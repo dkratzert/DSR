@@ -1,0 +1,9 @@
+Package: dsr
+Version: 1.2.12-1
+Architecture: all
+Maintainer: Daniel Kratzert <dkratzert@gmx.de>
+Installed-Size: 14
+Section: Productivity/Scientific/Chemistry
+Priority: extra
+Homepage: <https://www.xs3.uni-freiburg.de/research/dsr>
+Description: <DSR - Disordered Solvent Refinement>

@@ -1,0 +1,13 @@
+Source: dsr
+Section: Productivity/Scientific/Chemistry
+Priority: extra
+Maintainer: Daniel Kratzert <dkratzert@gmx.de>
+Build-Depends: debhelper (>= 8.0.0), xclip (>= 0)
+Standards-Version: 3.9.3
+Homepage: <https://www.xs3.uni-freiburg.de/research/dsr>
+Vcs-Git: <git://git.debian.org/collab-maint/dsr.git>
+Package: dsr
+Architecture: all
+Depends: xclip
+Description: <DSR - Disordered Solvent Refinement>
+Version: 1.2.12
