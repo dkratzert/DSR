@@ -263,7 +263,8 @@ class Export():
             print 'converting from .ps to .png'
             files = '"{}.ps" "{}.png"'.format(self.__fragment, self.__fragment)
             image_commandline = '{} {} {}'.format(convert, options_convert, files)
-            os.popen(image_commandline)
+            conv = os.popen(image_commandline)
+            conv.close()
             # were we successful?
             if os.path.isfile(self.__fragment+'.png'):
                 print 'success!'

@@ -55,6 +55,7 @@ from restraints import ListFile, Lst_Deviations
 # -why not "dsr import At1 > At2"; send to grade; get molecule and restraints back; 
 #  then import to database.
 # -linux-tkpb:/usr/src/packages/BUILD # dpkg-deb --build dsr
+# -options in __main__ und main() einzelne options übergeben
 
 VERSION = '1.2.12'
 progname = '\n----------------------------- D S R - v{} ----------------------------------'.format(VERSION)
