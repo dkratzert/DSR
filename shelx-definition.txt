@@ -1,0 +1,61 @@
+
+SHELX file definition
+
+- continuation lines ... =
+  ... C. end with a '=' and the next line starts with one or more spaces ' '
+
+- Comments: start with space ' ', rest is ignored
+
+- all characters following '!' or '=' are ignored
+
+- TIME and MOLE are deprecated
+
+- +filename incudes an input file with further instructions until 
+  an END instruction is encountered in that file.
+  The input from an include is not echoed to the res and lst file 
+  It can be used for FRAG and FEND and respective restraints
+
+- The .ins file should always start with 
+  TITL
+  CELL
+  ZERR
+  [LATT]
+  SYMM
+  [NEUT]
+  SFAC,
+  [DISP]
+  UNIT 
+  in that order and finish with 
+  HKLF and 
+  END. 
+  Instructions in square brackets
+  are not always required. 
+  There may be more than one SYMM, SFAC and DISP instructions.
+  
+- Atom instructions begin with an atom name 
+  (up to 4 characters, of which the first must be a letter) 
+  (A number is not required)
+  X = Letter, Y = number
+  X[XXX](0-3)[YYY](0-3)
+  
+  that do not correspond to any of the SHELXL instructions, 
+  and terminated by at least one blank) 
+  followed by a scattering factor number [which refers to the list defined by the SFAC instruction(s)], 
+  x, y, and z in fractional coordinates, and (optionally) a site occupation factor
+  (s.o.f.) and an isotropic U or six anisotropic Uij components (in Angström^2).
+  
+  XY Y x y z [11.0] [U] or [Uij]
+ 
+  atomname sfac x y z sof[11] U[0.05] or U11 U22 U33 U23 U13 U12
+  
+  The combination of atom name, PART and RESI numbers must be unique. 
+
+  To fix any atom parameter, add 10.
+  
+  If any atom parameter is given as (10*m+p), where abs(p) is less than 5 and m is an integer, it
+  is interpreted as p*fv_m, where fv_m is the mth free variable (see FVAR). 
+  
+  
+ 
+ 
+ 
