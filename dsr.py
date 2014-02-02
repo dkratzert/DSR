@@ -37,27 +37,21 @@ from restraints import ListFile, Lst_Deviations
 #   REM GEN: using MOGUL 1.6(RC5), CSD as535be with quantum mechanics RM1
 #   REM grade-cif2shelx output
 #   REM Version: 0.0.5 <Dec 20 2013>
-# -1. port to Python 2.6
-#  2. port to Python 3.3
 # -make a proper python module from DSR
-# -test what happens if no DSRDIR and DSR_DB_DIR variables are set.
 # -try to iterate all target atoms if fit is really bad
 # -Iteratively analyze disagreeable restraints and set ESDs of relative
 #  restraints accordingly. (Only if shift is not too big, has to be nearly converged)
 # -select atoms in shelxle > export to db
 # -if part > 2 and same residue and positive occ then SUMP
-# -use +filename for restraints? no!
+# -use +filename.dfix for restraints.
 # -If second part of a disordered atom is very close to the first, make EADP?
-# -Restraints such as "SAME_CF3 O1 > F9" should be inserted only once!
 # -If e.g. OCC in dsrline and index(OCC)+1 != ' ', then dsrline.insert(' ', index(OCC)+1)
 # -check for residues with same class and differing atom names inside.
 # -should I make rem dsr IMPORT from Atom1 to Atom2 ?
 #  with or without their restraints? RESI class might work?
 # -add SIMU and RIGU after Grade import
-# -why not "dsr import At1 > At2"; send to grade; get molecule and restraints back; 
-#  then import to database.
-# -linux-tkpb:/usr/src/packages/BUILD # dpkg-deb --build dsr
-# -options in __main__ und main() einzelne options übergeben
+# -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
+
 
 VERSION = '1.2.12'
 progname = '\n----------------------------- D S R - v{} ----------------------------------'.format(VERSION)
