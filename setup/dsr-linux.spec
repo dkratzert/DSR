@@ -96,10 +96,11 @@ cp setup/dsr.sh $RPM_BUILD_ROOT/etc/profile.d
 #/opt/DSR/setup/set_environ.py
 /opt/DSR/setup/OlexDSR.py
 /opt/DSR/setup/custom.xld
-/opt/DSR/example/p21c.hkl
-/opt/DSR/example/p21c.res
-/opt/DSR/example/p21c_step0.res
-/opt/DSR/example/p21c_step1.res
-/opt/DSR/example/p21c_step2.res
-/opt/DSR/example/p21c_step3.res
-/opt/DSR/example/p21c-step2.ins
+%attr(777, root, users) /opt/DSR/example
+%attr(666, root, users) /opt/DSR/example/p21c.hkl
+%attr(666, root, users) /opt/DSR/example/p21c.res
+%attr(666, root, users) /opt/DSR/example/p21c_step0.res
+%attr(666, root, users) /opt/DSR/example/p21c_step1.res
+%attr(666, root, users) /opt/DSR/example/p21c_step2.res
+%attr(666, root, users) /opt/DSR/example/p21c_step3.res
+%attr(666, root, users) /opt/DSR/example/p21c-step2.ins
