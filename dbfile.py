@@ -9,7 +9,7 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
-
+from __future__ import print_function
 import os, sys
 import re
 import fileinput
@@ -17,6 +17,7 @@ from constants import *
 import misc
 import tarfile
 from collections import Counter
+
 
 
 
@@ -37,7 +38,7 @@ class getDB():
         try:
             self._db_dir = os.environ["DSR_DB_DIR"]
         except(KeyError):
-            print 'The environment variable DSR_DB_DIR was not found.\nPlease set this variable to the path of the DSR database!'
+            print('The environment variable DSR_DB_DIR was not found.\nPlease set this variable to the path of the DSR database!')
             self._db_dir = './'
         self._databases = self.getDB_files_dict()
 
@@ -61,9 +62,9 @@ class getDB():
                 with open(filename, 'r') as f:
                     for line in f:
                         dblist.append(line)
-            except(IOError), e:
+            except(IOError) as e:
                 if not str(e).find('dsr_db'):
-                    print e
+                    print(e)
                     sys.exit(-1)
                 else:
                     continue
@@ -74,7 +75,7 @@ class getDB():
     def find_db_tags(self):
         '''This method lists all fragment names in the database'''
         dbnames = []
-        dbkeys = self._databases.keys() #names of the databases
+        dbkeys = list(self._databases.keys()) #names of the databases
         regex = r'^<[^/].*>'
         for db in dbkeys:
             for num, line in enumerate(self._databases[db]):
@@ -93,7 +94,7 @@ class getDB():
             for i in duplicates:
                 #print list(set([ i for y in dbnames if y for y in i]))[0]
                 #print dbnames
-                print '\nDuplicate database entry "{}" found! Please remove/rename second entry\nand/or check all end tags.\n'.format(duplicates.pop())
+                print('\nDuplicate database entry "{}" found! Please remove/rename second entry\nand/or check all end tags.\n'.format(duplicates.pop()))
             sys.exit(0)
         ## sort lower-case:
         dbnames.sort(key=lambda x: x[0].lower())
@@ -190,11 +191,11 @@ class global_DB():
                 if l[0].upper() not in SHX_CARDS:      # exclude all non-atom cards
                     atoms.append(l)
         if not atoms:
-            print 'database entry of {} is corrupt. No atoms found!'.format(fragment)
-            print 'Have you really followed the syntax?'
+            print('database entry of {} is corrupt. No atoms found!'.format(fragment))
+            print('Have you really followed the syntax?')
             sys.exit()
         if not end:
-            print 'Could not find end of dbentry for fragment "{}"  Exiting...'.format(fragment)
+            print('Could not find end of dbentry for fragment "{}"  Exiting...'.format(fragment))
             sys.exit(-1)
         return atoms
 
@@ -208,12 +209,12 @@ class global_DB():
                 continue
             if not fragment_dict[i]:
                 if i == 'head':
-                    print 'Header (restraints) of database entry "{}" missing!'.format(fragment)
+                    print('Header (restraints) of database entry "{}" missing!'.format(fragment))
                 else:
-                    print 'Values for "{}" in database entry "{}" missing!'.format(str.upper(i), fragment)
+                    print('Values for "{}" in database entry "{}" missing!'.format(str.upper(i), fragment))
         if len(fragment_dict['fragline']) != 8:
-            print 'The line starting with "FRAG" in the database entry of {} is not correct.\n\
-                \rAre the cell parameters really correct? "FRAG 17 a b c alpha beta gamma"\n'.format(fragment)
+            print('The line starting with "FRAG" in the database entry of {} is not correct.\n\
+                \rAre the cell parameters really correct? "FRAG 17 a b c alpha beta gamma"\n'.format(fragment))
             sys.exit(-1)
 
 
@@ -227,7 +228,7 @@ class global_DB():
             line = ' '.join(i)
             at = line.split()[0]
             if at in atoms:
-                print 'dublicate atom {0} in database entry "{1}" found!'.format(at, fragment)
+                print('dublicate atom {0} in database entry "{1}" found!'.format(at, fragment))
                 sys.exit(-1)
             else:
                 atoms.append(at)
@@ -249,7 +250,7 @@ class global_DB():
             if line[-1] == '=': # continuation line
                 multiline = True
             if line[0][:4].upper() not in SHX_CARDS:  # only the first 4 characters, because SADI_TOL would be bad
-                print 'Bad line in header of database entry "{}" found!'.format(fragment)
+                print('Bad line in header of database entry "{}" found!'.format(fragment))
                 sys.exit(-1)
         
     
@@ -282,8 +283,8 @@ class global_DB():
             if fragline:
                 pass
         except(UnboundLocalError):
-            print 'Error. No cell parameters found in the database entry of "{}".'.format(fragment)
-            print 'Please add these parameters!'
+            print('Error. No cell parameters found in the database entry of "{}".'.format(fragment))
+            print('Please add these parameters!')
             sys.exit(0)
         return (nhead, fragline, comment)
         
@@ -365,6 +366,7 @@ class ImportGRADE():
         '''
         regex = re.compile(r'sequence') 
         for line in obprop:
+            line = line.decode('ascii')
             if regex.match(line):
                 line = line.split()
                 break
@@ -377,6 +379,7 @@ class ImportGRADE():
         '''
         restraints = []
         for line in self._dfixfile:
+            line = line.decode('ascii')
             line = line.strip('\n\r').split()
             if line:
                 line[0] = line[0][:4].upper()
@@ -391,6 +394,7 @@ class ImportGRADE():
         '''
         atomlines = []            
         for line in pdb:
+            line = line.decode('ascii')
             line = line.split()
             #print line
             if line[0] == 'HETATM':
@@ -446,7 +450,7 @@ class ImportGRADE():
         if grade_base_filename[1] == '.tgz':
             gradefile = tarfile.open(self._gradefile)
         else:
-            print 'File {} is not a valid file to import from!'.format(grade_base_filename[1])
+            print('File {} is not a valid file to import from!'.format(grade_base_filename[1]))
             sys.exit(0)
         names = []
         pdbfile = False
@@ -462,13 +466,13 @@ class ImportGRADE():
             if i.endswith('obprop.txt'):
                 propfile = gradefile.extractfile(i)
         if not pdbfile:
-            print ' .pdb file not found!'
+            print(' .pdb file not found!')
             self.import_error(self._gradefile)
         elif not dfixfile:
-            print ' .dfix file not found!'
+            print(' .dfix file not found!')
             self.import_error(self._gradefile)
         elif not propfile:
-            print ' obprop.txt file not found!'
+            print(' obprop.txt file not found!')
             self.import_error(self._gradefile)
         output = []
         output.append(pdbfile.readlines())
@@ -481,8 +485,8 @@ class ImportGRADE():
         '''
         warns for import errors
         '''
-        print 'Unable to import GRADE file {}'.format(filename)
-        print 'GRADE import relies on GRADE v1.100 and up.'
+        print('Unable to import GRADE file {}'.format(filename))
+        print('GRADE import relies on GRADE v1.100 and up.')
         sys.exit()
         
     
@@ -492,9 +496,9 @@ class ImportGRADE():
         the dsr_user_db.txt
         '''
         filename = os.path.join(self._db_dir, 'dsr_user_db.txt')
-        fragments = self._db.keys()
+        fragments = list(self._db.keys())
         imported_entry = self.bild_grade_db_entry()
-        grade_db_names = imported_entry.keys()
+        grade_db_names = list(imported_entry.keys())
         user_db_names = []
         for i in fragments:
             if self._db[i]['db'] == 'dsr_user_db':
@@ -503,7 +507,7 @@ class ImportGRADE():
         try:
             with open(filename, 'w') as f:
                 for name in grade_db_names:
-                    print 'Importing {} to user database...'.format(name)
+                    print('Importing {} to user database...'.format(name))
                     atomlist = imported_entry[name]['atoms']
                     head = '\n'.join([' '.join(x) for x in imported_entry[name]['head']])
                     atoms = '\n'.join(['{:<6} 1  {:>10}{:>10}{:>10}'.format(*y) for y in atomlist])
@@ -512,8 +516,8 @@ class ImportGRADE():
                     cell = '  '.join(imported_entry[name]['fragline'])
                     dbentry = '<{}> \n{} \nRESI {} \n{} \n{} \n{} \n</{}>\n'.format(resi_name, comment, resi_name, head, cell, atoms, resi_name)
                     f.write(dbentry)
-        except(IOError), e:
-            print e
+        except(IOError) as e:
+            print(e)
             sys.exit(-1)
         # try to write existing dbentrys:
         try:
@@ -521,7 +525,7 @@ class ImportGRADE():
                 for i in fragments:
                     name = i
                     if self._db[i]['db'] == 'dsr_user_db':
-                        userdb = self._db[i].keys()
+                        userdb = list(self._db[i].keys())
                         atomlist = self._db[i]['atoms']
                         head = '\n'.join([''.join(x) for x in self._db[i]['head']])
                         atoms = '\n'.join(['{:<6}{:<2}{:>10}{:>10}{:>10}'.format(*y) for y in atomlist])
@@ -530,10 +534,10 @@ class ImportGRADE():
                         comment = ' '.join(self._db[i]['comment'])
                         dbentry = '\n<{}> \nREM {} \nRESI {} \n{} \n{} \n{} \n</{}>\n'.format(name, comment, resi_name, head, fragline, atoms, name)
                         fu.write(dbentry)
-        except(IOError), e:
-            print e
+        except(IOError) as e:
+            print(e)
             sys.exit(-1)
-        print 'User database successfully updated.'
+        print('User database successfully updated.')
                     
 
 ### old methods:  ########################
@@ -583,7 +587,7 @@ class ImportGRADE():
         reads the atom coordiantes from a mol2-file
         '''
         inputfile = []
-        print filename
+        print(filename)
         try:
             gfile = tarfile.open(self._gradefile)
             gfile = self._gradefile.extractfile(filename)
@@ -592,8 +596,8 @@ class ImportGRADE():
             #with open(filename, 'r') as f:
             #    for line in f:
             #        inputfile.append(line)
-        except(IOError), e:
-            print e
+        except(IOError) as e:
+            print(e)
             sys.exit(-1)
         return inputfile
 
@@ -641,17 +645,17 @@ if __name__ == '__main__':
     dbhead = gl.get_head_from_fragment(fragment)        # this is only executed once
     
     #print dbatoms
-    print 'residue:', db['toluene']['resi']
-    print 'line of db:', db['toluene']['line']
-    print 'database:', db['toluene']['db']
-    print fragline
+    print('residue:', db['toluene']['resi'])
+    print('line of db:', db['toluene']['line'])
+    print('database:', db['toluene']['db'])
+    print(fragline)
     
     #for i in dbatoms:
     #    print i
     head = db['toluene']['head']
-    print '### DB head:\n'
+    print('### DB head:\n')
     for i in dbhead:
-        print i
+        print(i)
     
     mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz')
     #mog = ImportGRADE('./test-data/LIG.gradeserver_all.tgz')
@@ -671,7 +675,7 @@ if __name__ == '__main__':
             if re.match('.*obabel.*', i):
                 continue
             #localFile = tempfile.TemporaryFile()
-            print i
+            print(i)
             gfile = gradefile.extractfile(i)
             #localFile.write(gfile)
 #            print gfile.readlines()
@@ -680,7 +684,7 @@ if __name__ == '__main__':
 
     
     #print localFile.readlines()
-    print
+    print()
     #print misc.ll_to_string(mog.get_molatoms())
     #for i in mog.get_molatoms('./test-data/TOL.mol2'):
     #    #print '{:<6}{:>1}{:>10}{:>10}{:>10}'.format(i[0], i[1], i[2], i[3], i[4])

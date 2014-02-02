@@ -9,13 +9,14 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
-
+from __future__ import print_function
 import re, sys
 import string
 from atoms import Element as el
 from constants import *
 from misc import find_line, get_atoms
 from options import OptionsParser 
+
 
 __metaclass__ = type  # use new-style classes
 
@@ -44,10 +45,10 @@ def get_atomtypes(dbatoms):
         elif atom[0] in el.atoms:
             found.append(atom[0])  # then for all one-letter atoms
         else:
-            print '\n {} is not a valid atom!!\n'.format(atom)
+            print('\n {} is not a valid atom!!\n'.format(atom))
             sys.exit()
     if len(dbatoms) != len(found):    # do we really need this here??
-        print "One of the Atoms in the dbentry is not correct! Exiting..."
+        print("One of the Atoms in the dbentry is not correct! Exiting...")
         sys.exit(-1)
     return found
 
@@ -58,7 +59,7 @@ def check_db_names_for_consistency(dbhead, dbatoms):
     
     for i in dbhead:
         if i not in dbatoms:
-            print 'Atom', i, 'is in a restraint but not in the dbentry!'
+            print('Atom', i, 'is in a restraint but not in the dbentry!')
         else:
             pass
 
@@ -156,7 +157,7 @@ class FindAtoms():
             suffix = atom.split('_') 
             resinum = suffix[-1].strip(string.ascii_letters) # we don't need the part here
             if len(resinum) > 4:
-                print 'Invalid residue number in', atom
+                print('Invalid residue number in', atom)
                 sys.exit(-1)
             return str(resinum)
         else:
@@ -184,15 +185,15 @@ class FindAtoms():
             try:
                 self._residues[num]
             except(KeyError):
-                print '\nTarget atom "{}" not found in res file!!'.format(i)
+                print('\nTarget atom "{}" not found in res file!!'.format(i))
                 sys.exit(-1)
             for x in self._residues[num]:
                 if x[0].upper() == i.split('_')[0].upper():
                     single_atom = {i.upper(): x[1]}
                     atom_dict.update(single_atom)
         for i in atoms:
-            if i not in atom_dict.keys():
-                print '\nTarget atom "{}" not found in res file!'.format(i)
+            if i not in list(atom_dict.keys()):
+                print('\nTarget atom "{}" not found in res file!'.format(i))
                 sys.exit(-1)
         return atom_dict
 
@@ -242,7 +243,7 @@ class FindAtoms():
                         atom = line.split()[0].upper()
                         if atom in SHX_CARDS:
                             continue
-                        print 'Deleted atom {}'.format(line.split()[0])
+                        print('Deleted atom {}'.format(line.split()[0]))
                         self._reslist[i+n] = ''
                     except(IndexError):
                         continue
@@ -261,13 +262,13 @@ def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
     nsrc = len(db_source_atoms)
     ntrg = len(res_target_atoms)
     if nsrc != ntrg:
-        print 'Number of source and target atoms is different!! ({} and {})'.format(nsrc, ntrg)
+        print('Number of source and target atoms is different!! ({} and {})'.format(nsrc, ntrg))
         sys.exit()
     
     # do the source atoms exist at all?:
     for i in db_source_atoms:
         if i.upper() not in dbat:
-            print '\nAtom {} not found in database entry! Exiting...\n'.format(i)
+            print('\nAtom {} not found in database entry! Exiting...\n'.format(i))
             sys.exit(-1)
     
     return 'check_source_target() succeded!\n'
@@ -383,8 +384,8 @@ class NumberScheme():
         self.__dbatome = dbatome
         # Alphabet for the naming scheme:
         self.__alphabet = []
-        self.__letters = string.uppercase
-        self.__alphabet = [ i for i in string.uppercase ]
+        self.__letters = string.ascii_uppercase
+        self.__alphabet = [ i for i in string.ascii_uppercase ]
         # unsorted atomlist:
         self.__atyp = get_atomtypes(self.__dbatome)
         # sorted atomlist:
@@ -422,7 +423,7 @@ class NumberScheme():
         ''' returns a list of atoms of length len(self.__dbatome) whith a naming scheme
             which fits into the resfile.'''
         if self.__resi:
-            print 'RESI instruction is enabled. Leaving atom numbers as they are.'
+            print('RESI instruction is enabled. Leaving atom numbers as they are.')
             atoms = []
             for i in self.__dbatome:
                 atoms.append(i[0].upper())
@@ -452,12 +453,12 @@ class NumberScheme():
         
         # retain the original order of the atomlist:
         # index of the sorted atoms:
-        aindex = sorted(range(len(self.__atyp)), key=lambda k: self.__atyp[k])
+        aindex = sorted(list(range(len(self.__atyp))), key=lambda k: self.__atyp[k])
         orglist = [''] * len(newatom) 
         for x, i in enumerate(aindex):
             orglist[i] = newatom[x] # every ith aindex element is replaced by newatom[x] to retain original order
     
-        print 'Fragment atom names:', ', '.join(orglist)
+        print('Fragment atom names:', ', '.join(orglist))
         return orglist
 
 
@@ -526,32 +527,32 @@ if __name__ == '__main__':
     
     fa = FindAtoms(reslist)
  #   print fa.get_atomcoordinates(['C12', 'C29', 'Q12'])
-    print 'line number:', fa.get_atom_line_numbers(['C12', 'C333', 'Q12'])
+    print('line number:', fa.get_atom_line_numbers(['C12', 'C333', 'Q12']))
     
     fa.remove_adjacent_hydrogens(['C2', 'c4', 'c5'])
     
     for num, i in enumerate(reslist):
         if num > 65:
-            print i.strip('\r\n')
+            print(i.strip('\r\n'))
         if num > 85:
             break
     
-    print 'get_atomtypes', get_atomtypes(dbatoms)
-    print
-    print 'get_atomcoordinates:'
+    print('get_atomtypes', get_atomtypes(dbatoms))
+    print()
+    print('get_atomcoordinates:')
     coord = fa.get_atomcoordinates(['C1', 'C22_1', 'C28', 'Q1'])
     for i in coord:
-        print '{}:\t{:<9} {:<9} {:<9}'.format(i, *coord[i])
-    print
-    print
+        print('{}:\t{:<9} {:<9} {:<9}'.format(i, *coord[i]))
+    print()
+    print()
     dsrp = DSR_Parser(reslist)
     dsr_dict = dsrp.parse_dsr_line()
     
-    print check_source_target(dsr_dict.get('source'), dsr_dict.get('target'), dbatoms)
+    print(check_source_target(dsr_dict.get('source'), dsr_dict.get('target'), dbatoms))
     
     #print dbatoms
     num = NumberScheme(reslist, dbatoms, dsr_dict['resi'])
     num.get_fragment_number_scheme()
     dbtypes = get_atomtypes(dbatoms)
     sfac = SfacTable(reslist, dbtypes)
-    print sfac.set_sfac_table()
+    print(sfac.set_sfac_table())

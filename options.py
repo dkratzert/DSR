@@ -9,11 +9,12 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
+from __future__ import print_function
 import sys
 try:
     from argparse import RawTextHelpFormatter
 except(ImportError):
-    print '\nYour python version is incompatible with DSR! \nPlease use Python 2.7 or above. (Except Python 3)\n'
+    print('\nYour python version is incompatible with DSR! \nPlease use Python 2.7 or above.\n')
     sys.exit()
 from argparse import ArgumentParser, SUPPRESS
 
@@ -45,7 +46,7 @@ class OptionsParser():
         #and not self._options.debug\
         
     def error(self):
-        print "\nPlease give one of the options as argument!\n"
+        print("\nPlease give one of the options as argument!\n")
         self.parser.print_help()
         sys.exit()
 
@@ -109,7 +110,7 @@ class OptionsParser():
 if __name__ == '__main__':
     from dsr import progname
     optparse = OptionsParser(progname)
-    print optparse.res_file
+    print(optparse.res_file)
     optparse.parser.print_help()
 
     

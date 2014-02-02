@@ -10,6 +10,7 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 # 
+from __future__ import print_function
 import sys
 import os
 import pstats
@@ -24,6 +25,7 @@ from refine import ShelxlRefine
 from resi import Resi
 from misc import get_replace_mode, find_line
 from restraints import ListFile, Lst_Deviations
+
 
 # TODO and ideas:
 # -To the manual: Avogradro/res-file -> rename -> mercury -> mol2-file -> GRADE
@@ -76,9 +78,9 @@ def list_dbentrys():
     '''
     gdb = global_DB()
     db = gdb.build_db_dict()
-    print '\n Entries found in the databases:\n'
-    print ' Fragment         | Line | DB Name    | Comment '
-    print ' ---------------------------------------------------------------------------'
+    print('\n Entries found in the databases:\n')
+    print(' Fragment         | Line | DB Name    | Comment ')
+    print(' ---------------------------------------------------------------------------')
 
     frags = sorted(db.keys())
     for i in frags:
@@ -86,10 +88,10 @@ def list_dbentrys():
                 i, gdb.get_line_number_from_fragment(i), 
                 gdb.get_db_from_fragment(i), 
                 gdb.get_comment_from_fragment(i))
-        print line[:79]
-    print '\n Feel free to add more fragments to "dsr_user_db.txt" in the program directory\n or mail them to dkratzert@gmx.de.\n'
+        print(line[:79])
+    print('\n Feel free to add more fragments to "dsr_user_db.txt" in the program directory\n or mail them to dkratzert@gmx.de.\n')
     
-    for fragment in db.keys():
+    for fragment in list(db.keys()):
         gdb.check_consistency(db[fragment], fragment)
         gdb.check_db_atom_consistency(db[fragment]['atoms'], fragment)
         gdb.check_db_header_consistency(db[fragment]['head'], fragment)
@@ -113,7 +115,7 @@ def set_post_refine_cycles(shx, cycles):
     try:
         shx.set_refinement_cycles(cycles)
     except(IndexError):
-        print 'Unable to set refinement cycles'
+        print('Unable to set refinement cycles')
     shx.remove_afix()   # removes the afix 9
     
 
@@ -124,7 +126,7 @@ def export_all_fragments(options):
     from export import Export
     gdb = global_DB()
     db = gdb.build_db_dict()
-    dbnames = db.keys()
+    dbnames = list(db.keys())
     for name in dbnames:
         export = Export(options, fragment=name)
         export.write_file()
@@ -147,7 +149,7 @@ def replacemode():
     '''
     Target atoms are being replaced if this is executed
     '''
-    print 'Replace mode active.'
+    print('Replace mode active.')
     target_lines = fa.get_atom_line_numbers(res_target_atoms)
     #print target_lines, res_target_atoms
     for i in target_lines:
@@ -162,8 +164,8 @@ def go_refine(shx):
     '''
     try:
         shx.run_shelxl()
-    except(), e:
-        print e
+    except() as e:
+        print(e)
         sys.exit()
 
 
@@ -173,7 +175,7 @@ def main():
     # The database content:
     gdb = global_DB()
     
-    print progname # prints the version string on screen
+    print(progname) # prints the version string on screen
     
     #  List of Database Fragments:   
     if options.list_db:
@@ -238,11 +240,11 @@ def main():
   #  
   #  #######################################################
 
-    print 'Inserting {} into res File.'.format(fragment)
+    print('Inserting {} into res File.'.format(fragment))
     db_source_atoms = dsr_dict.get('source')
-    print 'Source atoms:', ', '.join(db_source_atoms)
+    print('Source atoms:', ', '.join(db_source_atoms))
     res_target_atoms = dsr_dict.get('target')
-    print 'Target atoms:', ', '.join(res_target_atoms)
+    print('Target atoms:', ', '.join(res_target_atoms))
     
     
     # several checks if the atoms in the dsr command line are consistent

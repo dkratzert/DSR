@@ -9,14 +9,15 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
+from __future__ import print_function
 import string
 from constants import *
 import re
 import os
 
-alphabet = []
-alphabet = [ i for i in string.uppercase ]
+alphabet = string.ascii_uppercase
 
+__metaclass__ = type  # use new-style classes
 
 def get_atoms(atlist):
     '''returns all atoms found in the input as list'''
@@ -32,7 +33,7 @@ def get_atoms(atlist):
 def ll_to_string(inputlist):
     '''converts list of list to string with four whitespaces between each list element'''
     
-    inputlist = [map(str, i) for i in inputlist]
+    inputlist = [list(map(str, i)) for i in inputlist]
     
     newlist = []
     for i in inputlist:
@@ -160,7 +161,7 @@ def matrix(matrix1,matrix2):
     '''
     if len(matrix1[0]) != len(matrix2):
         # Check matrix dimensions
-        print 'Matrices must be m*n and n*p to multiply!'
+        print('Matrices must be m*n and n*p to multiply!')
     else:
         # Multiply if correct dimensions
         new_matrix = zero(len(matrix1),len(matrix2[0]))
@@ -215,18 +216,18 @@ if __name__ == '__main__':
     dsr_string = dsrp.find_dsr_command(line=True).lower()
 
     regex = 'Q2.*'
-    print 'found regex in line', find_line(reslist, regex)
+    print('found regex in line', find_line(reslist, regex))
     regex2 = '^H[0-9]+\s+'
     multi = find_multi_lines(reslist, regex2)
-    print 'found multiline in lines', multi
+    print('found multiline in lines', multi)
     if not multi:
-        print 'nix gefunbden!!!!!!!!'
-    print 'replace mode:', get_replace_mode(dsr_string)
-    print '#'+reslist[123].strip('\n')+'#'
-    print 'multiline?', multiline_test(reslist[123])
-    print '#'+reslist[24].strip('\n')+'#'
-    print 'multiline?', multiline_test(reslist[24])
+        print('nix gefunbden!!!!!!!!')
+    print('replace mode:', get_replace_mode(dsr_string))
+    print('#'+reslist[123].strip('\n')+'#')
+    print('multiline?', multiline_test(reslist[123]))
+    print('#'+reslist[24].strip('\n')+'#')
+    print('multiline?', multiline_test(reslist[24]))
     
     coo = frac_to_cart((0.3, 0.3, 0.4), (18, 19, 20, 90, 97, 90))
     #print coo
-    print '{:8.5} {:8.5} {:8.5}'.format(*coo), 'neue koordianten'
+    print('{:8.5} {:8.5} {:8.5}'.format(*coo), 'neue koordianten')

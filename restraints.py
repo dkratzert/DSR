@@ -7,6 +7,7 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
+from __future__ import print_function
 import sys, re
 from resfile import ResList
 from options import OptionsParser
@@ -15,9 +16,11 @@ from resi import Resi
 import string
 import misc
 from atomhandling import NumberScheme
-alphabet = []
-alphabet = [ i for i in string.lowercase ]
+alphabet = [ i for i in string.ascii_lowercase ]
 from dbfile import global_DB
+
+
+__metaclass__ = type  # use new-style classes
 
 class ListFile():
     def __init__(self):
@@ -45,7 +48,7 @@ class ListFile():
                 for line in l:
                     listfile.append(line)
         except(IOError):
-            print 'Unable to read {}'.format(self._listfile)
+            print('Unable to read {}'.format(self._listfile))
             sys.exit()
         return listfile
         
@@ -79,11 +82,11 @@ class Lst_Deviations():
         pretty output of the deviations
         '''
         if self._dev:
-            print '\n Fragment fit might have failed.'
-            print ' Deviations on fitting group:'
+            print('\n Fragment fit might have failed.')
+            print(' Deviations on fitting group:')
             for i in self._dev:
-                print ' {:<4}: {:>5} A'.format(i.strip(' \n\r'), self._dev[i][:4])
-        print '\n'
+                print(' {:<4}: {:>5} A'.format(i.strip(' \n\r'), self._dev[i][:4]))
+        print('\n')
     
 
     
@@ -130,7 +133,7 @@ class Connections():
             self._numpart = '_'+self._resinum+self._partsymbol
         else:
             self._numpart = ''
-        print '_numpart =',  self._numpart
+        print('_numpart =',  self._numpart)
 ##############################################################        
         self._atomnames = dbatoms[:] # instead of dbatoms, use all atoms here to get all connections!
 ######################################################        
@@ -169,7 +172,7 @@ class Connections():
                             atoms.pop()
                             atoms.pop()
                             break
-        print 'test:', atomconnections
+        print('test:', atomconnections)
         return atomconnections
     
     
@@ -195,7 +198,7 @@ class Connections():
                     atoms.pop()
                     break
         
-        print 'atomconnections "O4":', atomconnections['O4']
+        print('atomconnections "O4":', atomconnections['O4'])
         
         ##con = Connections(self._reslist, self._dsr_dict, self._dbhead, dbatoms)
         #conntable = self.find_pivotatoms()

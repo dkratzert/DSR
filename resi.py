@@ -14,10 +14,11 @@
 #
 # Wenn das dict leer ist werden überhaupt keine RESI betreffenden dinge in das insfile übernommen
 
-    
+from __future__ import print_function    
 import sys
 from resfile import ResList
 from constants import RESTRAINT_CARDS
+
 
 class Resi(object):
     '''Handles the RESI instructions and restraints
@@ -143,10 +144,10 @@ class Resi(object):
                 new_num = str(int(new_num)+1)
             return new_num
         if resinum in self._residues_in_res:
-            print 'Warning: The residue number "{}" you have chosen is already in use!'.format(resinum)
+            print('Warning: The residue number "{}" you have chosen is already in use!'.format(resinum))
             while new_num in self._residues_in_res:
                 new_num = str(int(new_num)+1)
-            print '         I am using number "{}" instead.\n'.format(new_num)
+            print('         I am using number "{}" instead.\n'.format(new_num))
             return new_num
         else:
             return self.__combined_resi['number']    
@@ -198,13 +199,13 @@ class Resi(object):
                 return resi_list
                 break
         if not resi_list:
-            print 'No valid RESI instruction found in the database entry.'
+            print('No valid RESI instruction found in the database entry.')
             sys.exit()
         
     
     
     def _wrong_syntax(self):
-        print 'This is not a valid RESIDUE syntax!'
+        print('This is not a valid RESIDUE syntax!')
 
 
     def get_resi_syntax(self, resi):
@@ -226,7 +227,7 @@ class Resi(object):
             'alias' : None}
         
         if resi == None:
-            print 'No valid RESI instruction found in the database entry!'
+            print('No valid RESI instruction found in the database entry!')
             sys.exit()
         else:
             resi.sort()
@@ -238,7 +239,7 @@ class Resi(object):
                     del resi[0]
                 else:
                     self._wrong_syntax()
-                    print 'Only digits are allowed for the residue number.'
+                    print('Only digits are allowed for the residue number.')
                     sys.exit()
             if len(resi) > 0:
                 if str.isdigit(resi[0]):
@@ -246,18 +247,18 @@ class Resi(object):
                     del resi[0]
                 else:
                     self._wrong_syntax()
-                    print 'Only digits are allowed in the residue alias.'
+                    print('Only digits are allowed in the residue alias.')
                     sys.exit()
             if resi_dict['number']:
                 if len(resi_dict['number']) > 4:
                     self._wrong_syntax()
-                    print 'Only four digits allowed in residue number!'
+                    print('Only four digits allowed in residue number!')
                     sys.exit()
             else: 
                 if self.__com_resi_list == 'DB': # in this case no residue number is given at all.
                     number = self.get_unique_resinumber()
                     #number = 3
-                    print 'No residue number was given. Using residue number {}.'.format(number)
+                    print('No residue number was given. Using residue number {}.'.format(number))
                 #self.get_unique_resinumber()
                 #resi_dict['number'] = True
             return resi_dict
@@ -306,9 +307,9 @@ if __name__ == '__main__':
     resi = Resi(res_list, dsr_dict, dbhead)
     db_resi = resi.get_resi_from_db()
    # print 'the new resinumber:', resi.get_unique_resinumber()
-    print
-    print
-    print resi.make_resihead()
+    print()
+    print()
+    print(resi.make_resihead())
     
     #if resi:
     #    print 'ja, resi aktivieren! hallo'

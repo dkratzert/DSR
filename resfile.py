@@ -9,13 +9,14 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
-
+from __future__ import print_function
 import misc
 import shutil
 import re
 import sys
 import os
 import constants
+
 
 __metaclass__ = type  # use new-style classes
 
@@ -35,7 +36,7 @@ class ResList():
             file_ext = os.path.splitext(resfilename)
             basefile = file_ext[0]
             if file_ext[1] != '.res':
-                print "Please give a res-file name as argument!"
+                print("Please give a res-file name as argument!")
                 sys.exit(0)
         except(AttributeError): 
             basefile = ''
@@ -51,7 +52,7 @@ class ResList():
                 for line in f:
                     reslist.append(line)
         except(IOError):
-            print 'Unable to read {}'.format(filename)
+            print('Unable to read {}'.format(filename))
             sys.exit()
         return reslist
         
@@ -70,7 +71,7 @@ class ResList():
             #nfile = open(self.__basefile+'-new.res', 'w')  # open the res file and add '-new' to the name
             nfile = open(self.__basefile+ending, 'w')  # open the ins file
         except(IOError):
-            print 'Unable to write res file!'
+            print('Unable to write res file!')
             sys.exit(-1)
         for i in reslist:            #modified reslist
             nfile.write("%s" % i)    #write the new file
@@ -162,7 +163,7 @@ class ResListEdit():
         '''
         dblines = []
         db = atoms[:]
-        db = [map(str, i) for i in db]
+        db = [list(map(str, i)) for i in db]
         for i in db:
             i[2] = i[2].ljust(8, '0').rjust(9, ' ') 
             i[3] = i[3].ljust(8, '0').rjust(9, ' ')
@@ -237,16 +238,16 @@ if __name__ == '__main__':
 
         
     for num, i in  enumerate(reslist):
-        print num+1, ''.join(i.strip('\n\r'))
+        print(num+1, ''.join(i.strip('\n\r')))
         if num > 15:
             break
-    print
+    print()
     
     reslist = rle.add_line(3, 'Hallo Welt!!!!!!!!!!!!!')
     
-    print
+    print()
     for num, i in  enumerate(reslist):
-        print num+1, ''.join(i.strip('\n'))
+        print(num+1, ''.join(i.strip('\n')))
         if num > 15:
             break
     
@@ -254,19 +255,19 @@ if __name__ == '__main__':
     reslist = rle.add_line(2, 'xghrzdg###################fdghgfdgh')
     
 
-    print
+    print()
     for n, i in enumerate(reslist):
-        print n+1, ''.join(i.strip('\n'))
+        print(n+1, ''.join(i.strip('\n')))
         if n > 5:
             break
             
     res_list.write_resfile(reslist, '.tst')
     
-    print '\n########################################\n'
+    print('\n########################################\n')
         
     for i in rle.list_lines(15, 33):
-        print i.strip('\n')
+        print(i.strip('\n'))
     
-    print misc.ll_to_string(dbatoms)
+    print(misc.ll_to_string(dbatoms))
     
 
