@@ -61,7 +61,7 @@ do
 done
 
 cd $TMP
-tar -rf $GIT/setup/Output/$OUTFILE DSR-$VERSION 2> /dev/null
+tar -rf $GIT/setup/Output/$OUTFILE DSR-$VERSION -C /opt/DSR 2> /dev/null
 gzip -f $GIT/setup/Output/$OUTFILE
 
 if [ -e $GIT/setup/Output/$OUTFILE.gz ]
