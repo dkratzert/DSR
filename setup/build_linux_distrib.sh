@@ -2,8 +2,8 @@
 
 
 TMP="/tmp"
-#GIT="/cygdrive/c/Users/$USERNAME/Documents/GitHub/DSR"
-GIT="/home/daniel/GitHub/DSR"
+GIT="/cygdrive/c/Users/$USERNAME/Documents/GitHub/DSR"
+#GIT="/home/daniel/GitHub/DSR"
 VERSION=$(cat $GIT/dsr.py|grep -e "VERSION ="|cut -d ' ' -f3|tr -d "\'")
 echo $VERSION
 OUTFILE=DSR-$VERSION.tar
@@ -61,7 +61,7 @@ do
 done
 
 cd $TMP
-tar -rf $GIT/setup/Output/$OUTFILE DSR-$VERSION -C /opt/DSR 2> /dev/null
+tar -rf $GIT/setup/Output/$OUTFILE DSR-$VERSION 2> /dev/null
 gzip -f $GIT/setup/Output/$OUTFILE
 
 if [ -e $GIT/setup/Output/$OUTFILE.gz ]
@@ -69,5 +69,5 @@ then
     echo "fertig mit Version $VERSION"
     cp $GIT/setup/Output/$OUTFILE.gz /usr/src/packages/SOURCES/
 else
-    sleep 10
+    sleep 5
 fi
