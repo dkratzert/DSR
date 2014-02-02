@@ -6,6 +6,7 @@ test-data/test
 test-data/test/*
 *.ps
 *.png
+/manuals/*.pdf
 /setup/*.exe
 /setup/Output/*.tar.gz
 /setup/Output/*.exe
