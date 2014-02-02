@@ -22,7 +22,7 @@ PROFILE = home+'/.profile'
 try:
     os.access(dsr_dir, os.W_OK)
 except:
-    print 'no write permission'
+    print('no write permission')
 
 def already_set_variable(file):
     for line in file:
@@ -36,16 +36,16 @@ try:
     os.chmod(dsr_dir+"/dsr", stat.S_IRWXU)
     os.chmod(dsr_dir+"/dsr", stat.S_IRWXG)
 except(OSError):
-    print 'Please copy the content of the DSR dsr_linux-version.tar.gz file to '+dsr_dir+' first!'
+    print('Please copy the content of the DSR dsr_linux-version.tar.gz file to '+dsr_dir+' first!')
     sys.exit()
 
 with open(PROFILE, 'a+') as file:
     if not already_set_variable(file):
-        print 'Environment path variable successfully set.'
+        print('Environment path variable successfully set.')
         file.write(dsr_path+'\n')
         file.write(DSR_DB_DIR+'\n')
     else:
-        print 'Environment path variable was already set.'
+        print('Environment path variable was already set.')
         sys.exit()
 
 

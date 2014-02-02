@@ -9,7 +9,7 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
-
+from __future__ import print_function
 import re
 import sys
 import misc
@@ -49,11 +49,11 @@ class DSR_Parser():
         try:
             indexnum[0]
         except(IndexError):
-            print ' no proper DSR command found! \n\n Have you really saved your .res file?\n'
+            print(' no proper DSR command found! \n\n Have you really saved your .res file?\n')
             sys.exit()
 
         if len(indexnum) > 1:
-            print 'only one dsr command at once is allowed! Exiting...'
+            print('only one dsr command at once is allowed! Exiting...')
             sys.exit(-1)
     
         if line is True:  # returns the string
@@ -121,10 +121,10 @@ class DSR_Parser():
             atindex = self.__dsr.index(start)+1
         except(ValueError):
             if start == 'WITH':
-                print 'No source atoms given!'
+                print('No source atoms given!')
                 sys.exit(-1)
             if start == 'ON':
-                print 'No target atoms given!'
+                print('No target atoms given!')
                 sys.exit(-1)
         atoms = []
         for i in self.__dsr[atindex:]: # start at the position of the first atom
@@ -145,7 +145,7 @@ class DSR_Parser():
                 if i not in self.__dsr:
                     raise Exception
             except:
-                print '\nNo "WITH" or "ON" statement in the dsr command line found!'
+                print('\nNo "WITH" or "ON" statement in the dsr command line found!')
                 sys.exit()
 
     def parse_dsr_line(self):
@@ -162,7 +162,7 @@ class DSR_Parser():
         # make sure the command is correct:
         command_list = ('PUT', 'REPLACE', 'ADD')
         if command not in command_list:
-            print 'No proper command string found in DSR command line!\n'#, self.__dsr
+            print('No proper command string found in DSR command line!\n')#, self.__dsr
             sys.exit(-1)
         # Source and target atoms:
         # In paerenteses are one start und one to multiple stop conditions:
@@ -241,19 +241,19 @@ if __name__ == '__main__':
  #   
   
     
-    print '\ncheck for FVAR:'
+    print('\ncheck for FVAR:')
     for i in reslist:
         if i.startswith('FVAR'):
-            print i
-    print
+            print(i)
+    print()
     
 #    for i in dsr_line:
 #        print i.ljust(9), '=', str(dsr_line.get(i)).ljust(11)
 #    print 
    
 
-    print 'String:', dsrp.find_dsr_command(line=True)
-    print 'Zeile mit dbentry:\n', dsrp.find_dsr_command(line=False), '\n'
+    print('String:', dsrp.find_dsr_command(line=True))
+    print('Zeile mit dbentry:\n', dsrp.find_dsr_command(line=False), '\n')
     
 
     

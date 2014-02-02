@@ -9,9 +9,12 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
+from __future__ import print_function
 from atomhandling import *
 import misc
 import constants
+
+__metaclass__ = type  # use new-style classes
 
 
 class InsertAfix(object):
@@ -56,7 +59,7 @@ class InsertAfix(object):
                     modified = True
                     break
         if modified:
-            print('\nAlready existing restraints were not inserted.')
+            print('\nAlready existing residue restraints were not inserted.')
         return newhead
         
     
@@ -155,13 +158,12 @@ if __name__ == '__main__':
     resi = Resi(reslist, dsr_dict, dbhead, residue, find_atoms)
     dbhead = resi.make_resihead()
 
-    
-   
+
     sf = SfacTable(reslist, dbtypes)
     sfac_table = sf.set_sfac_table()
-    
+
     afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, sfac_table, find_atoms)
-    print afix.build_afix_entry()
+    print(afix.build_afix_entry())
 
 
 

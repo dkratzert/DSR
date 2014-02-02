@@ -9,12 +9,15 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
+from __future__ import print_function
 import subprocess
 import sys, os, re
 import shutil
 from resfile import ResList
 import misc
 
+
+__metaclass__ = type  # use new-style classes
 
 class ShelxlRefine():
     '''A class to do a shelxl refinement. It is only for shelxl 2013!
@@ -26,7 +29,7 @@ class ShelxlRefine():
         self._find_atoms = find_atoms
         self._atoms_in_reslist = self._find_atoms.collect_residues()
         self.atoms = []
-        for residues in self._atoms_in_reslist.keys():
+        for residues in list(self._atoms_in_reslist.keys()):
             for i in self._atoms_in_reslist[residues]:
                 self.atoms.append(i[0])
         self.number_of_atoms = len(self.atoms)
@@ -36,19 +39,19 @@ class ShelxlRefine():
         self.b_array = self.approx_natoms()
         self.bakfile = str(self.resfile_name+'.dsr-bak')
         if not self.__shelx_command:
-            print '\nSHELXL executable not found! No fragment fitting possible.\n'
+            print('\nSHELXL executable not found! No fragment fitting possible.\n')
             sys.exit()
     
 
     def get_xl_version_string(self, exe):
         with open(exe, 'rb') as f:
             binary = f.read()
-            position = binary.find('Version 201')
+            position = binary.find(b'Version 201')
             if position > 0:
                 f.seek(position+8, 0) # seek to version string
                 version = f.read(6)   # read version string
                 #print version, 'found'
-                return version
+                return version.decode('ascii')
 
 
     def find_shelxl_exe(self):
@@ -67,16 +70,16 @@ class ShelxlRefine():
                 continue
             version = self.get_xl_version_string(exe)
             if not version:
-                print 'Your SHELXL version', exe, 'is too old for this Program'
-                print 'Please use SHELXL 2013/4 or above!'
+                print('Your SHELXL version', exe, 'is too old for this Program')
+                print('Please use SHELXL 2013/4 or above!')
                 sys.exit(-1)
             version = version.split('/')
             if int(version[0]) < 2013:
-                print 'Your SHELXL version is too old. Please use SHELXL 2013/4 or above!'
+                print('Your SHELXL version is too old. Please use SHELXL 2013/4 or above!')
                 sys.exit()
             if int(version[0]) > 2013:
                 if int(version[1]) <= 3:
-                    print 'Your SHELXL version is too old. Please use SHELXL 2013/4 or above!'
+                    print('Your SHELXL version is too old. Please use SHELXL 2013/4 or above!')
                     sys.exit()
             else:
                 return exe
@@ -97,7 +100,7 @@ class ShelxlRefine():
         '''
         status=self.checkFileExist(self.resfile_name+'.res')
         if not status:
-            print 'Error: unable to find res file!'
+            print('Error: unable to find res file!')
             sys.exit(-1)
         regex = '(^L\.S\.\s)|(^CGLS\s)'
         ls_line = misc.find_line(self.__reslist, regex)
@@ -163,7 +166,7 @@ class ShelxlRefine():
         try:
             res_filesize = int(os.stat(str(filename)).st_size)
         except:
-            print '"{}" not found!'.format(filename)
+            print('"{}" not found!'.format(filename))
             status = False
         if res_filesize > 10:
             status = True
@@ -178,7 +181,7 @@ class ShelxlRefine():
         try:
             shutil.copyfile(resfile, self.bakfile)
         except(IOError):
-            print 'Unable to make backup file from {}.'.format(resfile)
+            print('Unable to make backup file from {}.'.format(resfile))
             sys.exit(-1)
 
 
@@ -190,11 +193,11 @@ class ShelxlRefine():
         try:
             shutil.copyfile(self.bakfile, resfile)
         except(IOError):
-            print 'Unable to make restore res file from {}.'.format(self.bakfile)
+            print('Unable to make restore res file from {}.'.format(self.bakfile))
         try:
             misc.remove_file(self.bakfile)
         except(IOError):
-            print 'Unable to delete backup file {}.'.format(self.bakfile)
+            print('Unable to delete backup file {}.'.format(self.bakfile))
 
 
     def pretty_shx_output(self, out):
@@ -206,31 +209,30 @@ class ShelxlRefine():
         gof = False
         for i in out:
             #if re.match(r'.*Command line parameters', i):
-            #    print i.strip('\n\r')
             if i.startswith(' +  Copyright(C)'):
-                print ' SHELXL ', ' '.join(i.split()[6:8])
+                print(' SHELXL '+' '.join(i.split()[6:8]))
             # wR2
             if i.startswith(' wR2') and not wr2:
                 wr2 = True
                 line = i[:].split()
-                print ' {}  {} {:>6}'.format(line[0], line[1], line[2][:6])
+                print(' {}  {} {:>6}'.format(line[0], line[1], line[2][:6]))
             # R1
             if i.startswith(' R1') and not r1:
                 r1 = True
                 line = i[:].split()
-                print ' {}   {} {:>6}'.format(line[0], line[1], line[2][:6])
+                print(' {}   {} {:>6}'.format(line[0], line[1], line[2][:6]))
             # GooF
             if re.match(r'.*GooF.*', i) and not gof:
                 gof = True
                 line = i.split()
-                print ' {} {} {:>5}0'.format(line[0], line[1], line[4][:5])
+                print(' {} {} {:>5}0'.format(line[0], line[1], line[4][:5]))
             if re.match(r'.*CANNOT\s+OPEN\s+FILE.*hkl.*', i):
-                print ' No hkl file found!'
-                print 'You need a proper hkl file to use DSR!'
+                print(' No hkl file found!')
+                print('You need a proper hkl file to use DSR!')
                 sys.exit()
             if re.match(r'.*\*\*.*', i):
-                print '\n SHELXL says:'
-                print ' {}'.format(i.strip('\n\r'))
+                print('\n SHELXL says:')
+                print(' {}'.format(i.strip('\n\r')))
     
 
     def run_shelxl(self):
@@ -240,14 +242,14 @@ class ShelxlRefine():
         hklfile = self.resfile_name+'.hkl'
         
         if not self.checkFileExist(hklfile):
-            print 'You need a proper hkl file to use DSR.'
+            print('You need a proper hkl file to use DSR.')
             sys.exit()
         
         command_line='{} -b{} {}'.format(self.__shelx_command, self.b_array, self.resfile_name).split()
         
         self.backup_shx_file()
         
-        print '\n refining with "{}"'.format(' '.join(command_line))
+        print('\n refining with "{}"'.format(' '.join(command_line)))
         p = subprocess.Popen(command_line, stdin = subprocess.PIPE,
                             stdout = subprocess.PIPE, stderr=subprocess.STDOUT)
         
@@ -256,12 +258,12 @@ class ShelxlRefine():
         child_stdin.close()
         
         # Watch the output for successful termination
-        out = child_stdout_and_stderr.readline()
+        out = child_stdout_and_stderr.readline().decode('ascii')
         output = []
         while out:
             #sys.stdout.write(out)
             output.append(out)
-            out = child_stdout_and_stderr.readline()
+            out = child_stdout_and_stderr.readline().decode('ascii')
         
         child_stdout_and_stderr.close()
         # output only the most importand things from shelxl:
@@ -270,16 +272,16 @@ class ShelxlRefine():
         status = self.checkFileExist(resfile) # status is False if shelx was unsecessful
 
         if not status:
-            print '\n Error: SHELXL terminated unexpectedly. '
-            print ' Check for errors in your SHELX input file!\n'
+            print('\n Error: SHELXL terminated unexpectedly. ')
+            print(' Check for errors in your SHELX input file!\n')
             self.restore_shx_file()
             sys.exit()
         else:
             try:
                 misc.remove_file(self.bakfile)
             except(IOError):
-                print 'Unable to delete backup file {}.'.format(self.bakfile)
-            print '\nDSR run complete.'
+                print('Unable to delete backup file {}.'.format(self.bakfile))
+            print('\nDSR run complete.')
         
         
         
@@ -290,7 +292,7 @@ if __name__ == '__main__':
     res_list = rl.get_res_list()
     
     shx = ShelxlRefine(res_list, 'testfile')
-    print shx.afix_is_closed(110)
-    print shx.remove_afix()
+    print(shx.afix_is_closed(110))
+    print(shx.remove_afix())
     #shx.set_refinement_cycles()
     #shx.run_shelxl()

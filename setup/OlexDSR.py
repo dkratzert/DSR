@@ -19,23 +19,23 @@ def dsr(command):
         shutil.copyfile(inputfilename+'.ins', inputfilename+'.res')
         #os.popen(command)
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
-        print p.stdout.read()
-    except Exception, err:
-        print "DSR failed to run"
-        print "This is why: %s" %err
+        print(p.stdout.read())
+    except Exception as err:
+        print("DSR failed to run")
+        print("This is why: %s" %err)
         return
 
 def OlexDSR():
-    print "Olex2 to DSR Linker"
+    print("Olex2 to DSR Linker")
     # initialisation step
     exe_name = "dsr.bat"
     if not exe_name:
-        print 'The DSR executable could not be located, aborting'
+        print('The DSR executable could not be located, aborting')
         return
         
     #end of the initialisation
     inputfilename = OV.FileName()
-    print "Input file is: ", inputfilename
+    print("Input file is: ", inputfilename)
 
     command = "dsr.bat -r {}.res".format(inputfilename)
     #dsr(command)
@@ -44,8 +44,8 @@ def OlexDSR():
         shutil.copyfile(inputfilename+'.res', inputfilename+'.ins')
         OV.AtReap(inputfilename)
         return True
-    except Exception, err:
-        print "DSR gave up. This is why: %s" %err
+    except Exception as err:
+        print("DSR gave up. This is why: %s" %err)
         return
 
 def reopen():

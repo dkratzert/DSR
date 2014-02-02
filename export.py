@@ -9,17 +9,16 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
-
+from __future__ import print_function
 import sys, re, os
 from options import OptionsParser
 import atomhandling as at
 from misc import ll_to_string
 from dbfile import global_DB
 import pyperclip
-__metaclass__ = type  # use new-style classes
 
 
-   
+__metaclass__ = type  # use new-style classes   
     
 
 class Export():
@@ -50,13 +49,13 @@ class Export():
         if self.__options.export_all:
             self.__fragment = fragment
         if not self.__fragment:
-            print 'Please run this object with command line parameter -e "fragment" !'
+            print('Please run this object with command line parameter -e "fragment" !')
             sys.exit()
         self._gdb = global_DB()
         try:
             self.__db = self._gdb.build_db_dict()[self.__fragment.lower()]
         except(KeyError):
-            print 'Fragment "{}" was not found in the database!!'.format(self.__fragment)
+            print('Fragment "{}" was not found in the database!!'.format(self.__fragment))
             sys.exit()
         self._comment = self.__db['comment']
         self.__dbatoms = self.__db['atoms']
@@ -68,7 +67,7 @@ class Export():
         self.format_calced_coords()  # expands the cell of calculated structures
         self.__cell = '  '.join(self.__cell)
         self._comment_regex = '^REM .*$'.upper()
-        print 'Exporting "{0}" to {0}.res'.format(self.__fragment)
+        print('Exporting "{0}" to {0}.res'.format(self.__fragment))
     
     
     
@@ -157,11 +156,11 @@ class Export():
         '''
         arg = base+ending
         try:
-            print 'try to open...'
+            print('try to open...')
             f = open(arg, 'w')
             return True
         except IOError:
-            print 'can not open file'
+            print('can not open file')
             return False
         
 
@@ -174,9 +173,9 @@ class Export():
             for line in self.export_resfile(): 
                 line = ''.join(line)
                 f.write(line)
-            print 'Database entry of "{}" successfully written to {}.'.format(self.__fragment, resfile)
+            print('Database entry of "{}" successfully written to {}.'.format(self.__fragment, resfile))
         except(IOError):
-            print 'could not write file {}'.format(resfile)
+            print('could not write file {}'.format(resfile))
             sys.exit(-1)
         f.close()
         #if self.__options.export_all:
@@ -207,12 +206,12 @@ class Export():
         if misc.which('platon'):
             pass
         else:
-            print 'Could not write a .png image. No platon executable in path.'
+            print('Could not write a .png image. No platon executable in path.')
             sys.exit()
         try:
             shutil.copyfile(resfile, insfile)
         except(IOError):
-            print 'unable to write .ins file for plotting!'
+            print('unable to write .ins file for plotting!')
             sys.exit(-1)
 
         try:
@@ -224,7 +223,7 @@ class Export():
                 timeticks = timeticks+1
                 time.sleep(0.01)
                 if timeticks > 1500:
-                    print 'Platon run took too long to execute.'
+                    print('Platon run took too long to execute.')
                     break
             size1 = os.stat(psfile).st_size
             size2 = 99999999
@@ -236,8 +235,8 @@ class Export():
                 if timeticks > 30:
                     plat.terminate()
                     break
-        except(WindowsError), e:
-            print 'unable to run platon!', e
+        except(WindowsError) as e:
+            print('unable to run platon!', e)
             extensions = ('.bin', '.def', '.hkp', '.ins', '.pjn', '.lis', '.res', '.sar', '.sum', '.eld', '.out')
             plat.terminate()
             for i in extensions:
@@ -254,27 +253,27 @@ class Export():
         if misc.which('montage'): # i check for montage, because windows also ha a convert.exe
             pass
         else:
-            print 'Could not write a .png image. ImageMagic is not installed.'
+            print('Could not write a .png image. ImageMagic is not installed.')
             plat.terminate()
             return
         try:
             convert = 'convert'
             options_convert = '-crop 84%x90%+40%+40% -rotate 90 -trim' 
-            print 'converting from .ps to .png'
+            print('converting from .ps to .png')
             files = '"{}.ps" "{}.png"'.format(self.__fragment, self.__fragment)
             image_commandline = '{} {} {}'.format(convert, options_convert, files)
             conv = os.popen(image_commandline)
             conv.close()
             # were we successful?
             if os.path.isfile(self.__fragment+'.png'):
-                print 'success!'
+                print('success!')
                 # in case of success remove the postscript file
                 misc.remove_file(psfile, terminate=plat)
             else:
-                print 'unable to write .png file. Is platon and ImageMagic installed?'
+                print('unable to write .png file. Is platon and ImageMagic installed?')
                 plat.terminate()
-        except(EnvironmentError), e:
-            print 'unable to convert file', e
+        except(EnvironmentError) as e:
+            print('unable to convert file', e)
         
         misc.remove_file(self.__fragment+'.lis')
         misc.remove_file(self.__fragment+'.eld')
@@ -291,7 +290,7 @@ if __name__ == '__main__':
     db = gdb.build_db_dict()['toluene']
     export = Export('toluene')
     for i in export.export_resfile():
-        print i.strip('\n')
+        print(i.strip('\n'))
     #import pyperclip
     #pyperclip.setcb('The text to be copied to the clipboard.')
     #spam = pyperclip.getcb()
