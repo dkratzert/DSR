@@ -11,6 +11,7 @@
 #
 from atomhandling import *
 import misc
+import constants
 
 
 class InsertAfix(object):
@@ -32,12 +33,28 @@ class InsertAfix(object):
         self.source_atoms = dsr_line['source']
         self.target_atoms = dsr_line['target']
         self.__resi     = dsr_line['resi']
-
     
+
     def insert_dsr_warning(self):
         warn = 'rem the following was inserted by DSR:\n'
         return warn
     
+
+    def remove_duplicate_restraints(self, dbhead):
+        '''
+        removes restraints from the header which are already 
+        in the res-file
+        '''
+        newhead = dbhead[:]
+        for resline in self.__reslist:
+            resline = resline.strip().split()
+            for num, headline in enumerate(dbhead):
+                headline = headline.strip().split()
+                if headline == resline and headline[0][:4] in constants.RESTRAINT_CARDS:
+                    newhead[num] = ''
+                    break
+        return newhead
+        
     
     def build_afix_entry(self): 
         '''
@@ -46,11 +63,12 @@ class InsertAfix(object):
         atype = []       # list of atomtypes in reverse order
         afix_list = []   # the final list with atoms, sfac and coordinates
         e2s = Elem_2_Sfac(self.__sfac)
-        
+        # Fixme: move this to _init_
         num = NumberScheme(self.__reslist, self.__dbatoms, self.__resi)
         real_atomnames = list(reversed(num.get_fragment_number_scheme())) # i reverse it to pop() later
         # all non-atoms between start tag and FRAG card with new names:
         dbhead = rename_dbhead_atoms(real_atomnames, self.__dbatoms, self.__dbhead)
+        dbhead = self.remove_duplicate_restraints(dbhead)
         atype = list(reversed(self.__dbtypes))
         coord = self._find_atoms.get_atomcoordinates(self.target_atoms)
         target = self.target_atoms[:]  # a copy because we edit it later
@@ -110,29 +128,34 @@ if __name__ == '__main__':
     from dbfile import global_DB
     from dsrparse import DSR_Parser
     from atomhandling import SfacTable
-    from resfile import ResList
+    from resfile import ResList, ResListEdit
+    from resi import Resi
     
     options = OptionsParser()
     
     rl = ResList(options.res_file)
     reslist = rl.get_res_list()
-    
+    dsrp = DSR_Parser(reslist, rl)
+    dsr_dict = dsrp.parse_dsr_line()
+    find_atoms = FindAtoms(reslist)
+    rle = ResListEdit(reslist, find_atoms)
     gdb = global_DB()
     db = gdb.build_db_dict()
-    fragment = 'toluene'
+    fragment = 'oc(cf3)3'
     fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
     dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
     dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
+    residue = gdb.get_resi_from_fragment(fragment)
     dbtypes = get_atomtypes(dbatoms)
-    
-    dsrp = DSR_Parser(reslist)
-    dsr_dict = dsrp.parse_dsr_line()
+    resi = Resi(reslist, dsr_dict, dbhead, residue, find_atoms)
+    dbhead = resi.make_resihead()
+
     
    
     sf = SfacTable(reslist, dbtypes)
     sfac_table = sf.set_sfac_table()
     
-    afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, sfac_table)
+    afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, sfac_table, find_atoms)
     print afix.build_afix_entry()
 
 
