@@ -22,7 +22,7 @@ xcopy /Y %GIT%\resfile.py %DSRDIR%
 xcopy /Y %GIT%\resi.py %DSRDIR%
 xcopy /Y %GIT%\refine.py %DSRDIR%
 xcopy /Y %GIT%\restraints.py %DSRDIR%
-rem xcopy /Y %GIT%\dsr.bat %DSRDIR%
+xcopy /Y %GIT%\dsr.bat %DSRDIR%
 xcopy /Y %GIT%\pyperclip.py %DSRDIR%
 xcopy /Y %GIT%\dsr-shelxle.bat %DSRDIR%
 xcopy /Y %GIT%\dsr_db.txt %DSRDIR%
