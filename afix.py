@@ -45,6 +45,7 @@ class InsertAfix(object):
         removes restraints from the header which are already 
         in the res-file
         '''
+        modified = False
         newhead = dbhead[:]
         for resline in self.__reslist:
             resline = resline.strip().split()
@@ -52,7 +53,10 @@ class InsertAfix(object):
                 headline = headline.strip().split()
                 if headline == resline and headline[0][:4] in constants.RESTRAINT_CARDS:
                     newhead[num] = ''
+                    modified = True
                     break
+        if modified:
+            print('\nAlready existing restraints were not inserted.')
         return newhead
         
     
@@ -68,7 +72,8 @@ class InsertAfix(object):
         real_atomnames = list(reversed(num.get_fragment_number_scheme())) # i reverse it to pop() later
         # all non-atoms between start tag and FRAG card with new names:
         dbhead = rename_dbhead_atoms(real_atomnames, self.__dbatoms, self.__dbhead)
-        dbhead = self.remove_duplicate_restraints(dbhead)
+        if self.__resi:
+            dbhead = self.remove_duplicate_restraints(dbhead)
         atype = list(reversed(self.__dbtypes))
         coord = self._find_atoms.get_atomcoordinates(self.target_atoms)
         target = self.target_atoms[:]  # a copy because we edit it later
