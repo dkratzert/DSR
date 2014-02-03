@@ -133,21 +133,26 @@ class Connections():
         '''
         # lines is a list where self._pivot_regex is found
         lines = misc.find_multi_lines(self._listfile, self._pivot_regex)
-        atomconnections = {}
+        atomconnections = []
         for num in lines:
+            atname = self._listfile[num].split()[0] #atom1
             for atom in self._atomnames:
                 if atom in self._listfile[num]:
-                    atoms = []
+                    bond = []
                     for i in range(1, 10): # maximum number of connections for each atom
+                        row = self._listfile[num+i].split()
                         try:
-                            #print(self._listfile[num+i].split()[1]) # 1,2 distance
-                            atoms.append(self._listfile[num+i].split()[0])
-                            atoms.append('dist='+self._listfile[num+i].split()[1])
+                            atname_connect = row[0] #bonded atom
+                            distance = row[1]
+                            if distance == '-':
+                                break
+                            #angle1 = row[2]
+                            bond = ([atname, atname_connect, float(distance)])
+                            #bond = ([atname, atname_connect, [float(distance), float(angle1)]])
+                            atomconnections.append(tuple(bond))
                         except(IndexError):
-                            atoms.pop()
-                            atoms.pop()
-                            atomconnections[self._listfile[num].split()[0]] = tuple(atoms)
-                            break
+                            continue
+                    break
         return atomconnections
 
 
@@ -160,25 +165,17 @@ class Adjacency_Matrix():
     def __init__(self, conntable):
         self._conntable = conntable
         
-        
     def build_adjacency_matrix(self):
         '''
         needs pairs of atoms with their distance and residue
         '''
         MG = nx.Graph()
-        for atom in conntable:
-            atomname = list(atom)
-            line =(conntable[atom])
-            print(line)
-            MG.add_weighted_edges_from(line)
-        #for n,nbrs in MG.adjacency_iter():
-        #    for nbr,eattr in nbrs.items():
-        #        data=eattr['dist']
-        #        if data<2.5: print('{}, {}, {:.3f})'.format(n,nbr,data))
-    
+        MG.add_weighted_edges_from(self._conntable)
+        return MG
+
     @property
     def get_adjmatrix(self):
-        return self.build_adjacency_matrix
+        return self.build_adjacency_matrix()
 
 
 
@@ -208,12 +205,22 @@ if __name__ == '__main__':
     res_atoms = misc.get_atoms(res_list)
     res_atoms = [i[0] for i in res_atoms]
    
-   
     con = Connections(res_list, lst_file, dbhead, res_atoms, '2')
     conntable = con.get_bond_dist()
      
-    #for i in conntable.keys():
-    #    print(i, conntable[i])
-    #print(conntable)
     am = Adjacency_Matrix(conntable)
-    am.get_adjmatrix()
+    G = am.get_adjmatrix
+    #print(G.nodes())
+    print(G.edges(data=True))
+    #print(AM.get_adjmatrix())
+  #  for n,i in G.adjacency_iter():
+  #      for i, x in i.items():
+  #          dist=x['weight']
+  #          print(dist)
+#    for n,nbrs in AM.adjacency_iter():
+#        for nbr,eattr in nbrs.items():
+#            dist=eattr['weight']
+#            #if dist<1.1: print('{}, {}, {:.3f})'.format(n,nbr,dist))
+    #print(G.neighbors('Al1'))
+    dist='weight'
+    #print(G.edge['C1']['C2'][dist])
