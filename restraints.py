@@ -18,6 +18,7 @@ import misc
 from atomhandling import NumberScheme
 alphabet = [ i for i in string.ascii_lowercase ]
 from dbfile import global_DB
+import networkx as nx
 
 
 __metaclass__ = type  # use new-style classes
@@ -95,7 +96,6 @@ class Lst_Deviations():
 
 
 
-
 # for every atom in fragment:
 #   get_neighbours()
 #
@@ -114,12 +114,13 @@ class Connections():
                 reslist,   # resfile
                 dsr_dict,  # dict of dsr command
                 dbhead,    # header of dbentry
-                dbatoms,   # final atom names of the dbentry (with new naming sheme)
-                fragment,
-                residue):  
+                atoms,     # final atom names of the dbentry (with new naming sheme)
+                fragment,  # fragment name (not used atm)
+                residue):  # residue as number
         self._reslist = reslist
         lf = ListFile()
         self._dbhead = dbhead
+        # initialize the "_'residue number''part'" symbol:
         if residue:
             self._resinum = residue
         else:
@@ -134,13 +135,11 @@ class Connections():
         else:
             self._numpart = ''
         print('_numpart =',  self._numpart)
-##############################################################        
-        self._atomnames = dbatoms[:] # instead of dbatoms, use all atoms here to get all connections!
-######################################################        
+        self._atomnames = atoms[:] 
         self._atomnames = [ i+self._numpart for i in self._atomnames] #new names with _numpart notation
         #self._atomnames = ['C1A', 'C2A', 'C3A', 'C4A']
-#        self._pivot_regex = r'^\D+.*Distance\s+Angles'
-        self._pivot_regex = r'.*Angles.*'
+        self._pivot_regex = r'^.*Distance\s+Angles'
+#        self._pivot_regex = r'.*Angles.*'
         self._list = lf.read_lst_file()
     
     
@@ -198,7 +197,7 @@ class Connections():
                     atoms.pop()
                     break
         
-        print('atomconnections "O4":', atomconnections['O4'])
+        print('atomconnections "C1":', atomconnections['C1'])
         
         ##con = Connections(self._reslist, self._dsr_dict, self._dbhead, dbatoms)
         #conntable = self.find_pivotatoms()
@@ -232,40 +231,74 @@ class Restraints():
 
 
 
+class Adjacency_Matrix():
+    '''
+    returns an adjacence matrix for all atoms in the .lst file.
+    edge property is the bond length
+    
+    '''
+    def __init__(self, listfile, atompair, distance, residue):
+        self._listfile = listfile
+        
+        
+    def build_adjacency_matrix(self):
+        '''
+        needs pairs of atoms with their distance and residue
+        '''
+        MG = nx.Graph()
+        MG.add_weighted_edges_from([('C1','C2',1.125),('C1','C3',1.75),('C2','C4',1.2),('C3','C4',1.375)])
+        for n,nbrs in MG.adjacency_iter():
+            for nbr,eattr in nbrs.items():
+                data=eattr['weight']
+                if data<2.5: print('{}, {}, {:.3f})'.format(n,nbr,data))
+    
+    @property
+    def get_adjmatrix(self):
+        return self.build_adjacency_matrix
+
+
+
 if __name__ == '__main__':
     from dbfile import global_DB
+    from atomhandling import FindAtoms
     options = OptionsParser()
     rl = ResList(options.res_file)
     res_list = rl.get_res_list()
-    lf = ListFile()
-    lst_file = lf.read_lst_file()
-    lfd = Lst_Deviations(lst_file)
-    lfd.print_deviations()
-        
-        
-        
-        
-    dsrp = DSR_Parser(res_list)
+    dsrp = DSR_Parser(res_list, rl)
     dsr_dict = dsrp.parse_dsr_line()
     fragment = dsr_dict['fragment']
+    
     gdb = global_DB()
     dbatoms = gdb.get_atoms_from_fragment(fragment)
     dbhead = gdb.get_head_from_fragment(fragment) 
+
+    lf = ListFile()
+    lst_file = lf.read_lst_file()
+    #lfd = Lst_Deviations(lst_file)
+    #lfd.print_deviations()
+        
+
     num = NumberScheme(res_list, dbatoms, dsr_dict['resi'])
     new_atomnames = num.get_fragment_number_scheme()
-    con = Connections(res_list, dsr_dict, dbhead, new_atomnames, 'toluene', '2')
-   #    # print 'connections to other atoms:\n'
-    pivots = con.find_pivotatoms()
-    con.get_connections()
+    fa = FindAtoms(res_list)
+    atoms_dict = fa.collect_residues()
+    print(len(atoms_dict), 'residues')
+    print(atoms_dict['1'])
+    am = Adjacency_Matrix(lst_file, )
+    am.get_adjmatrix()
+  #  print()
+
+# all atom names in the res file:
+    res_atoms = misc.get_atoms(res_list)
+    res_atoms = [i[0] for i in res_atoms]
+   # print(res_atoms)
    
-    #print 'pivots', pivots
-    #here I need the distance of the former atoms list and make them in an adjacence matrix
-    
-    
-    #for i in pivots:
-    #    print i,':' , ' '.join(con.find_pivotatoms()[i])
-    #   
-    #for values in pivots.keys():
-    #    for i in pivots.get(values):
-    #        if i in pivots.keys() and i not in pivots.keys():
-    #            print i, 'bindet an', values
+   
+   
+ #   con = Connections(res_list, dsr_dict, dbhead, res_atoms, 'toluene', '2')
+ #  #    # print 'connections to other atoms:\n'
+ #   pivots = con.find_pivotatoms()
+ #   print('###')
+ #   con.get_connections()
+ #   print('###')
+
