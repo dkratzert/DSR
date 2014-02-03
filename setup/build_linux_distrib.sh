@@ -2,8 +2,8 @@
 
 
 TMP="/tmp"
-GIT="/cygdrive/c/Users/$USERNAME/Documents/GitHub/DSR"
-#GIT="/home/daniel/GitHub/DSR"
+#GIT="/cygdrive/c/Users/$USERNAME/Documents/GitHub/DSR"
+GIT="/home/daniel/GitHub/DSR"
 VERSION=$(cat $GIT/dsr.py|grep -e "VERSION ="|cut -d ' ' -f3|tr -d "\'")
 echo $VERSION
 OUTFILE=DSR-$VERSION.tar
@@ -24,7 +24,6 @@ resi.py
 refine.py
 pyperclip.py
 dsr_db.txt
-dsr_user_db.txt
 manuals/DSR-manual.pdf
 setup/OlexDSR.py
 setup/custom.xld

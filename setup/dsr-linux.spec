@@ -28,8 +28,14 @@ mkdir -p /opt/DSR/manuals
 mkdir -p /opt/DSR/example
 mkdir -p /opt/DSR/setup
 
-#%build
-#build dsr script here!
+%post
+if [ ! -f /opt/DSR/dsr_user_db.txt ]
+then
+    touch /opt/DSR/dsr_user_db.txt
+    chmod a+rw /opt/DSR/dsr_user_db.txt
+else
+    chmod a+rw /opt/DSR/dsr_user_db.txt
+fi
 
 %install
 install -m 644 afix.py /opt/DSR/afix.py
@@ -49,10 +55,6 @@ install -m 644 resi.py /opt/DSR/resi.py
 install -m 644 refine.py /opt/DSR/refine.py
 install -m 644 pyperclip.py /opt/DSR/pyperclip.py
 install -m 644 dsr_db.txt /opt/DSR/dsr_db.txt
-if [ ! -f /opt/DSR/dsr_user_db.txt ]
-then
-    install -m 644 dsr_user_db.txt /opt/DSR/dsr_user_db.txt
-fi
 install -m 644 manuals/DSR-manual.pdf /opt/DSR/manuals/DSR-manual.pdf
 install -m 644 setup/dsr.sh /etc/profile.d/dsr.sh
 install -m 644 setup/OlexDSR.py /opt/DSR/setup/OlexDSR.py
@@ -76,7 +78,7 @@ cp setup/dsr.sh $RPM_BUILD_ROOT/etc/profile.d
 #%defattr(644, root, root, 755)
 %attr(644, root, root) /etc/profile.d/dsr.sh
 %config /etc/profile.d/dsr.sh
-%attr(666, root, users) /opt/DSR/dsr_user_db.txt
+#%attr(666, root, users) /opt/DSR/dsr_user_db.txt
 %attr(755, root, users) /opt/DSR/dsr
 /opt/DSR/afix.py
 /opt/DSR/atomhandling.py
@@ -95,6 +97,7 @@ cp setup/dsr.sh $RPM_BUILD_ROOT/etc/profile.d
 /opt/DSR/refine.py
 /opt/DSR/pyperclip.py
 /opt/DSR/dsr_db.txt
+#/opt/DSR/dsr_user_db.txt
 /opt/DSR/manuals/DSR-manual.pdf
 #/opt/DSR/setup/set_environ.py
 /opt/DSR/setup/OlexDSR.py
