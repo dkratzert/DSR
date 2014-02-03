@@ -1,5 +1,6 @@
 -control and postinst in the DEBIAN directory control the behavior
 -copy content of debian-package to /usr/src/packages/BUILD
+-make dos2unix
 -rename it to dsr. Important! No version number!
 -the final directory structure must exist in [..]/BUILD/dsr
 -execute "dpkg-deb --build dsr"
