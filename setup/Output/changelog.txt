@@ -1,4 +1,5 @@
 Recent changes
+-1.2.13 Restraints for same residue classes are now inserted only once.
 -1.2.12 Small fixes and new Linux packages.
 -1.2.11 Supports now multiple lines of FVAR. DSR command line in res file is now correctly wrapped 
         during processing with DSR bevor exceeding 80 characters.

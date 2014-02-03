@@ -32,13 +32,10 @@ def get_atoms(atlist):
 
 def ll_to_string(inputlist):
     '''converts list of list to string with four whitespaces between each list element'''
-    
     inputlist = [list(map(str, i)) for i in inputlist]
-    
     newlist = []
     for i in inputlist:
         newlist.append('   '.join(i).rstrip())
-            
     string = '\n'.join(newlist)
     #string = '\n'.join('\t'.join(map(str, l)).rstrip() for l in inputlist).expandtabs(6).rstrip()
     return string

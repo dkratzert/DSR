@@ -50,7 +50,7 @@ class ShelxlRefine():
             if position > 0:
                 f.seek(position+8, 0) # seek to version string
                 version = f.read(6)   # read version string
-                #print version, 'found'
+                #print(version, 'found')
                 return version.decode('ascii')
 
 
@@ -77,10 +77,6 @@ class ShelxlRefine():
             if int(version[0]) < 2013:
                 print('Your SHELXL version is too old. Please use SHELXL 2013/4 or above!')
                 sys.exit()
-            if int(version[0]) > 2013:
-                if int(version[1]) <= 3:
-                    print('Your SHELXL version is too old. Please use SHELXL 2013/4 or above!')
-                    sys.exit()
             else:
                 return exe
                 
