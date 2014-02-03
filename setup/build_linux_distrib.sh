@@ -56,7 +56,7 @@ for i in $FILES
 do
 #    cd $GIT/setup
     cp ../$i $TMPDIR/$i
-#    dos2unix $TMPDIR/$i -q
+    dos2unix $TMPDIR/$i -q
     echo "packe " $i
 done
 
