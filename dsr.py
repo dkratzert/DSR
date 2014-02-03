@@ -28,6 +28,7 @@ from restraints import ListFile, Lst_Deviations
 
 
 # TODO and ideas:
+# -do not overwrite user-db with linux rpm, deb packages.
 # -To the manual: Avogradro/res-file -> rename -> mercury -> mol2-file -> GRADE
 # -To manual: what to do if something does not work.
 # -more detailed comments for grade imports:
@@ -37,7 +38,6 @@ from restraints import ListFile, Lst_Deviations
 #   REM GEN: using MOGUL 1.6(RC5), CSD as535be with quantum mechanics RM1
 #   REM grade-cif2shelx output
 #   REM Version: 0.0.5 <Dec 20 2013>
-# -make a proper python module from DSR
 # -try to iterate all target atoms if fit is really bad
 # -Iteratively analyze disagreeable restraints and set ESDs of relative
 #  restraints accordingly. (Only if shift is not too big, has to be nearly converged)
@@ -48,7 +48,7 @@ from restraints import ListFile, Lst_Deviations
 # -If e.g. OCC in dsrline and index(OCC)+1 != ' ', then dsrline.insert(' ', index(OCC)+1)
 # -check for residues with same class and differing atom names inside.
 # -should I make rem dsr IMPORT from Atom1 to Atom2 ?
-#  with or without their restraints? RESI class might work?
+#  with or without their restraints?
 # -add SIMU and RIGU after Grade import
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 
