@@ -49,7 +49,10 @@ install -m 644 resi.py /opt/DSR/resi.py
 install -m 644 refine.py /opt/DSR/refine.py
 install -m 644 pyperclip.py /opt/DSR/pyperclip.py
 install -m 644 dsr_db.txt /opt/DSR/dsr_db.txt
-install -m 644 dsr_user_db.txt /opt/DSR/dsr_user_db.txt
+if [ ! -f /opt/DSR/dsr_user_db.txt ]
+then
+    install -m 644 dsr_user_db.txt /opt/DSR/dsr_user_db.txt
+fi
 install -m 644 manuals/DSR-manual.pdf /opt/DSR/manuals/DSR-manual.pdf
 install -m 644 setup/dsr.sh /etc/profile.d/dsr.sh
 install -m 644 setup/OlexDSR.py /opt/DSR/setup/OlexDSR.py
