@@ -19,6 +19,7 @@ xcopy /Y %GIT%\misc.py %DSRDIR%
 xcopy /Y %GIT%\options.py %DSRDIR%
 xcopy /Y %GIT%\resfile.py %DSRDIR%
 xcopy /Y %GIT%\resi.py %DSRDIR%
+xcopy /Y %GIT%\pyperclip.py %DSRDIR%
 xcopy /Y %GIT%\refine.py %DSRDIR%
 xcopy /Y %GIT%\restraints.py %DSRDIR%
 xcopy /Y %GIT%\dsr.bat %DSRDIR%

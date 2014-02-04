@@ -171,6 +171,25 @@ F5    3      0.62402        1.32758       -1.41073
 F6    3     -1.39094        0.54896       -1.34009
 </hfipO>
 
+<OCH2CF3>
+rem Src: TURBOMOLE V6.0  B-P86/def-SV(P)
+RESI OCCF
+DFIX 1.376 O1 C1 
+DFIX 1.530 C1 C2
+DANG 2.415 O1 C2
+SADI F1 C2 F2 C2 F3 C2
+SADI 0.04 F1 F2 F2 F3 F3 F1
+SADI 0.04 F1 C1 F2 C1 F3 C1
+SIMU O1 > F3
+RIGU O1 > F3
+FRAG 17  1  1  1  90  90  90
+O1   2      -0.75623        1.65208       -0.33478
+C1   1      -2.10507        1.91209       -0.42225
+C2   1      -2.58835        1.99186       -1.87166
+F1   3      -1.95714        2.96525       -2.57811
+F2   3      -3.92641        2.28171       -1.91217
+F3   3      -2.41301        0.83156       -2.54596
+</OCH2CF3> 
 
 <Ethanol>
 REM Src: Turbomole, B3LYP/def2-TZVPP 
