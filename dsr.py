@@ -49,6 +49,7 @@ from restraints import ListFile, Lst_Deviations
 # -check for residues with same class and differing atom names inside.
 # -should I make rem dsr IMPORT from Atom1 to Atom2 ?
 #  with or without their restraints?
+# -detect empty residues and parts after atom deletion
 # -add SIMU and RIGU after Grade import
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 
