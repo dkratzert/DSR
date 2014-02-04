@@ -53,7 +53,7 @@ from restraints import ListFile, Lst_Deviations
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 
 
-VERSION = '1.2.12'
+VERSION = '1.2.13'
 progname = '\n----------------------------- D S R - v{} ----------------------------------'.format(VERSION)
 
 def export_fragment(options):
