@@ -139,7 +139,7 @@ def set_final_db_sfac_types(dbtypes, dbatoms, sfac_table):
         line[1] = e2s.elem_2_sfac(atype.pop())       # replace scattering factor (line[1]) with true one
 
 
-def replacemode():
+def replacemode(fa, res_target_atoms, rle):
     '''
     Target atoms are being replaced if this is executed
     '''
@@ -255,7 +255,7 @@ def main():
 
     ##### comment out all target atom lines in replace mode:  
     if dsr_dict.get('command') == 'REPLACE':
-        replacemode()
+        replacemode(find_atoms, res_target_atoms, rle)
     
 
     #############################################################

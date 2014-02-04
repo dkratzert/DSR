@@ -162,7 +162,6 @@ class Adjacency_Matrix():
     edge property is the bond length
     
     '''
-    import networkx as nx
     
     def __init__(self, conntable):
         self._conntable = conntable
@@ -171,6 +170,7 @@ class Adjacency_Matrix():
         '''
         needs pairs of atoms with their distance and residue
         '''
+        import networkx as nx
         MG = nx.Graph()
         MG.add_weighted_edges_from(self._conntable)
         return MG

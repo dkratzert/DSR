@@ -111,6 +111,7 @@ if __name__ == '__main__':
     from dsr import progname
     optparse = OptionsParser(progname)
     print(optparse.res_file)
+    print(optparse.parse_commandline())
     optparse.parser.print_help()
 
     
