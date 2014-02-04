@@ -224,7 +224,10 @@ class FindAtoms():
         for i in lines:
             afix = False
             for n in range(0, 10):
-                line = self._reslist[i+n]
+                try:
+                    line = self._reslist[i+n]
+                except(IndexError):
+                    continue
                 if line.startswith('HKLF'):
                     break # stop in this case because the file has ended anyway
                 if line.startswith('AFIX') and afix: # stop also if next afix begins
