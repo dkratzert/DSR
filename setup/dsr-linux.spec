@@ -2,14 +2,14 @@ Summary: DSR - A program for modelling of disordered solvents with SHELXL
 Name: DSR
 Provides: DSR
 Packager: dkratzert@gmx.de
-Version: 1.2.12
+Version: 1.2.13
 Release: 0
 Requires: python, xclip
 BuildRoot: %{_tmppath}/%{name}-%{version}-build/opt/DSR
 BuildArch: noarch
 URL: https://www.xs3.uni-freiburg.de/research/dsr
 License: Beerware
-Source: DSR-1.2.12.tar.gz
+Source: DSR-%{version}.tar.gz
 #Source: /home/ntrapp/rpmbuild/SOURCES/DSR-1.2.11.tar.gz
 Group: Productivity/Scientific/Chemistry
 %description
