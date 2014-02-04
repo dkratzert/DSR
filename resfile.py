@@ -106,7 +106,6 @@ class ResListEdit():
            This removes the line in the next refinement cycle. "rem" writes rem 
            in front of the line and "remove" clears the line.'''
         line = self.__reslist[linenum]
-        line2 = self.__reslist[linenum+1]
         if rem:   # comment out with 'rem ' in front
             self.__reslist[linenum] = 'rem '+line
             if misc.multiline_test(line):
@@ -118,7 +117,7 @@ class ResListEdit():
         if frontspace:  # only put a space in front
             self.__reslist[linenum] = ' '+line
             if misc.multiline_test(line):
-                self.__reslist[linenum+1] = ' '+line2
+                self.__reslist[linenum+1] = ' '+self.__reslist[linenum+1]
         return self.__reslist
 
     
