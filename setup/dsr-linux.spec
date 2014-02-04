@@ -36,6 +36,7 @@ then
 else
     chmod a+rw /opt/DSR/dsr_user_db.txt
 fi
+chmod a+rw /opt/DSR/example
 
 %install
 install -m 644 afix.py /opt/DSR/afix.py
