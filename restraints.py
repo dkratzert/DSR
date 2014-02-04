@@ -20,7 +20,7 @@ import misc
 from atomhandling import NumberScheme
 alphabet = [ i for i in string.ascii_lowercase ]
 from dbfile import global_DB
-import networkx as nx
+#import networkx as nx
 
 # note: parts    1, 2, 3 are _a, _b, _c
 # note: residue number 1, 2, 3 are _1, _2, _3
