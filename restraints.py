@@ -162,6 +162,8 @@ class Adjacency_Matrix():
     edge property is the bond length
     
     '''
+    import networkx as nx
+    
     def __init__(self, conntable):
         self._conntable = conntable
         
