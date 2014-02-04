@@ -139,15 +139,17 @@ def set_final_db_sfac_types(dbtypes, dbatoms, sfac_table):
         line[1] = e2s.elem_2_sfac(atype.pop())       # replace scattering factor (line[1]) with true one
 
 
-def replacemode(fa, res_target_atoms, rle):
+def replacemode(res_target_atoms, rle, reslist):
     '''
     Target atoms are being replaced if this is executed
     '''
+    fa = FindAtoms(reslist)
     print('Replace mode active.')
     target_lines = fa.get_atom_line_numbers(res_target_atoms)
     #print target_lines, res_target_atoms
     for i in target_lines:
         i = int(i)
+        #reslist[i]=' '+reslist[i]
         rle.remove_line(i, rem=False, remove=False, frontspace=True)
     fa.remove_adjacent_hydrogens(res_target_atoms)    
 
@@ -255,7 +257,7 @@ def main():
 
     ##### comment out all target atom lines in replace mode:  
     if dsr_dict.get('command') == 'REPLACE':
-        replacemode(find_atoms, res_target_atoms, rle)
+        replacemode(res_target_atoms, rle, reslist)
     
 
     #############################################################
