@@ -13,7 +13,7 @@
 from __future__ import print_function
 import sys
 import os
-import pstats
+#import pstats
 from dsrparse import DSR_Parser
 from options import OptionsParser
 from dbfile import global_DB, ImportGRADE
