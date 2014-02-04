@@ -288,7 +288,8 @@ if __name__ == '__main__':
     from dbfile import global_DB
     gdb = global_DB()
     db = gdb.build_db_dict()['toluene']
-    export = Export('toluene')
+    
+    export = Export(options, 'toluene')
     for i in export.export_resfile():
         print(i.strip('\n'))
     #import pyperclip
