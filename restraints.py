@@ -117,13 +117,37 @@ class Connections():
                 listfile,  # listfile
                 dbhead,    # header of dbentry
                 atoms,     # atom names for which connections in the list file should be found
+                part,      # part number
                 residue):  # residue as number
         self._reslist = reslist
         self._listfile = listfile
         self._dbhead = dbhead
-        self._atomnames = atoms[:]
         self._pivot_regex = r'^.*Distance\s+Angles'
+        if residue:
+            self._resinum = residue
+        else:
+            self._resinum = ''
+        if part:
+            self._part = part
+            self._partsymbol = alphabet[int(self._part)-1] # turns part number into a letter
+        else:
+            self._partsymbol = ''
+        if self._resinum and self._partsymbol:
+            self._numpart = '_'+self._resinum+self._partsymbol
+        else:
+            self._numpart = ''
+        print('_numpart =',  self._numpart)
+        self._atomnames = [i+self._numpart for i in atoms]
+        self._atomnames_resi = [i+self._resinum for i in atoms]
+       # print(self._atomnames)
     
+    @property
+    def get_numpart(self):
+        return self._numpart
+    
+    @property
+    def get_atoms_plusresi(self):
+        return self._atomnames_resi
     
     def get_bond_dist(self):
         '''
@@ -163,8 +187,9 @@ class Adjacency_Matrix():
     
     '''
     
-    def __init__(self, conntable):
+    def __init__(self, conntable, residue):
         self._conntable = conntable
+        self._residue = residue
         
     def build_adjacency_matrix(self):
         '''
@@ -175,6 +200,10 @@ class Adjacency_Matrix():
         MG.add_weighted_edges_from(self._conntable)
         return MG
 
+    @property
+    def get_residue(self):
+        return self._residue
+    
     @property
     def get_adjmatrix(self):
         return self.build_adjacency_matrix()
@@ -189,7 +218,7 @@ if __name__ == '__main__':
     res_list = rl.get_res_list()
     dsrp = DSR_Parser(res_list, rl)
     dsr_dict = dsrp.parse_dsr_line()
-    fragment = dsr_dict['fragment']
+    fragment = 'oc(cf3)3'#dsr_dict['fragment']
     
     gdb = global_DB()
     #dbatoms = gdb.get_atoms_from_fragment(fragment)
@@ -197,23 +226,31 @@ if __name__ == '__main__':
 
     lf = ListFile()
     lst_file = lf.read_lst_file()
+    
     #lfd = Lst_Deviations(lst_file)
     #lfd.print_deviations()
         
     fa = FindAtoms(res_list)
     atoms_dict = fa.collect_residues()
-
+    dbatoms = gdb.get_atoms_from_fragment(fragment)
+    dbatoms = [i[0] for i in dbatoms]
+    
+    
 # all atom names in the res file:
-    res_atoms = misc.get_atoms(res_list)
-    res_atoms = [i[0] for i in res_atoms]
-   
-    con = Connections(res_list, lst_file, dbhead, res_atoms, '2')
+    #res_atoms = misc.get_atoms(res_list)
+    #res_atoms_list = [i[0] for i in res_atoms]
+    
+    con = Connections(res_list, lst_file, dbhead, dbatoms, dsr_dict['part'], '4')
     conntable = con.get_bond_dist()
      
-    am = Adjacency_Matrix(conntable)
+    am = Adjacency_Matrix(conntable, '4')
     G = am.get_adjmatrix
     #print(G.nodes())
-    print(G.edges(data=True))
+    #print(G.edges(data=True))
+    #print(atoms_dict)
+    for i in (dbatoms):
+        #print(i[0])
+        print(G.edges(i+'_4b', data=True))
     #print(AM.get_adjmatrix())
   #  for n,i in G.adjacency_iter():
   #      for i, x in i.items():
