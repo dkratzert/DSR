@@ -293,9 +293,33 @@ def main():
     if not options.no_refine:
         rl.write_resfile(reslist, '.res')
     
-
-
-
+    
+    from misc import get_atoms
+    res_atoms = get_atoms(reslist)
+    res_atoms_list = [i[0] for i in res_atoms]
+    from restraints import Adjacency_Matrix, Connections
+    resinum = resi.get_resinumber
+    dbatom_names = [i[0] for i in dbatoms]
+    con = Connections(reslist, lst_file, dbhead, dbatom_names, dsr_dict['part'], resinum)
+    conntable = con.get_bond_dist()
+    
+    am = Adjacency_Matrix(conntable, resinum)
+    G = am.get_adjmatrix
+    #print(G.nodes())
+    #print(G.edges(data=True))
+    #print(atoms_dict)
+    fa = FindAtoms(reslist)
+    atoms_dict = fa.collect_residues()
+    numpart = con.get_numpart
+    print(numpart)
+    for i in dbatom_names:
+        #print('{}{}'.format(i, numpart))
+        for n in G.edges('{}{}'.format(i, numpart), data=True):
+            if resinum:
+                print('{}, {}, {}'.format(n[0], n[1], n[2]['weight']))
+            else:
+                print(' '.join(n[:2]), n[2]['weight'])
+# Im Resfile darf dann nur C1_4 und nicht C1_4b auftauchen!
 
 
 if __name__ == '__main__':

@@ -56,9 +56,13 @@ class Resi(object):
         self.__resi_dict_db = self.get_resi_syntax(self.__db_resi_list)
         ##############################
         self.__combined_resi = self.build_up_residue()
-        #print '\nFinales dict fuer resi:', self.__combined_resi
+        #print(self.__combined_resi)
 
-
+    @property
+    def get_resinumber(self):
+        return self.__combined_resi['number']
+        
+    
     def remove_resi(self, head):
         '''removes all resi commands and classes from head'''
         rhead = [] #head without resi
@@ -94,7 +98,7 @@ class Resi(object):
             resi = True
         if resi: 
             head = self.remove_resi(self.__dbhead)
-            residef = (['RESI', self.get_unique_resinumber(), 
+            residef = (['RESI', self.__combined_resi['number'], 
                         self.__combined_resi['class'], 
                         self.__combined_resi['alias']])
             for i in residef:
@@ -181,6 +185,7 @@ class Resi(object):
             if self.__resi_dict_com['number']:
                 resinum = self.__resi_dict_com['number']
         final_residue = {'class': resiclass, 'number': resinum, 'alias': resialias}
+        final_residue['number'] = self.get_unique_resinumber()
         if final_residue['class']:# and final_residue['number']:
             return final_residue
     
