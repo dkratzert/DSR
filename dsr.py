@@ -311,10 +311,21 @@ def main():
     fa = FindAtoms(reslist)
     atoms_dict = fa.collect_residues()
     numpart = con.get_numpart
-    print(numpart)
+    #print(numpart)
+    num = 0
+    for n,i in G.adjacency_iter():
+        for i, x in i.items():
+            num = num+1
+            #print(num)
+            dist=x['weight']
+            print(n, i, dist)
+    print()
+    num = 0
     for i in dbatom_names:
         #print('{}{}'.format(i, numpart))
         for n in G.edges('{}{}'.format(i, numpart), data=True):
+            num = num+1
+            #print(num)
             if resinum:
                 print('{}, {}, {}'.format(n[0], n[1], n[2]['weight']))
             else:

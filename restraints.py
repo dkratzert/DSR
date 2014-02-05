@@ -136,7 +136,7 @@ class Connections():
             self._numpart = '_'+self._resinum+self._partsymbol
         else:
             self._numpart = ''
-        print('_numpart =',  self._numpart)
+        #print('_numpart =',  self._numpart)
         self._atomnames = [i+self._numpart for i in atoms]
         self._atomnames_resi = [i+self._resinum for i in atoms]
        # print(self._atomnames)
@@ -160,6 +160,7 @@ class Connections():
         atomconnections = []
         for num in lines:
             atname = self._listfile[num].split()[0] #atom1
+            #print(self._listfile[num].split())
             for atom in self._atomnames:
                 if atom in self._listfile[num]:
                     bond = []
@@ -170,9 +171,17 @@ class Connections():
                             distance = row[1]
                             if distance == '-':
                                 break
-                            #angle1 = row[2]
-                            bond = ([atname, atname_connect, float(distance)])
-                            #bond = ([atname, atname_connect, [float(distance), float(angle1)]])
+                            try: 
+                                for i in range(2, 10):
+                                    if row[i]:
+                                        angle_atom = self._listfile[num+i].split()[0]
+                                        angle = row[i]
+                                        print(atname, row[0], angle_atom, '->', angle)
+                                        #break
+                                        #print(atname, angle_atom, atname_connect, '->', angle)
+                            except(IndexError), e:
+                                bond = ([atname, atname_connect, float(distance)])
+                                #print(e, i)
                             atomconnections.append(tuple(bond))
                         except(IndexError):
                             continue
@@ -252,10 +261,12 @@ if __name__ == '__main__':
         #print(i[0])
         print(G.edges(i+'_4b', data=True))
     #print(AM.get_adjmatrix())
-  #  for n,i in G.adjacency_iter():
-  #      for i, x in i.items():
-  #          dist=x['weight']
-  #          print(dist)
+ 
+ #   for n,i in G.adjacency_iter():
+ #       for i, x in i.items():
+ #           dist=x['weight']
+ #           print(n, i, dist)
+
 #    for n,nbrs in AM.adjacency_iter():
 #        for nbr,eattr in nbrs.items():
 #            dist=eattr['weight']
