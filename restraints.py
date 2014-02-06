@@ -293,7 +293,7 @@ if __name__ == '__main__':
     dbatoms = [i[0] for i in dbatoms]
     
     coords = lf.get_coordinates
-    print(coords['Al1'])
+    #print(coords['Al1'])
     
 # all atom names in the res file:
     #res_atoms = misc.get_atoms(res_list)
@@ -313,12 +313,44 @@ if __name__ == '__main__':
   #      print(G.edges(i+'_4b', data=True))
     #print(AM.get_adjmatrix())
     print()
+    dfix = []
     for n,i in G.adjacency_iter():
         #print(i)
         for i, x in i.items():
             dist=x['1,2-dist']
-            print(n, i, dist)
-
+            dfix.append([n, i, dist])
+    print(dfix)
+    
+    
+    def get_neighbors(atoms):
+        neighbors = []
+        for p in atoms:
+            #print(p[0])#, p[1])
+            #next = (G.neighbors(p[0]), 'test1', p[0]) #p[0] macht 1,3 zu test2-p[0]
+            #print(G.neighbors(p[1]), 'test2\n')
+            nb = G.neighbors(p[1])
+            try:
+                nb.remove(p[0])
+            except(ValueError):
+                pass
+            except(AttributeError):
+                pass
+    #        print(p[0], nb) #1, 3
+            neighbors.append([p[0], nb])
+            #print(neighbors)
+        return(neighbors)
+    
+    print('rtest')
+    
+    nb = get_neighbors(dfix)
+    print(nb)
+    # nb enthält jetzt jeweils ein atom pro listenlement und seine dazugehörigen 1,3-stehenden
+    
+    
+    #for i in nb:
+    #    print(G.neighbors(i))
+    
+    
 #    for n,nbrs in AM.adjacency_iter():
 #        for nbr,eattr in nbrs.items():
 #            dist=eattr['weight']
