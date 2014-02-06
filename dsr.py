@@ -317,19 +317,20 @@ def main():
         for i, x in i.items():
             num = num+1
             #print(num)
-            dist=x['weight']
+            dist=x['dist']
             print(n, i, dist)
-    print()
-    num = 0
-    for i in dbatom_names:
-        #print('{}{}'.format(i, numpart))
-        for n in G.edges('{}{}'.format(i, numpart), data=True):
-            num = num+1
-            #print(num)
-            if resinum:
-                print('{}, {}, {}'.format(n[0], n[1], n[2]['weight']))
-            else:
-                print(' '.join(n[:2]), n[2]['weight'])
+            
+ #   print()
+ #   num = 0
+ #   for i in dbatom_names:
+ #       #print('{}{}'.format(i, numpart))
+ #       for n in G.edges('{}{}'.format(i, numpart), data=True):
+ #           num = num+1
+ #           #print(num)
+ #           if resinum:
+ #               print('{}, {}, {}'.format(n[0], n[1], n[2]['weight']))
+ #           else:
+ #               print(' '.join(n[:2]), n[2]['weight'])
 # Im Resfile darf dann nur C1_4 und nicht C1_4b auftauchen!
 
 
