@@ -317,9 +317,12 @@ def main():
         for i, x in i.items():
             num = num+1
             #print(num)
-            dist=x['dist']
+            dist=x['1,2-dist']
             print(n, i, dist)
-            
+    print(G.adjacency_list())
+    #print(fa.get_atomcoordinates)
+    
+    
  #   print()
  #   num = 0
  #   for i in dbatom_names:
