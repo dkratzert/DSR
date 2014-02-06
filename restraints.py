@@ -34,7 +34,8 @@ class ListFile():
         options = OptionsParser()
         rl = ResList(options.res_file)
         self._listfile = str(rl.filename_wo_ending(options.res_file))+'.lst'
-        
+        self._coord_regex = r'^\s+ATOM\s+x\s+y\s+z'
+        self._listfile_list = self.read_lst_file()
         
     def read_lst_file(self):
         '''
@@ -58,9 +59,34 @@ class ListFile():
             print('Unable to read {}'.format(self._listfile))
             sys.exit()
         return listfile
+    
+    
+    def coordinates(self, listfile):
+        '''
+        reads the atom coordinates of the res-file
+        '''
+        atom_coords = {}
+        start_line = int(misc.find_line(listfile, self._coord_regex))+2
+        #print(listfile)
+        num = 0
+        for line in listfile[start_line:]:
+            line = line.split()
+            try:
+                line[0]
+            except(IndexError):
+                break
+            atom = {str(line[0]): line[1:4]}
+            atom_coords.update(atom)
+        return atom_coords
         
+    @property
+    def get_coordinates(self):
+        '''
+        return the coordinates as property
+        '''
+        return self.coordinates(self._listfile_list )
         
-
+    
 class Lst_Deviations():
     '''
     reads the deviations of the fitted group from the lst-file
@@ -103,14 +129,30 @@ class Restraints():
     relative distance restraints. 
     Maybe also absolute distance restraints?
     '''
-    def __init__(self):
-        pass
-        
+    def __init__(self, G):
+        self._G = G
+    
+    @property
+    def get_12_dfixes(self):
+        '''
+        returns the requested dfixes als list of strings
+        '''
+        single_dfix = []
+        all_dfixes = []
+        for n,i in self._G.adjacency_iter():
+            for i, x in i.items():
+                dist=x['1,2-dist']
+                single_dfix = ' '.join([n, i, dist])
+                all_dfixes.append(single_dfix+'\n')
+                print(single_dfix)
+            return all_dfixes
+    
+    
 
 class Connections():
     '''
     This class parses the shelx .lst file after L.S. 0 refinement and
-    puts all 1,2- and 1,3-bonds in a data structure.
+    puts all 1,2-bonds in a data structure.
     ''' 
     def __init__(self, 
                 reslist,   # resfile
@@ -151,8 +193,8 @@ class Connections():
     
     def get_bond_dist(self):
         '''
-        returns a dictionary of connections for each atom in the fragment:
-        {'C1_2b': ['C2_2b', '1.3843', 'C6_2b', '1.3849', 'C7_2b', '1.5033', 'C16', '1.9039'], ...
+        returns a list of connections for each atom in the fragment:
+        ['C1, 'C2' {'1,2-dist': distance}, 'O1, 'Al1' {'1,2-dist': distance}]
         each value is a set of pairs wit name and distance.
         '''
         # lines is a list where self._pivot_regex is found
@@ -171,23 +213,28 @@ class Connections():
                             distance = row[1]
                             if distance == '-':
                                 break
-                            try: 
-                                for i in range(2, 10):
-                                    if row[i]:
-                                        angle_atom = self._listfile[num+i].split()[0]
-                                        angle = row[i]
-                                        print(atname, row[0], angle_atom, '->', angle)
-                                        #break
-                                        #print(atname, angle_atom, atname_connect, '->', angle)
-                            except(IndexError), e:
-                                bond = ([atname, atname_connect, float(distance)])
-                                #print(e, i)
+                            bond = [atname, atname_connect, {'1,2-dist':float(distance)}]
                             atomconnections.append(tuple(bond))
                         except(IndexError):
                             continue
                     break
         return atomconnections
 
+
+
+class Nextneighbors():
+    '''
+    Nextneighbors for 1,3-distances
+    '''
+    
+    
+    def get_13_dist():
+        '''
+        
+        '''
+        def __init__(self):
+            pass
+    
 
 class Adjacency_Matrix():
     '''
@@ -206,7 +253,7 @@ class Adjacency_Matrix():
         '''
         import networkx as nx
         MG = nx.Graph()
-        MG.add_weighted_edges_from(self._conntable)
+        MG.add_edges_from(self._conntable)
         return MG
 
     @property
@@ -216,6 +263,7 @@ class Adjacency_Matrix():
     @property
     def get_adjmatrix(self):
         return self.build_adjacency_matrix()
+
 
 
 
@@ -244,6 +292,8 @@ if __name__ == '__main__':
     dbatoms = gdb.get_atoms_from_fragment(fragment)
     dbatoms = [i[0] for i in dbatoms]
     
+    coords = lf.get_coordinates
+    print(coords['Al1'])
     
 # all atom names in the res file:
     #res_atoms = misc.get_atoms(res_list)
@@ -254,23 +304,25 @@ if __name__ == '__main__':
      
     am = Adjacency_Matrix(conntable, '4')
     G = am.get_adjmatrix
+    
     #print(G.nodes())
     #print(G.edges(data=True))
     #print(atoms_dict)
-    for i in (dbatoms):
-        #print(i[0])
-        print(G.edges(i+'_4b', data=True))
+ #   for i in (dbatoms):
+ #       #print(i[0])
+  #      print(G.edges(i+'_4b', data=True))
     #print(AM.get_adjmatrix())
- 
- #   for n,i in G.adjacency_iter():
- #       for i, x in i.items():
- #           dist=x['weight']
- #           print(n, i, dist)
+    print()
+    for n,i in G.adjacency_iter():
+        #print(i)
+        for i, x in i.items():
+            dist=x['1,2-dist']
+            print(n, i, dist)
 
 #    for n,nbrs in AM.adjacency_iter():
 #        for nbr,eattr in nbrs.items():
 #            dist=eattr['weight']
 #            #if dist<1.1: print('{}, {}, {:.3f})'.format(n,nbr,dist))
     #print(G.neighbors('Al1'))
-    dist='weight'
+    #dist='weight'
     #print(G.edge['C1']['C2'][dist])
