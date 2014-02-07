@@ -3,7 +3,8 @@
 
 TMP="/tmp"
 #GIT="/cygdrive/c/Users/$USERNAME/Documents/GitHub/DSR"
-GIT="/home/daniel/GitHub/DSR"
+#GIT="/home/daniel/GitHub/DSR"
+GIT="/home/daniel/Downloads/DSR"
 VERSION=$(cat $GIT/dsr.py|grep -e "VERSION ="|cut -d ' ' -f3|tr -d "\'")
 echo $VERSION
 OUTFILE=DSR-$VERSION.tar
@@ -58,9 +59,12 @@ do
     dos2unix $TMPDIR/$i -q
     echo "packe " $i
 done
+# copy networkx
+cp -r ../networkx $TMPDIR/
 
 cd $TMP
 tar -rf $GIT/setup/Output/$OUTFILE DSR-$VERSION 2> /dev/null
+
 gzip -f $GIT/setup/Output/$OUTFILE
 
 if [ -e $GIT/setup/Output/$OUTFILE.gz ]
