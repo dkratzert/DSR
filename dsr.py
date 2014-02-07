@@ -57,7 +57,7 @@ from atomhandling import NumberScheme
 
 
 
-VERSION = '1.3.1'
+VERSION = '1.3.2'
 progname = '\n----------------------------- D S R - v{} ----------------------------------'.format(VERSION)
 
 def export_fragment(options):
