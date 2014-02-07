@@ -2,7 +2,7 @@ Summary: DSR - A program for modelling of disordered solvents with SHELXL
 Name: DSR
 Provides: DSR
 Packager: dkratzert@gmx.de
-Version: 1.2.13
+Version: 1.3.1
 Release: 0
 Requires: python, xclip
 BuildRoot: %{_tmppath}/%{name}-%{version}-build/opt/DSR
@@ -67,6 +67,7 @@ install -m 644 example/p21c_step1.res /opt/DSR/example/p21c_step1.res
 install -m 644 example/p21c_step2.res /opt/DSR/example/p21c_step2.res
 install -m 644 example/p21c_step3.res /opt/DSR/example/p21c_step3.res
 install -m 644 example/p21c-step2.ins /opt/DSR/example/p21c-step2.ins
+install -d -m 755 networkx /opt/DSR/networkx
 mkdir -p $RPM_BUILD_ROOT/opt/DSR
 dos2unix *
 cp -R * $RPM_BUILD_ROOT/opt/DSR
@@ -103,6 +104,7 @@ cp setup/dsr.sh $RPM_BUILD_ROOT/etc/profile.d
 #/opt/DSR/setup/set_environ.py
 /opt/DSR/setup/OlexDSR.py
 /opt/DSR/setup/custom.xld
+/opt/DSR/networkx/
 %attr(777, root, users) /opt/DSR/example
 %attr(666, root, users) /opt/DSR/example/p21c.hkl
 %attr(666, root, users) /opt/DSR/example/p21c.res
