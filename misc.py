@@ -1,5 +1,5 @@
 #-*- encoding: utf-8 -*-
-#mÃ¶p
+#möp
 #
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
@@ -186,17 +186,17 @@ def frac_to_cart(frac_coord, cell):
     
     # cell volume
  
-    v = sqrt(1.0 -cos(alpha)**2 - cos(beta)**2 - cos(gamma)**2 + 2*cos(alpha)*cos(beta)*cos(gamma))
+    v = sqrt(1.0-cos(alpha)**2-cos(beta)**2-cos(gamma)**2+2*cos(alpha)*cos(beta)*cos(gamma))
  
     tmat = ( [
-      [ a,   b*cos(gamma), c*cos(beta)                                       ],
-      [ 0.0, b*sin(gamma), c*((cos(alpha)-cos(beta)*cos(gamma))/sin(gamma))  ],
-      [ 0.0,          0.0, c*(v/sin(gamma))                                  ]]
+      [ a  , b*cos(gamma), c*cos(beta)                                       ],
+      [ 0.0, b*sin(gamma), -c*((cos(alpha)-cos(beta)*cos(gamma))/sin(gamma))  ],
+      [ 0.0, 0.0         , c*(v/sin(gamma))                                  ]]
       )
  
     cart_coords = matrix([frac_coord], tmat)
     cart_coords = cart_coords[0]
-    cart_coords = [str({0:.5}).format(round(i,4)) for i in cart_coords]
+    cart_coords = ['{:.8f}'.format(i) for i in cart_coords]
     return cart_coords
 
 
@@ -205,6 +205,7 @@ if __name__ == '__main__':
     from options import OptionsParser 
     from resfile import ResList
     from dsrparse import DSR_Parser
+    import math as m
     options = OptionsParser()
     res_list = ResList(options.res_file)
     reslist = res_list.get_res_list()
@@ -224,6 +225,46 @@ if __name__ == '__main__':
     print('multiline?', multiline_test(reslist[123]))
     print('#'+reslist[24].strip('\n')+'#')
     print('multiline?', multiline_test(reslist[24]))
+    
+    cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
+    coord1 = (0.425895, 0.630971, 0.290285)
+    coord2 = (0.380809, 0.569642, 0.277486)
+    # 1.3853 A
+    def at_distance(p1, p2, cell): 
+        from math import cos, sin, sqrt, radians
+        cell = [float(y) for y in cell]
+        a , b, c =  cell[:3]
+        al = radians(cell[3])
+        be = radians(cell[4])
+        ga = radians(cell[5])
+        x1, y1, z1 = p1
+        x2, y2, z2 = p2
+  #      print(x1, y1, z1, x2, y2, z2 , a, b, c, al, be, ga)
+        dx = (x1-x2)
+        dy = (y1-y2)
+        dz = (z1-z2)
+        dsq = (a*dx)**2+\
+              (b*dy)**2+\
+              (c*dz)**2+\
+              2*b*c*cos(al)*dy*dz+\
+              2*dx*dz*a*c*cos(be)+\
+              2*dx*dy*a*b*cos(ga)
+        return(sqrt(dsq))
+        
+    N1 = frac_to_cart(coord1, cell)
+    N2 = frac_to_cart(coord2, cell)
+    x1 = float(N1[0])
+    y1 = float(N1[1])
+    z1 = float(N1[2])
+    
+    x2 = float(N2[0])
+    y2 = float(N2[1])
+    z2 = float(N2[2])
+    
+    d = m.sqrt((x1-x2)**2+(y1-y2)**2+(z1-z2)**2)
+    print('distance:', round(d, 4))
+    #2.588 A
+    print('dist2:', round(at_distance(coord1, coord2, cell), 4))
     
     coo = frac_to_cart((0.3, 0.3, 0.4), (18, 19, 20, 90, 97, 90))
     #print coo
