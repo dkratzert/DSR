@@ -265,7 +265,9 @@ class Adjacency_Matrix():
     def get_adjmatrix(self):
         return self.build_adjacency_matrix()
 
-
+    @property
+    def get_graph(self):
+        return self.build_adjacency_matrix
 
 
 if __name__ == '__main__':
@@ -305,36 +307,39 @@ if __name__ == '__main__':
 # all atom names in the res file:
     #res_atoms = misc.get_atoms(res_list)
     #res_atoms_list = [i[0] for i in res_atoms]
-    
-    con = Connections(res_list, lst_file, dbhead, dbatoms, dsr_dict['part'], '3')
+    #print(dsr_dict['part'])
+    con = Connections(res_list, lst_file, dbhead, dbatoms, '2', '4')
     conntable = con.get_bond_dist()
     #print(conntable)
-    am = Adjacency_Matrix(conntable, '3')
+    am = Adjacency_Matrix(conntable, '4')
     G = am.get_adjmatrix
     
-    #print(G.nodes())
-    #print(G.edges(data=True))
-    #print(atoms_dict)
- #   for i in (dbatoms):
- #       #print(i[0])
-  #      print(G.edges(i+'_4b', data=True))
-    #print(AM.get_adjmatrix())
+
     print()
     dfix = []
     for n,i in G.adjacency_iter():
-        #print(i)
         for i, x in i.items():
             dist=x['1,2-dist']
-            dfix.append([n, i, dist])
-    #print(dfix)
+            atom1 = n
+            atom2 = i
+            dfix.append((atom1, atom2, dist))
     
     
+    #biglist = [keys.add(pair[0]) for pair in dfix if (pair[0], pair[1]) not in keys]
+    #print(biglist)
+    def remove_duplicate_bonds(dfix):
+        '''
+        removes duplicates from at1 at2 1.324, at2 at1 1.324
+        '''
+        keys = set()
+        dfix = (dict([(pair[0], pair) for pair in reversed(dfix)]).values())
+        return dfix
+             
+
+    import networkx as nx
     def get_neighbors(atoms):
         neighbors = []
         for p in atoms:
-            #print(p[0])#, p[1])
-            #next = (G.neighbors(p[0]), 'test1', p[0]) #p[0] macht 1,3 zu test2-p[0]
-            #print(G.neighbors(p[1]), 'test2\n')
             nb = G.neighbors(p[1])
             try:
                 nb.remove(p[0])
@@ -342,11 +347,15 @@ if __name__ == '__main__':
                 pass
             except(AttributeError):
                 pass
-    #        print(p[0], nb) #1, 3
             if not nb:
                 pass
             else:
-                neighbors.append([p[0], nb])
+                atom1 = p[0]
+                atom2 = nb
+                #print(p)
+                neighbors.append([atom1, atom2])
+                for i in nb:
+                    print(nx.shortest_path(G, source=atom1,target=i))
             #print(neighbors)
         return(neighbors)
     
@@ -355,26 +364,36 @@ if __name__ == '__main__':
     nb = get_neighbors(dfix)
     print(nb)
     
-    
+#koordinatenpaare für 1,3    
     length = len(nb)
+    coordpairs = []
     for n, item in enumerate(nb):
         piv = item[0]
-        if n == length/2:
-            break
+        #if n == length/2:
+        #    break
         for k in item[1]:
-            pass
-            #print(piv, k)
-            #print(piv, k, fa.get_atomcoordinates([piv]))
-        
-
+            coordpairs.append((fa.get_atomcoordinates([piv]), fa.get_atomcoordinates([k])))
+#abstände 1,3    
+    from resfile import get_cell
+    distpairs_13 = []
+    for at1, at2 in coordpairs:
+        #print(at1, at2)
+        for coord1, coord2 in zip(at1.keys(), at2.keys()):
+            c1 = [ float(i) for i in at1[coord1] ]
+            c2 = [ float(i) for i in at2[coord2] ]
+            atom1 = misc.remove_partsymbol(at1.keys()[0])
+            atom2 = misc.remove_partsymbol(at2.keys()[0])
+            distpairs_13.append((atom1, atom2, misc.at_distance(c1, c2, get_cell(res_list))))
     
-    #misc.at_distance(misc.cell(res_list))
+              
+    for n, i in enumerate(distpairs_13):
+        print('DANG {:5} {:5} {:>6.4f} {}'.format(i[0], i[1], i[2], n))
+    #bei den 1,3 abständen stimmt was nicht.
+    # z.B. die bindung O1_4b C1_4b ist falsch
+    dfix = remove_duplicate_bonds(dfix)
     
-    #jetzt matrix für 1,3 machen und für jedes atom die koordinaten
-    
-    
-    # nb enthält jetzt jeweils ein atom pro listenlement und seine dazugehörigen 1,3-stehenden
-    
+    for n, i in enumerate(dfix):
+        print('DFIX {:6}{:6}{:.4f} {}'.format(misc.remove_partsymbol(i[0]), misc.remove_partsymbol(i[1]), i[2], n))    
     
     #for i in nb:
     #    print(G.neighbors(i))

@@ -169,6 +169,20 @@ def matrix_mult(matrix1,matrix2):
         return new_matrix
 
 
+
+def remove_partsymbol(atom):
+    '''
+    strips the part symbol like C1_4b from an atom name
+    '''
+    if '_' in atom:
+        prefix = atom.split('_')[0]
+        suffix = atom.split('_')[-1].strip(string.ascii_letters)
+        atom = prefix+'_'+suffix
+    else:
+        pass
+    return atom
+
+
 def at_distance(p1, p2, cell): 
     from math import cos, sin, sqrt, radians
     cell = [float(y) for y in cell]

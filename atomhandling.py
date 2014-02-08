@@ -192,6 +192,7 @@ class FindAtoms():
                     single_atom = {i.upper(): x[1]}
                     atom_dict.update(single_atom)
         for i in atoms:
+            i = i.upper()
             if i not in list(atom_dict.keys()):
                 print('\nTarget atom "{}" not found in res file!'.format(i))
                 sys.exit(-1)
