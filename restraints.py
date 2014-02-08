@@ -335,7 +335,7 @@ if __name__ == '__main__':
                 pass
             except(AttributeError):
                 pass
-    #        print(p[0], nb) #1, 3
+            print(p[0], nb) #1, 3
             neighbors.append([p[0], nb])
             #print(neighbors)
         return(neighbors)
@@ -344,6 +344,19 @@ if __name__ == '__main__':
     
     nb = get_neighbors(dfix)
     print(nb)
+    
+    for line in res_list:
+        if line.startswith('CELL'):
+            cell = line.split()[2:]
+            break
+    print(cell)
+    
+    import misc
+    misc.at_distance(cell)
+    
+    #jetzt matrix für 1,3 machen und für jedes atom die koordinaten
+    
+    
     # nb enthält jetzt jeweils ein atom pro listenlement und seine dazugehörigen 1,3-stehenden
     
     
