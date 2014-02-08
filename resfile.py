@@ -20,7 +20,20 @@ import constants
 
 __metaclass__ = type  # use new-style classes
 
-
+def get_cell(res_list):
+    '''
+    Returns the unit cell parameters from the res file as list:
+    ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
+    '''
+    cell = False
+    for line in res_list:
+        if line.startswith('CELL'):
+            cell = line.split()[2:]
+            break
+    if not cell:
+        print('Unable to find unit cell parameters in th res file.')
+        sys.exit()
+    return cell
 
 class ResList():
     '''Reads and writes the res-file as list data structure'''

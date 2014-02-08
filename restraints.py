@@ -63,7 +63,7 @@ class ListFile():
     
     def coordinates(self, listfile):
         '''
-        reads the atom coordinates of the res-file
+        reads the atom coordinates of the lst-file
         '''
         atom_coords = {}
         start_line = int(misc.find_line(listfile, self._coord_regex))+2
@@ -241,6 +241,7 @@ class Adjacency_Matrix():
     returns an adjacence matrix for all atoms in the .lst file.
     edge property is the bond length
     
+    [('O1_4b', 'C1_4b', {'1,2-dist': 1.3986}), ... ]
     '''
     
     def __init__(self, conntable, residue):
@@ -301,7 +302,7 @@ if __name__ == '__main__':
     
     con = Connections(res_list, lst_file, dbhead, dbatoms, dsr_dict['part'], '4')
     conntable = con.get_bond_dist()
-     
+    #print(conntable)
     am = Adjacency_Matrix(conntable, '4')
     G = am.get_adjmatrix
     
@@ -319,7 +320,7 @@ if __name__ == '__main__':
         for i, x in i.items():
             dist=x['1,2-dist']
             dfix.append([n, i, dist])
-    print(dfix)
+    #print(dfix)
     
     
     def get_neighbors(atoms):
@@ -335,24 +336,22 @@ if __name__ == '__main__':
                 pass
             except(AttributeError):
                 pass
-            print(p[0], nb) #1, 3
-            neighbors.append([p[0], nb])
+    #        print(p[0], nb) #1, 3
+            if not nb:
+                pass
+            else:
+                neighbors.append([p[0], nb])
             #print(neighbors)
         return(neighbors)
     
     print('rtest')
     
     nb = get_neighbors(dfix)
-    print(nb)
-    
-    for line in res_list:
-        if line.startswith('CELL'):
-            cell = line.split()[2:]
-            break
-    print(cell)
-    
-    import misc
-    misc.at_distance(cell)
+    #print(nb)
+    for n, x in enumerate(nb):
+        print(nb[n])
+
+    misc.at_distance(misc.cell(res_list))
     
     #jetzt matrix für 1,3 machen und für jedes atom die koordinaten
     
