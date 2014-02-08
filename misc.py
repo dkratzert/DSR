@@ -151,7 +151,7 @@ def zero(m,n):
     return new_matrix
 
  
-def matrix(matrix1,matrix2):
+def matrix_mult(matrix1,matrix2):
     '''
     Multiplies matrix1 with matrix2.
     Independent from numpy, but slow.
@@ -169,13 +169,34 @@ def matrix(matrix1,matrix2):
         return new_matrix
 
 
+def at_distance(p1, p2, cell): 
+    from math import cos, sin, sqrt, radians
+    cell = [float(y) for y in cell]
+    a , b, c =  cell[:3]
+    al = radians(cell[3])
+    be = radians(cell[4])
+    ga = radians(cell[5])
+    x1, y1, z1 = p1
+    x2, y2, z2 = p2
+    dx = (x1-x2)
+    dy = (y1-y2)
+    dz = (z1-z2)
+    dsq = (a*dx)**2+\
+          (b*dy)**2+\
+          (c*dz)**2+\
+          2*b*c*cos(al)*dy*dz+\
+          2*dx*dz*a*c*cos(be)+\
+          2*dx*dy*a*b*cos(ga)
+    return(sqrt(dsq))
+
+
 def frac_to_cart(frac_coord, cell):
     '''
     Returns an array of catesian coordinates
     '''
     import math as np
     from math import cos, sin, sqrt
-    
+        
     cell = [float(y) for y in cell]
     a, b, c, alpha, beta, gamma = cell
     frac_coord = [float(x) for x in frac_coord]
@@ -193,10 +214,10 @@ def frac_to_cart(frac_coord, cell):
       [ 0.0, b*sin(gamma), c*((cos(alpha)-cos(beta)*cos(gamma))/sin(gamma))  ],
       [ 0.0, 0.0         , c*(v/sin(gamma))                                  ]]
       )
- 
-    cart_coords = matrix([frac_coord], tmat)
+    
+    cart_coords = matrix_mult([frac_coord], tmat)
     cart_coords = cart_coords[0]
-    cart_coords = ['{:.8f}'.format(i) for i in cart_coords]
+    cart_coords = ['{:.7f}'.format(i) for i in cart_coords]
     return cart_coords
 
 
@@ -230,27 +251,7 @@ if __name__ == '__main__':
     coord1 = (0.425895, 0.630971, 0.290285)
     coord2 = (0.380809, 0.569642, 0.277486)
     # 1.3853 A
-    def at_distance(p1, p2, cell): 
-        from math import cos, sin, sqrt, radians
-        cell = [float(y) for y in cell]
-        a , b, c =  cell[:3]
-        al = radians(cell[3])
-        be = radians(cell[4])
-        ga = radians(cell[5])
-        x1, y1, z1 = p1
-        x2, y2, z2 = p2
-  #      print(x1, y1, z1, x2, y2, z2 , a, b, c, al, be, ga)
-        dx = (x1-x2)
-        dy = (y1-y2)
-        dz = (z1-z2)
-        dsq = (a*dx)**2+\
-              (b*dy)**2+\
-              (c*dz)**2+\
-              2*b*c*cos(al)*dy*dz+\
-              2*dx*dz*a*c*cos(be)+\
-              2*dx*dy*a*b*cos(ga)
-        return(sqrt(dsq))
-        
+    
     N1 = frac_to_cart(coord1, cell)
     N2 = frac_to_cart(coord2, cell)
     x1 = float(N1[0])
@@ -263,9 +264,9 @@ if __name__ == '__main__':
     
     d = m.sqrt((x1-x2)**2+(y1-y2)**2+(z1-z2)**2)
     print('distance:', round(d, 4))
-    #2.588 A
+    # 1.3853 A
     print('dist2:', round(at_distance(coord1, coord2, cell), 4))
     
-    coo = frac_to_cart((0.3, 0.3, 0.4), (18, 19, 20, 90, 97, 90))
+    coo = frac_to_cart((0.312, 0.37, 0.754), (18.1, 19.3, 20.4, 90, 97, 90))
     #print coo
-    print('{:8.5} {:8.5} {:8.5}'.format(*coo), 'neue koordianten')
+    print('{:8.6} {:8.6} {:8.6}'.format(*coo), 'neue koordianten')
