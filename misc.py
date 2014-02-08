@@ -190,7 +190,7 @@ def frac_to_cart(frac_coord, cell):
  
     tmat = ( [
       [ a  , b*cos(gamma), c*cos(beta)                                       ],
-      [ 0.0, b*sin(gamma), -c*((cos(alpha)-cos(beta)*cos(gamma))/sin(gamma))  ],
+      [ 0.0, b*sin(gamma), c*((cos(alpha)-cos(beta)*cos(gamma))/sin(gamma))  ],
       [ 0.0, 0.0         , c*(v/sin(gamma))                                  ]]
       )
  
