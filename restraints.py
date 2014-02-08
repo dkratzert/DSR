@@ -269,6 +269,12 @@ class Adjacency_Matrix():
 
 
 if __name__ == '__main__':
+    # -list of bonds from Covalent radii and connectivity table for fragment
+    # -coordinates for each atom (node) in above list
+    # -adjacency matrix for each bond
+    # -calculate weight (distcance) for each bond (edge)
+    # -then 1,3 distance -> next neighbors and weight again
+    
     from dbfile import global_DB
     from atomhandling import FindAtoms
     options = OptionsParser()
@@ -300,10 +306,10 @@ if __name__ == '__main__':
     #res_atoms = misc.get_atoms(res_list)
     #res_atoms_list = [i[0] for i in res_atoms]
     
-    con = Connections(res_list, lst_file, dbhead, dbatoms, dsr_dict['part'], '4')
+    con = Connections(res_list, lst_file, dbhead, dbatoms, dsr_dict['part'], '3')
     conntable = con.get_bond_dist()
     #print(conntable)
-    am = Adjacency_Matrix(conntable, '4')
+    am = Adjacency_Matrix(conntable, '3')
     G = am.get_adjmatrix
     
     #print(G.nodes())
@@ -347,11 +353,22 @@ if __name__ == '__main__':
     print('rtest')
     
     nb = get_neighbors(dfix)
-    #print(nb)
-    for n, x in enumerate(nb):
-        print(nb[n])
+    print(nb)
+    
+    
+    length = len(nb)
+    for n, item in enumerate(nb):
+        piv = item[0]
+        if n == length/2:
+            break
+        for k in item[1]:
+            pass
+            #print(piv, k)
+            #print(piv, k, fa.get_atomcoordinates([piv]))
+        
 
-    misc.at_distance(misc.cell(res_list))
+    
+    #misc.at_distance(misc.cell(res_list))
     
     #jetzt matrix für 1,3 machen und für jedes atom die koordinaten
     
