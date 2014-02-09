@@ -36,6 +36,7 @@ class InsertAfix(object):
         self.source_atoms = dsr_line['source']
         self.target_atoms = dsr_line['target']
         self.__resi     = dsr_line['resi']
+        self._dfix = dsr_line['dfix']
     
 
     def insert_dsr_warning(self):
@@ -61,7 +62,19 @@ class InsertAfix(object):
         if modified:
             print('\nAlready existing residue restraints were not inserted.')
         return newhead
-        
+
+    
+    def remove_all_restraints(self, dbhead):
+        '''
+        removes all restraints from the header.
+        '''
+        newhead = dbhead[:]
+        for num, headline in enumerate(dbhead):
+            headline = headline.strip().split()
+            if headline[0][:4] in constants.RESTRAINT_CARDS:
+                newhead[num] = ''
+        return newhead
+
     
     def build_afix_entry(self): 
         '''
@@ -77,6 +90,8 @@ class InsertAfix(object):
         dbhead = rename_dbhead_atoms(real_atomnames, self.__dbatoms, self.__dbhead)
         if self.__resi:
             dbhead = self.remove_duplicate_restraints(dbhead)
+        if self._dfix:
+            dbhead = self.remove_all_restraints(dbhead)
         atype = list(reversed(self.__dbtypes))
         coord = self._find_atoms.get_atomcoordinates(self.target_atoms)
         target = self.target_atoms[:]  # a copy because we edit it later

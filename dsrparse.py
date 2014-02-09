@@ -177,13 +177,16 @@ class DSR_Parser():
                 residue = 'DB'
         else:
             residue = ''
+        dfix = False
+        if 'DFIX' in self.__dsr:
+            dfix = True
         dsr_dict = {
             'command': str(command),
             'fragment': str(fragment),
             'source': source, 
             'target': target,
             'part': self.find_commands('PART'),
-            'dfix': self.find_commands('DFIX'),
+            'dfix': dfix,
             'occupancy': self.find_commands('OCC'), 
             'resi': residue
             };
