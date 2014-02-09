@@ -20,7 +20,7 @@ import misc
 from atomhandling import NumberScheme
 alphabet = [ i for i in string.ascii_lowercase ]
 from dbfile import global_DB
-#import networkx as nx
+import networkx as nx
 
 # note: parts    1, 2, 3 are _a, _b, _c
 # note: residue number 1, 2, 3 are _1, _2, _3
@@ -131,7 +131,6 @@ class Restraints():
     '''
     def __init__(self, conntable, residue, res_list, fa):
         from resfile import get_cell
-        import networkx as nx
         self.fa = fa
         self.cell = get_cell(res_list)
         am = Adjacency_Matrix(conntable, residue)
@@ -346,7 +345,6 @@ class Adjacency_Matrix():
         '''
         needs pairs of atoms with their distance and residue
         '''
-        import networkx as nx
         MG = nx.Graph()
         MG.add_edges_from(self._conntable)
         return MG

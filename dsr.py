@@ -25,6 +25,7 @@ from refine import ShelxlRefine
 from resi import Resi
 from misc import get_replace_mode, find_line
 from restraints import ListFile, Lst_Deviations
+from restraints import Connections, Restraints
 
 
 # TODO and ideas:
@@ -179,7 +180,6 @@ def generate_dfix_restraints(lf,
     in the current fragment.
     'DFIX at1 at2 distance\n DFIX at1 at2 distance\n ...'
     '''
-    from restraints import Connections, Restraints
     fa = FindAtoms(reslist)
     atoms_dict = fa.collect_residues()
     #dbatoms = gdb.get_atoms_from_fragment(fragment)
