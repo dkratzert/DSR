@@ -202,7 +202,8 @@ class Restraints():
             for k in item[1]:
                 atom2 = [k]
                 coordpairs.append((self.fa.get_atomcoordinates(atom2), 
-                                    self.fa.get_atomcoordinates(atom1)))
+                                   self.fa.get_atomcoordinates(atom1)))
+        #print(coordpairs)
         return coordpairs
     
     
