@@ -71,7 +71,7 @@ class InsertAfix(object):
         newhead = dbhead[:]
         for num, headline in enumerate(dbhead):
             headline = headline.strip().split()
-            if headline[0][:4] in constants.RESTRAINT_CARDS:
+            if headline[:4] in constants.RESTRAINT_CARDS:
                 newhead[num] = ''
         return newhead
 
