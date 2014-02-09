@@ -52,9 +52,10 @@ from restraints import ListFile, Lst_Deviations
 # -detect empty residues and parts after atom deletion
 # -add SIMU and RIGU after Grade import
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
+# -check atoms bond valency after fit to decide if fit was sucessful.
 
 
-VERSION = '1.2.13'
+VERSION = '1.3.0'
 progname = '\n----------------------------- D S R - v{} ----------------------------------'.format(VERSION)
 
 def export_fragment(options):
@@ -164,6 +165,33 @@ def go_refine(shx):
     except() as e:
         print(e)
         sys.exit()
+
+
+def generate_dfix_restraints(lf, 
+                        reslist, 
+                        fragment, 
+                        dbhead, 
+                        dbatoms, 
+                        residue,
+                        part=''):
+    '''
+    returns a string of DFIX restraints for all 1,2- and 1,3-Bond distances
+    in the current fragment.
+    'DFIX at1 at2 distance\n DFIX at1 at2 distance\n ...'
+    '''
+    from restraints import Connections, Restraints
+    fa = FindAtoms(reslist)
+    atoms_dict = fa.collect_residues()
+    #dbatoms = gdb.get_atoms_from_fragment(fragment)
+    lst_file = lf.read_lst_file()
+    coords = lf.get_coordinates
+    con = Connections(reslist, lst_file, dbhead, dbatoms, part, residue)
+    conntable = con.get_bond_dists()
+    re = Restraints(conntable, residue, reslist, fa)
+    dfixes = re.get_formated_12_dfixes
+    dfixes_13 = re.get_formated_13_dfixes
+    dfixes.extend(dfixes_13)
+    return ''.join(dfixes)
 
 
 def main(): 
@@ -287,55 +315,30 @@ def main():
     rl = ResList(options.res_file)
     reslist = rl.get_res_list()
     shx = ShelxlRefine(reslist, basefilename, find_atoms)
+
     if not options.no_refine:
         set_post_refine_cycles(shx, '8')
+
+  #  rl = ResList(options.res_file)
+  #  reslist = rl.get_res_list()
+    
+    if dsr_dict.get('dfix'):
+        resinumber = resi.get_resinumber
+        dfix = generate_dfix_restraints(lf, 
+                                reslist, 
+                                fragment, 
+                                dbhead, 
+                                dbatoms, 
+                                resinumber, 
+                                dsr_dict.get('part'))
+        for n, line in enumerate(reslist):
+            if line.upper().startswith('RESI'):
+                if line.split()[1] == str(resinumber):
+                    line = '{} \n{}'.format(line, dfix)
+                    reslist[n] = line
     
     if not options.no_refine:
         rl.write_resfile(reslist, '.res')
-    
-    
-    from misc import get_atoms
-    res_atoms = get_atoms(reslist)
-    res_atoms_list = [i[0] for i in res_atoms]
-    from restraints import Adjacency_Matrix, Connections
-    resinum = resi.get_resinumber
-    dbatom_names = [i[0] for i in dbatoms]
-    con = Connections(reslist, lst_file, dbhead, dbatom_names, dsr_dict['part'], resinum)
-    conntable = con.get_bond_dist()
-    
-    am = Adjacency_Matrix(conntable, resinum)
-    G = am.get_adjmatrix
-    #print(G.nodes())
-    #print(G.edges(data=True))
-    #print(atoms_dict)
-    fa = FindAtoms(reslist)
-    atoms_dict = fa.collect_residues()
-    numpart = con.get_numpart
-    #print(numpart)
-    num = 0
-    for n,i in G.adjacency_iter():
-        for i, x in i.items():
-            num = num+1
-            #print(num)
-            dist=x['1,2-dist']
-            print(n, i, dist)
-    print(G.adjacency_list())
-    #print(fa.get_atomcoordinates)
-    
-    
- #   print()
- #   num = 0
- #   for i in dbatom_names:
- #       #print('{}{}'.format(i, numpart))
- #       for n in G.edges('{}{}'.format(i, numpart), data=True):
- #           num = num+1
- #           #print(num)
- #           if resinum:
- #               print('{}, {}, {}'.format(n[0], n[1], n[2]['weight']))
- #           else:
- #               print(' '.join(n[:2]), n[2]['weight'])
-# Im Resfile darf dann nur C1_4 und nicht C1_4b auftauchen!
-
 
 if __name__ == '__main__':
     '''main function'''

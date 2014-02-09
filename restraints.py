@@ -119,7 +119,7 @@ class Lst_Deviations():
             print(' Deviations on fitting group:')
             for i in self._dev:
                 print(' {:<4}: {:>5} A'.format(i.strip(' \n\r'), self._dev[i][:4]))
-        print('\n')
+        #print('\n')
     
 
 
@@ -129,9 +129,10 @@ class Restraints():
     relative distance restraints. 
     Maybe also absolute distance restraints?
     '''
-    def __init__(self, conntable, residue, res_list):
+    def __init__(self, conntable, residue, res_list, fa):
         from resfile import get_cell
         import networkx as nx
+        self.fa = fa
         self.cell = get_cell(res_list)
         am = Adjacency_Matrix(conntable, residue)
         self._G = am.get_adjmatrix
@@ -159,8 +160,8 @@ class Restraints():
         dfix = self.get_12_dfixes
         dfix = remove_duplicate_bonds(dfix)
         for n, i in enumerate(dfix, 1):
-            dfix_format.append('DFIX {:7}{:7}{:.4f} {}\n'.format(misc.remove_partsymbol(i[0]), 
-                                misc.remove_partsymbol(i[1]), i[2], n))
+            dfix_format.append('DFIX {:7}{:7}{:.4f}\n'.format(misc.remove_partsymbol(i[0]), 
+                                misc.remove_partsymbol(i[1]), i[2]))
         return dfix_format
 
 
@@ -195,7 +196,7 @@ class Restraints():
         for n, item in enumerate(nb):
             piv = item[0]
             for k in item[1]:
-                coordpairs.append((fa.get_atomcoordinates([k]), fa.get_atomcoordinates([piv])))
+                coordpairs.append((self.fa.get_atomcoordinates([k]), self.fa.get_atomcoordinates([piv])))
         return coordpairs
     
     
@@ -205,23 +206,23 @@ class Restraints():
         '''
         distpairs_13 = []
         for at1, at2 in coordpairs:
-            #print(at1, at2)
             for coord1, coord2 in zip(at1.keys(), at2.keys()):
                 c1 = [ float(i) for i in at1[coord1] ]
                 c2 = [ float(i) for i in at2[coord2] ]
                 atom1 = misc.remove_partsymbol(at1.keys()[0])
                 atom2 = misc.remove_partsymbol(at2.keys()[0])
                 distpairs_13.append((atom1, atom2, misc.at_distance(c1, c2, self.cell)))
-    
         distpairs_13 = remove_duplicate_bonds(distpairs_13)
-        #for n, i in enumerate(distpairs_13, 1):
-        #    print('DANG {:6} {:6} {:.4f} {}'.format(i[0], i[1], i[2], n))
         return distpairs_13
 
 
     def get_13_dist(self):
         coordpairs = self.get_coordpairs(self.nb)
-        dist_13 = self.make_13_dist(coordpairs)
+        try:
+            dist_13 = self.make_13_dist(coordpairs)
+        except(AttributeError):
+            print('No DFIX restraints could be inserted.')
+            sys.exit()
         return dist_13
 
     @property
@@ -229,8 +230,8 @@ class Restraints():
         dfixes_13 = self.get_13_dist()
         dfix_13_format = []
         for n, i in enumerate(dfixes_13, 1):
-            dfix_13_format.append('DANG {:7}{:7}{:.4f} {}\n'.format(misc.remove_partsymbol(i[0]), 
-                                    misc.remove_partsymbol(i[1]), i[2], n))
+            dfix_13_format.append('DANG {:7}{:7}{:.4f}\n'.format(misc.remove_partsymbol(i[0]), 
+                                    misc.remove_partsymbol(i[1]), i[2]))
         return dfix_13_format
         
         
@@ -264,13 +265,10 @@ class Connections():
             self._numpart = '_'+self._resinum+self._partsymbol
         else:
             self._numpart = ''
-        #print('_numpart =',  self._numpart)
         self.atoms = [i[0] for i in atoms]
         self._atomnames = [i+self._numpart for i in self.atoms]
         self._atomnames_resi = [i+'_'+str(self._resinum) for i in self.atoms]
-        #print(self._resinum)
-        #print(self._atomnames_resi)
-        #print(self.atoms)
+
     
     @property
     def get_numpart(self):
@@ -280,7 +278,7 @@ class Connections():
     def get_atoms_plusresi(self):
         return self._atomnames_resi
     
-    def get_bond_dist(self):
+    def get_bond_dists(self):
         '''
         returns a list of connections for each atom in the fragment:
         ['C1, 'C2' {'1,2-dist': distance}, 'O1, 'Al1' {'1,2-dist': distance}]
