@@ -61,15 +61,15 @@ class ListFile():
         return listfile
     
     
-    def coordinates(self, listfile):
+    def coordinates(self):
         '''
         reads the atom coordinates of the lst-file
         '''
         atom_coords = {}
-        start_line = int(misc.find_line(listfile, self._coord_regex))+2
+        start_line = int(misc.find_line(self._listfile_list, self._coord_regex))+2
         #print(listfile)
         num = 0
-        for line in listfile[start_line:]:
+        for line in self._listfile_list[start_line:]:
             line = line.split()
             try:
                 line[0]
@@ -78,13 +78,14 @@ class ListFile():
             atom = {str(line[0]): line[1:4]}
             atom_coords.update(atom)
         return atom_coords
+       
         
     @property
     def get_coordinates(self):
         '''
         return the coordinates as property
         '''
-        return self.coordinates(self._listfile_list )
+        return self.coordinates()
         
     
 class Lst_Deviations():
@@ -129,9 +130,10 @@ class Restraints():
     relative distance restraints. 
     Maybe also absolute distance restraints?
     '''
-    def __init__(self, conntable, residue, res_list, fa):
+    def __init__(self, conntable, residue, res_list, fa, coords):
         from resfile import get_cell
         self.fa = fa
+        self.coords = coords
         self.cell = get_cell(res_list)
         am = Adjacency_Matrix(conntable, residue)
         self._G = am.get_adjmatrix
@@ -179,12 +181,14 @@ class Restraints():
             else:
                 atom1 = p[0]
                 atom2 = nb
-                #print(p)
                 neighbors.append([atom1, atom2])
                 #for i in nb:
                 #    print(nx.shortest_path(G, source=atom1,target=i))
-            #print(neighbors)
         return(neighbors)
+    
+    def lst_cooordinate(self, atom):
+        #print(self.coords[atom])
+        return {atom : self.coords[atom]}
 
 
     def get_coordpairs(self, nb):
@@ -194,8 +198,11 @@ class Restraints():
         coordpairs = []
         for n, item in enumerate(nb):
             piv = item[0]
+            atom1 = [piv]
             for k in item[1]:
-                coordpairs.append((self.fa.get_atomcoordinates([k]), self.fa.get_atomcoordinates([piv])))
+                atom2 = [k]
+                coordpairs.append((self.fa.get_atomcoordinates(atom2), 
+                                    self.fa.get_atomcoordinates(atom1)))
         return coordpairs
     
     
@@ -220,7 +227,7 @@ class Restraints():
         try:
             dist_13 = self.make_13_dist(coordpairs)
         except(AttributeError):
-            print('No DFIX restraints could be inserted.')
+            print('No DFIX restraints could be inserted. Atoms not found.')
             sys.exit()
         return dist_13
 
@@ -363,11 +370,7 @@ class Adjacency_Matrix():
 
 
 if __name__ == '__main__':
-    # -list of bonds from Covalent radii and connectivity table for fragment
-    # -coordinates for each atom (node) in above list
-    # -adjacency matrix for each bond
-    # -calculate weight (distcance) for each bond (edge)
-    # -then 1,3 distance -> next neighbors and weight again
+
     
     from dbfile import global_DB
     from atomhandling import FindAtoms
@@ -392,8 +395,8 @@ if __name__ == '__main__':
     coords = lf.get_coordinates
     residue = '4'
     con = Connections(res_list, lst_file, dbhead, dbatoms, '2', residue)
-    conntable = con.get_bond_dist()
-    re = Restraints(conntable, residue, res_list)
+    conntable = con.get_bond_dists()
+    re = Restraints(conntable, residue, res_list, fa, coords)
     dfixes = re.get_formated_12_dfixes
     dfixes_13 = re.get_formated_13_dfixes
     print(''.join(dfixes))

@@ -165,7 +165,7 @@ def go_refine(shx):
         shx.run_shelxl()
     except() as e:
         print(e)
-        sys.exit()
+        sys.exit() 
 
 
 def generate_dfix_restraints(lf, 
@@ -187,7 +187,7 @@ def generate_dfix_restraints(lf,
     coords = lf.get_coordinates
     con = Connections(reslist, lst_file, dbhead, dbatoms, part, residue)
     conntable = con.get_bond_dists()
-    re = Restraints(conntable, residue, reslist, fa)
+    re = Restraints(conntable, residue, reslist, fa, coords)
     dfixes = re.get_formated_12_dfixes
     dfixes_13 = re.get_formated_13_dfixes
     dfixes.extend(dfixes_13)
@@ -319,8 +319,6 @@ def main():
     if not options.no_refine:
         set_post_refine_cycles(shx, '8')
 
-  #  rl = ResList(options.res_file)
-  #  reslist = rl.get_res_list()
     
     if dsr_dict.get('dfix'):
         resinumber = resi.get_resinumber
