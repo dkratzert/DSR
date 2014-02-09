@@ -17,7 +17,6 @@ from dsrparse import DSR_Parser
 from resi import Resi
 import string
 import misc
-from atomhandling import NumberScheme
 alphabet = [ i for i in string.ascii_lowercase ]
 from dbfile import global_DB
 import networkx as nx
@@ -259,10 +258,12 @@ class Connections():
         self._listfile = listfile
         self._dbhead = dbhead
         self._pivot_regex = r'^.*Distance\s+Angles'
+        self.atoms = [i[0] for i in atoms]
         if residue:
             self._resinum = residue
         else:
             self._resinum = ''
+            self._atomnames_resi = self.atoms
         if part:
             self._part = part
             self._partsymbol = alphabet[int(self._part)-1] # turns part number into a letter
@@ -272,19 +273,14 @@ class Connections():
             self._numpart = '_'+self._resinum+self._partsymbol
         else:
             self._numpart = ''
-        self.atoms = [i[0] for i in atoms]
         self._atomnames = [i+self._numpart for i in self.atoms]
-        self._atomnames_resi = [i+'_'+str(self._resinum) for i in self.atoms]
-
+#        print(self._atomnames)
     
     @property
     def get_numpart(self):
         return self._numpart
     
-    @property
-    def get_atoms_plusresi(self):
-        return self._atomnames_resi
-    
+  
     def get_bond_dists(self):
         '''
         returns a list of connections for each atom in the fragment:
@@ -311,6 +307,7 @@ class Connections():
                         except(IndexError):
                             continue
                     break
+        #print(atomconnections)
         return atomconnections
     
     
@@ -394,7 +391,7 @@ if __name__ == '__main__':
     atoms_dict = fa.collect_residues()
     dbatoms = gdb.get_atoms_from_fragment(fragment)
     coords = lf.get_coordinates
-    residue = '4'
+    residue = ''
     con = Connections(res_list, lst_file, dbhead, dbatoms, '2', residue)
     conntable = con.get_bond_dists()
     re = Restraints(conntable, residue, res_list, fa, coords)

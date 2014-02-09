@@ -23,13 +23,14 @@ class InsertAfix(object):
     - dbhead is modified by Resi() if residues are used! RESI num class ist inserted there
     '''
     
-    def __init__(self, reslist, dbatoms, dbtypes, dbhead, dsr_line, sfac_table, find_atoms):
+    def __init__(self, reslist, dbatoms, dbtypes, dbhead, dsr_line, sfac_table, find_atoms, numberscheme):
         self.__reslist = reslist
         self._find_atoms = find_atoms
         self.__dbatoms = dbatoms
         self.__dbhead = dbhead
         self.__dbtypes = dbtypes
         self.__sfac = sfac_table
+        self.numberscheme = numberscheme
         self.part = dsr_line['part']
         self.occ = dsr_line['occupancy']
         #self.afixnumber = dsr_line['afix']
@@ -87,9 +88,7 @@ class InsertAfix(object):
         atype = []       # list of atomtypes in reverse order
         afix_list = []   # the final list with atoms, sfac and coordinates
         e2s = Elem_2_Sfac(self.__sfac)
-        # Fixme: move this to _init_
-        num = NumberScheme(self.__reslist, self.__dbatoms, self.__resi)
-        real_atomnames = list(reversed(num.get_fragment_number_scheme())) # i reverse it to pop() later
+        real_atomnames = list(reversed(self.numberscheme)) # i reverse it to pop() later
         # all non-atoms between start tag and FRAG card with new names:
         dbhead = rename_dbhead_atoms(real_atomnames, self.__dbatoms, self.__dbhead)
         if self.__resi:
