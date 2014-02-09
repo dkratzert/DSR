@@ -179,7 +179,7 @@ def remove_partsymbol(atom):
         suffix = atom.split('_')[-1].strip(string.ascii_letters)
         atom = prefix+'_'+suffix
     else:
-        pass
+        atom = atom+'_0'
     return atom
 
 

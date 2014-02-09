@@ -304,14 +304,11 @@ if __name__ == '__main__':
     coords = lf.get_coordinates
     #print(coords['Al1'])
     
-# all atom names in the res file:
-    #res_atoms = misc.get_atoms(res_list)
-    #res_atoms_list = [i[0] for i in res_atoms]
-    #print(dsr_dict['part'])
-    con = Connections(res_list, lst_file, dbhead, dbatoms, '2', '4')
+    residue = '4'
+    con = Connections(res_list, lst_file, dbhead, dbatoms, '2', residue)
     conntable = con.get_bond_dist()
     #print(conntable)
-    am = Adjacency_Matrix(conntable, '4')
+    am = Adjacency_Matrix(conntable, residue)
     G = am.get_adjmatrix
     
 
@@ -327,13 +324,19 @@ if __name__ == '__main__':
     
     #biglist = [keys.add(pair[0]) for pair in dfix if (pair[0], pair[1]) not in keys]
     #print(biglist)
-    def remove_duplicate_bonds(dfix):
+    def remove_duplicate_bonds(bonds):
         '''
         removes duplicates from at1 at2 1.324, at2 at1 1.324
         '''
-        keys = set()
-        dfix = (dict([(pair[0], pair) for pair in reversed(dfix)]).values())
-        return dfix
+        #keys = set()
+        new_bonds = [] #(dict([(pair[0], pair) for pair in reversed(bonds)]).values())
+        pairs = []
+        for k in bonds:
+            pairs.append((k[0], k[1]))
+            if (k[1], k[0]) in pairs:
+                continue
+            new_bonds.append(k)
+        return new_bonds
              
 
     import networkx as nx
@@ -354,25 +357,32 @@ if __name__ == '__main__':
                 atom2 = nb
                 #print(p)
                 neighbors.append([atom1, atom2])
-                for i in nb:
-                    print(nx.shortest_path(G, source=atom1,target=i))
+                #for i in nb:
+                #    print(nx.shortest_path(G, source=atom1,target=i))
             #print(neighbors)
         return(neighbors)
     
     print('rtest')
     
     nb = get_neighbors(dfix)
-    print(nb)
+    #print(nb)
     
 #koordinatenpaare für 1,3    
     length = len(nb)
     coordpairs = []
+    #pairs = []
     for n, item in enumerate(nb):
         piv = item[0]
         #if n == length/2:
         #    break
         for k in item[1]:
-            coordpairs.append((fa.get_atomcoordinates([piv]), fa.get_atomcoordinates([k])))
+            #pairs.append((k, piv))
+            #if (piv, k) in pairs:
+            #    continue
+            coordpairs.append((fa.get_atomcoordinates([k]), fa.get_atomcoordinates([piv])))
+
+# bei oc(cf3)3 - 24 1,3-abstände mit Al 25
+
 #abstände 1,3    
     from resfile import get_cell
     distpairs_13 = []
@@ -385,15 +395,16 @@ if __name__ == '__main__':
             atom2 = misc.remove_partsymbol(at2.keys()[0])
             distpairs_13.append((atom1, atom2, misc.at_distance(c1, c2, get_cell(res_list))))
     
+    distpairs_13 = remove_duplicate_bonds(distpairs_13)
               
-    for n, i in enumerate(distpairs_13):
-        print('DANG {:5} {:5} {:>6.4f} {}'.format(i[0], i[1], i[2], n))
+    for n, i in enumerate(distpairs_13, 1):
+        print('DANG {:6} {:6} {:.4f} {}'.format(i[0], i[1], i[2], n))
     #bei den 1,3 abständen stimmt was nicht.
     # z.B. die bindung O1_4b C1_4b ist falsch
     dfix = remove_duplicate_bonds(dfix)
-    
-    for n, i in enumerate(dfix):
-        print('DFIX {:6}{:6}{:.4f} {}'.format(misc.remove_partsymbol(i[0]), misc.remove_partsymbol(i[1]), i[2], n))    
+    print()
+    for n, i in enumerate(dfix, 1):
+        print('DFIX {:7}{:7}{:.4f} {}'.format(misc.remove_partsymbol(i[0]), misc.remove_partsymbol(i[1]), i[2], n))    
     
     #for i in nb:
     #    print(G.neighbors(i))
