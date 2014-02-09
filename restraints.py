@@ -145,7 +145,7 @@ class Restraints():
         '''
         dfix = []
         for n,i in self._G.adjacency_iter():
-            for i, x in i.items():
+            for i, x in list(i.items()):
                 dist=x['1,2-dist']
                 atom1 = n
                 atom2 = i
@@ -205,11 +205,11 @@ class Restraints():
         '''
         distpairs_13 = []
         for at1, at2 in coordpairs:
-            for coord1, coord2 in zip(at1.keys(), at2.keys()):
+            for coord1, coord2 in zip(list(at1.keys()), list(at2.keys())):
                 c1 = [ float(i) for i in at1[coord1] ]
                 c2 = [ float(i) for i in at2[coord2] ]
-                atom1 = misc.remove_partsymbol(at1.keys()[0])
-                atom2 = misc.remove_partsymbol(at2.keys()[0])
+                atom1 = misc.remove_partsymbol(list(at1.keys())[0])
+                atom2 = misc.remove_partsymbol(list(at2.keys())[0])
                 distpairs_13.append((atom1, atom2, misc.at_distance(c1, c2, self.cell)))
         distpairs_13 = remove_duplicate_bonds(distpairs_13)
         return distpairs_13
