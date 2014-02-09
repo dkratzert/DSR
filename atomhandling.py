@@ -14,7 +14,7 @@ import re, sys
 import string
 from atoms import Element as el
 from constants import *
-from misc import find_line, get_atoms
+from misc import find_line, get_atoms, remove_partsymbol
 from options import OptionsParser 
 
 
@@ -156,6 +156,8 @@ class FindAtoms():
         if '_' in atom:
             suffix = atom.split('_') 
             resinum = suffix[-1].strip(string.ascii_letters) # we don't need the part here
+            if not resinum:
+                resinum = '0'
             if len(resinum) > 4:
                 print('Invalid residue number in', atom)
                 sys.exit(-1)
@@ -182,6 +184,7 @@ class FindAtoms():
         atom_dict = {}
         for i in atoms:
             num = self.get_atoms_resinumber(i)
+            #print(num, 'rdg')
             try:
                 self._residues[num]
             except(KeyError):
@@ -545,7 +548,7 @@ if __name__ == '__main__':
     print('get_atomtypes', get_atomtypes(dbatoms))
     print()
     print('get_atomcoordinates:')
-    coord = fa.get_atomcoordinates(['C1', 'C22_1', 'C28', 'Q1'])
+    coord = fa.get_atomcoordinates(['C1', 'C22', 'C28', 'Q1'])
     for i in coord:
         print('{}:\t{:<9} {:<9} {:<9}'.format(i, *coord[i]))
     print()

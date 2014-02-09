@@ -26,7 +26,7 @@ from resi import Resi
 from misc import get_replace_mode, find_line
 from restraints import ListFile, Lst_Deviations
 from restraints import Connections, Restraints
-
+from atomhandling import NumberScheme
 
 # TODO and ideas:
 # -do not overwrite user-db with linux rpm, deb packages.
@@ -275,8 +275,11 @@ def main():
     # several checks if the atoms in the dsr command line are consistent
     check_source_target(db_source_atoms, res_target_atoms, dbatoms)
     
-
-    afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, sfac_table, find_atoms)
+    num = NumberScheme(reslist, dbatoms, resi.get_resinumber)
+    numberscheme = num.get_fragment_number_scheme()
+    #print(numberscheme, residue, resi.get_resinumber)
+    #sys.exit() #enabled
+    afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, sfac_table, find_atoms, numberscheme)
     afix_entry = afix.build_afix_entry()
     # line where the dsr command is found in the resfile:
     dsrline = dsrp.find_dsr_command(reslist) 
@@ -329,12 +332,17 @@ def main():
                                 dbatoms, 
                                 resinumber, 
                                 dsr_dict.get('part'))
-        for n, line in enumerate(reslist):
-            if line.upper().startswith('RESI'):
-                if line.split()[1] == str(resinumber):
-                    line = '{} \n{}'.format(line, dfix)
-                    reslist[n] = line
-    
+        if resinumber:
+            for n, line in enumerate(reslist):
+                if line.upper().startswith('RESI'):
+                    if line.split()[1] == str(resinumber):
+                        line = '{} \n{}'.format(line, dfix)
+                        reslist[n] = line
+        else:
+            line = ''
+            line = '{} \n{}'.format(line, dfix)
+            reslist[dsrline] = line
+            
     if not options.no_refine:
         rl.write_resfile(reslist, '.res')
 
