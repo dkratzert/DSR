@@ -129,25 +129,111 @@ class Restraints():
     relative distance restraints. 
     Maybe also absolute distance restraints?
     '''
-    def __init__(self, G):
-        self._G = G
-    
+    def __init__(self, conntable, residue, res_list):
+        from resfile import get_cell
+        import networkx as nx
+        self.cell = get_cell(res_list)
+        am = Adjacency_Matrix(conntable, residue)
+        self._G = am.get_adjmatrix
+        self.nb = self.get_neighbors(self.get_12_dfixes)
+
+
     @property
     def get_12_dfixes(self):
         '''
         returns the requested dfixes als list of strings
         '''
-        single_dfix = []
-        all_dfixes = []
+        dfix = []
         for n,i in self._G.adjacency_iter():
             for i, x in i.items():
                 dist=x['1,2-dist']
-                single_dfix = ' '.join([n, i, dist])
-                all_dfixes.append(single_dfix+'\n')
-                print(single_dfix)
-            return all_dfixes
+                atom1 = n
+                atom2 = i
+                dfix.append((atom1, atom2, dist))
+        return dfix
     
     
+    @property
+    def get_formated_12_dfixes(self):
+        dfix_format = []
+        dfix = self.get_12_dfixes
+        dfix = remove_duplicate_bonds(dfix)
+        for n, i in enumerate(dfix, 1):
+            dfix_format.append('DFIX {:7}{:7}{:.4f} {}\n'.format(misc.remove_partsymbol(i[0]), 
+                                misc.remove_partsymbol(i[1]), i[2], n))
+        return dfix_format
+
+
+    def get_neighbors(self, atoms):
+        neighbors = []
+        for p in atoms:
+            nb = self._G.neighbors(p[1])
+            try:
+                nb.remove(p[0])
+            except(ValueError):
+                pass
+            except(AttributeError):
+                pass
+            if not nb:
+                pass
+            else:
+                atom1 = p[0]
+                atom2 = nb
+                #print(p)
+                neighbors.append([atom1, atom2])
+                #for i in nb:
+                #    print(nx.shortest_path(G, source=atom1,target=i))
+            #print(neighbors)
+        return(neighbors)
+
+
+    def get_coordpairs(self, nb):
+        '''
+        coordinate pairs for 1,3-distances
+        '''
+        coordpairs = []
+        for n, item in enumerate(nb):
+            piv = item[0]
+            for k in item[1]:
+                coordpairs.append((fa.get_atomcoordinates([k]), fa.get_atomcoordinates([piv])))
+        return coordpairs
+    
+    
+    def make_13_dist(self, coordpairs):
+        '''
+        return 1,3-distance as [('at1', 'at2', 'distance'), ('at1', 'at2', 'distance'), ...]
+        '''
+        distpairs_13 = []
+        for at1, at2 in coordpairs:
+            #print(at1, at2)
+            for coord1, coord2 in zip(at1.keys(), at2.keys()):
+                c1 = [ float(i) for i in at1[coord1] ]
+                c2 = [ float(i) for i in at2[coord2] ]
+                atom1 = misc.remove_partsymbol(at1.keys()[0])
+                atom2 = misc.remove_partsymbol(at2.keys()[0])
+                distpairs_13.append((atom1, atom2, misc.at_distance(c1, c2, self.cell)))
+    
+        distpairs_13 = remove_duplicate_bonds(distpairs_13)
+        #for n, i in enumerate(distpairs_13, 1):
+        #    print('DANG {:6} {:6} {:.4f} {}'.format(i[0], i[1], i[2], n))
+        return distpairs_13
+
+
+    def get_13_dist(self):
+        coordpairs = self.get_coordpairs(self.nb)
+        dist_13 = self.make_13_dist(coordpairs)
+        return dist_13
+
+    @property
+    def get_formated_13_dfixes(self):
+        dfixes_13 = self.get_13_dist()
+        dfix_13_format = []
+        for n, i in enumerate(dfixes_13, 1):
+            dfix_13_format.append('DANG {:7}{:7}{:.4f} {}\n'.format(misc.remove_partsymbol(i[0]), 
+                                    misc.remove_partsymbol(i[1]), i[2], n))
+        return dfix_13_format
+        
+        
 
 class Connections():
     '''
@@ -159,8 +245,8 @@ class Connections():
                 listfile,  # listfile
                 dbhead,    # header of dbentry
                 atoms,     # atom names for which connections in the list file should be found
-                part,      # part number
-                residue):  # residue as number
+                part,      # part number as string
+                residue):  # residue number as string
         self._reslist = reslist
         self._listfile = listfile
         self._dbhead = dbhead
@@ -179,9 +265,12 @@ class Connections():
         else:
             self._numpart = ''
         #print('_numpart =',  self._numpart)
-        self._atomnames = [i+self._numpart for i in atoms]
-        self._atomnames_resi = [i+self._resinum for i in atoms]
-       # print(self._atomnames)
+        self.atoms = [i[0] for i in atoms]
+        self._atomnames = [i+self._numpart for i in self.atoms]
+        self._atomnames_resi = [i+'_'+str(self._resinum) for i in self.atoms]
+        #print(self._resinum)
+        #print(self._atomnames_resi)
+        #print(self.atoms)
     
     @property
     def get_numpart(self):
@@ -202,7 +291,6 @@ class Connections():
         atomconnections = []
         for num in lines:
             atname = self._listfile[num].split()[0] #atom1
-            #print(self._listfile[num].split())
             for atom in self._atomnames:
                 if atom in self._listfile[num]:
                     bond = []
@@ -219,23 +307,31 @@ class Connections():
                             continue
                     break
         return atomconnections
-
-
-
-class Nextneighbors():
-    '''
-    Nextneighbors for 1,3-distances
-    '''
     
     
-    def get_13_dist():
-        '''
+
+
+
+
+def remove_duplicate_bonds(bonds):
+    '''
+    removes duplicates from at1 at2 1.324, at2 at1 1.324
+    '''
+    #keys = set()
+    new_bonds = [] #(dict([(pair[0], pair) for pair in reversed(bonds)]).values())
+    pairs = []
+    for k in bonds:
+        pairs.append((k[0], k[1]))
+        if (k[1], k[0]) in pairs:
+            continue
+        new_bonds.append(k)
+    return new_bonds
+
+
+
+
         
-        '''
-        def __init__(self):
-            pass
     
-
 class Adjacency_Matrix():
     '''
     returns an adjacence matrix for all atoms in the .lst file.
@@ -290,130 +386,19 @@ if __name__ == '__main__':
     #dbatoms = gdb.get_atoms_from_fragment(fragment)
     dbhead = gdb.get_head_from_fragment(fragment) 
 
+
+
     lf = ListFile()
     lst_file = lf.read_lst_file()
-    
-    #lfd = Lst_Deviations(lst_file)
-    #lfd.print_deviations()
-        
     fa = FindAtoms(res_list)
     atoms_dict = fa.collect_residues()
     dbatoms = gdb.get_atoms_from_fragment(fragment)
-    dbatoms = [i[0] for i in dbatoms]
-    
     coords = lf.get_coordinates
-    #print(coords['Al1'])
-    
     residue = '4'
     con = Connections(res_list, lst_file, dbhead, dbatoms, '2', residue)
     conntable = con.get_bond_dist()
-    #print(conntable)
-    am = Adjacency_Matrix(conntable, residue)
-    G = am.get_adjmatrix
-    
-
-    print()
-    dfix = []
-    for n,i in G.adjacency_iter():
-        for i, x in i.items():
-            dist=x['1,2-dist']
-            atom1 = n
-            atom2 = i
-            dfix.append((atom1, atom2, dist))
-    
-    
-    #biglist = [keys.add(pair[0]) for pair in dfix if (pair[0], pair[1]) not in keys]
-    #print(biglist)
-    def remove_duplicate_bonds(bonds):
-        '''
-        removes duplicates from at1 at2 1.324, at2 at1 1.324
-        '''
-        #keys = set()
-        new_bonds = [] #(dict([(pair[0], pair) for pair in reversed(bonds)]).values())
-        pairs = []
-        for k in bonds:
-            pairs.append((k[0], k[1]))
-            if (k[1], k[0]) in pairs:
-                continue
-            new_bonds.append(k)
-        return new_bonds
-             
-
-    import networkx as nx
-    def get_neighbors(atoms):
-        neighbors = []
-        for p in atoms:
-            nb = G.neighbors(p[1])
-            try:
-                nb.remove(p[0])
-            except(ValueError):
-                pass
-            except(AttributeError):
-                pass
-            if not nb:
-                pass
-            else:
-                atom1 = p[0]
-                atom2 = nb
-                #print(p)
-                neighbors.append([atom1, atom2])
-                #for i in nb:
-                #    print(nx.shortest_path(G, source=atom1,target=i))
-            #print(neighbors)
-        return(neighbors)
-    
-    print('rtest')
-    
-    nb = get_neighbors(dfix)
-    #print(nb)
-    
-#koordinatenpaare für 1,3    
-    length = len(nb)
-    coordpairs = []
-    #pairs = []
-    for n, item in enumerate(nb):
-        piv = item[0]
-        #if n == length/2:
-        #    break
-        for k in item[1]:
-            #pairs.append((k, piv))
-            #if (piv, k) in pairs:
-            #    continue
-            coordpairs.append((fa.get_atomcoordinates([k]), fa.get_atomcoordinates([piv])))
-
-# bei oc(cf3)3 - 24 1,3-abstände mit Al 25
-
-#abstände 1,3    
-    from resfile import get_cell
-    distpairs_13 = []
-    for at1, at2 in coordpairs:
-        #print(at1, at2)
-        for coord1, coord2 in zip(at1.keys(), at2.keys()):
-            c1 = [ float(i) for i in at1[coord1] ]
-            c2 = [ float(i) for i in at2[coord2] ]
-            atom1 = misc.remove_partsymbol(at1.keys()[0])
-            atom2 = misc.remove_partsymbol(at2.keys()[0])
-            distpairs_13.append((atom1, atom2, misc.at_distance(c1, c2, get_cell(res_list))))
-    
-    distpairs_13 = remove_duplicate_bonds(distpairs_13)
-              
-    for n, i in enumerate(distpairs_13, 1):
-        print('DANG {:6} {:6} {:.4f} {}'.format(i[0], i[1], i[2], n))
-    #bei den 1,3 abständen stimmt was nicht.
-    # z.B. die bindung O1_4b C1_4b ist falsch
-    dfix = remove_duplicate_bonds(dfix)
-    print()
-    for n, i in enumerate(dfix, 1):
-        print('DFIX {:7}{:7}{:.4f} {}'.format(misc.remove_partsymbol(i[0]), misc.remove_partsymbol(i[1]), i[2], n))    
-    
-    #for i in nb:
-    #    print(G.neighbors(i))
-    
-    
-#    for n,nbrs in AM.adjacency_iter():
-#        for nbr,eattr in nbrs.items():
-#            dist=eattr['weight']
-#            #if dist<1.1: print('{}, {}, {:.3f})'.format(n,nbr,dist))
-    #print(G.neighbors('Al1'))
-    #dist='weight'
-    #print(G.edge['C1']['C2'][dist])
+    re = Restraints(conntable, residue, res_list)
+    dfixes = re.get_formated_12_dfixes
+    dfixes_13 = re.get_formated_13_dfixes
+    print(''.join(dfixes))
+    print(''.join(dfixes_13))

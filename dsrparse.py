@@ -148,6 +148,7 @@ class DSR_Parser():
                 print('\nNo "WITH" or "ON" statement in the dsr command line found!')
                 sys.exit()
 
+
     def parse_dsr_line(self):
         '''returns the different parameters from the dsr command as dict
         It needs find_commands() and find_atoms() to parse the line.
@@ -167,9 +168,9 @@ class DSR_Parser():
         # Source and target atoms:
         # In paerenteses are one start und one to multiple stop conditions:
         source = self.find_atoms('WITH', 'ON')
-        target = self.find_atoms('ON', 'PART', 'OCC', 'RESI', '')
+        target = self.find_atoms('ON', 'PART', 'OCC', 'RESI', 'DFIX', '')
         if 'RESI' in self.__dsr:
-            residue = self.find_atoms('RESI', 'PART', 'OCC', 'RESI', '')
+            residue = self.find_atoms('RESI', 'PART', 'OCC', 'RESI', 'DFIX', '')
             # RESI is True but no residue returns -> only RESI in command line
             # hence, return that we at least want residues from the db
             if not residue:
@@ -182,6 +183,7 @@ class DSR_Parser():
             'source': source, 
             'target': target,
             'part': self.find_commands('PART'),
+            'dfix': self.find_commands('DFIX'),
             'occupancy': self.find_commands('OCC'), 
             'resi': residue
             };
@@ -211,6 +213,10 @@ class DSR_Parser():
     @property
     def resi(self):
         self.parse_dsr_line()['resi']
+    
+    @property
+    def dfix(self):
+        self.parse_dsr_line()['dfix']
     
     @property
     def source(self):
