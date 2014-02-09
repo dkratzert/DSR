@@ -180,6 +180,9 @@ class DSR_Parser():
         dfix = False
         if 'DFIX' in self.__dsr:
             dfix = True
+            if dfix and not residue:
+                print('The DFIX command is allowed only in combination with RESI.')
+                sys.exit()
         dsr_dict = {
             'command': str(command),
             'fragment': str(fragment),
