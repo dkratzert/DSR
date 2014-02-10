@@ -18,7 +18,7 @@ import constants
 import textwrap
 
 
-__metaclass__ = type  # use new-style classes
+__metaclass__ = type  # use new-style classes 
 
 class DSR_Parser():
     '''
@@ -94,6 +94,9 @@ class DSR_Parser():
                # dsr_list.insert(0, 'rem') # comment out the old line
                 txt = ' '.join(dsr_list)
                 dsrlines = '\n'.join(textwrap.wrap(txt, 75, initial_indent='rem ', subsequent_indent = 'rem ')) # wrap the line after 75 chars
+                if len(dsrlines) > 1:
+                    dsrlines[0] = dsrlines[0]+' ='
+                dsrlines = '\n'.join(dsrlines) 
                 dsrlines = dsrlines+'\n\n'
                 self.__reslist[indexnum[0]] = '' # delete old line
                 self.__reslist.insert(indexnum[0]+1, dsrlines)
