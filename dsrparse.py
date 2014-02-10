@@ -80,7 +80,10 @@ class DSR_Parser():
                 #        print 'Error in DSR command line: Wrapped line with empty next line.'
                 #        sys.exit()
                 # wrap the line after 75 chars:
-                dsrlines = '\n'.join(textwrap.wrap(txt, 75, initial_indent='rem ', subsequent_indent = 'rem ')) 
+                dsrlines = textwrap.wrap(txt, 75, initial_indent='rem ', subsequent_indent = 'rem ')
+                if len(dsrlines) > 1:
+                    dsrlines[0] = dsrlines[0]+' ='
+                dsrlines = '\n'.join(dsrlines) 
                 dsrlines = dsrlines+'\n\n'
                 self.__reslist[indexnum[0]] = '' # delete old line
                 self.__reslist[indexnum[0]+1] = '' # delete old line
