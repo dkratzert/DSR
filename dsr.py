@@ -54,6 +54,8 @@ from atomhandling import NumberScheme
 # -add SIMU and RIGU after Grade import
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 # -check atoms bond valency after fit to decide if fit was sucessful.
+# -DIFX in combination with Bonds to symmetry equivalent Bonds do not work at the moment. 
+#  Solution: Ignore Bonds to symmetry equivalents? Incorporate them?
 
 
 VERSION = '1.3.0'
