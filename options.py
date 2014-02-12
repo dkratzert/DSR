@@ -88,7 +88,7 @@ class OptionsParser():
         +'\n'+self.progname
         +'\nExample DSR res-file command line:\n'
         +'\nREM DSR PUT/REPLACE "Fragment" WITH C1 C2 C3 ON Q1 Q2 Q3 PART 1 OCC 21.0 ='
-        +'\n  RESI 1 BENZ\n'
+        +'\n  RESI 1 BENZ DFIX\n'
         +sep_line
         +'   PUT:     Just put the fragment source atoms here.\n'
         +'   REPLACE: Replace existing target atoms or q-peaks.'
