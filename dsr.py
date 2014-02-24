@@ -173,7 +173,6 @@ def go_refine(shx):
 def generate_dfix_restraints(lf, 
                         reslist, 
                         fragment, 
-                        dbhead, 
                         dbatoms, 
                         residue,
                         part=''):
@@ -187,7 +186,7 @@ def generate_dfix_restraints(lf,
     #dbatoms = gdb.get_atoms_from_fragment(fragment)
     lst_file = lf.read_lst_file()
     coords = lf.get_coordinates
-    con = Connections(reslist, lst_file, dbhead, dbatoms, part, residue)
+    con = Connections(reslist, lst_file, dbatoms, part, residue)
     conntable = con.get_bond_dists()
     re = Restraints(conntable, residue, reslist, fa, coords)
     dfixes = re.get_formated_12_dfixes
@@ -330,7 +329,6 @@ def main():
         dfix = generate_dfix_restraints(lf, 
                                 reslist, 
                                 fragment, 
-                                dbhead, 
                                 dbatoms, 
                                 resinumber, 
                                 dsr_dict.get('part'))
@@ -347,7 +345,9 @@ def main():
             
     if not options.no_refine:
         rl.write_resfile(reslist, '.res')
-
+    
+    print('\nDSR run complete.')
+    
 if __name__ == '__main__':
     '''main function'''
     

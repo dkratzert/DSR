@@ -21,6 +21,13 @@ alphabet = [ i for i in string.ascii_lowercase ]
 from dbfile import global_DB
 import networkx as nx
 
+# -read list file
+# -get connectivities
+
+
+
+
+
 # note: parts    1, 2, 3 are _a, _b, _c
 # note: residue number 1, 2, 3 are _1, _2, _3
 # number first, then part
@@ -250,13 +257,11 @@ class Connections():
     def __init__(self, 
                 reslist,   # resfile
                 listfile,  # listfile
-                dbhead,    # header of dbentry
                 atoms,     # atom names for which connections in the list file should be found
                 part,      # part number as string
                 residue):  # residue number as string
         self._reslist = reslist
         self._listfile = listfile
-        self._dbhead = dbhead
         self._pivot_regex = r'^.*Distance\s+Angles'
         self.atoms = [i[0] for i in atoms]
         if residue:
@@ -273,6 +278,8 @@ class Connections():
             self._numpart = '_'+self._resinum+self._partsymbol
         else:
             self._numpart = ''
+        # add the _'num''partsymbol' to each atom to be able to find them in the
+        # list file:
         self._atomnames = [i+self._numpart for i in self.atoms]
 #        print(self._atomnames)
     
@@ -381,7 +388,7 @@ if __name__ == '__main__':
     
     gdb = global_DB()
     #dbatoms = gdb.get_atoms_from_fragment(fragment)
-    dbhead = gdb.get_head_from_fragment(fragment) 
+    #dbhead = gdb.get_head_from_fragment(fragment) 
 
 
 
@@ -392,7 +399,7 @@ if __name__ == '__main__':
     dbatoms = gdb.get_atoms_from_fragment(fragment)
     coords = lf.get_coordinates
     residue = ''
-    con = Connections(res_list, lst_file, dbhead, dbatoms, '2', residue)
+    con = Connections(res_list, lst_file, dbatoms, '2', residue)
     conntable = con.get_bond_dists()
     re = Restraints(conntable, residue, res_list, fa, coords)
     dfixes = re.get_formated_12_dfixes
