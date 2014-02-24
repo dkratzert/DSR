@@ -35,12 +35,29 @@ import networkx as nx
 
 __metaclass__ = type  # use new-style classes
 
+
+def remove_duplicate_bonds(bonds):
+    '''
+    removes duplicates from at1 at2 1.324, at2 at1 1.324
+    '''
+    #keys = set()
+    new_bonds = [] #(dict([(pair[0], pair) for pair in reversed(bonds)]).values())
+    pairs = []
+    for k in bonds:
+        pairs.append((k[0], k[1]))
+        if (k[1], k[0]) in pairs:
+            continue
+        new_bonds.append(k)
+    return new_bonds
+
+
 class ListFile():
     def __init__(self, basefilename):
         self._listfile = basefilename+'.lst'
         self._coord_regex = r'^\s+ATOM\s+x\s+y\s+z'
         self._conntable_regex = r'^.*radii and connectivity'
         self._listfile_list = self.read_lst_file()
+        self._single_atom = None
         
     def read_lst_file(self):
         '''
@@ -66,29 +83,10 @@ class ListFile():
         return listfile
     
     
-    def coordinates(self):
-        '''
-        reads the atom coordinates of the lst-file
-        returns a dictionary with {'atom' : ['x', 'y', 'z']}
-        '''
-        atom_coords = {}
-        start_line = int(misc.find_line(self._listfile_list, self._coord_regex))+2
-        #print(listfile)
-        num = 0
-        for line in self._listfile_list[start_line:]:
-            line = line.split()
-            try:
-                line[0]
-            except(IndexError):
-                break
-            atom = {str(line[0]): line[1:4]}
-            atom_coords.update(atom)
-        return atom_coords
-       
-    
     def read_conntable(self):
         '''
         reads the conntable from self._listfile_list
+        returns a list of all atompairs
         '''
         # find the start of the conntable
         start_line = misc.find_line(self._listfile_list, self._conntable_regex)
@@ -116,54 +114,127 @@ class ListFile():
         return connpairs
 
 
-    @property
-    def get_coordinates(self):
+    def coordinates(self):
         '''
-        return the coordinates as property
+        reads the atom coordinates of the lst-file
+        returns a dictionary with {'atom' : ['x', 'y', 'z']}
+        '''
+        atom_coords = {}
+        start_line = int(misc.find_line(self._listfile_list, self._coord_regex))+2
+        #print(listfile)
+        num = 0
+        for line in self._listfile_list[start_line:]:
+            line = line.split()
+            try:
+                line[0]
+            except(IndexError):
+                break
+            atom = {str(line[0]): line[1:4]}
+            atom_coords.update(atom)
+        return atom_coords
+
+
+    @property
+    def get_all_coordinates(self):
+        '''
+        return all atom coordinates as property {'atom' : ['x', 'y', 'z'], 'atom2' : [...]}
         '''
         return self.coordinates()
 
+
+    @property
+    def get_single_coordinate(self):
+        '''
+        return the coordinates of a single atom as ['x', 'y', 'z']
+        '''
+        coord = self.coordinates()
+        try:
+            return coord[self._single_atom]
+        except(KeyError):
+            return None
+
+    @get_single_coordinate.setter
+    def single_atom(self, atom):
+        self._single_atom = atom
+
+
+    
+   # @property
+   # def get_conntable(self):
+   #     '''
+   #     return the 1,2-atomconnections as atompairs
+   #     '''
+        
+
+
+class Connections():
+    '''
+    This class parses the shelx .lst file after L.S. 0 refinement and
+    puts all 1,2-bonds in a data structure.
+    ''' 
+    def __init__(self, 
+                listfile,  # listfile
+                atoms,     # atom names for which connections in the list file should be found
+                part,      # part number as string
+                residue):  # residue number as string
+        self._listfile = listfile
+        self._pivot_regex = r'^.*Distance\s+Angles'
+        self.atoms = [i[0] for i in atoms]
+        if residue:
+            self._resinum = residue
+        else:
+            self._resinum = ''
+            self._atomnames_resi = self.atoms
+        if part:
+            self._part = part
+            self._partsymbol = alphabet[int(self._part)-1] # turns part number into a letter
+        else:
+            self._partsymbol = ''
+        if self._resinum and self._partsymbol:
+            self._numpart = '_'+self._resinum+self._partsymbol
+        else:
+            self._numpart = ''
+        # add the _'num''partsymbol' to each atom to be able to find them in the
+        # list file:
+        self._atomnames = [i+self._numpart for i in self.atoms]
+#        print(self._atomnames)
     
     @property
-    def get_conntable(self):
-        '''
-        return the 1,2-atomconnections as atompairs
-        '''
-        
+    def get_numpart(self):
+        return self._numpart
     
-class Lst_Deviations():
-    '''
-    reads the deviations of the fitted group from the lst-file
-    '''
-    def __init__(self, lst_file):
-        self._lst_file = lst_file
-        self._dev = self.find_deviations()
-
-    def find_deviations(self):
+  
+    def get_bond_dists(self):
         '''
-        parses the deviations of the fitted group and
-        returns a dictionary with the results:
-        {'C3': '11.773', 'C2': '7.667', 'C1': '8.761', 'C4': '5.700'}
+        returns a list of connections for each atom in the fragment:
+        ['C1, 'C2' {'1,2-dist': distance}, 'O1, 'Al1' {'1,2-dist': distance}]
+        each value is a set of pairs wit name and distance.
         '''
-        regex = re.compile(r'^\s+\*\*\s+Atom.*deviates\sby')
-        deviations = {}
-        for line in self._lst_file:
-            if regex.match(line):
-                line = line.split()
-                deviations[line[2]] = line[5]
-        return deviations
+        # lines is a list where self._pivot_regex is found
+        lines = misc.find_multi_lines(self._listfile, self._pivot_regex)
+        atomconnections = []
+        for num in lines:
+            atname = self._listfile[num].split()[0] #atom1
+            for atom in self._atomnames:
+                if atom in self._listfile[num]:
+                    bond = []
+                    for i in range(1, 10): # maximum number of connections for each atom
+                        row = self._listfile[num+i].split()
+                        try:
+                            atname_connect = row[0] #bonded atom
+                            distance = row[1]
+                            if distance == '-':
+                                break
+                            bond = [atname, atname_connect, {'1,2-dist':float(distance)}]
+                            atomconnections.append(tuple(bond))
+                        except(IndexError):
+                            continue
+                    break
+        #print(atomconnections)
+        return atomconnections
 
     
-    def print_deviations(self):
-        '''
-        pretty output of the deviations
-        '''
-        if self._dev:
-            print('\n Fragment fit might have failed.')
-            print(' Deviations on fitting group:')
-            for i in self._dev:
-                print(' {:<4}: {:>5} A'.format(i.strip(' \n\r'), self._dev[i][:4]))
-        #print('\n')
+
     
 
 
@@ -286,92 +357,14 @@ class Restraints():
         
         
 
-class Connections():
-    '''
-    This class parses the shelx .lst file after L.S. 0 refinement and
-    puts all 1,2-bonds in a data structure.
-    ''' 
-    def __init__(self, 
-                reslist,   # resfile
-                listfile,  # listfile
-                atoms,     # atom names for which connections in the list file should be found
-                part,      # part number as string
-                residue):  # residue number as string
-        self._reslist = reslist
-        self._listfile = listfile
-        self._pivot_regex = r'^.*Distance\s+Angles'
-        self.atoms = [i[0] for i in atoms]
-        if residue:
-            self._resinum = residue
-        else:
-            self._resinum = ''
-            self._atomnames_resi = self.atoms
-        if part:
-            self._part = part
-            self._partsymbol = alphabet[int(self._part)-1] # turns part number into a letter
-        else:
-            self._partsymbol = ''
-        if self._resinum and self._partsymbol:
-            self._numpart = '_'+self._resinum+self._partsymbol
-        else:
-            self._numpart = ''
-        # add the _'num''partsymbol' to each atom to be able to find them in the
-        # list file:
-        self._atomnames = [i+self._numpart for i in self.atoms]
-#        print(self._atomnames)
-    
-    @property
-    def get_numpart(self):
-        return self._numpart
-    
-  
-    def get_bond_dists(self):
-        '''
-        returns a list of connections for each atom in the fragment:
-        ['C1, 'C2' {'1,2-dist': distance}, 'O1, 'Al1' {'1,2-dist': distance}]
-        each value is a set of pairs wit name and distance.
-        '''
-        # lines is a list where self._pivot_regex is found
-        lines = misc.find_multi_lines(self._listfile, self._pivot_regex)
-        atomconnections = []
-        for num in lines:
-            atname = self._listfile[num].split()[0] #atom1
-            for atom in self._atomnames:
-                if atom in self._listfile[num]:
-                    bond = []
-                    for i in range(1, 10): # maximum number of connections for each atom
-                        row = self._listfile[num+i].split()
-                        try:
-                            atname_connect = row[0] #bonded atom
-                            distance = row[1]
-                            if distance == '-':
-                                break
-                            bond = [atname, atname_connect, {'1,2-dist':float(distance)}]
-                            atomconnections.append(tuple(bond))
-                        except(IndexError):
-                            continue
-                    break
-        #print(atomconnections)
-        return atomconnections
+
     
     
 
 
 
 
-def remove_duplicate_bonds(bonds):
-    '''
-    removes duplicates from at1 at2 1.324, at2 at1 1.324
-    '''
-    #keys = set()
-    new_bonds = [] #(dict([(pair[0], pair) for pair in reversed(bonds)]).values())
-    pairs = []
-    for k in bonds:
-        pairs.append((k[0], k[1]))
-        if (k[1], k[0]) in pairs:
-            continue
-        new_bonds.append(k)
-    return new_bonds
+
 
 
 
@@ -411,6 +404,43 @@ class Adjacency_Matrix():
         return self.build_adjacency_matrix
 
 
+
+class Lst_Deviations():
+    '''
+    reads the deviations of the fitted group from the lst-file
+    '''
+    def __init__(self, lst_file):
+        self._lst_file = lst_file
+        self._dev = self.find_deviations()
+
+    def find_deviations(self):
+        '''
+        parses the deviations of the fitted group and
+        returns a dictionary with the results:
+        {'C3': '11.773', 'C2': '7.667', 'C1': '8.761', 'C4': '5.700'}
+        '''
+        regex = re.compile(r'^\s+\*\*\s+Atom.*deviates\sby')
+        deviations = {}
+        for line in self._lst_file:
+            if regex.match(line):
+                line = line.split()
+                deviations[line[2]] = line[5]
+        return deviations
+
+    
+    def print_deviations(self):
+        '''
+        pretty output of the deviations
+        '''
+        if self._dev:
+            print('\n Fragment fit might have failed.')
+            print(' Deviations on fitting group:')
+            for i in self._dev:
+                print(' {:<4}: {:>5} A'.format(i.strip(' \n\r'), self._dev[i][:4]))
+        #print('\n')
+
+
+
 if __name__ == '__main__':
 
     
@@ -433,13 +463,15 @@ if __name__ == '__main__':
 
     lf = ListFile(basefilename)
     lst_file = lf.read_lst_file()
-    print(lf.read_conntable())
+    #print(lf.read_conntable())
     fa = FindAtoms(res_list)
     atoms_dict = fa.collect_residues()
     dbatoms = gdb.get_atoms_from_fragment(fragment)
-    coords = lf.get_coordinates
+    coords = lf.get_all_coordinates
+    lf.single_atom = 'O1_4b'
+    print(lf.get_single_coordinate)
     residue = ''
-    con = Connections(res_list, lst_file, dbatoms, '4', residue)
+    con = Connections(lst_file, dbatoms, '4', residue)
     conntable = con.get_bond_dists()
     re = Restraints(conntable, residue, res_list, fa, coords)
     dfixes = re.get_formated_12_dfixes
