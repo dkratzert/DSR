@@ -185,7 +185,7 @@ def generate_dfix_restraints(lf,
     #dbatoms = gdb.get_atoms_from_fragment(fragment)
     lst_file = lf.read_lst_file()
     coords = lf.get_coordinates
-    con = Connections(reslist, lst_file, dbatoms, part, residue)
+    con = Connections(lst_file, dbatoms, part, residue)
     conntable = con.get_bond_dists()
     re = Restraints(conntable, residue, reslist, fa, coords)
     dfixes = re.get_formated_12_dfixes
