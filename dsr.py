@@ -17,7 +17,7 @@ import os
 from dsrparse import DSR_Parser
 from options import OptionsParser
 from dbfile import global_DB, ImportGRADE
-from resfile import ResList, ResListEdit
+from resfile import ResList, ResListEdit, filename_wo_ending
 from atomhandling import SfacTable, get_atomtypes, check_source_target, Elem_2_Sfac
 from atomhandling import FindAtoms
 from afix import InsertAfix
@@ -172,7 +172,6 @@ def go_refine(shx):
 
 def generate_dfix_restraints(lf, 
                         reslist, 
-                        fragment, 
                         dbatoms, 
                         residue,
                         part=''):
@@ -295,7 +294,7 @@ def main():
 
     #############################################################
     ##    write to file:                                       ##
-    basefilename = rl.filename_wo_ending(options.res_file)
+    basefilename = filename_wo_ending(options.res_file)
     shx = ShelxlRefine(reslist, basefilename, find_atoms)
     if not options.no_refine:
         shx.set_refinement_cycles('0')
@@ -310,7 +309,7 @@ def main():
         go_refine(shx)
     
     ### Display the results from the list file:
-    lf = ListFile()
+    lf = ListFile(basefilename)
     lst_file = lf.read_lst_file()
     lfd = Lst_Deviations(lst_file)
     lfd.print_deviations()
@@ -328,7 +327,6 @@ def main():
         resinumber = resi.get_resinumber
         dfix = generate_dfix_restraints(lf, 
                                 reslist, 
-                                fragment, 
                                 dbatoms, 
                                 resinumber, 
                                 dsr_dict.get('part'))
@@ -336,11 +334,11 @@ def main():
             for n, line in enumerate(reslist):
                 if line.upper().startswith('RESI'):
                     if line.split()[1] == str(resinumber):
-                        line = '{} \n{}'.format(line, dfix)
+                        line = '{} \n{}'.format(line, dfix) # insert restraints after residue definition
                         reslist[n] = line
         else:
             line = ''
-            line = '{} \n{}'.format(line, dfix)
+            line = '{} \n{}'.format(line, dfix) # insert restraints after dsrline
             reslist[dsrline] = line
             
     if not options.no_refine:

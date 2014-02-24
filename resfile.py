@@ -35,25 +35,26 @@ def get_cell(res_list):
         sys.exit()
     return cell
 
+
+def filename_wo_ending(resfilename):
+    '''returns the input file name without ending'''
+    file_ext = ''
+    try:
+        file_ext = os.path.splitext(resfilename)
+        basefile = file_ext[0]
+        if file_ext[1] != '.res':
+            print("Please give a res-file name as argument!")
+            sys.exit(0)
+    except(AttributeError): 
+        basefile = ''
+    return str(basefile)
+
+
 class ResList():
     '''Reads and writes the res-file as list data structure'''
     def __init__(self, res_file):
         self.__resfilename = res_file
-        self.__basefile = self.filename_wo_ending(self.__resfilename)
-
-
-    def filename_wo_ending(self, resfilename):
-        '''returns the input file name without ending'''
-        file_ext = ''
-        try:
-            file_ext = os.path.splitext(resfilename)
-            basefile = file_ext[0]
-            if file_ext[1] != '.res':
-                print("Please give a res-file name as argument!")
-                sys.exit(0)
-        except(AttributeError): 
-            basefile = ''
-        return str(basefile)
+        self.__basefile = filename_wo_ending(self.__resfilename)
 
     
     def get_res_list(self):

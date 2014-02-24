@@ -36,11 +36,10 @@ import networkx as nx
 __metaclass__ = type  # use new-style classes
 
 class ListFile():
-    def __init__(self):
-        options = OptionsParser()
-        rl = ResList(options.res_file)
-        self._listfile = str(rl.filename_wo_ending(options.res_file))+'.lst'
+    def __init__(self, basefilename):
+        self._listfile = basefilename+'.lst'
         self._coord_regex = r'^\s+ATOM\s+x\s+y\s+z'
+        self._conntable_regex = r'^.*radii and connectivity'
         self._listfile_list = self.read_lst_file()
         
     def read_lst_file(self):
@@ -70,6 +69,7 @@ class ListFile():
     def coordinates(self):
         '''
         reads the atom coordinates of the lst-file
+        returns a dictionary with {'atom' : ['x', 'y', 'z']}
         '''
         atom_coords = {}
         start_line = int(misc.find_line(self._listfile_list, self._coord_regex))+2
@@ -85,13 +85,50 @@ class ListFile():
             atom_coords.update(atom)
         return atom_coords
        
-        
+    
+    def read_conntable(self):
+        '''
+        reads the conntable from self._listfile_list
+        '''
+        # find the start of the conntable
+        start_line = misc.find_line(self._listfile_list, self._conntable_regex)
+        if start_line:
+            for num, line in enumerate(self._listfile_list[start_line:]):
+                line = line.split()
+                # find the end of covalent radii
+                if not line:
+                    start_line = num+start_line+1
+                    break
+        connpairs = []
+        connlist = []
+        for i in self._listfile_list[start_line:]:
+            line = i.split()
+            if not line:
+                break
+            if 'found' in line:
+                continue
+            #i = i.replace('-', '')
+            connlist.append(i.strip('\n\r ').replace('-', '').split())
+        for i in connlist:
+            atom = i.pop(0)
+            for conatom in i:
+                connpairs.append((atom, conatom))
+        return connpairs
+
+
     @property
     def get_coordinates(self):
         '''
         return the coordinates as property
         '''
         return self.coordinates()
+
+    
+    @property
+    def get_conntable(self):
+        '''
+        return the 1,2-atomconnections as atompairs
+        '''
         
     
 class Lst_Deviations():
@@ -224,7 +261,7 @@ class Restraints():
                 c2 = [ float(i) for i in at2[coord2] ]
                 atom1 = misc.remove_partsymbol(list(at1.keys())[0])
                 atom2 = misc.remove_partsymbol(list(at2.keys())[0])
-                distpairs_13.append((atom1, atom2, misc.at_distance(c1, c2, self.cell)))
+                distpairs_13.append((atom1, atom2, misc.atomic_distance(c1, c2, self.cell)))
         distpairs_13 = remove_duplicate_bonds(distpairs_13)
         return distpairs_13
 
@@ -379,7 +416,9 @@ if __name__ == '__main__':
     
     from dbfile import global_DB
     from atomhandling import FindAtoms
+    from resfile import filename_wo_ending
     options = OptionsParser()
+    basefilename = filename_wo_ending(options.res_file)
     rl = ResList(options.res_file)
     res_list = rl.get_res_list()
     dsrp = DSR_Parser(res_list, rl)
@@ -392,14 +431,15 @@ if __name__ == '__main__':
 
 
 
-    lf = ListFile()
+    lf = ListFile(basefilename)
     lst_file = lf.read_lst_file()
+    print(lf.read_conntable())
     fa = FindAtoms(res_list)
     atoms_dict = fa.collect_residues()
     dbatoms = gdb.get_atoms_from_fragment(fragment)
     coords = lf.get_coordinates
     residue = ''
-    con = Connections(res_list, lst_file, dbatoms, '2', residue)
+    con = Connections(res_list, lst_file, dbatoms, '4', residue)
     conntable = con.get_bond_dists()
     re = Restraints(conntable, residue, res_list, fa, coords)
     dfixes = re.get_formated_12_dfixes

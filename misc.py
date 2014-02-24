@@ -183,7 +183,12 @@ def remove_partsymbol(atom):
     return atom
 
 
-def at_distance(p1, p2, cell): 
+def atomic_distance(p1, p2, cell):
+    '''
+    p1 and p2 are x, y , z coordinates as list ['x', 'y', 'z']
+    cell are the cell parameters as list: ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
+    returns the distance between the two points.
+    ''' 
     from math import cos, sin, sqrt, radians
     cell = [float(y) for y in cell]
     a , b, c =  cell[:3]
