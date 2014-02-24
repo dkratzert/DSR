@@ -277,7 +277,7 @@ class ShelxlRefine():
                 misc.remove_file(self.bakfile)
             except(IOError):
                 print('Unable to delete backup file {}.'.format(self.bakfile))
-            print('\nDSR run complete.')
+            
         
         
         
