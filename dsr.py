@@ -184,8 +184,9 @@ def generate_dfix_restraints(lf,
     atoms_dict = fa.collect_residues()
     #dbatoms = gdb.get_atoms_from_fragment(fragment)
     lst_file = lf.read_lst_file()
-    coords = lf.get_coordinates
-    con = Connections(lst_file, dbatoms, part, residue)
+    coords = lf.get_all_coordinates
+    conlist_atoms = [i[0] for i in dbatoms]
+    con = Connections(lst_file, conlist_atoms, part, residue)
     conntable = con.get_bond_dists()
     re = Restraints(conntable, residue, reslist, fa, coords)
     dfixes = re.get_formated_12_dfixes
