@@ -179,7 +179,7 @@ class Connections():
                 residue):  # residue number as string
         self._listfile = listfile
         self._pivot_regex = r'^.*Distance\s+Angles'
-        self.atoms = [i[0] for i in atoms]
+        self.atoms = atoms
         if residue:
             self._resinum = residue
         else:
@@ -203,9 +203,19 @@ class Connections():
     def get_numpart(self):
         return self._numpart
     
-  
+        
+    def get_12_bond_dists(self):
+        '''
+        returns a list of connections for each atom in the fragment:
+        ['C1, 'C2' {'1,2-dist': distance}, 'O1, 'Al1' {'1,2-dist': distance}]
+        '''
+        
+        
+        
     def get_bond_dists(self):
         '''
+        deprecated
+        
         returns a list of connections for each atom in the fragment:
         ['C1, 'C2' {'1,2-dist': distance}, 'O1, 'Al1' {'1,2-dist': distance}]
         each value is a set of pairs wit name and distance.
@@ -467,11 +477,12 @@ if __name__ == '__main__':
     fa = FindAtoms(res_list)
     atoms_dict = fa.collect_residues()
     dbatoms = gdb.get_atoms_from_fragment(fragment)
+    conlist_atoms = [i[0] for i in dbatoms]
     coords = lf.get_all_coordinates
     lf.single_atom = 'O1_4b'
     print(lf.get_single_coordinate)
     residue = ''
-    con = Connections(lst_file, dbatoms, '4', residue)
+    con = Connections(lst_file, conlist_atoms, '4', residue)
     conntable = con.get_bond_dists()
     re = Restraints(conntable, residue, res_list, fa, coords)
     dfixes = re.get_formated_12_dfixes
