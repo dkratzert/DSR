@@ -25,7 +25,7 @@ from refine import ShelxlRefine
 from resi import Resi
 from misc import get_replace_mode, find_line
 from restraints import ListFile, Lst_Deviations
-from restraints import Connections, Restraints
+from restraints import Restraints
 from atomhandling import NumberScheme
 
 # TODO and ideas:

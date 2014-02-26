@@ -56,9 +56,7 @@ def format_atom_names(atoms, part, resinum):
     needs a list of atoms ['C1', 'C2', 'O1', ..] witg part number and a residue number
     returns a list with atoms like ['C1_4b', 'C2_4b', 'O1_4b', ..]
     '''
-    if resinum:
-        pass
-    else:
+    if not resinum:
         resinum = ''
     if int(part) > 0:
         partsymbol = alphabet[int(part)-1] # turns part number into a letter
@@ -68,12 +66,12 @@ def format_atom_names(atoms, part, resinum):
         numpart = '_'+resinum+partsymbol
     if resinum and not partsymbol:
         numpart = '_'+resinum
-    else:
+    if not resinum and not partsymbol:
         numpart = ''
+#    print(numpart)
     # add the _'num''partsymbol' to each atom to be able to find them in the
     # list file:
     atomnames = [i+numpart for i in atoms]
-    print(atomnames)
     return atomnames
 
 
@@ -155,11 +153,32 @@ class ListFile():
                 line[0]
             except(IndexError):
                 break
-            atom = {str(line[0]): line[1:4]}
+            xyz = line[1:4]
+            xyz = [float(i) for i in xyz]
+            atom = {str(line[0]): xyz}
             atom_coords.update(atom)
         return atom_coords
 
-
+    
+    def get_cell(self):
+        '''
+        Returns the unit cell parameters from the list file as list:
+        ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
+        '''
+        cell = False
+        for line in self._listfile_list:
+            if line.startswith(' CELL'):
+                cell = line.split()[2:]
+                break
+        if not cell:
+            print('Unable to find unit cell parameters in th res file.')
+            sys.exit()
+        return cell
+    
+    @property
+    def get_cell_params(self):
+        return self.get_cell()
+    
     @property
     def get_all_coordinates(self):
         '''
@@ -193,17 +212,32 @@ class Adjacency_Matrix():
     needs atoms with numpart
     '''
     
-    def __init__(self, atoms, conntable, coords):
+    def __init__(self, atoms, conntable, coords, cell):
         self._atoms = atoms
         self._conntable = conntable
-        self._coords
+        self._coords = coords
+        self._cell = cell
+        self.adjmatrix()
         #print(conntable)
         
     def adjmatrix(self):
         '''
+        create a distance matrix for the atom coords
         '''
-        W = ''
-    
+        G=nx.Graph()
+        for i in self._conntable:
+            atom1 = i[0]
+            atom2 = i[1]
+            if atom1 in self._atoms:
+                coord1 = self._coords[atom1]
+                coord2 = self._coords[atom2]
+                dist = misc.atomic_distance(coord1, coord2, self._cell)
+                #print(atom1, atom2, dist)
+                ed = (atom1, atom2)
+                G.add_edge(atom1, atom2, weight=dist)
+        return G
+        #edges = [ (u,v,dist['weight']) for u,v,dist in G.edges(data=True) ]
+        
     
     @property
     def get_adjmatrix(self):
@@ -217,15 +251,14 @@ class Restraints():
     relative distance restraints. 
     Maybe also absolute distance restraints?
     '''
-    def __init__(self, conntable, residue, res_list, fa, coords):
-        from resfile import get_cell
-        self.fa = fa
+    def __init__(self, coords, G, atoms):
         self.coords = coords
-        self.cell = get_cell(res_list)
-        am = Adjacency_Matrix(conntable, residue)
-        self._G = am.get_adjmatrix
-        self.nb = self.get_neighbors(self.get_12_dfixes)
-
+        #print(self.coords['O1_4b'], '####')
+        self._G = G
+        print(''.join(self.get_formated_12_dfixes))
+        self.nb12 = self.get_neighbors(atoms)
+        print(self.get_13_dist())
+        #print(''.join(self.get_formated_13_dfixes))
 
     @property
     def get_12_dfixes(self):
@@ -235,10 +268,11 @@ class Restraints():
         dfix = []
         for n,i in self._G.adjacency_iter():
             for i, x in list(i.items()):
-                dist=x['1,2-dist']
+                dist=x['weight']
                 atom1 = n
                 atom2 = i
                 dfix.append((atom1, atom2, dist))
+        #print(dfix)
         return dfix
     
     
@@ -256,27 +290,14 @@ class Restraints():
     def get_neighbors(self, atoms):
         neighbors = []
         for p in atoms:
-            nb = self._G.neighbors(p[1])
-            try:
-                nb.remove(p[0])
-            except(ValueError):
-                pass
-            except(AttributeError):
-                pass
-            if not nb:
-                pass
-            else:
-                atom1 = p[0]
-                atom2 = nb
-                neighbors.append([atom1, atom2])
-                #for i in nb:
-                #    print(nx.shortest_path(G, source=atom1,target=i))
+            nb = self._G.neighbors(p)
+            atom1 = p
+            neighbors.append([atom1, nb])
+        for i in neighbors:
+            print(i)
         return(neighbors)
     
-    def lst_cooordinate(self, atom):
-        #print(self.coords[atom])
-        return {atom : self.coords[atom]}
-
+    
 
     def get_coordpairs(self, nb):
         '''
@@ -285,12 +306,13 @@ class Restraints():
         coordpairs = []
         for n, item in enumerate(nb):
             piv = item[0]
-            atom1 = [piv]
+            #print(piv)
+            atom1 = piv
             for k in item[1]:
-                atom2 = [k]
-                coordpairs.append((self.fa.get_atomcoordinates(atom2), 
-                                   self.fa.get_atomcoordinates(atom1)))
-        #print(coordpairs)
+                atom2 = k
+                #print(atom2, atom1)
+                coordpairs.append((self.coords[atom2], self.coords[atom1]))
+        print(coordpairs)
         return coordpairs
     
     
@@ -311,11 +333,12 @@ class Restraints():
 
 
     def get_13_dist(self):
-        coordpairs = self.get_coordpairs(self.nb)
+        coordpairs = self.get_coordpairs(self.nb12)
         try:
             dist_13 = self.make_13_dist(coordpairs)
-        except(AttributeError):
+        except(AttributeError), e:
             print('No DFIX restraints could be inserted. Atoms not found.')
+            print(e)
             sys.exit()
         return dist_13
 
@@ -389,9 +412,10 @@ if __name__ == '__main__':
     #atoms_dict = fa.collect_residues()
 
     residue = '4'
-    part = '-1'
+    part = '2'
     
     lf = ListFile(basefilename)
+    cell = lf.get_cell_params
     lst_file = lf.read_lst_file()
     coords = lf.get_all_coordinates
     conntable = lf.read_conntable()
@@ -399,18 +423,19 @@ if __name__ == '__main__':
     dbatoms = gdb.get_atoms_from_fragment(fragment)
     fragment_atoms = [i[0] for i in dbatoms]
     print(fragment_atoms) # atoms in the fragment    
-    format_atom_names(fragment_atoms, part, residue)
-    print(conntable)
-    print(coords)
-    lf.single_atom = 'O1_4b'
-    print(lf.get_single_coordinate)
+    fragment_atoms = format_atom_names(fragment_atoms, part, residue)
+    #print(conntable)
+    #print(coords)
+    #lf.single_atom = 'O1_4b'
+    #print(lf.get_single_coordinate)
     
+    am = Adjacency_Matrix(fragment_atoms, conntable, coords, cell)
     
     #con = Connections(lst_file, conlist_atoms, '2', residue)
     #conntable = con.get_bond_dists()
     #print(conntable) #old conntable
     
-    #re = Restraints(conntable, residue, res_list, fa, coords)
+    re = Restraints(coords, am.get_adjmatrix, fragment_atoms)
     #dfixes = re.get_formated_12_dfixes
     #dfixes_13 = re.get_formated_13_dfixes
     #print(''.join(dfixes))
