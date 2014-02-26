@@ -182,16 +182,14 @@ def generate_dfix_restraints(lf,
     '''
     fa = FindAtoms(reslist)
     atoms_dict = fa.collect_residues()
-    #dbatoms = gdb.get_atoms_from_fragment(fragment)
     lst_file = lf.read_lst_file()
     coords = lf.get_all_coordinates
-    conlist_atoms = [i[0] for i in dbatoms]
-    con = Connections(lst_file, conlist_atoms, part, residue)
-    conntable = con.get_bond_dists()
-    re = Restraints(conntable, residue, reslist, fa, coords)
+    fragment_atoms = [i[0] for i in dbatoms]
+    fragment_atoms = format_atom_names(fragment_atoms, part, residue)
+    am = Adjacency_Matrix(fragment_atoms, conntable, coords, cell)
+    re = Restraints(coords, am.get_adjmatrix, fragment_atoms, cell)
     dfixes = re.get_formated_12_dfixes
     dfixes_13 = re.get_formated_13_dfixes
-    dfixes.extend(dfixes_13)
     return ''.join(dfixes)
 
 
