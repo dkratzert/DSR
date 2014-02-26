@@ -10,23 +10,14 @@
 # ----------------------------------------------------------------------------
 #
 from __future__ import print_function
-import sys, re
+import sys, re, os
 from resfile import ResList
 from options import OptionsParser
 from dsrparse import DSR_Parser
-from resi import Resi
 import string
 import misc
 alphabet = [ i for i in string.ascii_lowercase ]
-from dbfile import global_DB
 import networkx as nx
-
-# -read list file
-# -get connectivities
-
-
-
-
 
 # note: parts    1, 2, 3 are _a, _b, _c
 # note: residue number 1, 2, 3 are _1, _2, _3
@@ -38,7 +29,7 @@ __metaclass__ = type  # use new-style classes
 
 def remove_duplicate_bonds(bonds):
     '''
-    removes duplicates from at1 at2 1.324, at2 at1 1.324
+    removes duplicates from [(at1, at2, 1.324), (at2, at1, 1.324)]
     '''
     #keys = set()
     new_bonds = [] #(dict([(pair[0], pair) for pair in reversed(bonds)]).values())
@@ -51,28 +42,6 @@ def remove_duplicate_bonds(bonds):
     return new_bonds
 
 
-def format_atom_names(atoms, part, resinum):
-    '''
-    needs a list of atoms ['C1', 'C2', 'O1', ..] witg part number and a residue number
-    returns a list with atoms like ['C1_4b', 'C2_4b', 'O1_4b', ..]
-    '''
-    if not resinum:
-        resinum = ''
-    if int(part) > 0:
-        partsymbol = alphabet[int(part)-1] # turns part number into a letter
-    else:
-        partsymbol = ''
-    if resinum and partsymbol:
-        numpart = '_'+resinum+partsymbol
-    if resinum and not partsymbol:
-        numpart = '_'+resinum
-    if not resinum and not partsymbol:
-        numpart = ''
-#    print(numpart)
-    # add the _'num''partsymbol' to each atom to be able to find them in the
-    # list file:
-    atomnames = [i+numpart for i in atoms]
-    return atomnames
 
 
 class ListFile():
@@ -130,7 +99,7 @@ class ListFile():
             if 'found' in line:
                 continue
             #i = i.replace('-', '')
-            connlist.append(i.strip('\n\r ').replace('-', '').split())
+            connlist.append(i.strip(os.linesep).replace('-', '').split())
         for i in connlist:
             atom = i.pop(0)
             for conatom in i:
@@ -140,7 +109,7 @@ class ListFile():
 
     def coordinates(self):
         '''
-        reads the atom coordinates of the lst-file
+        reads all atom coordinates of the lst-file
         returns a dictionary with {'atom' : ['x', 'y', 'z']}
         '''
         atom_coords = {}
@@ -218,7 +187,7 @@ class Adjacency_Matrix():
         self._coords = coords
         self._cell = cell
         self.adjmatrix()
-        #print(conntable)
+
         
     def adjmatrix(self):
         '''
@@ -232,11 +201,8 @@ class Adjacency_Matrix():
                 coord1 = self._coords[atom1]
                 coord2 = self._coords[atom2]
                 dist = misc.atomic_distance(coord1, coord2, self._cell)
-                #print(atom1, atom2, dist)
-                ed = (atom1, atom2)
                 G.add_edge(atom1, atom2, weight=dist)
         return G
-        #edges = [ (u,v,dist['weight']) for u,v,dist in G.edges(data=True) ]
         
     
     @property
@@ -251,14 +217,12 @@ class Restraints():
     relative distance restraints. 
     Maybe also absolute distance restraints?
     '''
-    def __init__(self, coords, G, atoms):
+    def __init__(self, coords, G, atoms, cell):
         self.coords = coords
-        #print(self.coords['O1_4b'], '####')
+        self.atoms = atoms
+        self._cell = cell
         self._G = G
-        print(''.join(self.get_formated_12_dfixes))
-        self.nb12 = self.get_neighbors(atoms)
-        print(self.get_13_dist())
-        #print(''.join(self.get_formated_13_dfixes))
+
 
     @property
     def get_12_dfixes(self):
@@ -272,7 +236,6 @@ class Restraints():
                 atom1 = n
                 atom2 = i
                 dfix.append((atom1, atom2, dist))
-        #print(dfix)
         return dfix
     
     
@@ -288,65 +251,63 @@ class Restraints():
 
 
     def get_neighbors(self, atoms):
+        '''
+        returns the neighbors of the fragment atoms
+        '''
         neighbors = []
         for p in atoms:
             nb = self._G.neighbors(p)
             atom1 = p
             neighbors.append([atom1, nb])
         for i in neighbors:
-            print(i)
+            pass
         return(neighbors)
     
-    
 
-    def get_coordpairs(self, nb):
+    def get_next_neighbors(self):
         '''
-        coordinate pairs for 1,3-distances
+        returns the next-neighbors of the fragment atoms
         '''
-        coordpairs = []
-        for n, item in enumerate(nb):
-            piv = item[0]
-            #print(piv)
-            atom1 = piv
-            for k in item[1]:
-                atom2 = k
-                #print(atom2, atom1)
-                coordpairs.append((self.coords[atom2], self.coords[atom1]))
-        print(coordpairs)
-        return coordpairs
+        nn = []
+        nb12 = self.get_neighbors(self.atoms)
+        for i in nb12:
+            atom1 = i[0]
+            bonded = i[1]
+            try:
+                bonded
+            except(KeyError):
+                continue
+            for n in bonded:
+                nb = self._G.neighbors(n)
+                nb.remove(atom1)
+                if not nb:
+                    continue
+                for at in nb: # nb -> neighbors of n
+                    nn.append((atom1, at))
+        return(nn)
+        
     
-    
-    def make_13_dist(self, coordpairs):
+    def make_13_dist(self, nn):
         '''
         return 1,3-distance as [('at1', 'at2', 'distance'), ('at1', 'at2', 'distance'), ...]
+        needs next neighbors pairs
         '''
-        distpairs_13 = []
-        for at1, at2 in coordpairs:
-            for coord1, coord2 in zip(list(at1.keys()), list(at2.keys())):
-                c1 = [ float(i) for i in at1[coord1] ]
-                c2 = [ float(i) for i in at2[coord2] ]
-                atom1 = misc.remove_partsymbol(list(at1.keys())[0])
-                atom2 = misc.remove_partsymbol(list(at2.keys())[0])
-                distpairs_13.append((atom1, atom2, misc.atomic_distance(c1, c2, self.cell)))
-        distpairs_13 = remove_duplicate_bonds(distpairs_13)
-        return distpairs_13
-
-
-    def get_13_dist(self):
-        coordpairs = self.get_coordpairs(self.nb12)
-        try:
-            dist_13 = self.make_13_dist(coordpairs)
-        except(AttributeError), e:
-            print('No DFIX restraints could be inserted. Atoms not found.')
-            print(e)
-            sys.exit()
+        dist_13 = []
+        for i in nn:
+            atom1 = i[0]
+            atom2 = i[1]
+            c1 = self.coords[atom1]
+            c2 = self.coords[atom2]
+            dist_13.append((atom1, atom2, misc.atomic_distance(c1, c2, self._cell)))
         return dist_13
+
 
     @property
     def get_formated_13_dfixes(self):
-        dfixes_13 = self.get_13_dist()
+        nextneighbors = remove_duplicate_bonds(self.get_next_neighbors())
+        dfixes_13 = self.make_13_dist(nextneighbors)
         dfix_13_format = []
-        for n, i in enumerate(dfixes_13, 1):
+        for i in dfixes_13:
             dfix_13_format.append('DANG {:7}{:7}{:.4f}\n'.format(misc.remove_partsymbol(i[0]), 
                                     misc.remove_partsymbol(i[1]), i[2]))
         return dfix_13_format
@@ -406,11 +367,7 @@ if __name__ == '__main__':
     fragment = 'oc(cf3)3'#dsr_dict['fragment']
     
     gdb = global_DB()
-    #dbatoms = gdb.get_atoms_from_fragment(fragment)
-    #dbhead = gdb.get_head_from_fragment(fragment) 
-    #fa = FindAtoms(res_list)
-    #atoms_dict = fa.collect_residues()
-
+ 
     residue = '4'
     part = '2'
     
@@ -422,21 +379,12 @@ if __name__ == '__main__':
     
     dbatoms = gdb.get_atoms_from_fragment(fragment)
     fragment_atoms = [i[0] for i in dbatoms]
-    print(fragment_atoms) # atoms in the fragment    
     fragment_atoms = format_atom_names(fragment_atoms, part, residue)
-    #print(conntable)
-    #print(coords)
-    #lf.single_atom = 'O1_4b'
-    #print(lf.get_single_coordinate)
     
     am = Adjacency_Matrix(fragment_atoms, conntable, coords, cell)
     
-    #con = Connections(lst_file, conlist_atoms, '2', residue)
-    #conntable = con.get_bond_dists()
-    #print(conntable) #old conntable
-    
-    re = Restraints(coords, am.get_adjmatrix, fragment_atoms)
-    #dfixes = re.get_formated_12_dfixes
-    #dfixes_13 = re.get_formated_13_dfixes
-    #print(''.join(dfixes))
-    #print(''.join(dfixes_13))
+    re = Restraints(coords, am.get_adjmatrix, fragment_atoms, cell)
+    dfixes = re.get_formated_12_dfixes
+    dfixes_13 = re.get_formated_13_dfixes
+    print(''.join(dfixes))
+    print(''.join(dfixes_13))
