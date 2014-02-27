@@ -25,7 +25,7 @@ from refine import ShelxlRefine
 from resi import Resi
 from misc import get_replace_mode, find_line
 from restraints import ListFile, Lst_Deviations
-from restraints import Restraints
+from restraints import Restraints, Adjacency_Matrix
 from atomhandling import NumberScheme
 
 # TODO and ideas:
@@ -174,16 +174,19 @@ def generate_dfix_restraints(lf,
                         reslist, 
                         dbatoms, 
                         residue,
+                        cell,
                         part=''):
     '''
     returns a string of DFIX restraints for all 1,2- and 1,3-Bond distances
     in the current fragment.
     'DFIX at1 at2 distance\n DFIX at1 at2 distance\n ...'
     '''
+    from misc import format_atom_names
     fa = FindAtoms(reslist)
-    atoms_dict = fa.collect_residues()
+    #atoms_dict = fa.collect_residues()
     lst_file = lf.read_lst_file()
     coords = lf.get_all_coordinates
+    conntable = lf.read_conntable()
     fragment_atoms = [i[0] for i in dbatoms]
     fragment_atoms = format_atom_names(fragment_atoms, part, residue)
     am = Adjacency_Matrix(fragment_atoms, conntable, coords, cell)
@@ -312,6 +315,7 @@ def main():
     lst_file = lf.read_lst_file()
     lfd = Lst_Deviations(lst_file)
     lfd.print_deviations()
+    cell = lf.get_cell_params
     
     ### open res file again to restore 10 refinement cycles
     rl = ResList(options.res_file)
@@ -327,7 +331,8 @@ def main():
         dfix = generate_dfix_restraints(lf, 
                                 reslist, 
                                 dbatoms, 
-                                resinumber, 
+                                resinumber,
+                                cell,
                                 dsr_dict.get('part'))
         if resinumber:
             for n, line in enumerate(reslist):
