@@ -29,7 +29,7 @@ from restraints import Restraints, Adjacency_Matrix
 from atomhandling import NumberScheme
 
 # TODO and ideas:
-# -do not overwrite user-db with linux rpm, deb packages.
+# -check for residues with same class and differing atom names inside.
 # -To the manual: Avogradro/res-file -> rename -> mercury -> mol2-file -> GRADE
 # -To manual: what to do if something does not work.
 # -more detailed comments for grade imports:
@@ -47,18 +47,16 @@ from atomhandling import NumberScheme
 # -use +filename.dfix for restraints.
 # -If second part of a disordered atom is very close to the first, make EADP?
 # -If e.g. OCC in dsrline and index(OCC)+1 != ' ', then dsrline.insert(' ', index(OCC)+1)
-# -check for residues with same class and differing atom names inside.
 # -should I make rem dsr IMPORT from Atom1 to Atom2 ?
 #  with or without their restraints?
 # -detect empty residues and parts after atom deletion
 # -add SIMU and RIGU after Grade import
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 # -check atoms bond valency after fit to decide if fit was sucessful.
-# -DIFX in combination with Bonds to symmetry equivalent Bonds do not work at the moment. 
-#  Solution: Ignore Bonds to symmetry equivalents (Filter out all Bonds to atoms with $)? Or recognize them?
 
 
-VERSION = '1.3.0'
+
+VERSION = '1.3.1'
 progname = '\n----------------------------- D S R - v{} ----------------------------------'.format(VERSION)
 
 def export_fragment(options):
