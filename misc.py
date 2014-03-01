@@ -166,7 +166,10 @@ def matrix_mult(matrix1,matrix2):
             for j in range(len(matrix2[0])):
                 for k in range(len(matrix2)):
                     new_matrix[i][j] += matrix1[i][k]*matrix2[k][j]
-        return new_matrix
+    return new_matrix
+
+
+
 
 
 def format_atom_names(atoms, part, resinum):
@@ -233,35 +236,23 @@ def atomic_distance(p1, p2, cell):
 
 def frac_to_cart(frac_coord, cell):
     '''
-    Returns an array of catesian coordinates
+    Converts fractional coordinates to cartesian coodinates
     '''
-    import math as np
-    from math import cos, sin, sqrt
-        
-    cell = [float(y) for y in cell]
+    from math import cos, sin, sqrt, radians
     a, b, c, alpha, beta, gamma = cell
-    frac_coord = [float(x) for x in frac_coord]
-    # convert to radians
-    alpha = np.radians(alpha)
-    beta  = np.radians(beta)
-    gamma = np.radians(gamma)
+    x, y, z = frac_coord
+    alpha = radians(alpha)
+    beta  = radians(beta)
+    gamma = radians(gamma)
     
-    # cell volume
- 
-    v = sqrt(1.0-cos(alpha)**2-cos(beta)**2-cos(gamma)**2+2*cos(alpha)*cos(beta)*cos(gamma))
- 
-    tmat = ( [
-      [ a  , b*cos(gamma), c*cos(beta)                                       ],
-      [ 0.0, b*sin(gamma), c*((cos(alpha)-cos(beta)*cos(gamma))/sin(gamma))  ],
-      [ 0.0, 0.0         , c*(v/sin(gamma))                                  ]]
-      )
+    cosastar = (cos(beta)*cos(gamma)-cos(alpha))/(sin(beta)*sin(gamma))
+    sinastar = sqrt(1-cosastar**2)
     
-    cart_coords = matrix_mult([frac_coord], tmat)
-    cart_coords = cart_coords[0]
-    cart_coords = ['{:.7f}'.format(i) for i in cart_coords]
-    return cart_coords
-
-
+    Xc = a*x + (b*cos(gamma))*y + (c*cos(beta))*z
+    Yc = 0   + (b*sin(gamma))*y + (-c*sin(beta)*cosastar)*z
+    Zc = 0   +  0               + (c*sin(beta)*sinastar)*z
+    return (Xc, Yc, Zc)
+    
 
 if __name__ == '__main__':
     from options import OptionsParser 
@@ -289,12 +280,17 @@ if __name__ == '__main__':
     print('multiline?', multiline_test(reslist[24]))
     
     cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
-    coord1 = (0.425895, 0.630971, 0.290285)
-    coord2 = (0.380809, 0.569642, 0.277486)
-    # 1.3853 A
+    cell90 = (1, 1, 1, 90, 90, 90)
+    cell90 = [ float(i) for i in cell90 ]
+    coord1 = (-0.186843,   0.282708,   0.526803) # C5
+    #                                              -2.741   5.912  10.774
+    coord2 = (-0.155278,   0.264593,   0.600644) # C7
+    # 1.573 A                                      -2.520   5.533  12.289
     
     N1 = frac_to_cart(coord1, cell)
     N2 = frac_to_cart(coord2, cell)
+    print(N1, '-2.741   5.912  10.774')
+    print(N2, '-2.520   5.533  12.289')
     x1 = float(N1[0])
     y1 = float(N1[1])
     z1 = float(N1[2])
@@ -304,10 +300,12 @@ if __name__ == '__main__':
     z2 = float(N2[2])
     
     d = m.sqrt((x1-x2)**2+(y1-y2)**2+(z1-z2)**2)
-    print('distance:', round(d, 4))
-    # 1.3853 A
-    print('dist2:', round(at_distance(coord1, coord2, cell), 4))
     
-    coo = frac_to_cart((0.312, 0.37, 0.754), (18.1, 19.3, 20.4, 90, 97, 90))
+    print('\ndist_frac_to_cart           : {:.3f}'.format(d))
+    print('dist_frac_to_cart_atomicdist: {:.3f}'.format(atomic_distance(N1, N2, cell90)))
+    print('atomicdist_direct:          : {:.3f}'.format(atomic_distance(coord1, coord2, cell)))
+    print('korrekte dist:              : 1.573 A\n')
+    
+    coo = frac_to_cart((0.312, 0.37, 0.754), (10.5086, 20.9035, 20.5072, 90, 94.13, 90))
     #print coo
     print('{:8.6} {:8.6} {:8.6}'.format(*coo), 'neue koordianten')
