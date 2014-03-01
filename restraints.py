@@ -16,7 +16,8 @@ from options import OptionsParser
 from dsrparse import DSR_Parser
 import string
 import misc
-alphabet = [ i for i in string.ascii_lowercase ]
+# all upper case for case insensitivity:
+alphabet = [ i for i in string.ascii_uppercase ]
 import networkx as nx
 
 # note: parts    1, 2, 3 are _a, _b, _c
@@ -41,6 +42,30 @@ def remove_duplicate_bonds(bonds):
         new_bonds.append(k)
     return new_bonds
 
+
+def format_atom_names(atoms, part, resinum):
+    '''
+    needs a list of atoms ['C1', 'C2', 'O1', ..] witg part number and a residue number
+    returns a list with atoms like ['C1_4b', 'C2_4b', 'O1_4b', ..]
+    '''
+    if resinum:
+        pass
+    else:
+        resinum = ''
+    if int(part) > 0:
+        partsymbol = alphabet[int(part)-1] # turns part number into a letter
+    else:
+        partsymbol = ''
+    if resinum and partsymbol:
+        numpart = '_'+resinum+partsymbol
+    if resinum and not partsymbol:
+        numpart = '_'+resinum
+    else:
+        numpart = ''
+    # add the _'num''partsymbol' to each atom to be able to find them in the
+    # list file:
+    atomnames = [i+numpart for i in atoms]
+    return atomnames
 
 
 
@@ -103,6 +128,9 @@ class ListFile():
         for i in connlist:
             atom = i.pop(0)
             for conatom in i:
+                # uppper case for case insensitivity:
+                atom = atom.upper()
+                conatom = conatom.upper()
                 connpairs.append((atom, conatom))
         return connpairs
 
@@ -114,7 +142,6 @@ class ListFile():
         '''
         atom_coords = {}
         start_line = int(misc.find_line(self._listfile_list, self._coord_regex))+2
-        #print(listfile)
         num = 0
         for line in self._listfile_list[start_line:]:
             line = line.split()
@@ -124,7 +151,7 @@ class ListFile():
                 break
             xyz = line[1:4]
             xyz = [float(i) for i in xyz]
-            atom = {str(line[0]): xyz}
+            atom = {str(line[0]).upper(): xyz}
             atom_coords.update(atom)
         return atom_coords
 
@@ -255,12 +282,9 @@ class Restraints():
         returns the neighbors of the fragment atoms
         '''
         neighbors = []
-        for p in atoms:
-            nb = self._G.neighbors(p)
-            atom1 = p
-            neighbors.append([atom1, nb])
-        for i in neighbors:
-            pass
+        for at in atoms:
+            nb = self._G.neighbors(at)
+            neighbors.append([at, nb])
         return(neighbors)
     
 
@@ -348,7 +372,6 @@ class Lst_Deviations():
             print(' Deviations on fitting group:')
             for i in self._dev:
                 print(' {:<4}: {:>5} A'.format(i.strip(' \n\r'), self._dev[i][:4]))
-        #print('\n')
 
 
 
@@ -376,13 +399,12 @@ if __name__ == '__main__':
     lst_file = lf.read_lst_file()
     coords = lf.get_all_coordinates
     conntable = lf.read_conntable()
-    
     dbatoms = gdb.get_atoms_from_fragment(fragment)
     fragment_atoms = [i[0] for i in dbatoms]
-    fragment_atoms = format_atom_names(fragment_atoms, part, residue)
-    
+    fragment_atoms = misc.format_atom_names(fragment_atoms, part, residue)
+    #print(fragment_atoms, conntable, coords, cell)
     am = Adjacency_Matrix(fragment_atoms, conntable, coords, cell)
-    
+    print(am.get_adjmatrix, 'sdrgrsdg')
     re = Restraints(coords, am.get_adjmatrix, fragment_atoms, cell)
     dfixes = re.get_formated_12_dfixes
     dfixes_13 = re.get_formated_13_dfixes
