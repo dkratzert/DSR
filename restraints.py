@@ -103,9 +103,11 @@ class ListFile():
     
     def read_conntable(self):
         '''
-        reads the conntable from self._listfile_list
-        returns a list of all atompairs
+        reads the connectivity table from self._listfile_list
+        returns a list of all bonded atompairs. Symmetry equivalent atoms 
+        are filtered out.
         '''
+        symmeq = False
         # find the start of the conntable
         start_line = misc.find_line(self._listfile_list, self._conntable_regex)
         if start_line:
@@ -123,15 +125,19 @@ class ListFile():
                 break
             if 'found' in line:
                 continue
-            #i = i.replace('-', '')
             connlist.append(i.strip(os.linesep).replace('-', '').split())
         for i in connlist:
             atom = i.pop(0)
             for conatom in i:
+                if '$' in conatom:
+                    symmeq = True
+                    continue
                 # uppper case for case insensitivity:
                 atom = atom.upper()
                 conatom = conatom.upper()
                 connpairs.append((atom, conatom))
+        if symmeq:
+            print('\nConnections to symmetry equivalent atoms found. \nGenerated DFIX restraints might be nonsense!!')
         return connpairs
 
 
