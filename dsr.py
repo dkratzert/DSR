@@ -24,7 +24,7 @@ from afix import InsertAfix
 from refine import ShelxlRefine
 from resi import Resi
 from misc import get_replace_mode, find_line
-from restraints import ListFile, Lst_Deviations
+from restraints import ListFile, Lst_Deviations, format_atom_names
 from restraints import Restraints, Adjacency_Matrix
 from atomhandling import NumberScheme
 
@@ -183,7 +183,6 @@ def generate_dfix_restraints(lf,
     '''
     from misc import format_atom_names
     fa = FindAtoms(reslist)
-    #atoms_dict = fa.collect_residues()
     lst_file = lf.read_lst_file()
     coords = lf.get_all_coordinates
     conntable = lf.read_conntable()
@@ -191,12 +190,12 @@ def generate_dfix_restraints(lf,
     fragment_atoms = format_atom_names(fragment_atoms, part, residue)
     am = Adjacency_Matrix(fragment_atoms, conntable, coords, cell)
     re = Restraints(coords, am.get_adjmatrix, fragment_atoms, cell)
-    dfixes = re.get_formated_12_dfixes
-    dfixes_13 = re.get_formated_13_dfixes
+    dfixes = re.get_formated_12_dfixes+re.get_formated_13_dfixes
     return ''.join(dfixes)
 
 
 def main(): 
+    
     # options from the commandline options parser
     options = OptionsParser(progname)
     # The database content:
@@ -352,7 +351,11 @@ def main():
     
 if __name__ == '__main__':
     '''main function'''
-    
+    import time
+    time1 = time.clock()
     main()
+    time2 = time.clock()
+    runtime = (time2-time1)
+    print('Runtime: {:>.1} s'.format(runtime))
     
 
