@@ -30,6 +30,7 @@ from atomhandling import NumberScheme
 
 # TODO and ideas:
 # -check for residues with same class and differing atom names inside.
+# -count number of atoms in old and new residues to compare them for error checking.
 # -To the manual: Avogradro/res-file -> rename -> mercury -> mol2-file -> GRADE
 # -To manual: what to do if something does not work.
 # -more detailed comments for grade imports:
