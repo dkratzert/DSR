@@ -244,10 +244,8 @@ def frac_to_cart(frac_coord, cell):
     alpha = radians(alpha)
     beta  = radians(beta)
     gamma = radians(gamma)
-    
     cosastar = (cos(beta)*cos(gamma)-cos(alpha))/(sin(beta)*sin(gamma))
     sinastar = sqrt(1-cosastar**2)
-    
     Xc = a*x + (b*cos(gamma))*y + (c*cos(beta))*z
     Yc = 0   + (b*sin(gamma))*y + (-c*sin(beta)*cosastar)*z
     Zc = 0   +  0               + (c*sin(beta)*sinastar)*z
@@ -289,7 +287,7 @@ if __name__ == '__main__':
     
     N1 = frac_to_cart(coord1, cell)
     N2 = frac_to_cart(coord2, cell)
-    print(N1, '-2.741   5.912  10.774')
+    print(N1, '-2.741   5.912  10.774 must be same')
     print(N2, '-2.520   5.533  12.289')
     x1 = float(N1[0])
     y1 = float(N1[1])
