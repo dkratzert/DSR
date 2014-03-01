@@ -281,9 +281,15 @@ class Restraints():
         '''
         returns the neighbors of the fragment atoms
         '''
+        from networkx import exception
         neighbors = []
+        nb = None
         for at in atoms:
-            nb = self._G.neighbors(at)
+            try:
+                nb = self._G.neighbors(at)
+            except(exception.NetworkXError):
+                print('Unable to find neighboring atom for "{}"'.format(at))
+                #sys.exit()
             neighbors.append([at, nb])
         return(neighbors)
     
@@ -298,9 +304,11 @@ class Restraints():
             atom1 = i[0]
             bonded = i[1]
             try:
-                bonded
-            except(KeyError):
-                continue
+                for n in bonded:
+                    pass
+            except(KeyError, TypeError):
+                print('No atom connections found. DFIX generation not possible! Check your SHELXL listing file.')
+                sys.exit()
             for n in bonded:
                 nb = self._G.neighbors(n)
                 nb.remove(atom1)
@@ -404,7 +412,7 @@ if __name__ == '__main__':
     fragment_atoms = misc.format_atom_names(fragment_atoms, part, residue)
     #print(fragment_atoms, conntable, coords, cell)
     am = Adjacency_Matrix(fragment_atoms, conntable, coords, cell)
-    print(am.get_adjmatrix, 'sdrgrsdg')
+    
     re = Restraints(coords, am.get_adjmatrix, fragment_atoms, cell)
     dfixes = re.get_formated_12_dfixes
     dfixes_13 = re.get_formated_13_dfixes
