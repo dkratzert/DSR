@@ -185,6 +185,8 @@ def format_atom_names(atoms, part, resinum):
         partsymbol = ''
     if resinum and partsymbol:
         numpart = '_'+resinum+partsymbol
+    if not resinum and partsymbol:
+        numpart = '_'+partsymbol
     if resinum and not partsymbol:
         numpart = '_'+resinum
     if not resinum and not partsymbol:
@@ -202,7 +204,10 @@ def remove_partsymbol(atom):
     if '_' in atom:
         prefix = atom.split('_')[0]
         suffix = atom.split('_')[-1].strip(string.ascii_letters)
-        atom = prefix+'_'+suffix
+        if not suffix:
+            atom = prefix
+        else:
+            atom = prefix+'_'+suffix
     else:
         atom = atom+'_0'
     return atom

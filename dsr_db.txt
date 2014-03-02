@@ -1224,7 +1224,7 @@ C8    1     -1.787     0.203     1.433
 </Vanillin>
 
 
-<4-Nitrobenz>
+<p-Toluidin>
 REM Source: GRADE import 
 RESI NBA1 
 DFIX 1.221 0.014 N1 O1
@@ -1275,7 +1275,7 @@ C4     1       1.542     0.785     0.016
 C5     1       1.476    -0.100     1.093
 C6     1       0.402    -0.957     1.256
 C7     1       2.686     1.692    -0.149 
-</4-Nitrobenz>
+</p-Toluidin>
 
 
 <cubane_dicarbox> 

@@ -57,7 +57,8 @@ class InsertAfix(object):
             for num, headline in enumerate(dbhead):
                 headline = headline.strip().split()
                 if headline == resline and headline[0][:4] in constants.RESTRAINT_CARDS:
-                    newhead[num] = ''
+                    # remove the restraint:
+                    newhead[num] = '' #'rem '+newhead[num]
                     modified = True
                     break
         if modified:
@@ -76,7 +77,7 @@ class InsertAfix(object):
                 headline[0]
             except(IndexError):    
                 continue
-            if headline[0][:4] in constants.RESTRAINT_CARDS:
+            if headline[0][:4] in constants.DIST_RESTRAINT_CARDS:
                 newhead[num] = ''
         return newhead
 

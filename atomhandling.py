@@ -15,7 +15,8 @@ import string
 from atoms import Element as el
 from constants import *
 from misc import find_line, get_atoms, remove_partsymbol
-from options import OptionsParser 
+from options import OptionsParser
+import textwrap
 
 
 __metaclass__ = type  # use new-style classes
@@ -289,17 +290,22 @@ def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
 def rename_dbhead_atoms(new_atoms, old_atoms, dbhead):
     '''
     returns the dbentry header with the old atom names replaced by the new number scheme
+    dbhead = [SAME F5A F6A F6A F4A F7A F8A F8A F9A F9A F7A\n', 'SIMU O1A > F9A\n', 'RIGU O1A > F9A\n']
     '''
-
     new_atoms = list(reversed(new_atoms))
     for x, i in enumerate(old_atoms):
         i = i[0]
-        for num, y in enumerate(dbhead):
-            y = y.strip().split(' ')
-            y = ' '.join(y)
-            y = y.replace(i, new_atoms[x])
-            #print i, new_atoms[x]
-            dbhead[num] = y+'\n'
+        for num, line in enumerate(dbhead):
+            line = ' '.join(line.strip().split(' '))
+            line = line.replace(i, new_atoms[x])
+            dbhead[num] = line+'\n'
+    for num, line in enumerate(dbhead):
+        line = textwrap.wrap(line, 78, subsequent_indent = '  ')
+        if len(line) > 1:
+            line[0] = line[0]+' ='
+            line[1] = line[1]+'\n'
+            line = '\n'.join(line)
+            dbhead[num] = line
     return dbhead
 
 

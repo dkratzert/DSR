@@ -169,24 +169,20 @@ def go_refine(shx):
         sys.exit() 
 
 
-def generate_dfix_restraints(lf, 
-                        reslist, 
-                        dbatoms, 
-                        residue,
-                        cell,
-                        part=''):
+def generate_dfix_restraints(lf, reslist, dbatoms, residue, cell, part=''):
     '''
     returns a string of DFIX restraints for all 1,2- and 1,3-Bond distances
     in the current fragment.
     'DFIX at1 at2 distance\n DFIX at1 at2 distance\n ...'
+    
+    dbatoms: formated atoms (with new number scheme) of the fragment
     '''
     from misc import format_atom_names
     fa = FindAtoms(reslist)
     lst_file = lf.read_lst_file()
     coords = lf.get_all_coordinates
     conntable = lf.read_conntable()
-    fragment_atoms = [i[0] for i in dbatoms]
-    fragment_atoms = format_atom_names(fragment_atoms, part, residue)
+    fragment_atoms = format_atom_names(dbatoms, part, residue)
     am = Adjacency_Matrix(fragment_atoms, conntable, coords, cell)
     re = Restraints(coords, am.get_adjmatrix, fragment_atoms, cell)
     dfixes = re.get_formated_12_dfixes+re.get_formated_13_dfixes
@@ -328,7 +324,7 @@ def main():
         resinumber = resi.get_resinumber
         dfix = generate_dfix_restraints(lf, 
                                 reslist, 
-                                dbatoms, 
+                                numberscheme, 
                                 resinumber,
                                 cell,
                                 dsr_dict.get('part'))
@@ -339,9 +335,9 @@ def main():
                         line = '{} \n{}'.format(line, dfix) # insert restraints after residue definition
                         reslist[n] = line
         else:
-            line = ''
-            line = '{} \n{}'.format(line, dfix) # insert restraints after dsrline
-            reslist[dsrline] = line
+            pass
+            line = '{}'.format(dfix) # insert restraints after dsrline
+            reslist[dsrline] = reslist[dsrline]+line
             
     if not options.no_refine:
         rl.write_resfile(reslist, '.res')
