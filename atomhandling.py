@@ -98,6 +98,7 @@ class FindAtoms():
         resi_dict = {
             'class' : None, 
             'number': None}
+        resi.remove('RESI')
         resi.sort()
         if str.isalpha(resi[-1][0]):
             resi_dict['class'] = resi.pop()
@@ -125,6 +126,7 @@ class FindAtoms():
                     print x #print C12 from all residues
         '''
         resi = False
+        resiclass = None
         residues = {'0': []}
         for num, i in enumerate(self._reslist):
             if re.match(r'^RESI\s+0', i.upper()) and resi:
@@ -136,17 +138,18 @@ class FindAtoms():
             if i.upper().startswith('RESI') and not re.match(r'^RESI\s+0', i.upper()):
                 resi = True
                 resinum = self.get_resinum(i.split())['number']
+                resiclass = self.get_resinum(i.split())['class']
                 residues.update({resinum: []})
                 continue
             if resi:
                 atom = self.get_atom(i)
                 if atom:
-                    residues[resinum].append([atom[0], atom[2:5], num])
+                    residues[resinum].append([atom[0], atom[2:5], num, resiclass])
             else:
                 atom = self.get_atom(i)
                 resinum = '0'   # all other atoms are residue 0
                 if atom:
-                    residues[resinum].append([atom[0], atom[2:5], num])
+                    residues[resinum].append([atom[0], atom[2:5], num, resiclass])
         return residues
             
 
