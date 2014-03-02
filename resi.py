@@ -36,6 +36,7 @@ class Resi(object):
         self.__reslist = reslist
         self._find_atoms = find_atoms
         self._atoms_in_reslist = self._find_atoms.collect_residues()
+        #print(self._atoms_in_reslist)
         self._residues_in_res = sorted(self._atoms_in_reslist.keys())
         self.__dsr_dict = dsr_line.copy()
         self.__command = self.__dsr_dict['command']
@@ -56,7 +57,8 @@ class Resi(object):
         self.__resi_dict_db = self.get_resi_syntax(self.__db_resi_list)
         ##############################
         self.__combined_resi = self.build_up_residue()
-        #print(self.__combined_resi)
+       # print(self.__combined_resi)
+       # self.resi_class_atoms_consistent()
 
     @property
     def get_resinumber(self):
@@ -274,12 +276,22 @@ class Resi(object):
         find out if the atom names of the current residue class fit
         to the atom names in already existing classes.
         '''
-        pass
+        for num in self._atoms_in_reslist.keys():
+            print(num, len(self._atoms_in_reslist[num]), self._atoms_in_reslist[num][:][0][3], [i[0] for i in self._atoms_in_reslist[num][:]])
         
 
     def get_unique_residue_name(self):
-        '''if not given, finds a unique RESIdue name'''
-        pass
+        '''if not given, finds a unique RESIdue name
+        
+        this method does not work!!
+        
+        '''
+        num = 1
+        resi_name = self._resi_name[:3]+str(num)
+        for i in self._dbnames:
+            while resi_name.upper() == i[0].upper():
+                num = num + 1
+                resi_name = resi_name[:3]+str(num)
 
 
     def multi_residues_single_fragment(self):
@@ -323,8 +335,8 @@ if __name__ == '__main__':
     print()
     print()
     head = resi.make_resihead()
-    for i in head:
-        print(i)
+    #for i in head:
+    #    print(i)
     
     resiatoms = find_atoms.collect_residues()
     print(resiatoms['1'])

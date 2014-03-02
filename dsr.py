@@ -351,6 +351,6 @@ if __name__ == '__main__':
     main()
     time2 = time.clock()
     runtime = (time2-time1)
-    print('Runtime: {:>.1} s'.format(runtime))
+    print('Runtime: {:>.1f} s'.format(runtime))
     
 
