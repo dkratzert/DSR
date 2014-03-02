@@ -139,7 +139,8 @@ class Export():
         cell = [float(x) for x in cell]
         atoms = copy.deepcopy(self.__dbatoms)
         for line in atoms:
-            coord = frac_to_cart(line[2:5], cell)
+            frac_coord = [  float(i) for i in line[2:5] ]
+            coord = frac_to_cart(frac_coord, cell)
             line[2:5] = coord
         clip_text.append('FRAG')
         clip_text.append('\n'+ll_to_string(atoms))

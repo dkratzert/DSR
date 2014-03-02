@@ -244,7 +244,7 @@ class ShelxlRefine():
         command_line='{} -b{} {}'.format(self.__shelx_command, self.b_array, self.resfile_name).split()
         
         self.backup_shx_file()
-        
+        print('-----------------------------------------------------------------')
         print('\n refining with "{}" and "L.S. 0"'.format(' '.join(command_line)))
         p = subprocess.Popen(command_line, stdin = subprocess.PIPE,
                             stdout = subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -267,12 +267,14 @@ class ShelxlRefine():
 
         status = self.checkFileExist(resfile) # status is False if shelx was unsecessful
 
-        if not status:
-            print('\n Error: SHELXL terminated unexpectedly. ')
-            print(' Check for errors in your SHELX input file!\n')
+        if not status: # fail
+            print('-----------------------------------------------------------------')
+            print('\nError: SHELXL terminated unexpectedly. Restoring original file.')
+            print('Check for errors in your SHELX input file!\n')
             self.restore_shx_file()
             sys.exit()
-        else:
+        else: # sucess
+            print('-----------------------------------------------------------------')
             try:
                 misc.remove_file(self.bakfile)
             except(IOError):

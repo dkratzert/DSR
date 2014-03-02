@@ -94,8 +94,6 @@ class DSR_Parser():
                # dsr_list.insert(0, 'rem') # comment out the old line
                 txt = ' '.join(dsr_list)
                 dsrlines = textwrap.wrap(txt, 75, initial_indent='rem ', subsequent_indent = 'rem ') # wrap the line after 75 chars
-                print(dsrlines)
-                print(len(dsrlines))
                 if len(dsrlines) > 1:
                     dsrlines[0] = dsrlines[0]+' ='
                 dsrlines = '\n'.join(dsrlines) 
@@ -188,9 +186,9 @@ class DSR_Parser():
         dfix = False
         if 'DFIX' in self.__dsr:
             dfix = True
-            if dfix and not residue:
-                print('The DFIX command is allowed only in combination with RESI.')
-                sys.exit()
+     #       if dfix and not residue:
+     #           print('The DFIX command is allowed only in combination with RESI.')
+     #           sys.exit()
         dsr_dict = {
             'command': str(command),
             'fragment': str(fragment),
