@@ -50,7 +50,7 @@ class Resi(object):
         if self.__com_resi_list == 'DB':
             self.__resi_dict_com = 'Empty'
         self.__dbhead = dbhead
-        #self.__db_resi_list = self.get_resi_from_db() #new header has nor residue, but db_dict has resi key
+        #self.__db_resi_list = self.get_resi_from_db() #new header has no residue, but db_dict has resi key
         self.__db_resi_list = residue.split()
         ##############################
         self.__resi_dict_db = self.get_resi_syntax(self.__db_resi_list)
@@ -294,28 +294,40 @@ class Resi(object):
 
 if __name__ == '__main__':
     from options import OptionsParser
+    from dsrparse import DSR_Parser
     from dbfile import global_DB
+    from atomhandling import FindAtoms
+    from resfile import ResList, ResListEdit
     options = OptionsParser()
     #dbhead = ['REM test\n', 'RESI 1 TOL\n', 'SADI_TOL C1 C2\n']
     rl = ResList(options.res_file)
     res_list = rl.get_res_list()
-    dsrp = DSR_Parser(res_list)
+    find_atoms = FindAtoms(res_list)
+    rle = ResListEdit(res_list, find_atoms)
+    dsrp = DSR_Parser(res_list, rle)
     dsr_dict = dsrp.parse_dsr_line()
-    fragment = dsr_dict['fragment']
+    #fragment = dsr_dict['fragment']
+    fragment = 'toluene'
     gdb = global_DB()
     db = gdb.build_db_dict()
     fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
     dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
     dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
-
     
-    resi = Resi(res_list, dsr_dict, dbhead)
-    db_resi = resi.get_resi_from_db()
+    for i in dbhead:
+        print(i)
+    residue = '5 CCF3'
+    resi = Resi(res_list, dsr_dict, dbhead, residue, find_atoms)
+   # db_resi = resi.get_resi_from_db()
    # print 'the new resinumber:', resi.get_unique_resinumber()
     print()
     print()
-    print(resi.make_resihead())
+    head = resi.make_resihead()
+    for i in head:
+        print(i)
     
+    resiatoms = find_atoms.collect_residues()
+    print(resiatoms['1'])
     #if resi:
     #    print 'ja, resi aktivieren! hallo'
     #else:

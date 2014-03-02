@@ -91,7 +91,8 @@ class FindAtoms():
 
     def get_resinum(self, resi):
         '''
-        returns the residue number of a string like 'RESI TOL 1'  or 'RESI 1 TOL'
+        returns the residue number and class of a string like 'RESI TOL 1'  or 'RESI 1 TOL'
+        {'class': 'TOL', 'number': '1'}
         '''
         resi_dict = {
             'class' : None, 
@@ -534,6 +535,7 @@ if __name__ == '__main__':
     
     
     fa = FindAtoms(reslist)
+    print('Residue dict:', fa.get_resinum('RESI 1 TOL'.split()))
  #   print fa.get_atomcoordinates(['C12', 'C29', 'Q12'])
     print('line number:', fa.get_atom_line_numbers(['C12', 'C333', 'Q12']))
     
