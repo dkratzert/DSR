@@ -255,7 +255,34 @@ def frac_to_cart(frac_coord, cell):
     Yc = 0   + (b*sin(gamma))*y + (-c*sin(beta)*cosastar)*z
     Zc = 0   +  0               + (c*sin(beta)*sinastar)*z
     return (Xc, Yc, Zc)
-    
+
+#def bond_angle(dx1, dx2, cell):
+#    pass
+#    # cos(phi) = {a**2*dxr*dxs + b**2*dyr*dys + c**2 * dzr*dzs + b*c*cos(alpha)(dyr*dzs + dys*dzr) +  
+# 	#      c*a*cos(beta)(dzr*dxs + dzs*xr) + a*b*cos(gamma)*(dxr*dys + dxs*dyr) } / r s
+#    vector1 = (2,3,5)
+#    vector2 = (3,4,6)
+#    def dot():
+#        sum(p*q for p,q in zip(vector1, vector2))
+#    def normalize(v):
+#        vmag = magnitude(v)
+#        return [ v[i]/vmag  for i in range(len(v)) ]
+#    def magnitude(v):
+#        return math.sqrt(sum(v[i]*v[i] for i in range(len(v))))
+#    def get_angle(self, list):
+#        """Get angle formed by three atoms.
+#
+#        calculate angle between the vectors list[1]->list[0] and
+#        list[1]->list[2], where list contains the atomic indexes in
+#        question."""
+#        # normalized vector 1->0, 1->2:
+#        v10 = self.positions[list[0]] - self.positions[list[1]]
+#        v12 = self.positions[list[2]] - self.positions[list[1]]
+#        v10 /= np.linalg.norm(v10)
+#        v12 /= np.linalg.norm(v12)
+#        angle = np.vdot(v10, v12)
+#        angle = np.arccos(angle)
+#        return angle
 
 if __name__ == '__main__':
     from options import OptionsParser 
