@@ -1,4 +1,8 @@
 Recent changes
+-1.3.1  A lot of improvements: DFIX command now possible without RESI command. line wrap of long command 
+        lines and lines of restraints now fully working. Export to clipboard of experimental coordinates now 
+        working correctly. Networkx added to distribution.
+-1.3.0  First implementation of automatic generated DFIX restraints.
 -1.2.13 Restraints for same residue classes are now inserted only once. Port to Python-3.3
 -1.2.12 Small fixes and new Linux packages.
 -1.2.11 Supports now multiple lines of FVAR. DSR command line in res file is now correctly wrapped 
