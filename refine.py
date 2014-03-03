@@ -40,6 +40,7 @@ class ShelxlRefine():
         self.bakfile = str(self.resfile_name+'.dsr-bak')
         if not self.__shelx_command:
             print('\nSHELXL executable not found! No fragment fitting possible.\n')
+            print('You can download SHELXL at http://shelx.uni-ac.gwdg.de/SHELX/index.php\n')
             sys.exit()
     
 
