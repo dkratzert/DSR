@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "DSR - Disordered Solvent Refinement"
-#define MyAppVersion "1.3.0"
+#define MyAppVersion "1.3.1"
 #define MyAppPublisher "Daniel Kratzert"
 
 [Setup]
@@ -90,10 +90,13 @@ Source: "..\setup\vcredist_x86.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\example\*"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: ".\Output\changelog.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\dsr_user_db.txt"; DestDir: "{app}"; Flags: ignoreversion confirmoverwrite uninsneveruninstall onlyifdoesntexist; Permissions: users-modify
+Source: "..\networkx\*"; DestDir: "{app}\networkx"; Flags: ignoreversion createallsubdirs recursesubdirs
 
 [Icons]
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{group}\DSR manual"; Filename: "{app}\manual\DSR-manual.pdf"; WorkingDir: "{app}"
+Name: "{group}\DSR database"; Filename: "{app}\dsr_db.txt"; WorkingDir: "{app}"
+Name: "{group}\DSR user-database"; Filename: "{app}\dsr_user_db.txt"
 
 [Registry]
 Root: "HKLM"; Subkey: "Software\DSR"; ValueType: string; ValueName: "dsr_directory"; ValueData: "{app}"; Flags: uninsdeletekey

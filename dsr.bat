@@ -5,7 +5,7 @@ rem echo %DSRDIR%
 rem set DSRDIR="C:\Program Files (x86)\DSR\"
 SET cmd=%1
 SET args=%2
-
+cls
 IF "%cmd%"=="" GOTO help
 
 :argloop
