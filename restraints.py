@@ -395,18 +395,19 @@ if __name__ == '__main__':
     from dbfile import global_DB
     from atomhandling import FindAtoms
     from resfile import filename_wo_ending
+    import networkx as nx
     options = OptionsParser()
     basefilename = filename_wo_ending(options.res_file)
     rl = ResList(options.res_file)
     res_list = rl.get_res_list()
     dsrp = DSR_Parser(res_list, rl)
     dsr_dict = dsrp.parse_dsr_line()
-    fragment = 'oc(cf3)3'#dsr_dict['fragment']
+    fragment = 'Toluene'#dsr_dict['fragment']
     
     gdb = global_DB()
  
-    residue = '4'
-    part = '2'
+    residue = ''
+    part = ''
     
     lf = ListFile(basefilename)
     cell = lf.get_cell_params
@@ -418,9 +419,11 @@ if __name__ == '__main__':
     fragment_atoms = misc.format_atom_names(fragment_atoms, part, residue)
     #print(fragment_atoms, conntable, coords, cell)
     am = Adjacency_Matrix(fragment_atoms, conntable, coords, cell)
-    
+    G = am.get_adjmatrix
+    print(G.nodes())
+    print(nx.dijkstra_path(G, 'C1', 'F9'))
     re = Restraints(coords, am.get_adjmatrix, fragment_atoms, cell)
     dfixes = re.get_formated_12_dfixes
     dfixes_13 = re.get_formated_13_dfixes
-    print(''.join(dfixes))
-    print(''.join(dfixes_13))
+    #print(''.join(dfixes))
+    #print(''.join(dfixes_13))

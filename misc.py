@@ -179,9 +179,10 @@ def format_atom_names(atoms, part, resinum):
     '''
     if not resinum:
         resinum = ''
-    if int(part) > 0:
+    try:
+        int(part)
         partsymbol = alphabet[int(part)-1] # turns part number into a letter
-    else:
+    except(ValueError):
         partsymbol = ''
     if resinum and partsymbol:
         numpart = '_'+resinum+partsymbol
@@ -259,7 +260,7 @@ def frac_to_cart(frac_coord, cell):
 #def bond_angle(dx1, dx2, cell):
 #    pass
 #    # cos(phi) = {a**2*dxr*dxs + b**2*dyr*dys + c**2 * dzr*dzs + b*c*cos(alpha)(dyr*dzs + dys*dzr) +  
-# 	#      c*a*cos(beta)(dzr*dxs + dzs*xr) + a*b*cos(gamma)*(dxr*dys + dxs*dyr) } / r s
+#   #      c*a*cos(beta)(dzr*dxs + dzs*xr) + a*b*cos(gamma)*(dxr*dys + dxs*dyr) } / r s
 #    vector1 = (2,3,5)
 #    vector2 = (3,4,6)
 #    def dot():
