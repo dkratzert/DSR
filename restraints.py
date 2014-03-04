@@ -396,13 +396,14 @@ if __name__ == '__main__':
     from atomhandling import FindAtoms
     from resfile import filename_wo_ending
     import networkx as nx
+    from atomhandling import NumberScheme
     options = OptionsParser()
     basefilename = filename_wo_ending(options.res_file)
     rl = ResList(options.res_file)
     res_list = rl.get_res_list()
     dsrp = DSR_Parser(res_list, rl)
     dsr_dict = dsrp.parse_dsr_line()
-    fragment = 'Toluene'#dsr_dict['fragment']
+    fragment = 'naphthalene'#dsr_dict['fragment']
     
     gdb = global_DB()
  
@@ -415,13 +416,22 @@ if __name__ == '__main__':
     coords = lf.get_all_coordinates
     conntable = lf.read_conntable()
     dbatoms = gdb.get_atoms_from_fragment(fragment)
-    fragment_atoms = [i[0] for i in dbatoms]
+    
+    num = NumberScheme(res_list, dbatoms, residue)
+    fragment_atoms = num.get_fragment_number_scheme()
+    #print(numberscheme)
+    #fragment_atoms = [i[0] for i in dbatoms]
     fragment_atoms = misc.format_atom_names(fragment_atoms, part, residue)
-    #print(fragment_atoms, conntable, coords, cell)
+    print(fragment_atoms, cell)
     am = Adjacency_Matrix(fragment_atoms, conntable, coords, cell)
     G = am.get_adjmatrix
     print(G.nodes())
-    print(nx.dijkstra_path(G, 'C1', 'F9'))
+    print('dihkstra:')
+    print(nx.dijkstra_path(G, 'C1A', 'C4A'))
+    print('\ncycle_basis')
+    l = nx.cycle_basis(G)
+    # liste der cycles im Graph:
+    print(sorted(l))
     re = Restraints(coords, am.get_adjmatrix, fragment_atoms, cell)
     dfixes = re.get_formated_12_dfixes
     dfixes_13 = re.get_formated_13_dfixes
