@@ -235,7 +235,7 @@ class FindAtoms():
             afix = False
             for n in range(0, 10):
                 try:
-                    line = self._reslist[i+n]
+                    line = self._reslist[i+n].upper()
                 except(IndexError):
                     continue
                 if line.startswith('HKLF'):
