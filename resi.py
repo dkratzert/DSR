@@ -27,9 +27,9 @@ class Resi(object):
     dbhead: db header from dbfile module
     
     self.__com_resi_list : list of RESI commands from command line. 
-                          self.__com_resi_list is == 'DB' if only RESI is given in res file.
+                          self.__com_resi_list is == 'dbentry' if only RESI is given in res file.
     self.__resi_dict_com : dictionary of commands after get_resi_syntax()
-                If self.__com_resi_list is == 'DB' then self.__resi_dict_com == False
+                If self.__com_resi_list is == 'dbentry' then self.__resi_dict_com == False
     '''
 
     def __init__(self, reslist, dsr_line, dbhead, residue, find_atoms):
@@ -42,23 +42,28 @@ class Resi(object):
         self.__command = self.__dsr_dict['command']
         self.__com_resi_list = self.__dsr_dict['resi'][:] # makes a copy because we need it also later
         if self.__com_resi_list:
-            if self.__com_resi_list != 'DB':
+            if self.__com_resi_list != 'dbentry':
                 ########################################
                 self.__resi_dict_com = self.get_resi_syntax(self.__com_resi_list)
                 #########################################
-        else: 
+        else:
             self.__resi_dict_com = False
-        if self.__com_resi_list == 'DB':
+        if self.__com_resi_list == 'dbentry':
             self.__resi_dict_com = 'Empty'
         self.__dbhead = dbhead
         #self.__db_resi_list = self.get_resi_from_db() #new header has no residue, but db_dict has resi key
-        self.__db_resi_list = residue.split()
+        try:
+            self.__db_resi_list = residue.split() # use residue from db if not given in command line
+        except(AttributeError):
+            print('No valid residue "RESI classname" found in the database entry of {} found.'.format(self.__dsr_dict['fragment']))
+            sys.exit()
         ##############################
         self.__resi_dict_db = self.get_resi_syntax(self.__db_resi_list)
         ##############################
         self.__combined_resi = self.build_up_residue()
        # print(self.__combined_resi)
        # self.resi_class_atoms_consistent()
+
 
     @property
     def get_resinumber(self):
@@ -262,7 +267,7 @@ class Resi(object):
                     print('Only four digits allowed in residue number!')
                     sys.exit()
             else: 
-                if self.__com_resi_list == 'DB': # in this case no residue number is given at all.
+                if self.__com_resi_list == 'dbentry': # in this case no residue number is given at all.
                     number = self.get_unique_resinumber()
                     #number = 3
                     print('No residue number was given. Using residue number {}.'.format(number))

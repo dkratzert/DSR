@@ -180,7 +180,7 @@ class DSR_Parser():
             # RESI is True but no residue returns -> only RESI in command line
             # hence, return that we at least want residues from the db
             if not residue:
-                residue = 'DB'
+                residue = 'dbentry'
         else:
             residue = ''
         dfix = False
@@ -261,7 +261,7 @@ if __name__ == '__main__':
     
     print('\ncheck for FVAR:')
     for i in reslist:
-        if i.startswith('FVAR'):
+        if i.upper().startswith('FVAR'):
             print(i)
     print()
     

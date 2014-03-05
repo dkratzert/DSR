@@ -127,6 +127,7 @@ class ShelxlRefine():
         '''
         afixes = []
         for num, i in enumerate(self.__reslist):
+            i = i.upper()
             if num <= line:
                 if i.startswith('AFIX'):
                     afixes.append(i.split()[1])

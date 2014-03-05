@@ -262,7 +262,7 @@ class global_DB():
         nhead = []
         comment = None
         for i in self._db_plain_dict[db][int(line):]:
-            if i.startswith('FRAG'):
+            if i.upper().startswith('FRAG'):
                 fragline = i.rstrip(' \n\r')
                 break
             head.append(i)

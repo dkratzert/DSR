@@ -202,7 +202,7 @@ class Export():
         except(AttributeError):
             pass
             
-        misc.remove_file(insfile) #platon runs faster if no ins file is present!
+        misc.remove_file(insfile) #platon runs faster if no ins file is present! 
         misc.remove_file(self.__fragment+'.png', exit_dsr=True)
         if misc.which('platon'):
             pass
