@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "DSR - Disordered Solvent Refinement"
-#define MyAppVersion "1.3.1"
+#define MyAppVersion "1.3.2"
 #define MyAppPublisher "Daniel Kratzert"
 
 [Setup]
@@ -38,7 +38,7 @@ MinVersion=0,5.01
 DefaultGroupName=DSR
 DisableProgramGroupPage=yes
 AppendDefaultGroupName=True
-AppContact=daniel.kratzert@ac.uni-freiburg.de
+AppContact=dkratzert@gmx.de
 AppCopyright=Daniel Kratzert
 AppSupportPhone=+49 761 201 6156
 VersionInfoProductName=DSR - Disordered Solvent Refinement
