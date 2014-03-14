@@ -229,7 +229,7 @@ class ShelxlRefine():
                 print('You need a proper hkl file to use DSR!')
                 sys.exit()
             if re.match(r'.*\*\*.*', i):
-                print('\n SHELXL says:')
+                print(' SHELXL says:')
                 print(' {}'.format(i.strip('\n\r')))
     
 
