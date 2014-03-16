@@ -12,7 +12,6 @@
 from __future__ import print_function
 import sys, re, os
 from resfile import ResList
-from options import OptionsParser
 from dsrparse import DSR_Parser
 import string
 import misc
@@ -399,9 +398,9 @@ if __name__ == '__main__':
     from resfile import filename_wo_ending
     import networkx as nx
     from atomhandling import NumberScheme
-    options = OptionsParser()
-    basefilename = filename_wo_ending(options.res_file)
-    rl = ResList(options.res_file)
+    res_file = 'p21c.res'
+    basefilename = filename_wo_ending(res_file)
+    rl = ResList(res_file)
     res_list = rl.get_res_list()
     dsrp = DSR_Parser(res_list, rl)
     dsr_dict = dsrp.parse_dsr_line()

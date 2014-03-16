@@ -286,14 +286,12 @@ def frac_to_cart(frac_coord, cell):
 #        return angle
 
 if __name__ == '__main__':
-    from options import OptionsParser 
     from resfile import ResList
     from dsrparse import DSR_Parser
     import math as m
-    options = OptionsParser()
-    res_list = ResList(options.res_file)
+    res_list = ResList(res_file)
     reslist = res_list.get_res_list()
-    dsrp = DSR_Parser(reslist, options)
+    dsrp = DSR_Parser(reslist)
     
     dsr_string = dsrp.find_dsr_command(line=True).lower()
 

@@ -247,11 +247,9 @@ class DSR_Parser():
 #for testing:
 if __name__ == '__main__':
     from resfile import ResList, ResListEdit
-    from options import OptionsParser 
-    options = OptionsParser()
-    rl = ResList(options.res_file)
+    rl = ResList(res_file)
     reslist = rl.get_res_list()
-    rle = ResListEdit(reslist, options.res_file)
+    rle = ResListEdit(reslist, res_file)
     #dsr_line = dsrp.parse_dsr_line()
     dsrp = DSR_Parser(reslist, rle)    
     #dsr_line = dsrp.parse_dsr_line()

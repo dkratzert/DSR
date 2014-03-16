@@ -159,9 +159,7 @@ if __name__ == '__main__':
     from resfile import ResList, ResListEdit
     from resi import Resi
     
-    options = OptionsParser()
-    
-    rl = ResList(options.res_file)
+    rl = ResList(res_file)
     reslist = rl.get_res_list()
     dsrp = DSR_Parser(reslist, rl)
     dsr_dict = dsrp.parse_dsr_line()

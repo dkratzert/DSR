@@ -205,12 +205,10 @@ class ResListEdit():
     
 # for testing
 if __name__ == '__main__':
-    from options import OptionsParser
     from dbfile import global_DB
     from atomhandling import FindAtoms
     from resfile import ResList, ResListEdit
-    options = OptionsParser()
-    res_list = ResList(options.res_file)
+    res_list = ResList(res_file)
     reslist =  res_list.get_res_list()
     find_atoms = FindAtoms(reslist)
     rle = ResListEdit(reslist, find_atoms)

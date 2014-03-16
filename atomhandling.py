@@ -15,7 +15,6 @@ import string
 from atoms import Element as el
 from constants import *
 from misc import find_line, get_atoms, remove_partsymbol
-from options import OptionsParser
 import textwrap
 
 
@@ -323,11 +322,10 @@ class SfacTable():
     SFAC table for the new res file.
     '''
     
-    def __init__(self, reslist, dbtypes): 
+    def __init__(self, reslist, dbtypes, res_file): 
         self.__reslist = reslist
         self.__db = dbtypes
-        self.__options = OptionsParser()
-        self.__resfilename = self.__options.res_file
+        self.__resfilename = res_file
     
     
     def set_sfac_table(self):
@@ -533,10 +531,8 @@ if __name__ == '__main__':
     # for testing:
     from dsrparse import DSR_Parser
     from resfile import ResList
-    from options import OptionsParser 
     from dbfile import global_DB
-    options = OptionsParser()
-    res_list = ResList(options.res_file)
+    res_list = ResList(res_file)
     reslist =  res_list.get_res_list()
     gdb = global_DB()
     db = gdb.build_db_dict()

@@ -286,9 +286,7 @@ class ShelxlRefine():
         
         
 if __name__ == '__main__':
-    from options import OptionsParser 
-    options = OptionsParser()
-    rl = ResList(options.res_file)
+    rl = ResList(res_file)
     res_list = rl.get_res_list()
     
     shx = ShelxlRefine(res_list, 'testfile')

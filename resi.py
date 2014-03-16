@@ -313,14 +313,12 @@ class Resi(object):
 
 
 if __name__ == '__main__':
-    from options import OptionsParser
     from dsrparse import DSR_Parser
     from dbfile import global_DB
     from atomhandling import FindAtoms
     from resfile import ResList, ResListEdit
-    options = OptionsParser()
     #dbhead = ['REM test\n', 'RESI 1 TOL\n', 'SADI_TOL C1 C2\n']
-    rl = ResList(options.res_file)
+    rl = ResList(res_file)
     res_list = rl.get_res_list()
     find_atoms = FindAtoms(res_list)
     rle = ResListEdit(res_list, find_atoms)
