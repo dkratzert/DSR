@@ -61,10 +61,6 @@ class OptionsParser():
     def export_all(self):
         return self._options.export_all
     
-#    @property
-#    def debug(self):
-#        return self._options.debug
-    
     @property
     def list_db(self):
         return self._options.list_db
@@ -99,7 +95,6 @@ class OptionsParser():
         self.parser.add_argument("-e", dest="export_fragment", metavar='"fragment"', help="export fragment from the database", default=False)
         self.parser.add_argument("-i", dest="import_grade", metavar='"tgz file"', help="import a fragment from GRADE (needs .tgz file)", default=False)
         self.parser.add_argument("-ea", dest="export_all", action='store_true', help=SUPPRESS, default=False)
-      #  self.parser.add_argument("-d", dest="debug", action="store_true", help="Enables printing of debug messages", default=False)
         self.parser.add_argument("-l", dest="list_db", action="store_true", help="list names of all database entries", default=False)
         self.parser.add_argument("-n", dest="no_refine", action="store_true", help="do not refine after fragment transfer", default=False)
         return self.parser.parse_args()

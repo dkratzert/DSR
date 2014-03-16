@@ -13,7 +13,6 @@
 from __future__ import print_function
 import sys
 import os
-#import pstats
 from dsrparse import DSR_Parser
 from options import OptionsParser
 from dbfile import global_DB, ImportGRADE
@@ -285,18 +284,6 @@ class DSR():
         ## Insert FRAG ... FEND entry: 
         rle.insert_frag_fend_entry(dbatoms, fragline, fvarlines)
         
-  #     # Output debug infos:
-  #     if self.debug:
-  #         try:
-  #             p = pstats.Stats('dsr.profile')
-  #         except(IOError):
-  #             print '\nunable to find "dsr.profile"'
-  #             sys.exit(-1)
-  #         p.strip_dirs().sort_stats('cumulative').print_stats(12)
-  #         p.strip_dirs().sort_stats('time').print_stats(12)
-  #         sys.exit(1)
-
-      
         print('Inserting {} into res File.'.format(fragment))
         db_source_atoms = dsr_dict['source']
         print('Source atoms:', ', '.join(db_source_atoms))
