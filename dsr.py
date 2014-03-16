@@ -55,20 +55,44 @@ from atomhandling import NumberScheme
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 # -check atoms bond valency after fit to decide if fit was sucessful.
 
-
-
 VERSION = '1.3.2'
 progname = '\n----------------------------- D S R - v{} ----------------------------------'.format(VERSION)
-
 
 class DSR():
     '''
     main class
     '''
-    def __init__(self):
+    def __init__(self, res_file, export_fragment, import_grade, export_all, list_db, no_refine):
         # options from the commandline options parser
-        options = OptionsParser(progname)
-    
+        self.options = OptionsParser(progname)
+        if not res_file:
+            self.res_file = self.options.res_file
+        else:
+            self.res_file = res_file
+        self.export_fragment = self.options.export_fragment
+        self.import_grade = self.options.import_grade
+        self.export_all = self.options.export_all
+       # self.debug = self.options.debug
+        self.list_db = self.options.list_db
+        self.no_refine = self.options.no_refine
+        
+        # check if at least one option is given:
+        if not  self.res_file\
+        and not self.export_fragment\
+        and not self.list_db\
+        and not self.export_all\
+        and not self.import_grade\
+        and not self.no_refine:
+            self.error()
+        
+        #and not self._options.debug\
+        
+    def error(self):
+        print("\nPlease give one of the options as argument!\n")
+        self.parser.print_help()
+        sys.exit()
+
+
     def export_fragment(options):
         ''' 
         Exports the current fragment.
@@ -358,7 +382,7 @@ if __name__ == '__main__':
     '''main function'''
     import time
     time1 = time.clock()
-    main()
+    dsr = DSR()
     time2 = time.clock()
     runtime = (time2-time1)
     print('Runtime: {:>.1f} s'.format(runtime))
