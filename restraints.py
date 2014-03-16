@@ -222,7 +222,6 @@ class Adjacency_Matrix():
         self._coords = coords
         self._cell = cell
         self.adjmatrix()
-
         
     def adjmatrix(self):
         '''
