@@ -41,16 +41,8 @@ class Export():
     END
     '''
     
-    def __init__(self, options, fragment=False):
-        self.__options = options
-        self.__fragment = fragment
-        if self.__options.export_fragment:
-            self.__fragment = self.__options.export_fragment
-        if self.__options.export_all:
-            self.__fragment = fragment
-        if not self.__fragment:
-            print('Please run this object with command line parameter -e "fragment" !')
-            sys.exit()
+    def __init__(self, fragment_name):
+        self.__fragment = fragment_name
         self._gdb = global_DB()
         try:
             self.__db = self._gdb.build_db_dict()[self.__fragment.lower()]
