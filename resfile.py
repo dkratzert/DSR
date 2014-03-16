@@ -61,13 +61,7 @@ class ResList():
         makes a copy of the resfile and writes basefile+ending.
         ending should be '.ins' or '.res'
         '''
-#        try:
-#            shutil.copyfile(self.__basefile+'.res', self.__basefile+'.bak')
-#        except(IOError):
-#            print 'Unable to create backup file!'
-#            sys.exit(-1)
         try:
-            #nfile = open(self.__basefile+'-new.res', 'w')  # open the res file and add '-new' to the name
             nfile = open(self.__basefile+ending, 'w')  # open the ins file
         except(IOError):
             print('Unable to write res file!')
@@ -76,9 +70,6 @@ class ResList():
             nfile.write("%s" % i)    #write the new file
         nfile.close()
     
-   # res_list = property(get_res_list, write_resfile)
-
-
 
 
 class ResListEdit():
@@ -178,7 +169,8 @@ class ResListEdit():
     def set_fvar(self, occupancynumber, fvarlines):
         '''
         Inserts additional free variables according to the occ parameter
-        This function starts at the end of parse_dsr_line() so we don't have to care about it anywhere else. 
+        This function starts at the end of parse_dsr_line() so we don't have 
+        to care about it anywhere else. 
         '''
         occupancynumber = occupancynumber.strip('-')
         fvar_list = []

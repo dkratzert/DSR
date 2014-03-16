@@ -19,14 +19,13 @@ from options import OptionsParser
 from dbfile import global_DB, ImportGRADE
 from resfile import ResList, ResListEdit, filename_wo_ending
 from atomhandling import SfacTable, get_atomtypes, check_source_target, Elem_2_Sfac
-from atomhandling import FindAtoms
+from atomhandling import FindAtoms, NumberScheme
 from afix import InsertAfix
 from refine import ShelxlRefine
 from resi import Resi
 from misc import get_replace_mode, find_line
 from restraints import ListFile, Lst_Deviations, format_atom_names
 from restraints import Restraints, Adjacency_Matrix
-from atomhandling import NumberScheme
 
 # TODO and ideas:
 # -check for residues with same class and differing atom names inside.
@@ -56,7 +55,9 @@ from atomhandling import NumberScheme
 # -check atoms bond valency after fit to decide if fit was sucessful.
 
 VERSION = '1.3.2'
-progname = '\n----------------------------- D S R - v{} ----------------------------------'.format(VERSION)
+progname = '\n-----------------------------'\
+           ' D S R - v{}' \
+           ' ----------------------------------'.format(VERSION)
 
 class DSR():
     '''
@@ -140,7 +141,13 @@ class DSR():
                     gdb.get_db_from_fragment(i), 
                     gdb.get_comment_from_fragment(i))
             print(line[:79])
-        print('\n Feel free to add more fragments to "dsr_user_db.txt" in the program directory\n or mail them to dkratzert@gmx.de.\n')
+        try:
+            if os.environ["DSR_DB_DIR"]:
+                dbdir = os.environ["DSR_DB_DIR"]
+        except(KeyError):
+            dbdir = '.'
+        print('\n Feel free to add more fragments to "{}dsr_user_db.txt"' \
+              '\n or mail them to dkratzert@gmx.de.'.format(dbdir+os.path.sep))
         
         for fragment in list(db.keys()):
             gdb.check_consistency(db[fragment], fragment)
@@ -301,7 +308,8 @@ class DSR():
         
         num = NumberScheme(reslist, dbatoms, resi.get_resinumber)
         numberscheme = num.get_fragment_number_scheme()
-        afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, sfac_table, find_atoms, numberscheme)
+        afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, 
+                          sfac_table, find_atoms, numberscheme)
         afix_entry = afix.build_afix_entry()
         # line where the dsr command is found in the resfile:
         dsrline = dsrp.find_dsr_command(reslist) 
@@ -342,7 +350,7 @@ class DSR():
         
         if dsr_dict['dfix']:
             resinumber = resi.get_resinumber
-            dfix = generate_dfix_restraints(lf, 
+            dfix = self.generate_dfix_restraints(lf, 
                                             reslist, 
                                             numberscheme, 
                                             resinumber,
@@ -362,8 +370,7 @@ class DSR():
         if not self.no_refine:
             rl.write_resfile(reslist, '.res')
         
-
-    
+  
     
 if __name__ == '__main__':
     '''main function'''

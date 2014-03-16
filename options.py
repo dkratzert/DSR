@@ -26,10 +26,6 @@ __metaclass__ = type  # use new-style classes
 class OptionsParser():
     '''
     This class uses the ArgumentParser module to parse the command line options.
-    The options can be derived with:
-    optparse = OptionsParser()
-    optparse.res_file
-    optparse.fragment
     '''
     def __init__(self, progname=''):
         self.progname = progname
@@ -83,9 +79,11 @@ class OptionsParser():
     
     
     def parse_commandline(self):
-        '''parses the command line options and returns the command line options as dict'''
+        '''parses the command line options and returns 
+           the command line options as dict'''
         # Options parser for the command line:
-        sep_line = '\n--------------------------------------------------------------------------------\n'
+        sep_line = '\n------------------------------------------------'\
+                    '--------------------------------\n'
         self.parser = ArgumentParser(prog='dsr', formatter_class=RawTextHelpFormatter, 
         description='Disordered solvent refinement (DSR)\n'
         +'\n'+self.progname

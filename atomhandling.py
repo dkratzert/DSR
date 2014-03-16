@@ -92,7 +92,8 @@ class FindAtoms():
 
     def get_resinum(self, resi):
         '''
-        returns the residue number and class of a string like 'RESI TOL 1'  or 'RESI 1 TOL'
+        returns the residue number and class of a string like 'RESI TOL 1'  
+        or 'RESI 1 TOL'
         {'class': 'TOL', 'number': '1'}
         '''
         resi_dict = {
@@ -113,8 +114,8 @@ class FindAtoms():
         '''
         find all atoms and sort them into residues
         
-        residues is a dictionary which includes a dictionary for each residue which in turn
-        includes a list of its atoms.
+        residues is a dictionary which includes a dictionary for each residue 
+        which in turn includes a list of its atoms.
         
         residues = { {'0': ['C1', 'x y z', 'linenumber'], ['C2', 'x y z', 'linenumber']}, 
                      {'1': ['C1', 'x y z', 'linenumber'], []} }
@@ -275,7 +276,8 @@ def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
     nsrc = len(db_source_atoms)
     ntrg = len(res_target_atoms)
     if nsrc != ntrg:
-        print('Number of source and target atoms is different!! ({} and {})'.format(nsrc, ntrg))
+        print('Number of source and target atoms is different!! '\
+                '({} and {})'.format(nsrc, ntrg))
         sys.exit()
     
     # do the source atoms exist at all?:
@@ -292,8 +294,10 @@ def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
 
 def rename_dbhead_atoms(new_atoms, old_atoms, dbhead):
     '''
-    returns the dbentry header with the old atom names replaced by the new number scheme
-    dbhead = [SAME F5A F6A F6A F4A F7A F8A F8A F9A F9A F7A\n', 'SIMU O1A > F9A\n', 'RIGU O1A > F9A\n']
+    returns the dbentry header with the old atom names replaced by the new 
+    number scheme
+    dbhead = [SAME F5A F6A F6A F4A F7A F8A F8A F9A F9A F7A\n', 'SIMU O1A > F9A\n', 
+                'RIGU O1A > F9A\n']
     '''
     new_atoms = list(reversed(new_atoms))
     for x, i in enumerate(old_atoms):
@@ -438,8 +442,9 @@ class NumberScheme():
 
 
     def get_fragment_number_scheme(self):
-        ''' returns a list of atoms of length len(self.__dbatome) whith a naming scheme
-            which fits into the resfile.'''
+        ''' returns a list of atoms of length len(self.__dbatome) whith a 
+            naming scheme which fits into the resfile.
+        '''
         if self.__resi:
             print('RESI instruction is enabled. Leaving atom numbers as they are.')
             atoms = []

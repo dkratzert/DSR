@@ -137,7 +137,8 @@ class ListFile():
                 conatom = conatom.upper()
                 connpairs.append((atom, conatom))
         if symmeq:
-            print('\nConnections to symmetry equivalent atoms found. \nGenerated DFIX restraints might be nonsense!!')
+            print('\nConnections to symmetry equivalent atoms found.'\
+                    ' \nGenerated DFIX restraints might be nonsense!!')
         return connpairs
 
 
@@ -184,7 +185,8 @@ class ListFile():
     @property
     def get_all_coordinates(self):
         '''
-        return all atom coordinates as property {'atom' : ['x', 'y', 'z'], 'atom2' : [...]}
+        return all atom coordinates as property 
+        {'atom' : ['x', 'y', 'z'], 'atom2' : [...]}
         '''
         return self.coordinates()
 
@@ -313,7 +315,8 @@ class Restraints():
                 for n in bonded:
                     pass
             except(KeyError, TypeError):
-                print('No atom connections found. DFIX generation not possible! Check your SHELXL listing file.')
+                print('No atom connections found. DFIX generation not possible!'\
+                        ' Check your SHELXL listing file.')
                 sys.exit()
             for n in bonded:
                 nb = self._G.neighbors(n)
