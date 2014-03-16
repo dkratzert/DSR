@@ -60,289 +60,299 @@ from atomhandling import NumberScheme
 VERSION = '1.3.2'
 progname = '\n----------------------------- D S R - v{} ----------------------------------'.format(VERSION)
 
-def export_fragment(options):
-    ''' 
-    Exports the current fragment.
-    '''
-    from export import Export
-    export = Export(options)
-    export.write_file()
-    sys.exit(1)
 
-
-def list_dbentrys():
+class DSR():
     '''
-    list all entries in the db.
+    main class
     '''
-    gdb = global_DB()
-    db = gdb.build_db_dict()
-    print('\n Entries found in the databases:\n')
-    print(' Fragment         | Line | DB Name    | Comment ')
-    print(' ---------------------------------------------------------------------------')
-
-    frags = sorted(db.keys())
-    for i in frags:
-        line = ' {:<17}| {:<5}| {:<11}| {}'.format(
-                i, gdb.get_line_number_from_fragment(i), 
-                gdb.get_db_from_fragment(i), 
-                gdb.get_comment_from_fragment(i))
-        print(line[:79])
-    print('\n Feel free to add more fragments to "dsr_user_db.txt" in the program directory\n or mail them to dkratzert@gmx.de.\n')
+    def __init__(self):
+        # options from the commandline options parser
+        options = OptionsParser(progname)
     
-    for fragment in list(db.keys()):
-        gdb.check_consistency(db[fragment], fragment)
-        gdb.check_db_atom_consistency(db[fragment]['atoms'], fragment)
-        gdb.check_db_header_consistency(db[fragment]['head'], fragment)
-    sys.exit()
-
-
-def import_from_grade(options):
-    '''
-    imports a fragment from the GRADE webserver.
-    '''
-    mog = ImportGRADE(options.import_grade)
-    mog.write_user_database()
-    sys.exit(1)
-
-
-def set_post_refine_cycles(shx, cycles):
-    '''
-    set the number of refinement cycles
-    cycles must be a string
-    '''
-    try:
-        shx.set_refinement_cycles(cycles)
-    except(IndexError):
-        print('Unable to set refinement cycles')
-    shx.remove_afix()   # removes the afix 9
-    
-
-def export_all_fragments(options):
-    '''
-    export all database entries at once
-    '''
-    from export import Export
-    gdb = global_DB()
-    db = gdb.build_db_dict()
-    dbnames = list(db.keys())
-    for name in dbnames:
-        export = Export(options, fragment=name)
+    def export_fragment(options):
+        ''' 
+        Exports the current fragment.
+        '''
+        from export import Export
+        export = Export(options)
         export.write_file()
-    sys.exit(1)
-    
-
-
-def set_final_db_sfac_types(dbtypes, dbatoms, sfac_table):
-    '''
-    corrects the sfac types of the dbentry according to sfac card of the
-    res file
-    '''
-    e2s = Elem_2_Sfac(sfac_table)
-    atype = list(reversed(dbtypes))
-    for line in dbatoms:                             # go through db entry
-        line[1] = e2s.elem_2_sfac(atype.pop())       # replace scattering factor (line[1]) with true one
-
-
-def replacemode(res_target_atoms, rle, reslist):
-    '''
-    Target atoms are being replaced if this is executed
-    '''
-    fa = FindAtoms(reslist)
-    print('Replace mode active.')
-    target_lines = fa.get_atom_line_numbers(res_target_atoms)
-    #print target_lines, res_target_atoms
-    for i in target_lines:
-        i = int(i)
-        #reslist[i]=' '+reslist[i]
-        rle.remove_line(i, rem=False, remove=False, frontspace=True)
-    fa.remove_adjacent_hydrogens(res_target_atoms)    
-
-
-def go_refine(shx):
-    '''
-    actually starts the fragment fit
-    '''
-    try:
-        shx.run_shelxl()
-    except() as e:
-        print(e)
-        sys.exit() 
-
-
-def generate_dfix_restraints(lf, reslist, dbatoms, residue, cell, part=''):
-    '''
-    returns a string of DFIX restraints for all 1,2- and 1,3-Bond distances
-    in the current fragment.
-    'DFIX at1 at2 distance\n DFIX at1 at2 distance\n ...'
-    
-    dbatoms: formated atoms (with new number scheme) of the fragment
-    '''
-    from misc import format_atom_names
-    fa = FindAtoms(reslist)
-    lst_file = lf.read_lst_file()
-    coords = lf.get_all_coordinates
-    conntable = lf.read_conntable()
-    fragment_atoms = format_atom_names(dbatoms, part, residue)
-    am = Adjacency_Matrix(fragment_atoms, conntable, coords, cell)
-    re = Restraints(coords, am.get_adjmatrix, fragment_atoms, cell)
-    dfixes = re.get_formated_12_dfixes+re.get_formated_13_dfixes
-    return ''.join(dfixes)
-
-
-def main(): 
-    
-    # options from the commandline options parser
-    options = OptionsParser(progname)
-    # The database content:
-    gdb = global_DB()
-    
-    print(progname) # prints the version string on screen
-    
-    #  List of Database Fragments:   
-    if options.list_db:
-        list_dbentrys()
-   
-    ## Export !all! fragments   
-    if options.export_all:
-        export_all_fragments(options)
-
-    ## Export one fragment         
-    if options.export_fragment:
-        export_fragment(options)
- 
-    ## Import a GRADE fragment          
-    if options.import_grade:
-        import_from_grade(options)
-
-    rl = ResList(options.res_file)
-    reslist = rl.get_res_list()
-    find_atoms = FindAtoms(reslist)
-    rle = ResListEdit(reslist, find_atoms)
-    dsrp = DSR_Parser(reslist, rle)
-    dsr_dict = dsrp.parse_dsr_line()
-    fvarlines = rle.find_fvarlines()
-    
-    if dsrp.occupancy:
-        rle.set_fvar(dsrp.occupancy, fvarlines)
-    
-    fragment = dsrp.fragment
-
-    # line of the fragment card as string:
-    fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
-    dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
-    dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
-    residue = gdb.get_resi_from_fragment(fragment)
-    dbtypes = get_atomtypes(dbatoms)                 # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
-    resi = Resi(reslist, dsr_dict, dbhead, residue, find_atoms)
-    dbhead = resi.make_resihead()
-    sf = SfacTable(reslist, dbtypes)
-    sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
-    
-    ### corrects the atom type according to the previous defined global sfac table:
-    set_final_db_sfac_types(dbtypes, dbatoms, sfac_table)
-
-
-    ## Insert FRAG ... FEND entry: 
-    rle.insert_frag_fend_entry(dbatoms, fragline, fvarlines)
-    
-  #  ######################################################
-  #  ##    Output debug infos                            ##
-  #  ######################################################   
-  #
-  #  if options.debug:
-  #      try:
-  #          p = pstats.Stats('dsr.profile')
-  #      except(IOError):
-  #          print '\nunable to find "dsr.profile"'
-  #          sys.exit(-1)
-  #      p.strip_dirs().sort_stats('cumulative').print_stats(12)
-  #      p.strip_dirs().sort_stats('time').print_stats(12)
-  #      sys.exit(1)
-  #  
-  #  #######################################################
-
-    print('Inserting {} into res File.'.format(fragment))
-    db_source_atoms = dsr_dict.get('source')
-    print('Source atoms:', ', '.join(db_source_atoms))
-    res_target_atoms = dsr_dict.get('target')
-    print('Target atoms:', ', '.join(res_target_atoms))
+        sys.exit(1)
     
     
-    # several checks if the atoms in the dsr command line are consistent
-    check_source_target(db_source_atoms, res_target_atoms, dbatoms)
+    def list_dbentrys():
+        '''
+        list all entries in the db.
+        '''
+        gdb = global_DB()
+        db = gdb.build_db_dict()
+        print('\n Entries found in the databases:\n')
+        print(' Fragment         | Line | DB Name    | Comment ')
+        print(' ---------------------------------------------------------------------------')
     
-    num = NumberScheme(reslist, dbatoms, resi.get_resinumber)
-    numberscheme = num.get_fragment_number_scheme()
-    #print(numberscheme, residue, resi.get_resinumber)
-    #sys.exit() #enabled
-    afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, sfac_table, find_atoms, numberscheme)
-    afix_entry = afix.build_afix_entry()
-    # line where the dsr command is found in the resfile:
-    dsrline = dsrp.find_dsr_command(reslist) 
-    #reslist[dsrline-1] = reslist[dsrline-1]+'\n'
-    reslist[dsrline] = reslist[dsrline]+'\n'
-    reslist.insert(dsrline+1, afix_entry)
-
-    ##### comment out all target atom lines in replace mode:  
-    if dsr_dict.get('command') == 'REPLACE':
-        replacemode(res_target_atoms, rle, reslist)
-    
-
-    #############################################################
-    ##    write to file:                                       ##
-    basefilename = filename_wo_ending(options.res_file)
-    shx = ShelxlRefine(reslist, basefilename, find_atoms)
-    if not options.no_refine:
-        shx.set_refinement_cycles('0')
-    shx.remove_acta()
-    
-    rl.write_resfile(reslist, '.ins')  
+        frags = sorted(db.keys())
+        for i in frags:
+            line = ' {:<17}| {:<5}| {:<11}| {}'.format(
+                    i, gdb.get_line_number_from_fragment(i), 
+                    gdb.get_db_from_fragment(i), 
+                    gdb.get_comment_from_fragment(i))
+            print(line[:79])
+        print('\n Feel free to add more fragments to "dsr_user_db.txt" in the program directory\n or mail them to dkratzert@gmx.de.\n')
+        
+        for fragment in list(db.keys()):
+            gdb.check_consistency(db[fragment], fragment)
+            gdb.check_db_atom_consistency(db[fragment]['atoms'], fragment)
+            gdb.check_db_header_consistency(db[fragment]['head'], fragment)
+        sys.exit()
     
     
-    ###########################################################
-    ###  Refine with L.S. 0 to insert the fragment          ###
-    if not options.no_refine:
-        go_refine(shx)
+    def import_from_grade(options):
+        '''
+        imports a fragment from the GRADE webserver.
+        '''
+        mog = ImportGRADE(options.import_grade)
+        mog.write_user_database()
+        sys.exit(1)
     
-    ### Display the results from the list file:
-    lf = ListFile(basefilename)
-    lst_file = lf.read_lst_file()
-    lfd = Lst_Deviations(lst_file)
-    lfd.print_deviations()
-    cell = lf.get_cell_params
     
-    ### open res file again to restore 10 refinement cycles
-    rl = ResList(options.res_file)
-    reslist = rl.get_res_list()
-    shx = ShelxlRefine(reslist, basefilename, find_atoms)
-
-    if not options.no_refine:
-        set_post_refine_cycles(shx, '8')
-
+    def set_post_refine_cycles(shx, cycles):
+        '''
+        set the number of refinement cycles
+        cycles must be a string
+        '''
+        try:
+            shx.set_refinement_cycles(cycles)
+        except(IndexError):
+            print('Unable to set refinement cycles')
+        shx.remove_afix()   # removes the afix 9
+        
     
-    if dsr_dict.get('dfix'):
-        resinumber = resi.get_resinumber
-        dfix = generate_dfix_restraints(lf, 
-                                reslist, 
-                                numberscheme, 
-                                resinumber,
-                                cell,
-                                dsr_dict.get('part'))
-        if resinumber:
-            for n, line in enumerate(reslist):
-                if line.upper().startswith('RESI'):
-                    if line.split()[1] == str(resinumber):
-                        line = '{} \n{}'.format(line, dfix) # insert restraints after residue definition
-                        reslist[n] = line
-        else:
-            pass
-            line = '{}'.format(dfix) # insert restraints after dsrline
-            reslist[dsrline] = reslist[dsrline]+line
-            
-    if not options.no_refine:
-        rl.write_resfile(reslist, '.res')
+    def export_all_fragments(options):
+        '''
+        export all database entries at once
+        '''
+        from export import Export
+        gdb = global_DB()
+        db = gdb.build_db_dict()
+        dbnames = list(db.keys())
+        for name in dbnames:
+            export = Export(options, fragment=name)
+            export.write_file()
+        sys.exit(1)
+        
     
-    print('\nDSR run complete.')
+    
+    def set_final_db_sfac_types(dbtypes, dbatoms, sfac_table):
+        '''
+        corrects the sfac types of the dbentry according to sfac card of the
+        res file
+        '''
+        e2s = Elem_2_Sfac(sfac_table)
+        atype = list(reversed(dbtypes))
+        for line in dbatoms:                             # go through db entry
+            line[1] = e2s.elem_2_sfac(atype.pop())       # replace scattering factor (line[1]) with true one
+    
+    
+    def replacemode(res_target_atoms, rle, reslist):
+        '''
+        Target atoms are being replaced if this is executed
+        '''
+        fa = FindAtoms(reslist)
+        print('Replace mode active.')
+        target_lines = fa.get_atom_line_numbers(res_target_atoms)
+        #print target_lines, res_target_atoms
+        for i in target_lines:
+            i = int(i)
+            #reslist[i]=' '+reslist[i]
+            rle.remove_line(i, rem=False, remove=False, frontspace=True)
+        fa.remove_adjacent_hydrogens(res_target_atoms)    
+    
+    
+    def go_refine(shx):
+        '''
+        actually starts the fragment fit
+        '''
+        try:
+            shx.run_shelxl()
+        except() as e:
+            print(e)
+            sys.exit() 
+    
+    
+    def generate_dfix_restraints(lf, reslist, dbatoms, residue, cell, part=''):
+        '''
+        returns a string of DFIX restraints for all 1,2- and 1,3-Bond distances
+        in the current fragment.
+        'DFIX at1 at2 distance\n DFIX at1 at2 distance\n ...'
+        
+        dbatoms: formated atoms (with new number scheme) of the fragment
+        '''
+        from misc import format_atom_names
+        fa = FindAtoms(reslist)
+        lst_file = lf.read_lst_file()
+        coords = lf.get_all_coordinates
+        conntable = lf.read_conntable()
+        fragment_atoms = format_atom_names(dbatoms, part, residue)
+        am = Adjacency_Matrix(fragment_atoms, conntable, coords, cell)
+        re = Restraints(coords, am.get_adjmatrix, fragment_atoms, cell)
+        dfixes = re.get_formated_12_dfixes+re.get_formated_13_dfixes
+        return ''.join(dfixes)
+    
+    
+    def main(): 
+        '''
+        main object to run DSR as command line program
+        '''
+        # The database content:
+        gdb = global_DB()
+        
+        print(progname) # prints the version string on screen
+        
+        #  List of Database Fragments:   
+        if options.list_db:
+            list_dbentrys()
+    
+        ## Export !all! fragments   
+        if options.export_all:
+            export_all_fragments(options)
+    
+        ## Export one fragment         
+        if options.export_fragment:
+            export_fragment(options)
+    
+        ## Import a GRADE fragment          
+        if options.import_grade:
+            import_from_grade(options)
+    
+        rl = ResList(options.res_file)
+        reslist = rl.get_res_list()
+        find_atoms = FindAtoms(reslist)
+        rle = ResListEdit(reslist, find_atoms)
+        dsrp = DSR_Parser(reslist, rle)
+        dsr_dict = dsrp.parse_dsr_line()
+        fvarlines = rle.find_fvarlines()
+        
+        if dsrp.occupancy:
+            rle.set_fvar(dsrp.occupancy, fvarlines)
+        
+        fragment = dsrp.fragment
+    
+        # line of the fragment card as string:
+        fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
+        dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
+        dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
+        residue = gdb.get_resi_from_fragment(fragment)
+        dbtypes = get_atomtypes(dbatoms)                 # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
+        resi = Resi(reslist, dsr_dict, dbhead, residue, find_atoms)
+        dbhead = resi.make_resihead()
+        sf = SfacTable(reslist, dbtypes)
+        sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
+        
+        ### corrects the atom type according to the previous defined global sfac table:
+        set_final_db_sfac_types(dbtypes, dbatoms, sfac_table)
+    
+    
+        ## Insert FRAG ... FEND entry: 
+        rle.insert_frag_fend_entry(dbatoms, fragline, fvarlines)
+        
+  #      ######################################################
+  #      ##    Output debug infos                            ##
+  #      ######################################################   
+  # 
+  #      if options.debug:
+  #          try:
+  #              p = pstats.Stats('dsr.profile')
+  #          except(IOError):
+  #              print '\nunable to find "dsr.profile"'
+  #              sys.exit(-1)
+  #          p.strip_dirs().sort_stats('cumulative').print_stats(12)
+  #          p.strip_dirs().sort_stats('time').print_stats(12)
+  #          sys.exit(1)
+  #      
+  #      #######################################################
+    
+        print('Inserting {} into res File.'.format(fragment))
+        db_source_atoms = dsr_dict.get('source')
+        print('Source atoms:', ', '.join(db_source_atoms))
+        res_target_atoms = dsr_dict.get('target')
+        print('Target atoms:', ', '.join(res_target_atoms))
+        
+        
+        # several checks if the atoms in the dsr command line are consistent
+        check_source_target(db_source_atoms, res_target_atoms, dbatoms)
+        
+        num = NumberScheme(reslist, dbatoms, resi.get_resinumber)
+        numberscheme = num.get_fragment_number_scheme()
+        #print(numberscheme, residue, resi.get_resinumber)
+        #sys.exit() #enabled
+        afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, sfac_table, find_atoms, numberscheme)
+        afix_entry = afix.build_afix_entry()
+        # line where the dsr command is found in the resfile:
+        dsrline = dsrp.find_dsr_command(reslist) 
+        #reslist[dsrline-1] = reslist[dsrline-1]+'\n'
+        reslist[dsrline] = reslist[dsrline]+'\n'
+        reslist.insert(dsrline+1, afix_entry)
+    
+        ##### comment out all target atom lines in replace mode:  
+        if dsr_dict.get('command') == 'REPLACE':
+            replacemode(res_target_atoms, rle, reslist)
+        
+    
+        #############################################################
+        ##    write to file:                                       ##
+        basefilename = filename_wo_ending(options.res_file)
+        shx = ShelxlRefine(reslist, basefilename, find_atoms)
+        if not options.no_refine:
+            shx.set_refinement_cycles('0')
+        shx.remove_acta()
+        
+        rl.write_resfile(reslist, '.ins')  
+        
+        
+        ###########################################################
+        ###  Refine with L.S. 0 to insert the fragment          ###
+        if not options.no_refine:
+            go_refine(shx)
+        
+        ### Display the results from the list file:
+        lf = ListFile(basefilename)
+        lst_file = lf.read_lst_file()
+        lfd = Lst_Deviations(lst_file)
+        lfd.print_deviations()
+        cell = lf.get_cell_params
+        
+        ### open res file again to restore 10 refinement cycles
+        rl = ResList(options.res_file)
+        reslist = rl.get_res_list()
+        shx = ShelxlRefine(reslist, basefilename, find_atoms)
+    
+        if not options.no_refine:
+            set_post_refine_cycles(shx, '8')
+    
+        
+        if dsr_dict.get('dfix'):
+            resinumber = resi.get_resinumber
+            dfix = generate_dfix_restraints(lf, 
+                                    reslist, 
+                                    numberscheme, 
+                                    resinumber,
+                                    cell,
+                                    dsr_dict.get('part'))
+            if resinumber:
+                for n, line in enumerate(reslist):
+                    if line.upper().startswith('RESI'):
+                        if line.split()[1] == str(resinumber):
+                            line = '{} \n{}'.format(line, dfix) # insert restraints after residue definition
+                            reslist[n] = line
+            else:
+                pass
+                line = '{}'.format(dfix) # insert restraints after dsrline
+                reslist[dsrline] = reslist[dsrline]+line
+                
+        if not options.no_refine:
+            rl.write_resfile(reslist, '.res')
+        
+        print('\nDSR run complete.')
+    
     
 if __name__ == '__main__':
     '''main function'''
