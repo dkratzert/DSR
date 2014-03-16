@@ -82,10 +82,6 @@ class DSR():
             self.export_all = self.options.export_all
         else:
             self.export_all = self.export_all
-       #if not self.debug:
-       #    self.debug = self.options.debug
-       #else:
-       #    self.debug = debug
         if not list_db:
             self.list_db = self.options.list_db
         else:
@@ -94,19 +90,16 @@ class DSR():
             self.no_refine = self.options.no_refine
         else:
             self.no_refine = no_refine
-        self.options_check()
-                #  List of Database Fragments:   
+
+        #  List of Database Fragments:   
         if self.list_db:
             self.list_dbentrys()
-    
         ## Export !all! fragments   
         if self.export_all:
             self.export_all_fragments()
-
         ## Export one fragment         
         if self.export_fragment:
             self.do_export_fragment()
-    
         ## Import a GRADE fragment          
         if self.import_grade:
             self.import_from_grade()
@@ -117,28 +110,8 @@ class DSR():
         time2 = time.clock()
         runtime = (time2-time1)
         print('Runtime: {:>.1f} s'.format(runtime))
-
-
-
-    def options_check(self):
-        '''
-        check if at least one option is given
-        '''
-        if not  self.res_file\
-        and not self.export_fragment\
-        and not self.list_db\
-        and not self.export_all\
-        and not self.import_grade\
-        and not self.no_refine:
-            self.error()
-        return
-
-    
-    def error(self):
-        print("\nPlease give one of the options as argument!\n")
-        self.parser.print_help()
-        sys.exit()
-
+        print('\nDSR run complete.')
+        
 
     def do_export_fragment(self):
         ''' 
@@ -348,36 +321,33 @@ class DSR():
         
         rl.write_resfile(reslist, '.ins')  
         
-        
-        ###########################################################
-        ###  Refine with L.S. 0 to insert the fragment          ###
+        #  Refine with L.S. 0 to insert the fragment
         if not self.no_refine:
             self.go_refine(shx)
         
-        ### Display the results from the list file:
+        # Display the results from the list file:
         lf = ListFile(basefilename)
         lst_file = lf.read_lst_file()
         lfd = Lst_Deviations(lst_file)
         lfd.print_deviations()
         cell = lf.get_cell_params
         
-        ### open res file again to restore 10 refinement cycles
+        # open res file again to restore 10 refinement cycles:
         rl = ResList(self.res_file)
         reslist = rl.get_res_list()
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
     
         if not self.no_refine:
             self.set_post_refine_cycles(shx, '8')
-    
         
         if dsr_dict['dfix']:
             resinumber = resi.get_resinumber
             dfix = generate_dfix_restraints(lf, 
-                                    reslist, 
-                                    numberscheme, 
-                                    resinumber,
-                                    cell,
-                                    dsr_dict['part'])
+                                            reslist, 
+                                            numberscheme, 
+                                            resinumber,
+                                            cell,
+                                            dsr_dict['part'])
             if resinumber:
                 for n, line in enumerate(reslist):
                     if line.upper().startswith('RESI'):
@@ -392,7 +362,7 @@ class DSR():
         if not self.no_refine:
             rl.write_resfile(reslist, '.res')
         
-        print('\nDSR run complete.')
+
     
     
 if __name__ == '__main__':

@@ -35,6 +35,20 @@ class OptionsParser():
         self.progname = progname
         self._options = self.parse_commandline()
 
+        if not  self.res_file\
+        and not self.export_fragment\
+        and not self.list_db\
+        and not self.export_all\
+        and not self.import_grade\
+        and not self.no_refine:
+            self.error()
+        return
+    
+    def error(self):
+        print("\nPlease give one of the options as argument!\n")
+        self.parser.print_help()
+        sys.exit()
+    
     @property
     def res_file(self):
         return self._options.res_file
