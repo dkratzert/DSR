@@ -53,7 +53,7 @@ from restraints import Restraints, Adjacency_Matrix
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 # -check atoms bond valency after fit to decide if fit was sucessful.
 
-VERSION = '1.3.2'
+VERSION = '1.3.3'
 progname = '\n-----------------------------'\
            ' D S R - v{}' \
            ' ----------------------------------'.format(VERSION)
