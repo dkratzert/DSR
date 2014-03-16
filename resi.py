@@ -55,7 +55,8 @@ class Resi(object):
         try:
             self.__db_resi_list = residue.split() # use residue from db if not given in command line
         except(AttributeError):
-            print('No valid residue "RESI classname" found in the database entry of {} found.'.format(self.__dsr_dict['fragment']))
+            print('No valid residue "RESI classname" found in the database entry '\
+                    'of {} found.'.format(self.__dsr_dict['fragment']))
             sys.exit()
         ##############################
         self.__resi_dict_db = self.get_resi_syntax(self.__db_resi_list)
@@ -155,7 +156,8 @@ class Resi(object):
                 new_num = str(int(new_num)+1)
             return new_num
         if resinum in self._residues_in_res:
-            print('Warning: The residue number "{}" you have chosen is already in use!'.format(resinum))
+            print('Warning: The residue number "{}" you have chosen is already '\
+                    'in use!'.format(resinum))
             while new_num in self._residues_in_res:
                 new_num = str(int(new_num)+1)
             print('         I am using number "{}" instead.\n'.format(new_num))
@@ -282,7 +284,8 @@ class Resi(object):
         to the atom names in already existing classes.
         '''
         for num in self._atoms_in_reslist.keys():
-            print(num, len(self._atoms_in_reslist[num]), self._atoms_in_reslist[num][:][0][3], [i[0] for i in self._atoms_in_reslist[num][:]])
+            print(num, len(self._atoms_in_reslist[num]), self._atoms_in_reslist[num][:][0][3], \
+                    [i[0] for i in self._atoms_in_reslist[num][:]])
         
 
     def get_unique_residue_name(self):

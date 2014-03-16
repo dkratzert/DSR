@@ -23,7 +23,8 @@ class InsertAfix(object):
     - dbhead is modified by Resi() if residues are used! RESI num class ist inserted there
     '''
     
-    def __init__(self, reslist, dbatoms, dbtypes, dbhead, dsr_line, sfac_table, find_atoms, numberscheme):
+    def __init__(self, reslist, dbatoms, dbtypes, dbhead, dsr_line, sfac_table, 
+                find_atoms, numberscheme):
         self.__reslist = reslist
         self._find_atoms = find_atoms
         self.__dbatoms = dbatoms

@@ -65,8 +65,8 @@ class Export():
     
     def format_calced_coords(self):
         '''
-        In calculated structure the cell is 1 1 1 90 90 90. Shelxle has problems with that when growing.
-        So the cell is expanded to 100 100 100
+        In calculated structure the cell is 1 1 1 90 90 90. Shelxle has problems 
+        with that when growing. So the cell is expanded to 100 100 100
         '''
         summe = None
         summe = int(sum(float(i) for i in self.__cell[0:3])) # this is to detect calculated structures
@@ -166,7 +166,8 @@ class Export():
             for line in self.export_resfile(): 
                 line = ''.join(line)
                 f.write(line)
-            print('Database entry of "{}" successfully written to {}.'.format(self.__fragment, resfile))
+            print('Database entry of "{}" successfully written to {}.'\
+                    ''.format(self.__fragment, resfile))
         except(IOError):
             print('could not write file {}'.format(resfile))
             sys.exit(-1)

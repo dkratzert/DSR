@@ -42,14 +42,15 @@ class DSR_Parser():
         '''
         line = False  -> Line number
         line = True  -> Text string
-        find the lines with a DSR command entry and return its line number as default
-        or the text string when line is set to True'''
+        find the lines with a DSR command entry and return its line number as 
+        default or the text string when line is set to True'''
         dsr_str = ''
         indexnum = [i for i, l in enumerate(self.__reslist) for m in [re.search(self.__regex, l.lower())] if m]
         try:
             indexnum[0]
         except(IndexError):
-            print(' no proper DSR command found! \n\n Have you really saved your .res file?\n')
+            print(' no proper DSR command found! \n\n '\
+                    'Have you really saved your .res file?\n')
             sys.exit()
 
         if len(indexnum) > 1:
@@ -143,7 +144,8 @@ class DSR_Parser():
 
     def minimal_requirements(self):
         '''
-        Checks if minimal requirements of the dsr command are met. E.g. the WITH and ON command 
+        Checks if minimal requirements of the dsr command are met. 
+        E.g. the WITH and ON command 
         '''
         check = ('WITH', 'ON')
         for i in check:
@@ -151,7 +153,8 @@ class DSR_Parser():
                 if i not in self.__dsr:
                     raise Exception
             except:
-                print('\nNo "WITH" or "ON" statement in the dsr command line found!')
+                print('\nNo "WITH" or "ON" statement in the dsr '\
+                        'command line found!')
                 sys.exit()
 
 

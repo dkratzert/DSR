@@ -38,7 +38,8 @@ class getDB():
         try:
             self._db_dir = os.environ["DSR_DB_DIR"]
         except(KeyError):
-            print('The environment variable DSR_DB_DIR was not found.\nPlease set this variable to the path of the DSR database!')
+            print('The environment variable DSR_DB_DIR was not found.\n'\
+                'Please set this variable to the path of the DSR database!')
             self._db_dir = './'
         self._databases = self.getDB_files_dict()
 
@@ -94,7 +95,8 @@ class getDB():
             for i in duplicates:
                 #print list(set([ i for y in dbnames if y for y in i]))[0]
                 #print dbnames
-                print('\nDuplicate database entry "{}" found! Please remove/rename second entry\nand/or check all end tags.\n'.format(duplicates.pop()))
+                print('\nDuplicate database entry "{}" found! Please remove/rename '\
+                    'second entry\nand/or check all end tags.\n'.format(duplicates.pop()))
             sys.exit(0)
         ## sort lower-case:
         dbnames.sort(key=lambda x: x[0].lower())
@@ -195,7 +197,8 @@ class global_DB():
             print('Have you really followed the syntax?')
             sys.exit()
         if not end:
-            print('Could not find end of dbentry for fragment "{}"  Exiting...'.format(fragment))
+            print('Could not find end of dbentry for fragment '\
+                '"{}"  Exiting...'.format(fragment))
             sys.exit(-1)
         return atoms
 
@@ -209,12 +212,15 @@ class global_DB():
                 continue
             if not fragment_dict[i]:
                 if i == 'head':
-                    print('Header (restraints) of database entry "{}" missing!'.format(fragment))
+                    print('Header (restraints) of database entry "{}" missing!'\
+                        ''.format(fragment))
                 else:
-                    print('Values for "{}" in database entry "{}" missing!'.format(str.upper(i), fragment))
+                    print('Values for "{}" in database entry "{}" missing!'\
+                        ''.format(str.upper(i), fragment))
         if len(fragment_dict['fragline']) != 8:
-            print('The line starting with "FRAG" in the database entry of {} is not correct.\n\
-                \rAre the cell parameters really correct? "FRAG 17 a b c alpha beta gamma"\n'.format(fragment))
+            print('The line starting with "FRAG" in the database entry of {} is '\
+                'not correct.\n Are the cell parameters really correct? '\
+                '"FRAG 17 a b c alpha beta gamma"\n'.format(fragment))
             sys.exit(-1)
 
 
@@ -228,7 +234,8 @@ class global_DB():
             line = ' '.join(i)
             at = line.split()[0]
             if at in atoms:
-                print('dublicate atom {0} in database entry "{1}" found!'.format(at, fragment))
+                print('dublicate atom {0} in database entry "{1}" '\
+                    'found!'.format(at, fragment))
                 sys.exit(-1)
             else:
                 atoms.append(at)
@@ -237,7 +244,8 @@ class global_DB():
 
     def check_db_header_consistency(self, head, fragment):
         '''This method check the db header for consistency
-         - before frag only comments or cards. in case off error raise warning with line number
+         - before frag only comments or cards. in case off error raise warning 
+           with line number
         '''
         multiline = False  # multiline is here to be able to skip the next line after a continuation line
         for line in head:
@@ -283,7 +291,8 @@ class global_DB():
             if fragline:
                 pass
         except(UnboundLocalError):
-            print('Error. No cell parameters found in the database entry of "{}".'.format(fragment))
+            print('Error. No cell parameters found in the database entry '\
+                    'of "{}".'.format(fragment))
             print('Please add these parameters!')
             sys.exit(0)
         return (nhead, fragline, comment)
@@ -514,7 +523,8 @@ class ImportGRADE():
                     resi_name = str(name)
                     comment = imported_entry[name]['comment']
                     cell = '  '.join(imported_entry[name]['fragline'])
-                    dbentry = '<{}> \n{} \nRESI {} \n{} \n{} \n{} \n</{}>\n'.format(resi_name, comment, resi_name, head, cell, atoms, resi_name)
+                    dbentry = '<{}> \n{} \nRESI {} \n{} \n{} \n{} \n</{}>\n''\
+                        '.format(resi_name, comment, resi_name, head, cell, atoms, resi_name)
                     f.write(dbentry)
         except(IOError) as e:
             print(e)
@@ -532,7 +542,8 @@ class ImportGRADE():
                         resi_name = self._db[i]['resi']
                         fragline = '  '.join(self._db[i]['fragline'])
                         comment = ' '.join(self._db[i]['comment'])
-                        dbentry = '\n<{}> \nREM {} \nRESI {} \n{} \n{} \n{} \n</{}>\n'.format(name, comment, resi_name, head, fragline, atoms, name)
+                        dbentry = '\n<{}> \nREM {} \nRESI {} \n{} \n{} \n{} \n</{}>\n'\
+                            ''.format(name, comment, resi_name, head, fragline, atoms, name)
                         fu.write(dbentry)
         except(IOError) as e:
             print(e)
