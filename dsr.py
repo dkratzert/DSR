@@ -62,21 +62,45 @@ class DSR():
     '''
     main class
     '''
-    def __init__(self, res_file, export_fragment, import_grade, export_all, list_db, no_refine):
+    def __init__(self, res_file=None, export_fragment=None, import_grade=None, 
+                export_all=None, list_db=None, no_refine=None):
         # options from the commandline options parser
         self.options = OptionsParser(progname)
         if not res_file:
             self.res_file = self.options.res_file
         else:
             self.res_file = res_file
-        self.export_fragment = self.options.export_fragment
-        self.import_grade = self.options.import_grade
-        self.export_all = self.options.export_all
-       # self.debug = self.options.debug
-        self.list_db = self.options.list_db
-        self.no_refine = self.options.no_refine
-        
-        # check if at least one option is given:
+        if not export_fragment:
+            self.export_fragment = self.options.export_fragment
+        else:
+            self.export_fragment = export_fragment
+        if not import_grade:
+            self.import_grade = self.options.import_grade
+        else:
+            self.import_grade = import_grade
+        if not export_all:
+            self.export_all = self.options.export_all
+        else:
+            self.export_all = self.export_all
+       #if not self.debug:
+       #    self.debug = self.options.debug
+       #else:
+       #    self.debug = debug
+        if not list_db:
+            self.list_db = self.options.list_db
+        else:
+            self.list_db = list_db
+        if not no_refine:
+            self.no_refine = self.options.no_refine
+        else:
+            self.no_refine = no_refine
+        self.options_check()
+
+
+    def options_check(self):
+        '''
+        check if at least one option is given
+        '''
         if not  self.res_file\
         and not self.export_fragment\
         and not self.list_db\
@@ -84,9 +108,9 @@ class DSR():
         and not self.import_grade\
         and not self.no_refine:
             self.error()
-        
-        #and not self._options.debug\
-        
+        return
+
+    
     def error(self):
         print("\nPlease give one of the options as argument!\n")
         self.parser.print_help()
