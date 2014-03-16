@@ -34,21 +34,6 @@ class OptionsParser():
     def __init__(self, progname=''):
         self.progname = progname
         self._options = self.parse_commandline()
-        # check if at least one option is given:
-        if not self._options.res_file\
-        and not self._options.export_fragment\
-        and not self._options.list_db\
-        and not self._options.export_all\
-        and not self._options.import_grade\
-        and not self._options.no_refine:
-            self.error()
-        
-        #and not self._options.debug\
-        
-    def error(self):
-        print("\nPlease give one of the options as argument!\n")
-        self.parser.print_help()
-        sys.exit()
 
     @property
     def res_file(self):
@@ -66,9 +51,9 @@ class OptionsParser():
     def export_all(self):
         return self._options.export_all
     
-    @property
-    def debug(self):
-        return self._options.debug
+#    @property
+#    def debug(self):
+#        return self._options.debug
     
     @property
     def list_db(self):
@@ -77,6 +62,10 @@ class OptionsParser():
     @property
     def import_grade(self):
         return self._options.import_grade
+    
+    @property
+    def all_options(self):
+        return self._options
     
     
     def parse_commandline(self):
