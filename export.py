@@ -11,7 +11,6 @@
 #
 from __future__ import print_function
 import sys, re, os
-from options import OptionsParser
 import atomhandling as at
 from misc import ll_to_string
 from dbfile import global_DB
@@ -172,7 +171,6 @@ class Export():
             print('could not write file {}'.format(resfile))
             sys.exit(-1)
         f.close()
-        #if self.__options.export_all:
         self.make_image()
 
     
@@ -283,7 +281,7 @@ if __name__ == '__main__':
     gdb = global_DB()
     db = gdb.build_db_dict()['toluene']
     
-    export = Export(options, 'toluene')
+    export = Export('toluene')
     for i in export.export_resfile():
         print(i.strip('\n'))
     #import pyperclip
