@@ -188,7 +188,6 @@ class DSR():
             export = Export(name)
             export.write_file()
         sys.exit(1)
-        
     
     
     def set_final_db_sfac_types(self, dbtypes, dbatoms, sfac_table):

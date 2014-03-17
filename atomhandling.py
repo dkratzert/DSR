@@ -73,7 +73,6 @@ class FindAtoms():
     def __init__(self, reslist):
         self._reslist = reslist
         self._residues = self.collect_residues()
-        #print self.get_atoms_resinumber('C12_2')
 
     
     def get_atom(self, atomline):
@@ -532,6 +531,7 @@ if __name__ == '__main__':
     from dsrparse import DSR_Parser
     from resfile import ResList
     from dbfile import global_DB
+    res_file = 'p21c.res'
     res_list = ResList(res_file)
     reslist =  res_list.get_res_list()
     gdb = global_DB()

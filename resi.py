@@ -36,34 +36,27 @@ class Resi(object):
         self.__reslist = reslist
         self._find_atoms = find_atoms
         self._atoms_in_reslist = self._find_atoms.collect_residues()
-        #print(self._atoms_in_reslist)
         self._residues_in_res = sorted(self._atoms_in_reslist.keys())
         self.__dsr_dict = dsr_line.copy()
         self.__command = self.__dsr_dict['command']
         self.__com_resi_list = self.__dsr_dict['resi'][:] # makes a copy because we need it also later
         if self.__com_resi_list:
             if self.__com_resi_list != 'dbentry':
-                ########################################
                 self.__resi_dict_com = self.get_resi_syntax(self.__com_resi_list)
-                #########################################
         else:
             self.__resi_dict_com = False
         if self.__com_resi_list == 'dbentry':
             self.__resi_dict_com = 'Empty'
         self.__dbhead = dbhead
-        #self.__db_resi_list = self.get_resi_from_db() #new header has no residue, but db_dict has resi key
         try:
             self.__db_resi_list = residue.split() # use residue from db if not given in command line
         except(AttributeError):
             print('No valid residue "RESI classname" found in the database entry '\
                     'of {} found.'.format(self.__dsr_dict['fragment']))
             sys.exit()
-        ##############################
         self.__resi_dict_db = self.get_resi_syntax(self.__db_resi_list)
-        ##############################
         self.__combined_resi = self.build_up_residue()
-       # print(self.__combined_resi)
-       # self.resi_class_atoms_consistent()
+
 
 
     @property

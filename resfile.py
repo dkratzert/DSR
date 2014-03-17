@@ -85,7 +85,6 @@ class ResListEdit():
         checks are missing which make sure the data structure of new_line is correct!
         '''
         linenum = linenum-1
-        # adds the new line:
         self.__reslist.insert(linenum, new_line+'\n')
         return self.__reslist
 
@@ -109,7 +108,6 @@ class ResListEdit():
             if misc.multiline_test(line):
                 self.__reslist[linenum+1] = ' '+self.__reslist[linenum+1]
         return self.__reslist
-
     
     
     def list_lines(self, startline, endline):
@@ -223,8 +221,6 @@ if __name__ == '__main__':
     rle.insert_frag_fend_entry(dbatoms, fragline, fvarlines)    
     rle.set_fvar('91.1234', fvarlines)
     
-
-        
     for num, i in  enumerate(reslist):
         print(num+1, ''.join(i.strip('\n\r')))
         if num > 15:

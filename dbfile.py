@@ -279,11 +279,11 @@ class global_DB():
             if line.startswith('REM '):
                 if not comment:
                     comment = line.split()[1:]
+#                else:
+#                    comment.append(line.split()[1:])
                 continue
             if line.startswith('REM'):
                 continue
-            #if line.startswith('RESI'):
-            #    continue
             nhead.append(line)
         if not comment:
             comment = ''
@@ -405,19 +405,16 @@ class ImportGRADE():
         for line in pdb:
             line = line.decode('ascii')
             line = line.split()
-            #print line
             if line[0] == 'HETATM':
                 if line[-1] == 'H':
                     continue
                 tmp = []
                 tmp.append(line[2])
                 tmp.extend(line[6:9])
-                #tmp.append(line[11])
                 atomlines.append(tmp)
         if not atomlines:
             self.import_error()
         return atomlines
-
 
 
     def bild_grade_db_entry(self):
@@ -426,7 +423,6 @@ class ImportGRADE():
         .mol2 and .dfx file
         '''
         db_import_dict = {}
-#        dbnames = [i[0].upper() for i in self._dbnames[:]]
         num = 1
         resi_name = self._resi_name[:3]+str(num)
         for i in self._dbnames:
@@ -452,10 +448,7 @@ class ImportGRADE():
         '''
         returns the .mol2 and .dfx file location
         '''
-        #grade_base_filename = os.path.splitext(self._gradefile)[0]
-        #new code:
         grade_base_filename = os.path.splitext(self._gradefile)
-#        print grade_base_filename
         if grade_base_filename[1] == '.tgz':
             gradefile = tarfile.open(self._gradefile)
         else:
@@ -584,7 +577,6 @@ class ImportGRADE():
                 if l[4].upper() == 'H':
                     continue
                 # reorder the list fields:
-                #l = [l[0], l[4], l[1], l[2], l[3]]
                 l = [l[0], '1', l[1], l[2], l[3]]
                 atomlines.append(l)
         return atomlines
