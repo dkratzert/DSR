@@ -13,8 +13,6 @@ from __future__ import print_function
 import re
 import sys
 import misc
-from resfile import ResListEdit
-import constants
 import textwrap
 
 
@@ -76,10 +74,6 @@ class DSR_Parser():
                 dsr_str = dsr_str+' '+self.__reslist[indexnum[0]+1]
                 dsr_list = dsr_str.split()
                 txt = ' '.join(dsr_list)
-                #for i in dsr_list:
-                #    if i in constants.SHX_CARDS:
-                #        print 'Error in DSR command line: Wrapped line with empty next line.'
-                #        sys.exit()
                 # wrap the line after 75 chars:
                 dsrlines = textwrap.wrap(txt, 75, initial_indent='rem ', subsequent_indent = 'rem ')
                 if len(dsrlines) > 1:
@@ -92,9 +86,9 @@ class DSR_Parser():
             else:
                 dsr_str = re.sub(' +',' ', dsr_str)
                 dsr_list = dsr_str.split()
-               # dsr_list.insert(0, 'rem') # comment out the old line
                 txt = ' '.join(dsr_list)
-                dsrlines = textwrap.wrap(txt, 75, initial_indent='rem ', subsequent_indent = 'rem ') # wrap the line after 75 chars
+                # wrap the line after 75 chars
+                dsrlines = textwrap.wrap(txt, 75, initial_indent='rem ', subsequent_indent = 'rem ') 
                 if len(dsrlines) > 1:
                     dsrlines[0] = dsrlines[0]+' ='
                 dsrlines = '\n'.join(dsrlines) 
@@ -165,7 +159,6 @@ class DSR_Parser():
         self.minimal_requirements()
         # syntax:
         # rem dsr put|add|replace fragment with source on target part xx AFIX 17x occ occupancy
-        # the command:
         command = self.__dsr[2]
         # get the fragment:
         fragment = self.__dsr[3]
@@ -189,9 +182,6 @@ class DSR_Parser():
         dfix = False
         if 'DFIX' in self.__dsr:
             dfix = True
-     #       if dfix and not residue:
-     #           print('The DFIX command is allowed only in combination with RESI.')
-     #           sys.exit()
         dsr_dict = {
             'command': str(command),
             'fragment': str(fragment),
@@ -247,6 +237,7 @@ class DSR_Parser():
 #for testing:
 if __name__ == '__main__':
     from resfile import ResList, ResListEdit
+    res_file = 'p21c.res'
     rl = ResList(res_file)
     reslist = rl.get_res_list()
     rle = ResListEdit(reslist, res_file)

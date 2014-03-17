@@ -22,9 +22,7 @@ __metaclass__ = type  # use new-style classes
 class ShelxlRefine():
     '''A class to do a shelxl refinement. It is only for shelxl 2013!
     The resfilename should be without ending.
-    
     '''
-    
     def __init__(self, reslist, resfile_name, find_atoms):
         self._find_atoms = find_atoms
         self._atoms_in_reslist = self._find_atoms.collect_residues()
@@ -250,16 +248,13 @@ class ShelxlRefine():
         print(' refining with "{}" and "L.S. 0"'.format(' '.join(command_line)))
         p = subprocess.Popen(command_line, stdin = subprocess.PIPE,
                             stdout = subprocess.PIPE, stderr=subprocess.STDOUT)
-        
         (child_stdin, child_stdout_and_stderr) = (p.stdin, p.stdout)
-        
         child_stdin.close()
         
         # Watch the output for successful termination
         out = child_stdout_and_stderr.readline().decode('ascii')
         output = []
         while out:
-            #sys.stdout.write(out)
             output.append(out)
             out = child_stdout_and_stderr.readline().decode('ascii')
         
@@ -275,7 +270,7 @@ class ShelxlRefine():
             print('Check for errors in your SHELX input file!\n')
             self.restore_shx_file()
             sys.exit()
-        else: # sucess
+        else:          # sucess
             print('-----------------------------------------------------------------')
             try:
                 misc.remove_file(self.bakfile)

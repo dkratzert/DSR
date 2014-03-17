@@ -31,13 +31,13 @@ class OptionsParser():
         self.progname = progname
         self._options = self.parse_commandline()
 
-        if not  self.res_file\
-        and not self.export_fragment\
-        and not self.list_db\
-        and not self.export_all\
-        and not self.import_grade\
-        and not self.no_refine:
-            self.error()
+#        if not  self.res_file\
+#        and not self.export_fragment\
+#        and not self.list_db\
+#        and not self.export_all\
+#        and not self.import_grade\
+#        and not self.no_refine:
+#            self.error()
         return
     
     def error(self):
@@ -91,12 +91,18 @@ class OptionsParser():
         +'   REPLACE: Replace existing target atoms or q-peaks.'
         +sep_line
         )
-        self.parser.add_argument("-r", dest="res_file", metavar='"res file"', help="res file with DSR command", default=False)
-        self.parser.add_argument("-e", dest="export_fragment", metavar='"fragment"', help="export fragment from the database", default=False)
-        self.parser.add_argument("-i", dest="import_grade", metavar='"tgz file"', help="import a fragment from GRADE (needs .tgz file)", default=False)
-        self.parser.add_argument("-ea", dest="export_all", action='store_true', help=SUPPRESS, default=False)
-        self.parser.add_argument("-l", dest="list_db", action="store_true", help="list names of all database entries", default=False)
-        self.parser.add_argument("-n", dest="no_refine", action="store_true", help="do not refine after fragment transfer", default=False)
+        self.parser.add_argument("-r", dest="res_file", metavar='"res file"', \
+                                help="res file with DSR command", default=False)
+        self.parser.add_argument("-e", dest="export_fragment", metavar='"fragment"', \
+                                help="export fragment from the database", default=False)
+        self.parser.add_argument("-i", dest="import_grade", metavar='"tgz file"', \
+                                help="import a fragment from GRADE (needs .tgz file)", default=False)
+        self.parser.add_argument("-ea", dest="export_all", action='store_true', \
+                                help=SUPPRESS, default=False)
+        self.parser.add_argument("-l", dest="list_db", action="store_true", \
+                                help="list names of all database entries", default=False)
+        self.parser.add_argument("-n", dest="no_refine", action="store_true", \
+                                help="do not refine after fragment transfer", default=False)
         return self.parser.parse_args()
         
 

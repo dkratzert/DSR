@@ -158,7 +158,7 @@ if __name__ == '__main__':
     from atomhandling import SfacTable
     from resfile import ResList, ResListEdit
     from resi import Resi
-    
+    res_file = 'p21c.res'
     rl = ResList(res_file)
     reslist = rl.get_res_list()
     dsrp = DSR_Parser(reslist, rl)
@@ -176,11 +176,13 @@ if __name__ == '__main__':
     resi = Resi(reslist, dsr_dict, dbhead, residue, find_atoms)
     dbhead = resi.make_resihead()
 
-
-    sf = SfacTable(reslist, dbtypes)
+    sf = SfacTable(reslist, dbtypes, res_file)
     sfac_table = sf.set_sfac_table()
+    num = NumberScheme(reslist, dbatoms, resi.get_resinumber)
+    numberscheme = num.get_fragment_number_scheme()
 
-    afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, sfac_table, find_atoms)
+
+    afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, sfac_table, find_atoms, numberscheme)
     print(afix.build_afix_entry())
 
 
