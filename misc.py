@@ -257,6 +257,61 @@ def frac_to_cart(frac_coord, cell):
     Zc = 0   +  0               + (c*sin(beta)*sinastar)*z
     return (Xc, Yc, Zc)
 
+
+def determinante(a):
+    '''
+    return determinant of 3x3 matrix
+    '''
+    return (a[0][0] * (a[1][1] * a[2][2] - a[2][1] * a[1][2])
+           -a[1][0] * (a[0][1] * a[2][2] - a[2][1] * a[0][2])
+           +a[2][0] * (a[0][1] * a[1][2] - a[1][1] * a[0][2]))
+
+
+def subtract(a, b):
+    '''
+    subtract vector b from vector a
+    '''
+    return (a[0] - b[0],
+            a[1] - b[1],
+            a[2] - b[2])
+
+
+def vol_tetrahedron(a, b, c, d, cell):
+    '''
+    returns the volume of a terahedron spanned by four points:
+    e.g. A = (3, 2, 1), B = (1, 2, 4), C = (4, 0, 3), D = (1, 1, 7)
+
+            |u1 u2 u3|
+    v = 1/6*|v1 v2 v3|
+            |w1 w2 w3|
+    
+    AB = (1-3, 2-2, 4-1) = (-2, 0, 3)
+    AC = ...
+    AD = ...
+    
+    V = 1/6[u,v,w]
+    
+              |-2,  0, 3|
+    [u,v,w] = | 1, -2, 2| = 24-3-12 = 5
+              |-2, -1, 6|
+        
+    V = 1/6*5
+    '''
+    A = frac_to_cart(a, cell)
+    B = frac_to_cart(b, cell)
+    C = frac_to_cart(c, cell)
+    D = frac_to_cart(d, cell)
+    
+    AB = subtract(A, B)
+    AC = subtract(A, C)
+    AD = subtract(A, D)
+    D = determinante([AB, AC, AD])
+    volume = abs((D/6))
+
+    return volume
+    
+
+
 #def bond_angle(dx1, dx2, cell):
 #    pass
 #    # cos(phi) = {a**2*dxr*dxs + b**2*dyr*dys + c**2 * dzr*dzs + b*c*cos(alpha)(dyr*dzs + dys*dzr) +  
@@ -286,12 +341,35 @@ def frac_to_cart(frac_coord, cell):
 #        return angle
 
 if __name__ == '__main__':
-    from resfile import ResList
+    from resfile import ResList, ResListEdit
+    from atomhandling import FindAtoms
     from dsrparse import DSR_Parser
     import math as m
+    res_file = 'p21c.res'
     res_list = ResList(res_file)
     reslist = res_list.get_res_list()
-    dsrp = DSR_Parser(reslist)
+    find_atoms = FindAtoms(reslist)
+    rle = ResListEdit(reslist, find_atoms)
+    dsrp = DSR_Parser(reslist, rle)
+    
+    cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
+    # CF3:
+    a = (0.281319, 0.368769, 0.575106)
+    b = (0.352077, 0.314955, 0.582945)
+    c = (0.191896, 0.365437, 0.617058)
+    d = (0.358359, 0.417667, 0.594043)
+    print('volume of CF3-group:')
+    print(vol_tetrahedron(a, b, c, d, cell))
+    # Benzene:
+    # orig: a = (0.838817,   0.474526,   0.190081)
+    a = (0.838817,   0.484526,   0.190081) # a ist um 0.01 ausgelenkt
+    b = (0.875251,   0.478410,   0.256955)
+    c = (0.789290,   0.456520,   0.301616)
+    d = (0.674054,   0.430194,   0.280727)
+    print('volume of Benzene ring atoms:')
+    print(vol_tetrahedron(a, b, c, d, cell))    
+    
+    
     
     dsr_string = dsrp.find_dsr_command(line=True).lower()
 
@@ -308,7 +386,7 @@ if __name__ == '__main__':
     print('#'+reslist[24].strip('\n')+'#')
     print('multiline?', multiline_test(reslist[24]))
     
-    cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
+    
     cell90 = (1, 1, 1, 90, 90, 90)
     cell90 = [ float(i) for i in cell90 ]
     coord1 = (-0.186843,   0.282708,   0.526803) # C5

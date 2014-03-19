@@ -428,7 +428,7 @@ if __name__ == '__main__':
     G = am.get_adjmatrix
     print(G.nodes())
     print('dihkstra:')
-    print(nx.dijkstra_path(G, 'C1A', 'C4A'))
+    #print(nx.dijkstra_path(G, 'C1A_B', 'C4A_B'))
     print('\ncycle_basis')
     l = nx.cycle_basis(G)
     # liste der cycles im Graph:
