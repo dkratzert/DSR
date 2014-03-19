@@ -225,7 +225,45 @@ class DSR():
         except() as e:
             print(e)
             sys.exit() 
+
     
+    def chunks(self, l, n):
+        """ Yield successive n-sized chunks from l.
+        """
+        for i in range(0, len(l), n):
+            fehlt = 4 - len(l[i:i+n])
+            i=i-fehlt
+            yield l[i:i+n]
+
+    
+    def generate_flat_restraints(self, am, coords, cell):
+        import networkx as nx
+        from misc import vol_tetrahedron
+        G = am.get_adjmatrix
+        l = nx.cycle_basis(G)
+        
+        if not l:
+            return False
+        for ring in l:
+            x=len(ring)
+ #           print( ((x+3)//4)+(x%4)//4 , 'anzahl')
+            parts = self.chunks(ring, 4)
+            for i in parts:
+                for fl in i:
+                    print(coords[fl])
+#            for n, atom in enumerate(ring):
+#                atcoord = coords[atom]
+#                x = atcoord
+#                print(x, atom)
+#                if n == 3:
+#                    print('\n')
+#                    break
+#            #print(ring)
+#        rem rem dsr put naphthalene with c8 c6 c7 on q6 Q4 q7 resi PART 3 occ -31 =
+#         rem dfix
+        #vol_tetrahedron(a, b, c, d, cell)
+        #print(l)
+        
     
     def generate_dfix_restraints(self, lf, reslist, dbatoms, residue, cell, part=''):
         '''
@@ -244,6 +282,7 @@ class DSR():
         am = Adjacency_Matrix(fragment_atoms, conntable, coords, cell)
         re = Restraints(coords, am.get_adjmatrix, fragment_atoms, cell)
         dfixes = re.get_formated_12_dfixes+re.get_formated_13_dfixes
+        print(self.generate_flat_restraints(am, coords, cell))
         return ''.join(dfixes)
     
     
@@ -360,7 +399,8 @@ class DSR():
     
 if __name__ == '__main__':
     '''main function'''
-    dsr = DSR()
+    dsr = DSR(no_refine=True)
+    #dsr = DSR()
 
     
 

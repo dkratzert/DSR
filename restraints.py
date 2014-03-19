@@ -151,12 +151,17 @@ class ListFile():
         num = 0
         for line in self._listfile_list[start_line:]:
             line = line.split()
+            #print(line)
             try:
                 line[0]
             except(IndexError):
                 break
             xyz = line[1:4]
-            xyz = [float(i) for i in xyz]
+            try:
+                xyz = [float(i) for i in xyz]
+            except(ValueError):
+                print('No atoms found in list file!')
+                sys.exit(0)
             atom = {str(line[0]).upper(): xyz}
             atom_coords.update(atom)
         return atom_coords
@@ -278,8 +283,8 @@ class Restraints():
         dfix = self.get_12_dfixes
         dfix = remove_duplicate_bonds(dfix)
         for n, i in enumerate(dfix, 1):
-            dfix_format.append('DFIX {:7}{:7}{:.4f}\n'.format(misc.remove_partsymbol(i[0]), 
-                                misc.remove_partsymbol(i[1]), i[2]))
+            dfix_format.append('DFIX {:.4f}  {:7}{:7}\n'.format(i[2], \
+                misc.remove_partsymbol(i[0]), misc.remove_partsymbol(i[1])))
         return dfix_format
 
 
@@ -347,8 +352,8 @@ class Restraints():
         dfixes_13 = self.make_13_dist(nextneighbors)
         dfix_13_format = []
         for i in dfixes_13:
-            dfix_13_format.append('DANG {:7}{:7}{:.4f}\n'.format(misc.remove_partsymbol(i[0]), 
-                                    misc.remove_partsymbol(i[1]), i[2]))
+            dfix_13_format.append('DANG {:.4f}  {:7}{:7}\n'.format(i[2], 
+                misc.remove_partsymbol(i[0]), misc.remove_partsymbol(i[1])))
         return dfix_13_format
         
         
@@ -408,8 +413,8 @@ if __name__ == '__main__':
     
     gdb = global_DB()
  
-    residue = ''
-    part = ''
+    residue = '4'
+    part = '3'
     
     lf = ListFile(basefilename)
     cell = lf.get_cell_params
@@ -426,13 +431,14 @@ if __name__ == '__main__':
     print(fragment_atoms, cell)
     am = Adjacency_Matrix(fragment_atoms, conntable, coords, cell)
     G = am.get_adjmatrix
-    print(G.nodes())
-    print('dihkstra:')
-    #print(nx.dijkstra_path(G, 'C1A_B', 'C4A_B'))
+    print('nodes:', G.nodes())
+    print('dihkstra (kürzester pfad):')
+    print(nx.dijkstra_path(G, 'C1_4C', 'C4_4C'))
     print('\ncycle_basis')
     l = nx.cycle_basis(G)
-    # liste der cycles im Graph:
+    print('liste der cycles im Graph:')
     print(sorted(l))
+    print('end\n')
     re = Restraints(coords, am.get_adjmatrix, fragment_atoms, cell)
     dfixes = re.get_formated_12_dfixes
     dfixes_13 = re.get_formated_13_dfixes
