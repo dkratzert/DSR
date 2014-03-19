@@ -297,6 +297,10 @@ def vol_tetrahedron(a, b, c, d, cell):
         
     V = 1/6*5
     '''
+    a = [float(i) for i in a]
+    b = [float(i) for i in b]
+    c = [float(i) for i in c]
+    d = [float(i) for i in d]
     A = frac_to_cart(a, cell)
     B = frac_to_cart(b, cell)
     C = frac_to_cart(c, cell)
