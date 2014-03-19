@@ -48,6 +48,7 @@ class Export():
         except(KeyError):
             print('Fragment "{}" was not found in the database!!'.format(self.__fragment))
             sys.exit()
+        self._gdb.check_consistency(self.__db, self.__fragment)
         self._comment = self.__db['comment']
         self.__dbatoms = self.__db['atoms']
         self.__atomtypes = at.get_atomtypes(self.__dbatoms)

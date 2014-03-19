@@ -212,14 +212,14 @@ class global_DB():
                 continue
             if not fragment_dict[i]:
                 if i == 'head':
-                    print('Header (restraints) of database entry "{}" missing!'\
+                    print('- Restraints in the header of database entry "{}" missing!\n'\
                         ''.format(fragment))
                 else:
-                    print('Values for "{}" in database entry "{}" missing!'\
+                    print('- Values for "{}" in database entry "{}" missing!'\
                         ''.format(str.upper(i), fragment))
         if len(fragment_dict['fragline']) != 8:
-            print('The line starting with "FRAG" in the database entry of {} is '\
-                'not correct.\n Are the cell parameters really correct? '\
+            print('- The line starting with "FRAG" in the database entry of {} is '\
+                'not correct.\n  Are the cell parameters really correct? '\
                 '"FRAG 17 a b c alpha beta gamma"\n'.format(fragment))
             sys.exit(-1)
 
