@@ -235,22 +235,43 @@ class DSR():
             i=i-fehlt
             yield l[i:i+n]
 
+    def get_overlapped_chunks(self, ring, size):
+        for i in range(len(ring)-size+1):
+            yield ring[i:i+size]
+
+    def get_overlapped_chunks2(textin, chunksize, overlapsize):  
+        return [ textin[a:a+chunksize] for a in range(0,len(textin), chunksize-overlapsize)]
     
     def generate_flat_restraints(self, am, coords, cell):
         import networkx as nx
         from misc import vol_tetrahedron
+        cell = [float(i) for i in cell]
         G = am.get_adjmatrix
         l = nx.cycle_basis(G)
-        
         if not l:
             return False
+        flats = []
         for ring in l:
             x=len(ring)
+            if x < 4:
+                continue
  #           print( ((x+3)//4)+(x%4)//4 , 'anzahl')
-            parts = self.chunks(ring, 4)
+            #parts = self.chunks(ring, 4)
+            parts = self.get_overlapped_chunks(ring, 4)
             for i in parts:
+                print(i)
+                atoms = []
                 for fl in i:
-                    print(coords[fl])
+                    coord = coords[fl]
+                    #print(coord)
+                    atoms.append(coord)
+                #print(atoms)
+                a, b, c, d = atoms
+                volume = (vol_tetrahedron(a, b, c, d, cell))
+                print('{:.4f}'.format(volume))
+                if volume < 0.1:
+                    flats.append(i)
+        print(flats)
 #            for n, atom in enumerate(ring):
 #                atcoord = coords[atom]
 #                x = atcoord
