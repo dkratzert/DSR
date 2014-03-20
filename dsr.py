@@ -235,7 +235,20 @@ class DSR():
             i=i-fehlt
             yield l[i:i+n]
 
-    def get_overlapped_chunks(self, ring, size):
+    def get_overlapped_chunks(self, ring, size, count):
+        chunks = []
+        
+        print(ring)
+        for i in range(0, len(ring)-size+1, 3):
+            #if i > 0:
+            #    i = i + 2
+            chunk = ring[i:i+size]
+            #print(i)
+            print(chunk)
+            chunks.append(chunk)
+        return chunks
+    
+    def get_overlapped_chunks_bak(self, ring, size):
         for i in range(len(ring)-size+1):
             yield ring[i:i+size]
 
@@ -251,15 +264,19 @@ class DSR():
         if not l:
             return False
         flats = []
+        l = [['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']]
         for ring in l:
             x=len(ring)
             if x < 4:
                 continue
- #           print( ((x+3)//4)+(x%4)//4 , 'anzahl')
+            count = ((x+3)//4)+(x%4)//4
             #parts = self.chunks(ring, 4)
-            parts = self.get_overlapped_chunks(ring, 4)
+            parts = self.get_overlapped_chunks(ring, 4, count)
+            print('\n')
+            #print(parts)
             for i in parts:
-                print(i)
+                #print(i, len(i))
+                continue
                 atoms = []
                 for fl in i:
                     coord = coords[fl]
