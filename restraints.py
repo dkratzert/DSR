@@ -173,12 +173,17 @@ class ListFile():
         ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
         '''
         cell = False
-        for line in self._listfile_list:
+        for num, line in enumerate(self._listfile_list):
             if line.startswith(' CELL'):
                 cell = line.split()[2:]
+                try:
+                    cell = [float(i) for i in cell]
+                except(ValueError), e:
+                    print(e, '\nbad cell parameters in line {} in the list file.'.format(num+1))
+                    sys.exit()
                 break
         if not cell:
-            print('Unable to find unit cell parameters in th res file.')
+            print('Unable to find unit cell parameters in th list file.')
             sys.exit()
         return cell
     
