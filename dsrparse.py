@@ -205,27 +205,36 @@ class DSR_Parser():
     
     @property
     def command(self):
-        self.parse_dsr_line()['command']
-        
+        return self.parse_dsr_line()['command']
+    
+    @property
+    def part(self):
+        return self.parse_dsr_line()['part']
+    
     @property
     def source(self):
-        self.parse_dsr_line()['source']
+        return self.parse_dsr_line()['source']
     
     @property
     def target(self):
-        self.parse_dsr_line()['target']    
+        return self.parse_dsr_line()['target']    
         
     @property
     def resi(self):
-        self.parse_dsr_line()['resi']
+        return self.parse_dsr_line()['resi']
     
     @property
     def dfix(self):
-        self.parse_dsr_line()['dfix']
+        dfix = self.parse_dsr_line()['dfix']
+        if dfix and not self.part:
+            print('You have to use the "PART" command if you use DFIX in DSR!')
+            print('No restraints inserted!')
+            sys.exit()
+        return dfix
     
     @property
     def source(self):
-        self.parse_dsr_line()['source']    
+        return self.parse_dsr_line()['source']    
         
     
     

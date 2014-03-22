@@ -227,81 +227,7 @@ class DSR():
             sys.exit() 
 
     
-    def chunks(self, l, n):
-        """ Yield successive n-sized chunks from l.
-        """
-        for i in range(0, len(l), n):
-            fehlt = 4 - len(l[i:i+n])
-            i=i-fehlt
-            yield l[i:i+n]
-
-    def get_overlapped_chunks(self, ring, size, count):
-        chunks = []
-        
-        print(ring)
-        for i in range(0, len(ring)-size+1, 3):
-            #if i > 0:
-            #    i = i + 2
-            chunk = ring[i:i+size]
-            #print(i)
-            print(chunk)
-            chunks.append(chunk)
-        return chunks
-    
-    def get_overlapped_chunks_bak(self, ring, size):
-        for i in range(len(ring)-size+1):
-            yield ring[i:i+size]
-
-    def get_overlapped_chunks2(textin, chunksize, overlapsize):  
-        return [ textin[a:a+chunksize] for a in range(0,len(textin), chunksize-overlapsize)]
-    
-    def generate_flat_restraints(self, am, coords, cell):
-        import networkx as nx
-        from misc import vol_tetrahedron
-        cell = [float(i) for i in cell]
-        G = am.get_adjmatrix
-        l = nx.cycle_basis(G)
-        if not l:
-            return False
-        flats = []
-        l = [['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']]
-        for ring in l:
-            x=len(ring)
-            if x < 4:
-                continue
-            count = ((x+3)//4)+(x%4)//4
-            #parts = self.chunks(ring, 4)
-            parts = self.get_overlapped_chunks(ring, 4, count)
-            print('\n')
-            #print(parts)
-            for i in parts:
-                #print(i, len(i))
-                continue
-                atoms = []
-                for fl in i:
-                    coord = coords[fl]
-                    #print(coord)
-                    atoms.append(coord)
-                #print(atoms)
-                a, b, c, d = atoms
-                volume = (vol_tetrahedron(a, b, c, d, cell))
-                print('{:.4f}'.format(volume))
-                if volume < 0.1:
-                    flats.append(i)
-        print(flats)
-#            for n, atom in enumerate(ring):
-#                atcoord = coords[atom]
-#                x = atcoord
-#                print(x, atom)
-#                if n == 3:
-#                    print('\n')
-#                    break
-#            #print(ring)
-#        rem rem dsr put naphthalene with c8 c6 c7 on q6 Q4 q7 resi PART 3 occ -31 =
-#         rem dfix
-        #vol_tetrahedron(a, b, c, d, cell)
-        #print(l)
-        
+       
     
     def generate_dfix_restraints(self, lf, reslist, dbatoms, residue, cell, part=''):
         '''
@@ -319,8 +245,7 @@ class DSR():
         fragment_atoms = format_atom_names(dbatoms, part, residue)
         am = Adjacency_Matrix(fragment_atoms, conntable, coords, cell)
         re = Restraints(coords, am.get_adjmatrix, fragment_atoms, cell)
-        dfixes = re.get_formated_12_dfixes+re.get_formated_13_dfixes
-        print(self.generate_flat_restraints(am, coords, cell))
+        dfixes = re.get_formated_12_dfixes+re.get_formated_13_dfixes+re.get_formated_flats
         return ''.join(dfixes)
     
     
@@ -411,7 +336,7 @@ class DSR():
         if not self.no_refine:
             self.set_post_refine_cycles(shx, '8')
         
-        if dsr_dict['dfix']:
+        if dsrp.dfix:
             resinumber = resi.get_resinumber
             dfix = self.generate_dfix_restraints(lf, 
                                             reslist, 
@@ -429,7 +354,7 @@ class DSR():
                 pass
                 line = '{}'.format(dfix) # insert restraints after dsrline
                 reslist[dsrline] = reslist[dsrline]+line
-                
+            #print(dfix)
         if not self.no_refine:
             rl.write_resfile(reslist, '.res')
         
@@ -437,8 +362,8 @@ class DSR():
     
 if __name__ == '__main__':
     '''main function'''
-    dsr = DSR(no_refine=True)
-    #dsr = DSR()
+    #dsr = DSR(no_refine=True)
+    dsr = DSR()
 
     
 
