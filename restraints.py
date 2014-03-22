@@ -403,6 +403,8 @@ class Restraints():
         formats the FLAT restraints and removes the part symbol
         '''
         flats = self.make_flat_restraints()
+        if not flats:
+            return ['']
         flat_format = []
         for i in flats:
             i = [misc.remove_partsymbol(x) for x in i]
