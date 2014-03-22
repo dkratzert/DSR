@@ -178,7 +178,7 @@ class ListFile():
                 cell = line.split()[2:]
                 try:
                     cell = [float(i) for i in cell]
-                except(ValueError), e:
+                except(ValueError, e):
                     print(e, '\nbad cell parameters in line {} in the list file.'.format(num+1))
                     sys.exit()
                 break
@@ -263,6 +263,7 @@ class Restraints():
     def __init__(self, coords, G, atoms, cell):
         self.coords = coords
         self.atoms = atoms
+        cell = [float(i) for i in cell]
         self._cell = cell
         self._G = G
 
@@ -350,7 +351,65 @@ class Restraints():
             dist_13.append((atom1, atom2, misc.atomic_distance(c1, c2, self._cell)))
         return dist_13
 
+    
+    def get_overlapped_chunks(self, ring, size):
+        '''
+        returns a list of chunks of size 'size' which overlap with one field.
+        If the last chunk is smaller than size, the last 'size' chunks are returned as last chunk.
+        '''
+        chunks = []
+        for i in range(0, len(ring)-size+3, 3):
+            chunk = ring[i:i+size]
+            if len(chunk) < 4:
+                chunk = ring[-size:]
+            chunks.append(chunk)
+        return chunks
+    
+    
+    def make_flat_restraints(self):
+        '''
+        searches for rings in the graph G, splits it in 4-member chunks and tests if
+        they are flat: volume of tetrahedron of chunk < 0.1 A-3.
+        returns list of flat chunks.
+        '''
+        from misc import vol_tetrahedron
+        list_of_rings = nx.cycle_basis(self._G)
+        #print('The list of rings:', list_of_rings)
+        if not list_of_rings:
+            return False 
+        flats = []
+        for ring in list_of_rings:
+            if len(ring) < 4:
+                continue #wenn ring zu wenig atome hat dann nächsten
+            chunks = self.get_overlapped_chunks(ring, 4)
+            for p in chunks:
+                atoms = []
+                for atom in p:
+                    coord = self.coords[atom]
+                    atoms.append(coord)
+                a, b, c, d = atoms
+                volume = (vol_tetrahedron(a, b, c, d, self._cell))
+                if volume < 0.1:
+                    flats.append(p)
+                else:
+                    pass
+                    #print('volume of', p, 'too big:', volume)
+        return flats
 
+
+    @property
+    def get_formated_flats(self):
+        '''
+        formats the FLAT restraints and removes the part symbol
+        '''
+        flats = self.make_flat_restraints()
+        flat_format = []
+        for i in flats:
+            i = [misc.remove_partsymbol(x) for x in i]
+            flat_format.append('FLAT {}\n'.format(' '.join(i)))
+        return flat_format
+    
+    
     @property
     def get_formated_13_dfixes(self):
         nextneighbors = remove_duplicate_bonds(self.get_next_neighbors())
