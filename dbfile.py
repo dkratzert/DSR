@@ -268,7 +268,7 @@ class global_DB():
         '''
         head = []
         nhead = []
-        comment = None
+        comment = []
         for i in self._db_plain_dict[db][int(line):]:
             if i.upper().startswith('FRAG'):
                 fragline = i.rstrip(' \n\r')
@@ -277,13 +277,7 @@ class global_DB():
         for line in head:
             line = line.strip(' \n\r').upper()
             if line.startswith('REM '):
-                if not comment:
-                    comment = line.split()[1:]
-#                else:
-#                    comment.append(line.split()[1:])
-                continue
-            if line.startswith('REM'):
-                continue
+                comment.append(line.split()[1:])
             nhead.append(line)
         if not comment:
             comment = ''
@@ -338,7 +332,7 @@ class global_DB():
         returns the first comment line of the dbentry of fragment x
         '''
         comment = self._dbentry_dict[fragment.lower()]['comment']
-        comment = ' '.join(comment)
+        comment = ', '.join([' '.join(i) for i in comment])
         return comment
 
     
