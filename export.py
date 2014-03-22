@@ -81,7 +81,13 @@ class Export():
         
     
     def export_resfile(self):
-        '''exports a .res file from a database entry to be viewed in a GUI'''
+        '''
+        exports a .res file from a database entry to be viewed in a GUI
+        '''
+        try:
+            from dsr import VERSION
+        except(ImportError):
+            pass
         sfac = []
         res_export = []
         for i in self.__atomtypes:       #build sfac table from atomtypes
@@ -109,6 +115,12 @@ class Export():
             
         a = ll_to_string(self.__dbatoms)      #convert to string
         res_export.append('TITL '+self.__fragment+'\n')     #title card with fragment name
+        try:
+            res_export.append('REM This file was exported by DSR version {}\n'.format(VERSION))
+        except(NameError):
+            pass
+        comment = '\nREM '.join([' '.join(i) for i in self._comment])
+        res_export.append('REM '+comment+'\n')
         res_export.append('CELL  0.71  '+self.__cell+'\n')   # the cell with wavelength
         res_export.append('LATT  -1\n')
         res_export.append('SFAC '+'  '.join(sfac)+'\n')
