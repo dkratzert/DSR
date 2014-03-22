@@ -150,6 +150,7 @@ class global_DB():
             fragline = self.get_head_lines(fragment, db, line)[1]
             atoms = self.get_fragment_atoms(fragment, db, line)
             comment = self.get_head_lines(fragment, db, line)[2]
+            comment = ' '.join([' '.join(x) for x in comment])
             db_dict[fragment] = {
                 'head'    : (header),
                 'resi'    : residue,
@@ -280,7 +281,7 @@ class global_DB():
                 comment.append(line.split()[1:])
             nhead.append(line)
         if not comment:
-            comment = ''
+            comment = ['']
         try:
             if fragline:
                 pass
@@ -361,6 +362,7 @@ class ImportGRADE():
         self._restraints = self.get_restraints()
         self._atoms = self.get_pdbatoms(self._pdbfile)
         self._resi_name = self.get_name_from_obprop(self._obpropfile) 
+        #print(self.get_first_last_atom())
         
 
     def get_name_from_obprop(self, obprop):
@@ -374,7 +376,13 @@ class ImportGRADE():
                 line = line.split()
                 break
         return line[1]
-
+    
+    
+    def get_first_last_atom(self):
+        '''
+        returns the first and the last atom from the imported atom list
+        '''
+        return self._atoms[0][0], self._atoms[-1][0]
     
     def get_restraints(self):
         '''
@@ -432,7 +440,7 @@ class ImportGRADE():
                 'atoms'   : self._atoms,
                 'line'    : None,
                 'db'      : 'dsr-user-db',
-                'comment' : 'REM Source: GRADE import',
+                'comment' : [['REM', 'Source:', 'GRADE', 'import'], ['']],
                 'name'    : resi_name
                 }
         return db_import_dict
@@ -505,10 +513,11 @@ class ImportGRADE():
                 for name in grade_db_names:
                     print('Importing {} to user database...'.format(name))
                     atomlist = imported_entry[name]['atoms']
+                    comment = imported_entry[name]['comment']
+                    comment = '\nREM '.join([' '.join(x) for x in comment])
                     head = '\n'.join([' '.join(x) for x in imported_entry[name]['head']])
                     atoms = '\n'.join(['{:<6} 1  {:>10}{:>10}{:>10}'.format(*y) for y in atomlist])
                     resi_name = str(name)
-                    comment = imported_entry[name]['comment']
                     cell = '  '.join(imported_entry[name]['fragline'])
                     dbentry = '<{}> \n{} \nRESI {} \n{} \n{} \n{} \n</{}>\n''\
                         '.format(resi_name, comment, resi_name, head, cell, atoms, resi_name)
@@ -528,9 +537,8 @@ class ImportGRADE():
                         atoms = '\n'.join(['{:<6}{:<2}{:>10}{:>10}{:>10}'.format(*y) for y in atomlist])
                         resi_name = self._db[i]['resi']
                         fragline = '  '.join(self._db[i]['fragline'])
-                        comment = ' '.join(self._db[i]['comment'])
-                        dbentry = '\n<{}> \nREM {} \nRESI {} \n{} \n{} \n{} \n</{}>\n'\
-                            ''.format(name, comment, resi_name, head, fragline, atoms, name)
+                        dbentry = '\n<{}> \nRESI {} \n{} \n{} \n{} \n</{}>\n'\
+                            ''.format(name, resi_name, head, fragline, atoms, name)
                         fu.write(dbentry)
         except(IOError) as e:
             print(e)
