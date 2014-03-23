@@ -27,23 +27,16 @@ from restraints import ListFile, Lst_Deviations, format_atom_names
 from restraints import Restraints, Adjacency_Matrix
 
 # TODO and ideas:
-# -check for residues with same class and differing atom names inside.
-# -count number of atoms in old and new residues to compare them for error checking.
+# -list of available fragments on homepage
 # -To the manual: Avogradro/res-file -> rename -> mercury -> mol2-file -> GRADE
 # -To manual: what to do if something does not work.
 # -try to iterate all target atoms if fit is really bad
-# -Iteratively analyze disagreeable restraints and set ESDs of relative
-#  restraints accordingly. (Only if shift is not too big, has to be nearly converged)
 # -select atoms in shelxle > export to db
-# -if part > 2 and same residue and positive occ then SUMP
-# -use +filename.dfix for restraints.
 # -If second part of a disordered atom is very close to the first, make EADP?
 # -If e.g. OCC in dsrline and index(OCC)+1 != ' ', then dsrline.insert(' ', index(OCC)+1)
-# -should I make rem dsr IMPORT from Atom1 to Atom2 ?
-#  with or without their restraints?
 # -detect empty residues and parts after atom deletion
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
-# -check atoms bond valency after fit to decide if fit was sucessful.
+
 
 VERSION = '1.3.3'
 progname = '\n-----------------------------'\
