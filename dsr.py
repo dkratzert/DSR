@@ -59,13 +59,14 @@ class DSR():
                 self.external = True
             else:
                 self.res_file = self.options.res_file
+                self.external = False
         else:
             if not res_file:
                 self.res_file = res_file_external
                 self.external = True
             else:
                 self.res_file = res_file
-        
+                self.external = False
         if not export_fragment:
             self.export_fragment = self.options.export_fragment
         else:
@@ -333,7 +334,6 @@ class DSR():
         if not self.no_refine:
             self.set_post_refine_cycles(shx, '8')
 
-        
         if dsrp.dfix:
             resinumber = resi.get_resinumber
             dfix = self.generate_dfix_restraints(lf, 
@@ -351,8 +351,9 @@ class DSR():
                             if self.external:
                                 line = '\n{}REM The restraints for this residue are here:\n+{}\n'.format(line, externalfile) 
                             else:
-                                line = '\n{} \n+{}\n{}'.format(line, externalfile, dfix) 
+                                line = '\n{} \n{}'.format(line, dfix) 
                             reslist[n] = line
+                            return
             else:
                 line = '{}'.format(dfix) # insert restraints after dsrline
                 reslist[dsrline] = reslist[dsrline]+line
