@@ -12,9 +12,32 @@
 from __future__ import print_function
 from atomhandling import *
 import misc
+import os
 import constants
 
 __metaclass__ = type  # use new-style classes
+
+
+def write_dbhead_to_file(filename, dbhead, resi, resinumber):
+    '''
+    write the restraints to an external file
+    '''
+    if resinumber:
+        filename = resi+'_'+resinumber+'_'+filename
+    else:
+        filename = resi+'_'+filename
+    if os.path.isfile(filename):
+        print('\nPrevious restraint file found. Using restraints from "{}"'.format(filename))
+        return filename
+    try:
+        dfix_file = open(filename, 'w')  # open the ins file
+    except(IOError):
+        print('Unable to write res file!')
+        sys.exit(-1)
+    for i in dbhead:            #modified reslist
+        dfix_file.write("%s" %i)    #write the new file
+    dfix_file.close()
+    return filename
 
 
 class InsertAfix(object):
@@ -34,10 +57,8 @@ class InsertAfix(object):
         self.numberscheme = numberscheme
         self.part = dsr_line['part']
         self.occ = dsr_line['occupancy']
-        #self.afixnumber = dsr_line['afix']
         self.source_atoms = dsr_line['source']
         self.target_atoms = dsr_line['target']
-        self.__resi     = dsr_line['resi']
         self._dfix = dsr_line['dfix']
     
 
@@ -69,9 +90,12 @@ class InsertAfix(object):
     
     def remove_all_restraints(self, dbhead):
         '''
-        removes all restraints from the header.
+        Devides header in distance restraints (distance)
+        and all other lines (oldhead)
+        Restraints are instead inserted after fragment fit.
         '''
-        newhead = dbhead[:]
+        distance = []
+        others = []
         for num, headline in enumerate(dbhead):
             headline = headline.strip().split()
             try:
@@ -79,11 +103,14 @@ class InsertAfix(object):
             except(IndexError):    
                 continue
             if headline[0][:4] in constants.DIST_RESTRAINT_CARDS:
-                newhead[num] = ''
-        return newhead
+                distance.append(' '.join(headline)+'\n')
+            else:
+                others.append(' '.join(headline)+'\n')
+        return [distance, others]
 
     
-    def build_afix_entry(self): 
+    
+    def build_afix_entry(self, external_restraints, filename, residue): 
         '''
         build an afix entry with coordinates from the targetatoms
         '''
@@ -93,10 +120,17 @@ class InsertAfix(object):
         real_atomnames = list(reversed(self.numberscheme)) # i reverse it to pop() later
         # all non-atoms between start tag and FRAG card with new names:
         dbhead = rename_dbhead_atoms(real_atomnames, self.__dbatoms, self.__dbhead)
-        if self.__resi:
+        if residue:
             dbhead = self.remove_duplicate_restraints(dbhead)
+        dbhead_distance = self.remove_all_restraints(dbhead)[0]
+        dbhead_others = self.remove_all_restraints(dbhead)[1]
         if self._dfix:
-            dbhead = self.remove_all_restraints(dbhead)
+            dbhead = dbhead_others
+        if external_restraints and not self._dfix:
+            # in case of dfix, write restraints ti file after fragment fit
+            dbhead = dbhead_others
+            resinumber = False
+            filename = write_dbhead_to_file(filename, dbhead_distance, residue, resinumber)
         atype = list(reversed(self.__dbtypes))
         coord = self._find_atoms.get_atomcoordinates(self.target_atoms)
         target = self.target_atoms[:]  # a copy because we edit it later
@@ -127,12 +161,7 @@ class InsertAfix(object):
             newlist.append('    '.join(i).rstrip())
             
         atoms = '\n'.join(newlist)
-
-        #atoms = misc.ll_to_string(afix_list) # make list of lists to string
-            
-        #if not self.afixnumber:  
         self.afixnumber = '179'   # makes afix 179 default 
-        
         if not self.occ:
             self.occ = ''
         if self.part:
@@ -141,10 +170,12 @@ class InsertAfix(object):
         else:
             part = ''
             part2 = ''
-        if ''.join(self.__resi):
+        if residue:
             resi = 'RESI 0\n'
         else:
             resi = ''
+        if external_restraints and not self._dfix:
+            dbhead.append('+'+filename+'\n')
         dbhead = ''.join(dbhead)
         warn = self.insert_dsr_warning()
         afix = warn+dbhead+str(part)+'AFIX '+str(self.afixnumber)+(
