@@ -581,44 +581,6 @@ class ImportGRADE():
         print('User database successfully updated.')
                     
 
-### old methods:  ########################
-    def get_molatoms(self):
-        '''
-        This methos is deprecated, because we now collect the atoms from
-        the pdb file!
-        
-        extract the non-Hydrogen atoms from a mol2-file
-        
-        ['C1', '-1.6350', '0.6420', '-0.1710', 'C']
-        ['atom name', 'x', 'y', 'z', 'atom type']
-        '''
-        mol_list = self.read_file(self._molfile)
-        atomlines = []
-        atom = False
-        regex_start = r'@<TRIPOS>ATOM'
-        regex_stop = r'@<TRIPOS>'
-        for line in mol_list:
-            line = line.strip('\n\r')
-            if re.match(regex_start, line):
-                atom = True
-                continue
-            if re.match(regex_stop, line) and atom:
-                atom = False
-                break
-            if atom:
-                l = line.split()[1:6]
-                try:
-                    l[4] = l[4].split('.')[0]
-                except:
-                    pass
-                if l[4].upper() == 'H':
-                    continue
-                # reorder the list fields:
-                l = [l[0], '1', l[1], l[2], l[3]]
-                atomlines.append(l)
-        return atomlines
-
-
     def read_mol2_file(self, filename):
         '''
         This methos is deprecated, because we now collect the atoms from
