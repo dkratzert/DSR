@@ -119,7 +119,7 @@ class Export():
             res_export.append('REM This file was exported by DSR version {}\n'.format(VERSION))
         except(NameError):
             pass
-        comment = '\nREM '.join([' '.join(i) for i in self._comment])
+        comment = '\nREM '.join(self._comment)
         res_export.append('REM '+comment+'\n')
         res_export.append('CELL  0.71  '+self.__cell+'\n')   # the cell with wavelength
         res_export.append('LATT  -1\n')
