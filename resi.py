@@ -263,7 +263,7 @@ class Resi(object):
                     sys.exit()
             else: 
                 if self.__com_resi_list == 'dbentry': # in this case no residue number is given at all.
-                    number = self.get_unique_resinumber()
+                    number = self.get_unique_resinumber(resinum=False)
                     #number = 3
                     print('No residue number was given. Using residue number {}.'.format(number))
                 #self.get_unique_resinumber()
