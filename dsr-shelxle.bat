@@ -13,6 +13,7 @@ IF NOT "%3"=="" SET args=%args% %3
 SHIFT
 IF NOT "%3"=="" GOTO argloop
 IF "%cmd%"=="-r" GOTO resfile
+IF "%cmd%"=="-re" GOTO resfile_ext
 IF "%cmd%"=="-e" GOTO export
 IF "%cmd%"=="-h" GOTO help
 IF "%cmd%"=="-l" GOTO list
@@ -22,6 +23,11 @@ GOTO end
 
 :resfile
 "%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py -r %args%
+GOTO end
+
+:resfile_ext
+rem IF "%args%" == "" GOTO help
+"%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py -re %args%
 GOTO end
 
 :export

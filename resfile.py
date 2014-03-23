@@ -51,7 +51,7 @@ class ResList():
                 for line in f:
                     reslist.append(line)
         except(IOError):
-            print('Unable to read {}'.format(filename))
+            print('Unable to read {} file.'.format(filename))
             sys.exit()
         return reslist
         
@@ -67,7 +67,7 @@ class ResList():
             print('Unable to write res file!')
             sys.exit(-1)
         for i in reslist:            #modified reslist
-            nfile.write("%s" % i)    #write the new file
+            nfile.write("%s" %i)    #write the new file
         nfile.close()
     
 

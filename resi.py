@@ -63,6 +63,11 @@ class Resi(object):
     def get_resinumber(self):
         return self.__combined_resi['number']
         
+
+    @property
+    def get_resiclass(self):
+        return self.__combined_resi['class']
+        
     
     def remove_resi(self, head):
         '''removes all resi commands and classes from head'''

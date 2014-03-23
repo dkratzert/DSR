@@ -19,7 +19,7 @@ from dbfile import global_DB, ImportGRADE
 from resfile import ResList, ResListEdit, filename_wo_ending
 from atomhandling import SfacTable, get_atomtypes, check_source_target, Elem_2_Sfac
 from atomhandling import FindAtoms, NumberScheme
-from afix import InsertAfix
+from afix import InsertAfix, write_dbhead_to_file
 from refine import ShelxlRefine
 from resi import Resi
 from misc import get_replace_mode, find_line
@@ -52,16 +52,27 @@ progname = '\n-----------------------------'\
 
 class DSR():
     '''
-    main class
+    main class 
     '''
-    def __init__(self, res_file=None, export_fragment=None, import_grade=None, 
+    def __init__(self, res_file=None, res_file_external=None, export_fragment=None, import_grade=None, 
                 export_all=None, list_db=None, no_refine=None):
         # options from the commandline options parser:
         self.options = OptionsParser(progname)
-        if not res_file:
-            self.res_file = self.options.res_file
+        self.external = False
+        
+        if not res_file and not res_file_external:
+            if not self.options.res_file:
+                self.res_file = self.options.res_file_external
+                self.external = True
+            else:
+                self.res_file = self.options.res_file
         else:
-            self.res_file = res_file
+            if not res_file:
+                self.res_file = res_file_external
+                self.external = True
+            else:
+                self.res_file = res_file
+        
         if not export_fragment:
             self.export_fragment = self.options.export_fragment
         else:
@@ -275,7 +286,10 @@ class DSR():
     
         ## Insert FRAG ... FEND entry: 
         rle.insert_frag_fend_entry(dbatoms, fragline, fvarlines)
-        
+        if not dsr_dict['resi'] and self.external:
+            print('External restraint files are only possible in combination with residues!')
+            sys.exit()
+            
         print('Inserting {} into res File.'.format(fragment))
         db_source_atoms = dsr_dict['source']
         print('Source atoms:', ', '.join(db_source_atoms))
@@ -284,12 +298,12 @@ class DSR():
         
         # several checks if the atoms in the dsr command line are consistent
         check_source_target(db_source_atoms, res_target_atoms, dbatoms)
-        
+        basefilename = filename_wo_ending(self.res_file)
         num = NumberScheme(reslist, dbatoms, resi.get_resinumber)
         numberscheme = num.get_fragment_number_scheme()
         afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, 
                           sfac_table, find_atoms, numberscheme)
-        afix_entry = afix.build_afix_entry()
+        afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfx', resi.get_resiclass)
         # line where the dsr command is found in the resfile:
         dsrline = dsrp.find_dsr_command(reslist) 
         reslist[dsrline] = reslist[dsrline]+'\n'
@@ -300,7 +314,6 @@ class DSR():
             replacemode(res_target_atoms, rle, reslist)
 
         # write to file:
-        basefilename = filename_wo_ending(self.res_file)
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
         if not self.no_refine:
             shx.set_refinement_cycles('0')
@@ -326,6 +339,7 @@ class DSR():
     
         if not self.no_refine:
             self.set_post_refine_cycles(shx, '8')
+
         
         if dsrp.dfix:
             resinumber = resi.get_resinumber
@@ -336,16 +350,20 @@ class DSR():
                                             cell,
                                             dsr_dict['part'])
             if resinumber:
+                if self.external:
+                    externalfile = write_dbhead_to_file(basefilename+'.dfx', dfix, resi.get_resiclass, resinumber)
                 for n, line in enumerate(reslist):
                     if line.upper().startswith('RESI'):
                         if line.split()[1] == str(resinumber):
-                            line = '{} \n{}'.format(line, dfix) # insert restraints after residue definition
+                            if self.external:
+                                line = '\n{}REM The restraints for this residue are here:\n+{}\n'.format(line, externalfile) 
+                            else:
+                                line = '\n{} \n+{}\n{}'.format(line, externalfile, dfix) 
                             reslist[n] = line
             else:
-                pass
                 line = '{}'.format(dfix) # insert restraints after dsrline
                 reslist[dsrline] = reslist[dsrline]+line
-            #print(dfix)
+ 
         if not self.no_refine:
             rl.write_resfile(reslist, '.res')
         

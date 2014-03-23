@@ -95,7 +95,7 @@ class ListFile():
                 for line in l:
                     listfile.append(line)
         except(IOError):
-            print('Unable to read {}'.format(self._listfile))
+            print('Unable to read {} file.'.format(self._listfile))
             sys.exit()
         return listfile
     
