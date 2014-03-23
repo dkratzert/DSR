@@ -58,7 +58,6 @@ class Resi(object):
         self.__combined_resi = self.build_up_residue()
 
 
-
     @property
     def get_resinumber(self):
         return self.__combined_resi['number']
@@ -139,15 +138,11 @@ class Resi(object):
         return newhead
     
             
-    def get_unique_resinumber(self):
+    def get_unique_resinumber(self, resinum):
         '''
         Finds a unique resi number. If the number is already unique
         the given is used.
         '''
-        try:
-            resinum = self.__combined_resi['number']
-        except(AttributeError):
-            resinum = False
         new_num = '1'
         if not resinum:
             while new_num in self._residues_in_res:
@@ -161,7 +156,7 @@ class Resi(object):
             print('         I am using number "{}" instead.\n'.format(new_num))
             return new_num
         else:
-            return self.__combined_resi['number']    
+            return resinum    
     
     
     def build_up_residue(self):
@@ -192,7 +187,7 @@ class Resi(object):
             if self.__resi_dict_com['number']:
                 resinum = self.__resi_dict_com['number']
         final_residue = {'class': resiclass, 'number': resinum, 'alias': resialias}
-        final_residue['number'] = self.get_unique_resinumber()
+        final_residue['number'] = self.get_unique_resinumber(resinum)
         if final_residue['class']:# and final_residue['number']:
             return final_residue
     
