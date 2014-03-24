@@ -345,16 +345,15 @@ class DSR():
                                             dsr_dict['part'])
             if resinumber:
                 if self.external:
-                    externalfile = write_dbhead_to_file(basefilename+'.dfx', dfix, resi.get_resiclass, resinumber)
+                    externalfile_name = write_dbhead_to_file(basefilename+'.dfx', dfix, resi.get_resiclass, resinumber)
                 for n, line in enumerate(reslist):
                     if line.upper().startswith('RESI'):
                         if line.split()[1] == str(resinumber):
                             if self.external:
-                                line = '\n{}REM The restraints for this residue are here:\n+{}\n'.format(line, externalfile) 
+                                line = '{}\nREM The restraints for residue {} are in this file:\n+{}\n'.format(line, resinumber, externalfile_name) 
                             else:
                                 line = '\n{} \n{}'.format(line, dfix) 
                             reslist[n] = line
-                            return
             else:
                 line = '{}'.format(dfix) # insert restraints after dsrline
                 reslist[dsrline] = reslist[dsrline]+line

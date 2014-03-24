@@ -96,6 +96,22 @@ def remove_file(filename, exit_dsr=False, terminate=False):
                 sys.exit(0)
     
 
+def wrap_headlines(dbhead):
+    import textwrap
+    for num, line in enumerate(dbhead):
+        line = textwrap.wrap(line, 77, subsequent_indent = '  ')
+        if len(line) > 1:
+            line[0] = line[0]+' ='
+            line[1] = line[1]+'\n'
+            line = '\n'.join(line)
+            dbhead[num] = line
+    for num, line in enumerate(dbhead):
+        line = ' '.join(line.strip().split(' '))
+        dbhead[num] = line+'\n'
+    return dbhead
+
+
+
 # this is deprecated:
 def get_replace_mode(dsr_string):
     '''returns the put/replace keyword'''
