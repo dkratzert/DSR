@@ -27,8 +27,10 @@ def write_dbhead_to_file(filename, dbhead, resi, resinumber):
     else:
         filename = resi+'_'+filename
     if os.path.isfile(filename):
-        print('\nPrevious restraint file found. Using restraints from "{}"'.format(filename))
+        print('Previous restraint file found. Using restraints from "{}"'.format(filename))
         return filename
+    else:
+        print('Restraints were written to "{}"'.format(filename))
     try:
         dfix_file = open(filename, 'w')  # open the ins file
     except(IOError):
@@ -130,7 +132,11 @@ class InsertAfix(object):
             # in case of dfix, write restraints ti file after fragment fit
             dbhead = dbhead_others
             resinumber = False
+            dbhead_distance = misc.wrap_headlines(dbhead_distance)
             filename = write_dbhead_to_file(filename, dbhead_distance, residue, resinumber)
+        if not external_restraints and not self._dfix:
+            dbhead_distance = misc.wrap_headlines(dbhead_distance)
+            dbhead = dbhead_others+dbhead_distance
         atype = list(reversed(self.__dbtypes))
         coord = self._find_atoms.get_atomcoordinates(self.target_atoms)
         target = self.target_atoms[:]  # a copy because we edit it later
@@ -175,11 +181,10 @@ class InsertAfix(object):
         else:
             resi = ''
         if external_restraints and not self._dfix:
-            dbhead.append('+'+filename+'\n')
+            dbhead.append('REM The restraints for residue {} are in this file:\n+{}\n'.format(residue, filename))
         dbhead = ''.join(dbhead)
         warn = self.insert_dsr_warning()
-        afix = warn+dbhead+str(part)+'AFIX '+str(self.afixnumber)+(
-                '\n'+atoms+'\nAFIX 0\n'+part2+resi+'rem End of DSR entry\n\n')
+        afix = warn+dbhead+str(part)+'AFIX '+str(self.afixnumber)+'\n'+atoms+'\nAFIX 0\n'+part2+resi+'rem End of DSR entry\n\n'
         return afix
 
 

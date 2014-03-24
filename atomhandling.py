@@ -287,7 +287,10 @@ def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
     return 'check_source_target() succeded!\n'
     
   
-    
+def wrap_long_lines(head):
+    '''
+    '''
+    pass
 
 
 def rename_dbhead_atoms(new_atoms, old_atoms, dbhead):
@@ -304,13 +307,13 @@ def rename_dbhead_atoms(new_atoms, old_atoms, dbhead):
             line = ' '.join(line.strip().split(' '))
             line = line.replace(i, new_atoms[x])
             dbhead[num] = line+'\n'
-    for num, line in enumerate(dbhead):
-        line = textwrap.wrap(line, 78, subsequent_indent = '  ')
-        if len(line) > 1:
-            line[0] = line[0]+' ='
-            line[1] = line[1]+'\n'
-            line = '\n'.join(line)
-            dbhead[num] = line
+    #for num, line in enumerate(dbhead):
+    #    line = textwrap.wrap(line, 78, subsequent_indent = '  ')
+    #    if len(line) > 1:
+    #        line[0] = line[0]+' ='
+    #        line[1] = line[1]+'\n'
+    #        line = '\n'.join(line)
+    #        dbhead[num] = line
     return dbhead
 
 
@@ -538,11 +541,54 @@ if __name__ == '__main__':
     db = gdb.build_db_dict()
 
     
-    fragment = 'toluene'
+    fragment = 'OC1'
     fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
     dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
     dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
     
+    
+    print(dbhead)
+    print('\n')
+    
+    def rename_at(head):
+        for num, line in enumerate(dbhead):
+            line = textwrap.wrap(line, 78, subsequent_indent = '  ')
+            if len(line) > 1:
+                line[0] = line[0]+' ='
+                line[1] = line[1]+'\n'
+                line = '\n'.join(line)
+                dbhead[num] = line
+        for num, line in enumerate(dbhead):
+            line = ' '.join(line.strip().split(' '))
+            dbhead[num] = line+'\n'
+        return dbhead
+    
+    
+    print(rename_at(dbhead))
+    
+    for i in dbhead:
+        print(i)
+    
+    
+    
+    
+    
+    
+    
+    import misc
+    filename = 'testfile.txt'
+    misc.remove_file(filename)
+    try:
+        dfix_file = open(filename, 'w')  # open the ins file
+    except(IOError):
+        print('Unable to write res file!')
+        sys.exit(-1)
+    for i in dbhead:            #modified reslist
+        dfix_file.write("%s" %i)    #write the new file
+    dfix_file.close()
+    
+    
+    sys.exit()
     
     fa = FindAtoms(reslist)
     print('Residue dict:', fa.get_resinum('RESI 1 TOL'.split()))
