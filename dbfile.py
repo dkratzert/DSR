@@ -335,8 +335,11 @@ class global_DB():
         returns the first comment line of the dbentry of fragment x
         '''
         comment = self._dbentry_dict[fragment.lower()]['comment']
-        #print(comment)
-        #comment = ''.join([', '.join(i) for i in comment])
+        for i in comment:
+            if re.match('.*[n|N]ame.*', i):
+                i = i.split(' ', 1)[1:]
+                comment = i
+                break
         return comment
 
     

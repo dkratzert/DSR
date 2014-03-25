@@ -35,6 +35,7 @@
 ########################################################################################
 
 <Toluene>
+REM Name: Toluene
 REM Source: GRADE import 
 REM Gradeserver from https://globalphasong.org
 RESI TOL1 
@@ -72,6 +73,7 @@ C7     1       2.394    -0.004     1.394
 
 
 <DME-free>
+REM Name: 1,2-Dimethoxyethane, not coordinated
 rem Src: Turbomole, B3-LYP/def2-TZVPP
 rem This DME is not coordinated
 RESI DME
@@ -91,8 +93,11 @@ C3  1   0.7022675    0.6754980   -0.1402004
 C4  1   2.7670633   -0.4138645    0.1574639 
 </DME-free>
 
-<Chlorobenzene>
+
+
+<Chlorobenz>
 REM Src: pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei
+rem Name: Chlorobenzene
 RESI CBZ
 SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1
 SADI C1 C3 C3 C5 C2 C6 C2 C4 C4 C6 C1 C5
@@ -108,11 +113,33 @@ C3  1 0.000000 -1.207087 -1.570551
 C4  1 0.000000  0.000000 -2.272838
 C5  1 0.000000  1.207087 -1.570551
 C6  1 0.000000  1.215734 -0.174314
-FEND 
-</Chlorobenzene>
+</Chlorobenz>
+
+
+<Quinaldine>
+REM Src: Gaussian03, b3lyp/6-31+G(d), Ilia A. Guzei
+REM: Name: Quinaldine, C10H9N
+RESI quin
+FLAT C1 > C10
+RIGU C1 > C10 
+SIMU C1 > C10
+FRAG 17 1 1 1 90 90 90
+C1  6  0.004068  0.000000 -0.004296
+C2  6  0.005574  0.000000  1.506233
+C3  6  1.232737  0.000000  2.232169
+C4  6  1.207339  0.000000  3.607130
+C5  6 -0.039155  0.000000  4.283401
+C6  6 -0.166327  0.000000  5.698669
+C7  6 -1.412439  0.000000  6.288002
+C8  6 -2.582500  0.000000  5.484768
+C9  6 -2.489973  0.000000  4.109117
+C10 6 -1.219145  0.000000  3.471863
+</Quinaldine>
+
 
 <acetate>
 rem Src: b3lyp/6-31+G(d), Ilia A. Guzei
+rem Name: Acetate, C2H3O2
 RESI OAC
 DFIX O1 C3 1.2623 
 DFIX O2 C3 1.2623 
@@ -131,7 +158,8 @@ C4 6  2.062240    0.018137     1.055055
 </acetate>
 
 
-<pz-star>
+<dmpz>
+REM Name: Dimethylpyrazolato anion, [C5H6N]-
 REM Src: pbe1pbe/6-311+G(d), Ilia A. Guzei
 RESI CBZ
 DFIX C4 C1 1.4951
@@ -161,11 +189,12 @@ C2  1 0.000000    0.000000   -0.943507
 C3  1 0.000000    1.098793   -0.072305
 C4  1 0.000000   -2.560546   -0.385972
 C5  1 0.000000    2.560546   -0.385972
-</pz-star>
+</dmpz>
 
 
 <DME>
 REM SRC: TURBOMOLE, B3-LYP/def2-TZVP
+rem Name: 1,2-Dimethoxyethane, coordinated to Na
 REM This DME was coordinated to Na
 RESI DME
 DFIX 1.436 O1 C1 O2 C4 O1 C2 O2 C3
@@ -186,6 +215,7 @@ C4    1      2.404   1.477   0.307
 
 <Bipyridine>
 rem Src: own measurement
+REM Name: 2,2'-bipyridine
 RESI BIP
 SADI N1 C1 N1 C5 N2 C6 N2 C10
 SADI C2 C3 C3 C4 C4 C5 C6 C7 C7 C8 C8 C9 C9 C10
@@ -211,8 +241,54 @@ C10   1    0.948215    0.628103    0.449282    11.00000    0.01755
 </Bipyridine>
 
 
+<Pyrazole>
+REM Src: Gaussian03, pbe1pbe/6-311+G(d), Ilia A. Guzei
+REM Name: Pyrazole, C3H4N2
+RESI pyr
+SADI C1 C2 C2 C3
+SADI C1 N1 C3 N2
+SADI C1 N2 C3 N1
+RIGU C1 > N2
+SIMU C1 > N2
+FRAG 17  1  1  1  90  90  90
+C1  1 -0.633822 -0.969049 0.000000
+C2  1  0.742382 -0.957798 0.000000
+C3  2  1.083183  0.402805 0.000000
+N1  3 -1.014593  0.325538 0.000000
+N2  3  0.007233  1.178904 0.000000
+</Pyrazole>
+
+
+<Pyrene>
+REM Src: Gaussian03,  b3lyp/6-311+G(d), Ilia A. Guzei
+rem Name: Pyrene, C16H10
+RESI pyr
+SIMU C1 > C10c 
+RIGU C1 > C10c
+FLAT C1 > C10c
+FRAG 17  1  1  1  90  90  90
+C1   1 -2.830028 -1.209088 0.000000 
+C2   1 -3.520007  0.000000 0.000000 
+C3   1 -2.830028  1.209088 0.000000 
+C3a  1 -1.427766  1.234552 0.000000
+C4   1 -0.679679  2.461024 0.000000 
+C5   1  0.679679  2.461024 0.000000 
+C5a  1  1.427766  1.234552 0.000000
+C6   1  2.830028  1.209088 0.000000
+C7   1  3.520007  0.000000 0.000000 
+C8   1  2.830028 -1.209088 0.000000 
+C8a  1  1.427766 -1.234552 0.000000
+C9   1  0.679679 -2.461024 0.000000
+C10  1 -0.679679 -2.461024 0.000000 
+C10a 1 -1.427766 -1.234552 0.000000
+C10b 1 -0.712711  0.000000 0.000000
+C10c 1  0.712711  0.000000 0.000000 
+</Pyrene>
+
+
 <Pentane>
-rem Src: Gaussian 03 B3LYP/6-31G(d,p) Opt
+rem Src: Gaussian 03  pbepbe/6-311+G(d), Ilia A. Guzei
+REM: Name: Pentane
 RESI PEN
 SADI C1 C2 C2 C3 C3 C4 C4 C5 
 SADI 0.04 C1 C3 C3 C5 C2 C4
@@ -220,16 +296,42 @@ FLAT C1 C2 C3 C4 C5
 SIMU C1 > C5
 RIGU C1 > C5
 FRAG 17  1  1  1  90  90  90
-C1  6   -2.560376    0.324186   -0.000001
-C2  6   -1.283674   -0.523753   -0.000001
-C3  6    0.000000    0.316633    0.000000
-C4  6    1.283674   -0.523753    0.000000
-C5  6    2.560376    0.324187    0.000001
+C1  1 0.000000  2.559464  0.324526
+C2  1 0.000000  1.284592 -0.523421
+C3  1 0.000000  0.000000  0.313412
+C4  1 0.000000 -1.284592 -0.523421
+C5  1 0.000000 -2.559464  0.324526
 </Pentane>
 
 
+<Pentafl>
+REM Src: CSD search among high quality structures, Ilia A. Guzei
+REM Name: Pentafluorophenyl, -C6F5
+REM from a D6h-symmetrized geometry of C6F6
+RESI pefl
+SAME C2 > C6 C1
+SAME C1 > F2
+SIMU C1 > F2
+RIGU C1 > F2
+FRAG 17 1 1 1  90 90 90
+C1  1   0.000000  1.394954 0.000000
+C2  1   1.208066  0.697477 0.000000
+C3  1   1.208066 -0.697477 0.000000
+C4  1   0.000000 -1.394954 0.000000
+C5  1  -1.208066 -0.697477 0.000000
+C6  1  -1.208066  0.697477 0.000000
+F3  1   0.000000 -2.745111 0.000000
+F4  1   2.377336 -1.372555 0.000000
+F5  1   2.377336  1.372555 0.000000
+F1  1  -2.377336  1.372555 0.000000
+F2  1  -2.377336 -1.372555 0.000000 
+</Pentafl>
+
+
+
 <hfipO>
-REM Src: Turbomole, B3LYP/def2-TZVPP 
+REM Src: Turbomole, B3LYP/def2-TZVPP
+rem Name: Hexafluoroisopropanol, C3H2F6O
 RESI HFIP
 SADI C2 F1 C2 F2 C2 F3  C3 F4 C3 F5 C3 C6
 SADI C1 C2 C1 C3
@@ -254,6 +356,7 @@ F6    3     -1.39094        0.54896       -1.34009
 
 <OCH2CF3>
 rem Src: TURBOMOLE V6.0  B-P86/def-SV(P)
+rem Name: Trifluoroethanol, C2H3F3O
 RESI OCCF
 DFIX 1.376 O1 C1 
 DFIX 1.530 C1 C2
@@ -272,8 +375,10 @@ F2   3      -3.92641        2.28171       -1.91217
 F3   3      -2.41301        0.83156       -2.54596
 </OCH2CF3> 
 
+
 <Ethanol>
 REM Src: Turbomole, B3LYP/def2-TZVPP 
+rem Name: Ethanol, C2H6O
 RESI ETH
 DFIX 1.510 C1 C2 
 DFIX 1.425 C1 O1
@@ -288,7 +393,8 @@ C2   1    1.00302        0.15990        0.00000
 
 
 <Hexane>
-rem Src: Gaussian 03 B3LYP/6-31G(d,p) Opt
+rem Src: Gaussian 03  pbepbe/6-311++G(3df,3pd), Ilia A. Guzei
+REM: Name: Hexane, C6H14
 RESI HEX
 SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6
 SADI 0.04 C1 C3 C3 C5 C2 C4 C4 C6
@@ -306,26 +412,28 @@ C6  6  -3.176756   -0.215285    0.000030
 
 
 <Heptane>
-rem Src: Gaussian 03 B3LYP/6-31G(d,p) Opt
-RESI HEP
+rem Src: Gaussian 03, pbepbe/6-311++G(3df,3pd), Ilia A. Guzei
+REM Name: Heptane, C7H16
+RESI HEPT
 SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C7
 SADI C1 C3 C3 C5 C2 C4 C4 C6 C5 C7
 FLAT 0.15 C1 > C7
 SIMU C1 > C7
 RIGU C1 > C7
 FRAG 17 1  1  1  90  90  90
-C1   6      3.843302   -0.352614    0.000000
-C2   6      2.567134    0.494562    0.000000
-C3   6      1.283275   -0.344657    0.000000
-C4   6      0.000000    0.495244    0.000000
-C5   6     -1.283275   -0.344657    0.000000
-C6   6     -2.567134    0.494562    0.000000
-C7   6     -3.843302   -0.352614    0.000000 
+C1  1    0.013119 -0.022627  0.059882
+C2  1   -0.702705  1.212023 -0.489331
+C3  1   -0.731936  1.262441 -2.018958
+C4  1   -1.445755  2.493635 -2.581811
+C5  1   -1.473983  2.542321 -4.111194
+C6  1   -2.187583  3.773136 -4.676015
+C7  1   -2.208691  3.809544 -6.204619 
 </Heptane>
 
 
 <THF-R>
 rem Src: Gaussian 03 B3LYP/6-311++G(d,p) Opt
+Rem Name: THF twisted, R
 RESI THFR
 SAME O1 > C4
 SAME O1 C4 < C1
@@ -342,6 +450,7 @@ C4    6       1.169778   -0.428974    0.130832
 
 <THF-S>
 rem Src: Gaussian 03 B3LYP/6-311++G(d,p) Opt
+Rem Name: THF twisted, S
 RESI THFS
 SADI C1 C2 C3 C4 C2 C3 
 SAME O1 C4 < C1
@@ -358,6 +467,7 @@ C4    6    -1.170070   -0.428764    0.130725
 
 <12-dichlorobenz>
 rem Src: pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei
+REM Name: Dichlorobenzene, C6H4Cl2
 RESI ClBE
 SADI C1 Cl1 C2 Cl2
 SADI 0.04 C6 Cl1 C2 Cl1 C1 Cl2 C3 Cl2
@@ -377,8 +487,27 @@ C6  1  0.032329 0.000000 -0.008988
 </12-dichlorobenz>
 
 
-<Naphthalene>
+
+<Perchlorate>
+REM Src: Gaussian03, pbe1pbe/6-311+G(3df), Ilia A. Guzei
+REM Name: Perchlorate, [ClO4]-
+RESI PERC
+RIGU Cl1 > O4
+SIMU Cl1 > O4
+DFIX 21.000 0.01 Cl1 O1 Cl1 O2 Cl1 O3 Cl1 O4
+DFIX 21.633 0.02 O1 O2 O1 O3 O1 O4 O2 O3 O2 O4 O3 O4
+FRAG 17 1 1 1 90 90 90
+Cl1 5  0.000000  0.000000  0.000000
+O1  4  0.832780  0.832780  0.832780
+O2  4 -0.832780 -0.832780  0.832780
+O3  4 -0.832780  0.832780 -0.832780
+O4  4  0.832780 -0.832780 -0.832780
+</Perchlorate>
+
+
+<Napht>
 rem Src: b3lyp/6-311+G(d), Ilia A. Guzei
+REM: Name: Naphthalene C10H8
 RESI NAPH
 SAME C2 > C8a C1
 FLAT C1 > C8a
@@ -395,11 +524,12 @@ C6  1 0.000000 -0.707569 -2.430888
 C7  1 0.000000  0.707569 -2.430888
 C8  1 0.000000  1.400530 -1.243880
 C8a 1 0.000000  0.715982  0.000000
-</Naphthalene>
+</Napht>
 
 
 <acetonitrile>
 rem Src: pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei
+remName: Acetonitrile, C2H3N
 RESI MeCN
 DFIX 0.01 1.162 C1 N1
 DFIX 0.01 1.453 C2 N1
@@ -415,6 +545,7 @@ C2   1  0.000000  0.000000 -1.176783
 
 <NSiMe3>
 rem Src: own measurement
+REM Name: Trimethylsilyl-N, C3H10OSi
 RESI NSI
 SADI Si1 C1 Si1 C2 Si1 C3
 SADI C1 C2 C2 C3 C3 C1
@@ -431,8 +562,9 @@ C3    1    0.001505    0.299282    0.171842
 
 
 
-<N(SiMe3)2>
+<Hexa>
 rem Src: own measurement
+REM Name: Hexamethyldisilazane, C6H19NSi2
 RESI HEXA
 SADI N1 Si1 N1 Si2
 SADI Si1 C1 Si1 C2 Si1 C3  Si2 C4 Si2 C5 Si2 C6
@@ -451,13 +583,14 @@ SI2   4    0.136576    0.259830    0.096411
 C4    1    0.114377    0.397578    0.011501 
 C5    1    0.071922    0.117330    0.061122 
 C6    1    0.214656    0.164146    0.107732 
-</N(SiMe3)2>
+</Hexa>
 
 
 
 
 <NEt4>
 rem Src: CCDC ABENRE
+rem Name: Tetraethylammonium, C8H20N+
 RESI NET4
 SADI N1 C1 N1 C7 N1 C3 N1 C5
 SADI C1 C2 C3 C4 C5 C6 C7 C8
@@ -466,7 +599,7 @@ SADI 0.08 C2 C4 C4 C6 C6 C8
 SADI 0.04 N1 C2 N1 C4 N1 C6 N1 C8
 SIMU N1 > C8
 RIGU N1 > C8
-rem this might me removed later:
+rem these FLAT restraints might me removed later:
 FLAT 0.2 N1 C3 C4 C7 C8
 FLAT 0.2 N1 C1 C2 C5 C6
 FRAG 17 16.41 13.81 16.91 90 90 90
@@ -485,6 +618,7 @@ C8    2  0.554900  0.316400  0.069100
 
 <Benzene>
 REM Source: GRADE import 
+REM Name: Benzene, C6H6
 RESI BEN1 
 DFIX 1.379 0.015 C1 C2
 DFIX 1.379 0.015 C1 C6
@@ -516,6 +650,7 @@ C6     1       1.208     0.000    -0.683
 
 
 <Supersilyle>
+rem Name: Tris(trimethylsilyl)silane, Trimethylsilyl, [(CH3)3Si]3Si
 rem Src: CCDC CEYMID
 RESI SUP
 SADI Si1 C1 Si1 C2 Si1 C3 Si2 C4 Si2 C5 Si2 C6 Si3 C7 Si3 C8 Si3 C9
@@ -545,6 +680,7 @@ C9      1  0.337300  0.772640  0.755910
 
 <Cp>
 rem Src: Gaussian 03 B3LYP/6-31+G(d,p) Opt
+rem Name: Cyclopentadienyl, [C5H5]-
 RESI CP
 SAME C2 > C5 C1
 FLAT C1 > C5
@@ -561,6 +697,7 @@ C5   1   -1.157659   -0.339847   0.000001
 
 <Cpstar>
 rem Src: Gaussian 03 B3LYP/6-31G(d,p) Opt
+rem Name: Pentamethylcyclopentadienyl, [C5Me5]−
 RESI CPST
 SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C1
 SADI 0.04 C1 C3  C2 C4  C3 C5  C5 C2  C1 C4
@@ -584,66 +721,9 @@ C10    6    -2.388757   -1.277095    0.008582
 </Cpstar>
 
 
+
 <TIP> 
-REM Source: GRADE import 
-RESI TIP1 
-DFIX 1.389 0.010 C1 C2
-DFIX 1.389 0.010 C1 C6
-DFIX 1.389 0.010 C2 C3
-DFIX 1.522 0.010 C10 C2
-DFIX 1.389 0.010 C3 C4
-DFIX 1.389 0.010 C4 C5
-DFIX 1.522 0.010 C13 C4
-DFIX 1.389 0.010 C5 C6
-DFIX 1.522 0.010 C6 C7
-DFIX 1.527 0.012 C7 C8
-DFIX 1.527 0.012 C7 C9
-DFIX 1.527 0.012 C10 C11
-DFIX 1.527 0.012 C10 C12
-DFIX 1.527 0.012 C13 C14
-DFIX 1.527 0.012 C13 C15
-DANG 2.425 0.038 C2 C6
-DANG 2.386 0.019 C1 C3
-DANG 2.537 0.026 C1 C10
-DANG 2.537 0.026 C10 C3
-DANG 2.426 0.038 C2 C4
-DANG 2.386 0.019 C3 C5
-DANG 2.537 0.026 C13 C3
-DANG 2.537 0.026 C13 C5
-DANG 2.426 0.038 C4 C6
-DANG 2.386 0.019 C1 C5
-DANG 2.537 0.026 C1 C7
-DANG 2.537 0.026 C5 C7
-DANG 2.525 0.033 C6 C8
-DANG 2.525 0.033 C6 C9
-DANG 2.506 0.024 C8 C9
-DANG 2.525 0.033 C11 C2
-DANG 2.525 0.033 C12 C2
-DANG 2.506 0.024 C11 C12
-DANG 2.525 0.033 C14 C4
-DANG 2.525 0.033 C15 C4
-DANG 2.506 0.024 C14 C15
-FLAT C1 > C6 C7 C10 C13 
-FRAG  17  1  1  1  90  90  90 
-C1     1       1.117    -1.184     0.000
-C2     1      -0.197    -1.639     0.000
-C3     1      -1.220    -0.698     0.000
-C4     1      -0.958     0.667     0.000
-C5     1       0.368     1.082     0.000
-C6     1       1.420     0.173     0.000
-C7     1       2.864     0.653     0.000
-C8     1       3.189     1.463     1.253
-C9     1       3.189     1.463    -1.253
-C10    1      -0.510    -3.129     0.000
-C11    1      -1.278    -3.544     1.253
-C12    1      -1.278    -3.544    -1.253
-C13    1      -2.092     1.682     0.000
-C14    1      -2.068     2.555     1.253
-C15    1      -2.068     2.555    -1.253 
-</TIP>
-
-
-<TIP-sadi> 
+REM Name: Triisopropylphenyl
 rem Src: Turbomole, B3LYP/def2-TZVPP
 SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1
 SADI 0.04 C1 C3 C3 C5 C5 C1 C2 C4 C4 C6 C6 C2
@@ -672,11 +752,12 @@ C12  1   -1.2646  -3.5463  -1.2660
 C13  1   -2.1081   1.7022   0.0000  
 C14  1   -2.1106   2.5726   1.2661  
 C15  1   -2.1106   2.5726  -1.2661  
-</TIP-sadi> 
+</TIP> 
 
 
 
 <OC(CF3)3>
+rem Name: Nonafluoro-tert-butyl, (CF3)3CO-
 rem Src: TURBOMOLE V6.0  B-P86/def-SV(P)
 RESI CCF3
 SADI C1 C2 C1 C3 C1 C4
@@ -706,6 +787,7 @@ F9   1      -1.29323        0.46963        2.06735
 
 
 <PF6>
+rem Name: Hexafluorophosphate
 rem Src: Gaussian 03 B3LYP/6-311+G(d,p) Opt
 RESI PF6
 SADI P1 F1 P1 F2 P1 F3 P1 F4 P1 F5 P1 F6
@@ -724,10 +806,112 @@ F5      5    0.470393    1.575477   -0.077012
 F6      5   -0.470461   -1.575424    0.077017
 </PF6>
 
+<1mim>
+REM Src: Gaussian03 b3lyp/6-31+G(d), Ilia A. Guzei
+REM Name: (1-methyl-1H-imidazol-2-yl)methanol, C5H8N2O
+RESI MIM
+SIMU O1 > C8
+RIGU O1 > C8
+FRAG 17 1 1 1 90 90 90
+O1 8    0.000000  0.000000  0.000000
+C2 6    0.000000  1.415461  0.000000
+C3 6    1.358331  1.909397 -0.422586
+N4 7    2.394752  1.164514 -0.745023
+C5 6    3.402934  2.048559 -1.058675
+C6 6    2.968311  3.342914 -0.923461
+N7 7    1.648917  3.252748 -0.512989
+C8 6    0.777670  4.386313 -0.241938
+</1mim>
+
+
+<TFB>
+REM Src: Gaussian03 pbe1pbe/6-311+G(3df), Ilia A. Guzei
+REM Name: Tetrafluoroborate, [BF4]-
+RESI TFB
+SIMU B1 > F4
+RIGU B1 > F4
+DFIX 21.000 0.01 B1 F1 B1 F2 B1 F3 B1 F4
+DFIX 21.633 0.02 F1 F2 F1 F3 F1 F4 F2 F3 F2 F4 F3 F4
+FRAG 17 1 1 1 90 90 90
+B1  5  0.000000  0.000000  0.000000
+F1  4  0.809590  0.809590  0.809590
+F2  4 -0.809590  0.809590 -0.809590
+F3  4  0.809590 -0.809590 -0.809590
+F4  4 -0.809590 -0.809590  0.809590
+</TFB>
+
+<TFA>
+REM Name: Trifluoroacetic acid, C2H1F3O2
+REM Src: Gaussian03 b3lyp/6-31+G(d), Ilia A. Guzei
+RESI TFA
+SADI C4 F1 C4 F2 C4 F3
+SADI 0.04 C5 F1 C5 F2 C5 F3
+SADI 0.04 F1 F2 F2 F3 F3 F1
+DFIX 1.20 C5 O6
+DFIX 1.34 C5 O7
+DFIX 2.2707 O6 O7 
+DFIX 2.4323 C4 O6 
+DFIX 2.3694 C4 O7 
+FLAT C4 C5 O6 O7
+RIGU F1 > O7
+SIMU F1 > O7
+FRAG 17 1 1 1 90 90 90
+F1 9 0.206794 0.017882 -0.076820
+F2 9 -0.158957 -0.030752 2.071766
+F3 9 1.888186 0.052982 1.310344
+C4 6 0.626685 0.482727 1.103228
+C5 6 0.571892 2.032370 1.126534
+O6 8 0.198653 2.699294 0.197891
+O7 8 0.995400 2.486086 2.313549
+</TFA>
+
+
+<mquinolinol>
+REM Src: Gaussian03 b3lyp/6-31+G(d), Ilia A. Guzei
+REM Name: 2-Methyl-8-quinolinol, C10H9NO
+RESI MQUI
+SIMU C1 > O11
+RIGU C1 > O11
+FRAG 17 1 1 1 90 90 90
+C1  6  0.010009  0.000000 -0.005503
+C2  6  0.006818  0.000000  1.503664
+C3  6  1.223257  0.000000  2.243706
+C4  6  1.191063  0.000000  3.621012
+C5  6 -0.054259  0.000000  4.299821
+C6  6 -0.207447  0.000000  5.712127
+C7  6 -1.475275  0.000000  6.259249
+C8  6 -2.635607  0.000000  5.446877
+C9  6 -2.511944  0.000000  4.071607
+C10 6 -1.213970  0.000000  3.470544
+N11 7 -1.170419  0.000000  2.111123
+O12 8 -3.600290  0.000000  3.264511
+</mquinolinol>
+
+
+<quinolinol>
+REM Src: Gaussian03 b3lyp/6-31+G(d), Ilia A. Guzei
+REM Name: 8-hydroxyquinoline, C9H7NO
+RESI QUIN
+SIMU C1 > O12
+RIGU C1 > O12
+FRAG 17 1 1 1 90 90 90
+C1  6    0.000075  0.000256  0.000050
+C2  6    0.000001 -0.000754  1.417717
+C3  6    1.204557 -0.000379  2.087889
+C4  6    2.419660  0.000941  1.353904
+C5  6    3.713528  0.001459  1.939405
+C6  6    4.829893  0.002651  1.126134
+C7  6    4.723100  0.003447 -0.285659
+C8  6    3.476413  0.002931 -0.879936
+C9  6    2.298604  0.001787 -0.068677
+N10 7    1.104914  0.001477 -0.723275
+O11 8    3.338595  0.003601 -2.227084
+</quinolinol>
 
 
 <Cyclohexane>
 rem Src: Gaussian 03 B3LYP/6-31+G(d,p) Opt
+rem Name: Cyclohexane, C6H12
 RESI CYH
 SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1
 SADI 0.04 C1 C5 C3 C5 C2 C6 C2 C4 C4 C6 C1 C3
@@ -741,12 +925,12 @@ C3   1    0.325134   -1.431258    0.229507
 C4   1   -1.077432   -0.997227   -0.229521
 C5   1   -1.402687    0.434241    0.229581
 C6   1   -0.325134    1.431258   -0.229507
-FEND
 </Cyclohexane>
 
 
-<Diethyl_ether>
-rem Src: Gaussian 03 MP2/6-31+G(d,p) Opt
+<ether>
+rem Src: Gaussian 03 pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei
+REM Name: Diethyl ether, C4H10O
 REM ETH
 RESI DIET
 SADI C1 C2 C3 C4
@@ -756,17 +940,17 @@ FLAT C1 > C4
 SIMU O1 > C4
 RIGU O1 > C4
 FRAG 17 1 1 1 90 90 90
-O1  3    0.000000    0.259114    0.000000
-C1  1   -2.386425    0.414218   -0.000130
-C2  1   -1.187942   -0.520285    0.000281
-C3  1    1.187941   -0.520285   -0.000281
-C4  1    2.386425    0.414218    0.000130
-FEND
-</Diethyl_ether>
+O1   3   0.445427   0.111653   0.205538 
+C1   1   1.618115  -0.780303  -1.675303
+C2   1   1.017082  -1.079296  -0.313914
+C3   1  -0.147697  -0.056793   1.484120
+C4   1  -0.721097   1.273775   1.936641
+</ether>
 
 
 <tBu-C>
 rem Src: Gaussian 03 B3LYP/6-311G(d,p) Opt
+rem Name: Tert-butyl-C
 REM C-tBu without H atoms
 RESI CTBU
 SADI C2 C3 C2 C4 C3 C5
@@ -775,17 +959,36 @@ SADI 0.04 C1 C3 C1 C4 C1 C5
 SIMU C1 > C5
 RIGU C1 > C5
 FRAG 17 1 1 1 90 90 90
-C1 1      0.078571    0.028684   -0.000002
-C2 1      -1.461121    0.005441    0.000000
-C3 1     -2.069261    1.420103    0.000003
-C4 1     -1.964795   -0.733029    1.261728
-C5 1      -1.964800   -0.733025   -1.261729
-FEND
+C1 1    0.078571   0.028684   -0.000002
+C2 1   -1.461121   0.005441    0.000000
+C3 1   -2.069261   1.420103    0.000003
+C4 1   -1.964795  -0.733029    1.261728
+C5 1   -1.964800  -0.733025   -1.261729
 </tBu-C>
+
+
+<tBu-O>
+rem Src: Gaussian 03 b3lyp/6-31G(d), Ilia A. Guzei
+rem Name: Tert-butanol (or tert-bytoxy)
+RESI TBUO
+DFIX 1.45 O1 C1
+SADI 0.04 O1 C2 O1 C3 O1 C4
+SADI C1 C2 C1 C3 C1 C4
+SADI 0.04 C2 C3 C3 C4 C4 C2
+SIMU O1 > C4
+RIGU O1 > C4
+FRAG 17 1 1 1 90 90 90
+O1  4 -2.093378  1.134082 -0.084963
+C1  1 -0.743687  1.228240 -0.574859
+C2  1 -0.031105  0.005011  0.006551
+C3  1 -0.749844  1.180989 -2.110429
+C4  1 -0.102469  2.528995 -0.067788
+</tBu-O>
 
 
 <tBu-N>
 rem Src: Gaussian 03 B3LYP/6-31G(d,p) Opt
+Rem Name: Tert-butyl-N
 RESI NTBU
 DFIX 1.49 N1 C1
 SADI 0.04 N1 C2 N1 C3 N1 C4
@@ -803,7 +1006,8 @@ N1     7     -0.823996   -0.000019   -0.415658
 
 
 <DABCO>
-rem Src: Gaussian 03 pbe1pbe/6-311+G(d)
+rem Src: Gaussian 03 pbe1pbe/6-311+G(d), Ilia A. Guzei
+REM Name: 1,4-diazabicyclo[2.2.2]octane, DABCO
 RESI DBCO
 SADI N1 C1 N1 C3 N1 C5 N2 C2 N2 C4 N2 C6 
 SADI C1 C2 C3 C4 C5 C6
@@ -826,6 +1030,7 @@ C6  1  0.004599  2.398139  1.557316
 
 <Water>
 rem Src: pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei
+REM: Name: Water
 RESI H2O
 DFIX 0.9584 0.001 O1 H1 O1 H2
 DFIX 1.5150 0.001 H1 H2
@@ -833,12 +1038,12 @@ FRAG 17 1 1 1 90 90 90
 O1  4  0.0000 0.0000 0.0000 
 H1  2  0.9584 0.0000 0.0000
 H2  2 -0.2392 0.9281 0.0000 
-FEND
 </Water>
 
 
 <CHCl3>
 rem Src: Turbomole, B3-LYP/def2-TZVPP 
+rem Name: Trichloromethane, Chloroform, CHCl3
 RESI CCL3
 DFIX 1.783 C1 Cl1 C1 Cl2 C1 Cl3
 DFIX 2.946 Cl1 Cl2 Cl2 Cl3 Cl3 Cl1
@@ -854,6 +1059,7 @@ CL3  2    1.7008437    0.0000000    0.4333292
 
 <DMF>
 rem Src: Gaussian 03 B3LYP/6-31+G(d,p) Opt
+REM Name: N,N-dimethylformamide, C3H7NO
 RESI DMF
 SADI N1 C2 N1 C3 
 DFIX 1.36 N1 C1
@@ -871,12 +1077,13 @@ C3    3   0.421705    1.433650    0.000019
 
 
 <Acetone>
-rem Src: Gaussian 03 B3LYP/6-31G(d,p) Opt
+rem Src: Gaussian 03, pbe1pbe/6-311+G(d), Ilia A. Guzei
+REM Name: Acetone, C3H6O
 RESI ACE
 SADI C1 C2 C2 C3 
 FLAT O1 > C3
 SADI 0.04 C1 O1 C3 O1
-DFIX 2.586 C1 C3
+DFIX 2.6029 C1 C3
 SIMU O1 > C3
 RIGU O1 > C3
 FRAG 17 1 1 1  90  90  90
@@ -887,8 +1094,9 @@ C3    6     -1.292738   -0.614241    0.000006
 </Acetone>
 
 
-<Ethyl_acetate>
+<Ethylac>
 rem Src: Own measurement
+rem Name: Ethyl acetate, C4H8O2
 RESI ETAC
 SIMU O1 > C4 
 RIGU O1 > C4 
@@ -906,11 +1114,12 @@ C1    1    0.83056   1.15362   0.66512
 C2    1    0.65200   1.04813   0.68557 
 C3    1    0.40932   0.89077   0.82575 
 C4    1    0.34314   0.86040   0.95545 
-</Ethyl_acetate>
+</Ethylac>
 
 
 <Triflate>
 rem Src: Own measurement
+rem Name: Trifluoromethanesulfonate, CF3SO3-
 RESI TRIF
 SIMU C1 > O3
 RIGU C1 > O3
@@ -934,6 +1143,7 @@ O3    3    0.80703   0.27957   0.36326
 
 
 <N-Adamantane>
+rem Name: Adamantane-N, C10H16N
 rem Src: own measurement
 RESI NADA
 SADI N3 C2 N3 C3 N3 C4
@@ -961,6 +1171,7 @@ C10  2   -0.058852  0.386127  0.561687
 
 <Adamantane>
 rem Src: own measurement
+REM Name: Adamantane, C10H16
 RESI CADA
 SADI C1 C2 C1 C3 C1 C4 C5 C6 C6 C7 C7 C8 C8 C9 C9 C10 C10 C5 =
   C2 C9 C3 C7 C4 C5
@@ -984,6 +1195,7 @@ C10  6   -0.058852  0.386127  0.561687
 
 <Nitrate>
 rem Src: pbe1pbe/6-311+G(3df), Ilia A. Guzei
+REM Name: Nitrate, [NO3]2-
 RESI NITR
 DFIX 0.01 1.246 N1 O1 N1 O2 N1 O3
 DFIX 0.01 2.158 O1 O2 O2 O3 O3 O1
@@ -998,22 +1210,24 @@ N1  3  0.000000  0.000000 0.000000
 
 
 <BF4>
-rem Src: Gaussian 03 B3LYP/6-311+G(d,p) Opt
+rem Src: Gaussian 03 pbe1pbe/6-311+G(3df), Ilia A. Guzei
+rem Name: Tetrafluoroborate, BF4−
 RESI BF4
 SIMU B1 > F4
 RIGU B1 > F4
 SADI B1 F1 B1 F2 B1 F3 B1 F4
 SADI 0.04 F1 F2  F2 F3  F3 F4  F4 F1  F2 F4  F1 F3
 FRAG  17  1  1  1  90  90  90
-B1     5    -0.000041    0.000137    0.000016
-F1     9     0.945519    1.050080   -0.106589
-F2     9     0.140054   -0.875706   -1.105007
-F3     9     0.223627   -0.716733    1.201540
-F4     9    -1.309177    0.542283    0.010047
+B1  5  0.000000  0.000000  0.000000
+F1  4  0.809590  0.809590  0.809590
+F2  4 -0.809590  0.809590 -0.809590
+F3  4  0.809590 -0.809590 -0.809590
+F4  4 -0.809590 -0.809590  0.809590
 </BF4>
 
 
 <Tosylate>
+rem Name: Tosylate anion,  CH3C6H4SO3−
 rem Src: Gaussian 03 B3LYP/6-31+G(d,p) Opt
 RESI TOS
 SAME C2 > C6 C1
@@ -1043,6 +1257,7 @@ O3    8     -2.354340   -0.740897   -1.243045
 
 <CCl4>
 rem Src: Gaussian 03 B3LYP/6-311++G(d,p)
+rem Name: Tetrachloromethane, CCl4
 RESI CCL4
 SADI C1 Cl1 C1 Cl2 C1 Cl3 C1 Cl4
 SADI 0.04 Cl1 Cl3 Cl2 Cl4 Cl1 Cl4 Cl2 Cl3 Cl1 Cl2 Cl3 Cl4
@@ -1058,21 +1273,39 @@ Cl4    2    0.198841    1.733330   -0.406054
 
 
 <CH2Cl2>
-rem Src: Gaussian 03 B3LYP/6-311++G(d,p) Opt
+rem Src: Gaussian 03, pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei
+REM Name: Dichloromethane, (CH2Cl2)
 RESI CCL2
 SIMU C1 > CL2
 RIGU C1 > CL2
-DFIX 1.791 C1 Cl1 C1 Cl2
-DFIX 2.991 Cl1 Cl2
+DFIX 1.7602 0.002 Cl1 C1 Cl2 C1
+DFIX 2.9338 0.004 Cl1 Cl2
 FRAG  17  1  1  1  90  90  90
-C1    1     0.000000    0.768606    0.000000
-CL1   2     1.495383   -0.216495    0.000000
-CL2   2    -1.495383   -0.216496    0.000000
+CL1  5  -0.806296 -1.466876 -0.570138
+CL2  5  -0.806296  1.466876 -0.570138
+C1   1  -0.011933  0.000000 -0.008438
 </CH2Cl2>
+
+
+<diox>
+rem Src: Gaussian03, b3lyp/6-31+G(d), Ilia A. Guzei
+REM Name: Dioxane, C4H8O2
+RESI DIOX
+SIMU O1 > C6
+RIGU O1 > C6
+FRAG 17 1 1 1 90 90 90
+O1 8 -0.019137 -0.029588 0.011353
+C2 6 0.006251 0.003805 1.435238
+C3 6 1.443149 0.000570 1.945240
+O4 8 2.145171 -1.138002 1.455314
+C5 6 2.119784 -1.171395 0.031428
+C6 6 0.682885 -1.168160 -0.478573
+</diox>
 
 
 <DMSO>
 rem Src: Gaussian 03 MP2/LANL2DZ Opt
+rem Name: Dimethyl sulfoxide (DMSO), (CH3)2SO
 RESI DMSO
 SIMU O1 > C2
 RIGU O1 > C2
@@ -1089,6 +1322,7 @@ C2    3   -1.426877   -0.809502    0.234347
 
 
 <12-Difluorobenz>
+rem Name: 1,2-difluorobenzene, C6H4F2
 rem Src: Gaussian 03 B3LYP/6-31+G(d,p) Opt
 RESI FBEN
 SADI C1 F1 C2 F2
@@ -1110,6 +1344,7 @@ F2     9     1.713722   -1.355385    0.000000
 
 
 <ClO4>
+rem Name: Perchlorate anion, ClO4-
 rem Src: Gaussian 03 B3LYP/6-311++G(d,p) Opt
 RESI CLO4
 SADI Cl1 O1 Cl1 O2 Cl1 O3 Cl1 O4
