@@ -39,7 +39,7 @@ from restraints import Restraints, Adjacency_Matrix
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 
 
-VERSION = '1.3.3'
+VERSION = '1.4.0'
 progname = '\n-----------------------------'\
            ' D S R - v{}' \
            ' ----------------------------------'.format(VERSION)
@@ -365,7 +365,7 @@ class DSR():
     
 if __name__ == '__main__':
     '''main function'''
-    #dsr = DSR(no_refine=True)
+    #dsr = DSR(no_refine=True, res_file='p21c.res')
     dsr = DSR()
 
     
