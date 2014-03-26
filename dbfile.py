@@ -38,8 +38,8 @@ class getDB():
         try:
             self._db_dir = os.environ["DSR_DB_DIR"]
         except(KeyError):
-            print('The environment variable DSR_DB_DIR was not found.\n'\
-                'Please set this variable to the path of the DSR database!')
+            print('\nThe environment variable DSR_DB_DIR was not found.\n'\
+                'Please set this variable to the path of the DSR database!\n')
             self._db_dir = './'
         self._databases = self.getDB_files_dict()
 
