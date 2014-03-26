@@ -2,7 +2,7 @@ Summary: DSR - A program for modelling of disordered solvents with SHELXL
 Name: DSR
 Provides: DSR
 Packager: dkratzert@gmx.de
-Version: 1.3.2
+Version: 1.4.0
 Release: 0
 Requires: python, xclip
 BuildRoot: %{_tmppath}/%{name}-%{version}-build/opt/DSR
@@ -50,6 +50,7 @@ install -m 644 dsrparse.py /opt/DSR/dsrparse.py
 install -m 644 export.py /opt/DSR/export.py
 install -m 644 misc.py /opt/DSR/misc.py
 install -m 644 options.py /opt/DSR/options.py
+install -m 644 terminalsize.py /opt/DSR/terminalsize.py
 install -m 644 resfile.py /opt/DSR/resfile.py
 install -m 644 restraints.py /opt/DSR/restraints.py
 install -m 644 resi.py /opt/DSR/resi.py
@@ -92,6 +93,7 @@ cp setup/dsr.sh $RPM_BUILD_ROOT/etc/profile.d
 /opt/DSR/dsrparse.py
 /opt/DSR/export.py
 /opt/DSR/misc.py
+/opt/DSR/terminalsize.py
 /opt/DSR/options.py
 /opt/DSR/resfile.py
 /opt/DSR/restraints.py
