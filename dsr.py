@@ -125,10 +125,15 @@ class DSR():
         '''
         list all entries in the db.
         '''
+        try:
+            from terminalsize import get_terminal_size
+            (width, height) = get_terminal_size()
+        except():
+            width = 80
         gdb = global_DB()
         db = gdb.build_db_dict()
         print('\n Entries found in the databases:\n')
-        print(' Fragment         | Line | DB Name    | Comment ')
+        print(' Fragment         | Line | DB Name    | Full name, Comments ')
         print(' ---------------------------------------------------------------------------')
     
         frags = sorted(db.keys())
@@ -136,7 +141,7 @@ class DSR():
             line = ' {:<17}| {:<5}| {:<11}| {}'.format(
                     i, gdb.get_line_number_from_fragment(i), gdb.get_db_from_fragment(i), 
                     ', '.join(gdb.get_comment_from_fragment(i)))
-            print(line[:79])
+            print(line[:width-1])
         try:
             if os.environ["DSR_DB_DIR"]:
                 dbdir = os.environ["DSR_DB_DIR"]
