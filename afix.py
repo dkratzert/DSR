@@ -184,7 +184,7 @@ class InsertAfix(object):
             dbhead.append('REM The restraints for residue {} are in this file:\n+{}\n'.format(residue, filename))
         dbhead = ''.join(dbhead)
         warn = self.insert_dsr_warning()
-        afix = warn+dbhead+str(part)+'AFIX '+str(self.afixnumber)+'\n'+atoms+'\nAFIX 0\n'+part2+resi+'rem End of DSR entry\n\n'
+        afix = warn+dbhead+str(part)+'AFIX '+str(self.afixnumber)+'\n'+atoms+'\nAFIX 0\n'+part2+resi+'rem The end of the DSR entry\n\n'
         return afix
 
 
