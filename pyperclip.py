@@ -151,6 +151,13 @@ elif os.name == 'posix' or platform.system() == 'Linux':
                 getcb = qtGetClipboard
                 setcb = qtSetClipboard
             except:
-                raise Exception('Pyperclip requires the gtk or PyQt4 module installed, or the xclip command.')
-copy = setcb
-paste = getcb
+                import sys
+                print('\nDSR requires Pyperclip to export fragments to the clipboard.')
+                print('Pyperclip requires the xclip command or the gtk or PyQt4 module installed.\n')
+                
+#                sys.exit()
+try:
+  copy = setcb
+  paste = getcb
+except(NameError):
+  pass

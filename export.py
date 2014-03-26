@@ -55,7 +55,10 @@ class Export():
         self.__fragline = self.__db['fragline']
         self.__cell = self.__fragline[2:]
         self.__clipcell = self.__fragline[:]
-        self.copy_to_clipboard()
+        try: 
+            self.copy_to_clipboard()
+        except(AttributeError):
+            pass
         self.format_calced_coords()  # expands the cell of calculated structures
         self.__cell = '  '.join(self.__cell)
         self._comment_regex = '^REM .*$'.upper()
