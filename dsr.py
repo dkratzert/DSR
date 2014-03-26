@@ -97,7 +97,10 @@ class DSR():
             self.export_all_fragments()
         ## Export one fragment         
         if self.export_fragment:
-            self.do_export_fragment()
+            try:
+                self.do_export_fragment()
+            except() as e:
+                print(e)
         ## Import a GRADE fragment          
         if self.import_grade:
             self.import_from_grade()
