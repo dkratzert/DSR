@@ -214,7 +214,7 @@ class Export():
         if misc.which('platon'):
             pass
         else:
-            print('Could not write a .png image. No platon executable in path.')
+            print('Could not write a .png image. No platon executable in PATH.')
             sys.exit()
         try:
             shutil.copyfile(resfile, insfile)
