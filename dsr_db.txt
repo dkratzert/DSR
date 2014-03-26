@@ -37,7 +37,7 @@
 <Toluene>
 REM Name: Toluene, C7H8
 REM Source: GRADE import 
-REM Gradeserver from https://globalphasong.org
+REM Gradeserver from http://grade.globalphasing.org
 RESI TOL1 
 DFIX 1.509 0.011 C1 C2
 DFIX 1.385 0.012 C2 C3
