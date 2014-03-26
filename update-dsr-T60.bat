@@ -17,6 +17,7 @@ xcopy /Y %GIT%\dsr.py %DSRDIR%
 xcopy /Y %GIT%\dsrparse.py %DSRDIR%
 xcopy /Y %GIT%\export.py %DSRDIR%
 xcopy /Y %GIT%\misc.py %DSRDIR%
+xcopy /Y %GIT%\terminalsize.py %DSRDIR%
 xcopy /Y %GIT%\options.py %DSRDIR%
 xcopy /Y %GIT%\resfile.py %DSRDIR%
 xcopy /Y %GIT%\resi.py %DSRDIR%
