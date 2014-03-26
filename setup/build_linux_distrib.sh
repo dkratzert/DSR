@@ -21,6 +21,7 @@ misc.py
 options.py
 resfile.py
 restraints.py
+terminalsize.py
 resi.py
 refine.py
 pyperclip.py
