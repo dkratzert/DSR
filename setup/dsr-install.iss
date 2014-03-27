@@ -75,6 +75,7 @@ Source: "..\constants.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\dbfile.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\dsrparse.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\export.py"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\terminalsize.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\misc.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\options.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\refine.py"; DestDir: "{app}"; Flags: ignoreversion
