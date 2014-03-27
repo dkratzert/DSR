@@ -29,7 +29,8 @@
 #                                     You must enter at least one restraint! e.g. RIGU     
 # FRAG 17 a b c alpha beta gamma   <- FRAG card with afix number and cell parameters.
 # Atom sfac-number coordinates     <- One isotropic atom per line following SHELX syntax.
-#   e.g. C1  1  x  y  z            <- The SFAC number is arbitrary. It ist changed later anyway.
+#   e.g. O1  2  x  y  z            <- The SFAC number is arbitrary. 
+         C1  1  x  y  z               Atom types are recognized by its name.
 # </name>                          <- End tag. Same as start tag but with /
 #
 # - Anything not being an atom after FRAG is ignored.
