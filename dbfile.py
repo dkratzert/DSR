@@ -273,9 +273,16 @@ class global_DB():
         for num, line in enumerate(headlines):
             if misc.multiline_test(line):
                 line = line.rstrip('\n\r= ')
-                line = line+' '+line[num+1]
+                linecombi = line+' '+headlines[num+1].rstrip('\n\r= ')
+                try:
+                    del(headlines[num+1])
+                except(IndexError):
+                    pass
+                new_head.append(linecombi)
+                continue
+            #if line:
             new_head.append(line)
-        return headlines
+        return new_head
         
 
 
@@ -297,6 +304,7 @@ class global_DB():
             head.append(i)
         for line in head:
             line = line.strip(' \n\r')
+            line = ' '.join(line.split())
             if line.upper().startswith('REM'):
                 comment.append(line.split()[1:])
                 line = ''

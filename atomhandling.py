@@ -555,24 +555,18 @@ if __name__ == '__main__':
     dsrp = DSR_Parser(reslist, rle)
     dsr_dict = dsrp.parse_dsr_line()
     num = NumberScheme(reslist, dbatoms, resiopt)
+    # das printet auch auf bilschirm:
     num.get_fragment_number_scheme()
     dbtypes = get_atomtypes(dbatoms)
     
-    #print(dbhead)
+    print(dbhead)
     print('\n')
     
     misc.wrap_headlines(dbhead)
     
     
-    
-    
     for i in dbhead:
         print(i.strip('\n'))
-    
-    
-    
-    
-    
     
     
     import misc
