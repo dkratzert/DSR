@@ -30,6 +30,7 @@ from restraints import Restraints, Adjacency_Matrix
 
 # -remove all ACTA befor freagment fit
 # F15 C8 F16 = vs. F15 C8 F16=
+# long line break in db fails to insert
 # -list of available fragments on homepage
 # -To the manual: Avogradro/res-file -> rename -> mercury -> mol2-file -> GRADE
 # -To manual: what to do if something does not work.
@@ -256,6 +257,8 @@ class DSR():
         return ''.join(dfixes)
     
     
+    
+    
     def main(self): 
         '''
         main object to run DSR as command line program
@@ -316,7 +319,7 @@ class DSR():
     
         ##### comment out all target atom lines in replace mode:  
         if dsr_dict['command'] == 'REPLACE':
-            replacemode(res_target_atoms, rle, reslist)
+            self.replacemode(res_target_atoms, rle, reslist)
 
         # write to file:
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
