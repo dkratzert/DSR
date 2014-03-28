@@ -235,6 +235,20 @@ class DSR():
             sys.exit() 
 
     
+    def restraints_and_dfix(self, dfix, resiclass, resinumber):
+        '''
+        '''
+        if self.external:
+            externalfile_name = write_dbhead_to_file(basefilename+'.dfx', dfix, resiclass, resinumber)
+            for n, line in enumerate(reslist):
+                if line.upper().startswith('RESI'):
+                    if line.split()[1] == str(resinumber):
+                        if self.external:
+                            line = '{}\nREM The restraints for residue {} are in this file:\n+{}\n'.format(line, resinumber, externalfile_name) 
+                        else:
+                            line = '\n{} \n{}'.format(line, dfix) 
+                        reslist[n] = line
+
        
     
     def generate_dfix_restraints(self, lf, reslist, dbatoms, residue, cell, part=''):
@@ -357,16 +371,7 @@ class DSR():
                                             cell,
                                             dsr_dict['part'])
             if resinumber:
-                if self.external:
-                    externalfile_name = write_dbhead_to_file(basefilename+'.dfx', dfix, resi.get_resiclass, resinumber)
-                for n, line in enumerate(reslist):
-                    if line.upper().startswith('RESI'):
-                        if line.split()[1] == str(resinumber):
-                            if self.external:
-                                line = '{}\nREM The restraints for residue {} are in this file:\n+{}\n'.format(line, resinumber, externalfile_name) 
-                            else:
-                                line = '\n{} \n{}'.format(line, dfix) 
-                            reslist[n] = line
+                self.restraints_and_dfix(dfix, resi.get_resiclass, resinumber)
             else:
                 line = '{}'.format(dfix) # insert restraints after dsrline
                 reslist[dsrline] = reslist[dsrline]+line

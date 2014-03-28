@@ -325,8 +325,8 @@ PART 0
 RESI 0
 rem End of DSR entry
  
-rem rem dsr put OC(CF3)3 with O1 c2 c3 c4 on o1_3 q6 Q4 q7 resi PART 3 occ =
-rem -31 dfix
+rem dsr put OC(CF3)3 with O1 c2 c3 c4 on o1_3 q6 Q4 q7 resi PART 3 occ =
+ -31 dfix
  
 AFIX   0
 HKLF 4

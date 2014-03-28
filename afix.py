@@ -121,11 +121,15 @@ class InsertAfix(object):
         e2s = Elem_2_Sfac(self.__sfac)
         real_atomnames = list(reversed(self.numberscheme)) # i reverse it to pop() later
         # all non-atoms between start tag and FRAG card with new names:
-        dbhead = rename_dbhead_atoms(real_atomnames, self.__dbatoms, self.__dbhead)
+        dbhead = self.__dbhead
         if residue:
             dbhead = self.remove_duplicate_restraints(dbhead)
+        else:
+            # applies new naming scheme
+            dbhead = rename_dbhead_atoms(real_atomnames, self.__dbatoms, self.__dbhead)
+        #print(dbhead)
         dbhead_distance = self.remove_all_restraints(dbhead)[0]
-        dbhead_others = self.remove_all_restraints(dbhead)[1]
+        dbhead_others = misc.wrap_headlines(self.remove_all_restraints(dbhead)[1])
         if self._dfix:
             dbhead = dbhead_others
         if external_restraints and not self._dfix:
@@ -219,7 +223,7 @@ if __name__ == '__main__':
 
 
     afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, sfac_table, find_atoms, numberscheme)
-    print(afix.build_afix_entry())
+    print(afix.build_afix_entry(True, False, False))
 
 
 

@@ -145,9 +145,10 @@ class global_DB():
             fragment = i[0].lower()
             line = str(i[1])
             db = str(i[2])
-            header = self.get_head_lines(fragment, db, line)[0]
+            headboth = self.get_head_lines(fragment, db, line)
+            header = headboth[0]
+            fragline = headboth[1]
             residue = self.get_residue_from_head(header)
-            fragline = self.get_head_lines(fragment, db, line)[1]
             atoms = self.get_fragment_atoms(fragment, db, line)
             comment = self.get_head_lines(fragment, db, line)[2]
             comment = [' '.join(x) for x in comment]
@@ -249,7 +250,7 @@ class global_DB():
            with line number
         '''
         multiline = False  # multiline is here to be able to skip the next line after a continuation line
-        for line in head:
+        for n, line in enumerate(head):
             line = line.split()
             if not line:
                 continue
@@ -259,19 +260,38 @@ class global_DB():
             if line[-1] == '=': # continuation line
                 multiline = True
             if line[0][:4].upper() not in SHX_CARDS:  # only the first 4 characters, because SADI_TOL would be bad
-                print('Bad line in header of database entry "{}" found!'.format(fragment))
+                print('Bad line {} in header of database entry "{}" found!'.format(n, fragment))
                 sys.exit(-1)
+
         
-    
+    def unwrap_head_lines(self, headlines):
+        '''
+        if a line is wrapped like "SADI C1 C2 =\n  C3 C4" or "SADI C1 C2=\n  C3 C4"
+        this function returns "SADI C1 C2 C3 C4"
+        '''
+        new_head = []
+        for num, line in enumerate(headlines):
+            if misc.multiline_test(line):
+                line = line.rstrip('\n\r= ')
+                line = line+' '+line[num+1]
+            new_head.append(line)
+        return headlines
+        
+
+
     def get_head_lines(self, fragment, db, line):
         '''
-        return the head of the dbentry of the fragment
+        return the head of the dbentry of the fragment as
+        list of strings
+        ['RESI CBZ', 'SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1', 
+        'SADI Cl1 C2 Cl1 C6', 
+        'FLAT Cl1 > C6', 'SIMU Cl1 > C6', 'RIGU Cl1 > C6']
         '''
         head = []
         nhead = []
         comment = []
         for i in self._db_plain_dict[db][int(line):]:
-            if i.upper().startswith('FRAG'):
+            if i.upper().startswith('FRAG'):  #collect the fragline
                 fragline = i.rstrip(' \n\r')
                 break
             head.append(i)
@@ -282,6 +302,8 @@ class global_DB():
                 line = ''
                 continue
             nhead.append(line)
+        # nhead is list of strings
+        nhead = self.unwrap_head_lines(nhead)
         if not comment:
             comment = ['']
         try:
@@ -644,25 +666,27 @@ if __name__ == '__main__':
     db = gl.build_db_dict()
     #print db.values()[3]
     
-    fragment = 'toluene'
-    fragline = gl.get_fragline_from_fragment(fragment)  # full string of FRAG line
-    dbatoms = gl.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
+    fragment = 'pfan'
+   # fragline = gl.get_fragline_from_fragment(fragment)  # full string of FRAG line
+   # dbatoms = gl.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
     dbhead = gl.get_head_from_fragment(fragment)        # this is only executed once
+    dbhead = gl.unwrap_head_lines(dbhead)
     
     #print dbatoms
-    print('residue:', db['toluene']['resi'])
-    print('line of db:', db['toluene']['line'])
-    print('database:', db['toluene']['db'])
-    print(fragline)
+   # print('residue:', db['toluene']['resi'])
+   # print('line of db:', db['toluene']['line'])
+   # print('database:', db['toluene']['db'])
+    #print(fragline)
     
     #for i in dbatoms:
     #    print i
-    head = db['toluene']['head']
+    #head = db['toluene']['head']
     print('### DB head:\n')
     for i in dbhead:
         print(i)
     
-    mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz')
+    sys.exit()
+    #mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz')
     #mog = ImportGRADE('./test-data/LIG.gradeserver_all.tgz')
     
     #import tempfile

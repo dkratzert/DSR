@@ -68,39 +68,30 @@ class DSR_Parser():
                 return dsr_str
         else:  # returns the index number of the command
             dsr_str = str(self.__reslist[indexnum[0]])
+            dsr_str = re.sub(' +',' ', dsr_str)
             if misc.multiline_test(dsr_str):
                 # in case of a multiline command, strip the '=' and the newline
                 dsr_str = dsr_str.rstrip('\n\r= ')
                 dsr_str = dsr_str+' '+self.__reslist[indexnum[0]+1]
-                dsr_list = dsr_str.split()
-                txt = ' '.join(dsr_list)
-                # wrap the line after 75 chars:
-                dsrlines = textwrap.wrap(txt, 75, initial_indent='rem ', subsequent_indent = 'rem ')
-                if len(dsrlines) > 1:
-                    dsrlines[0] = dsrlines[0]+' ='
-                dsrlines = '\n'.join(dsrlines) 
-                dsrlines = dsrlines+'\n\n'
-                self.__reslist[indexnum[0]] = '' # delete old line
+            dsr_list = dsr_str.split()
+            txt = ' '.join(dsr_list)
+            # wrap the line after 75 chars:
+            dsrlines = textwrap.wrap(txt, 75, initial_indent='rem ', subsequent_indent = 'rem ')
+            if len(dsrlines) > 1:
+                dsrlines[0] = dsrlines[0]+' ='
+            dsrlines = '\n'.join(dsrlines) 
+            dsrlines = dsrlines+'\n\n'
+            self.__reslist[indexnum[0]] = '' # delete old line
+            if misc.multiline_test(dsr_str):
                 self.__reslist[indexnum[0]+1] = '' # delete old line
-                self.__reslist.insert(indexnum[0]+1, dsrlines)
-            else:
-                dsr_str = re.sub(' +',' ', dsr_str)
-                dsr_list = dsr_str.split()
-                txt = ' '.join(dsr_list)
-                # wrap the line after 75 chars
-                dsrlines = textwrap.wrap(txt, 75, initial_indent='rem ', subsequent_indent = 'rem ') 
-                if len(dsrlines) > 1:
-                    dsrlines[0] = dsrlines[0]+' ='
-                dsrlines = '\n'.join(dsrlines) 
-                dsrlines = dsrlines+'\n\n'
-                self.__reslist[indexnum[0]] = '' # delete old line
-                self.__reslist.insert(indexnum[0]+1, dsrlines)
+            self.__reslist.insert(indexnum[0]+1, dsrlines)
             if misc.multiline_test(dsr_str):
                 return indexnum[0]+1
             else:
                 return indexnum[0]                     # return the line index number
     
-
+    
+    
     def find_commands(self, command):
         '''returns the value of the input string argument as string'''
         # hier vielleicht sogar mit match, damit OCCC nicht gültig ist

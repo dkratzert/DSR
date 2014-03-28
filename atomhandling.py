@@ -534,40 +534,40 @@ if __name__ == '__main__':
     from dsrparse import DSR_Parser
     from resfile import ResList
     from dbfile import global_DB
+    from resfile import ResList, ResListEdit
+    import misc
     res_file = 'p21c.res'
     res_list = ResList(res_file)
     reslist =  res_list.get_res_list()
+    find_atoms = FindAtoms(reslist)
+    rle = ResListEdit(reslist, find_atoms)
     gdb = global_DB()
     db = gdb.build_db_dict()
-
     
-    fragment = 'OC1'
-    fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
-    dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
-    dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
+    #resiopt = dsr_dict['resi']
+    resiopt = False
     
+    fragment = 'pfan'
+    fragline = gdb.get_fragline_from_fragment(fragment)  
+    dbatoms = gdb.get_atoms_from_fragment(fragment)      
+    dbhead = gdb.get_head_from_fragment(fragment)
     
-    print(dbhead)
+    dsrp = DSR_Parser(reslist, rle)
+    dsr_dict = dsrp.parse_dsr_line()
+    num = NumberScheme(reslist, dbatoms, resiopt)
+    num.get_fragment_number_scheme()
+    dbtypes = get_atomtypes(dbatoms)
+    
+    #print(dbhead)
     print('\n')
     
-    def rename_at(head):
-        for num, line in enumerate(dbhead):
-            line = textwrap.wrap(line, 78, subsequent_indent = '  ')
-            if len(line) > 1:
-                line[0] = line[0]+' ='
-                line[1] = line[1]+'\n'
-                line = '\n'.join(line)
-                dbhead[num] = line
-        for num, line in enumerate(dbhead):
-            line = ' '.join(line.strip().split(' '))
-            dbhead[num] = line+'\n'
-        return dbhead
+    misc.wrap_headlines(dbhead)
     
     
-    print(rename_at(dbhead))
+    
     
     for i in dbhead:
-        print(i)
+        print(i.strip('\n'))
     
     
     
