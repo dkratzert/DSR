@@ -207,18 +207,18 @@ if __name__ == '__main__':
     rle = ResListEdit(reslist, find_atoms)
     gdb = global_DB()
     db = gdb.build_db_dict()
-    fragment = 'oc(cf3)3'
+    fragment = 'pfan'
     fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
     dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
     dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
-    residue = gdb.get_resi_from_fragment(fragment)
+    resi = False #gdb.get_resi_from_fragment(fragment)
     dbtypes = get_atomtypes(dbatoms)
-    resi = Resi(reslist, dsr_dict, dbhead, residue, find_atoms)
-    dbhead = resi.make_resihead()
+    #resi = Resi(reslist, dsr_dict, dbhead, residue, find_atoms)
+    #dbhead = resi.make_resihead()
 
     sf = SfacTable(reslist, dbtypes, res_file)
     sfac_table = sf.set_sfac_table()
-    num = NumberScheme(reslist, dbatoms, resi.get_resinumber)
+    num = NumberScheme(reslist, dbatoms, resi)
     numberscheme = num.get_fragment_number_scheme()
 
 
