@@ -287,10 +287,7 @@ def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
     return 'check_source_target() succeded!\n'
     
   
-def wrap_long_lines(head):
-    '''
-    '''
-    pass
+
 
 
 def rename_dbhead_atoms(new_atoms, old_atoms, dbhead):
@@ -307,13 +304,15 @@ def rename_dbhead_atoms(new_atoms, old_atoms, dbhead):
             line = ' '.join(line.strip().split(' '))
             line = line.replace(i, new_atoms[x])
             dbhead[num] = line+'\n'
-    #for num, line in enumerate(dbhead):
-    #    line = textwrap.wrap(line, 78, subsequent_indent = '  ')
-    #    if len(line) > 1:
-    #        line[0] = line[0]+' ='
-    #        line[1] = line[1]+'\n'
-    #        line = '\n'.join(line)
-    #        dbhead[num] = line
+    #new_atoms = list(reversed(new_atoms))
+    #for x, i in enumerate(old_atoms):
+    #    i = i[0]
+    #    for line in dbhead:
+    #        line = line.split()
+    #        for n, atom in enumerate(line):
+    #            if line == i:
+    #                line[n] = new_atoms[x]
+    #                dbhead[num] = line+'\n'
     return dbhead
 
 
@@ -556,17 +555,22 @@ if __name__ == '__main__':
     dsr_dict = dsrp.parse_dsr_line()
     num = NumberScheme(reslist, dbatoms, resiopt)
     # das printet auch auf bilschirm:
-    num.get_fragment_number_scheme()
+    numbers = num.get_fragment_number_scheme()
+    print('#######################')
+    #print(numbers)
+    print('#######################')
     dbtypes = get_atomtypes(dbatoms)
     
-    print(dbhead)
+    
     print('\n')
     
     misc.wrap_headlines(dbhead)
     
+    newnames = rename_dbhead_atoms(numbers, dbatoms, dbhead)
     
-    for i in dbhead:
-        print(i.strip('\n'))
+    print(newnames)
+    #for i in dbhead:
+    #    print(i.strip('\n'))
     
     
     import misc
