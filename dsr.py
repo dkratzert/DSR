@@ -29,6 +29,7 @@ from restraints import Restraints, Adjacency_Matrix
 # TODO and ideas:
 
 # -remove all ACTA befor freagment fit
+# F15 C8 F16 = vs. F15 C8 F16=
 # -list of available fragments on homepage
 # -To the manual: Avogradro/res-file -> rename -> mercury -> mol2-file -> GRADE
 # -To manual: what to do if something does not work.
