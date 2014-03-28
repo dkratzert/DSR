@@ -28,9 +28,8 @@ from restraints import Restraints, Adjacency_Matrix
 
 # TODO and ideas:
 
-# -remove all ACTA befor freagment fit
-# F15 C8 F16 = vs. F15 C8 F16=
-# long line break in db fails to insert
+# -remove all ACTA befor fragment fit
+# -renaming of atoms with number ofer 10 fails
 # -list of available fragments on homepage
 # -To the manual: Avogradro/res-file -> rename -> mercury -> mol2-file -> GRADE
 # -To manual: what to do if something does not work.
@@ -42,7 +41,7 @@ from restraints import Restraints, Adjacency_Matrix
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 
 
-VERSION = '1.4.0'
+VERSION = '1.4.1'
 progname = '\n-----------------------------'\
            ' D S R - v{}' \
            ' ----------------------------------'.format(VERSION)
@@ -235,19 +234,6 @@ class DSR():
             sys.exit() 
 
     
-    def restraints_and_dfix(self, dfix, resiclass, resinumber):
-        '''
-        '''
-        if self.external:
-            externalfile_name = write_dbhead_to_file(basefilename+'.dfx', dfix, resiclass, resinumber)
-            for n, line in enumerate(reslist):
-                if line.upper().startswith('RESI'):
-                    if line.split()[1] == str(resinumber):
-                        if self.external:
-                            line = '{}\nREM The restraints for residue {} are in this file:\n+{}\n'.format(line, resinumber, externalfile_name) 
-                        else:
-                            line = '\n{} \n{}'.format(line, dfix) 
-                        reslist[n] = line
 
        
     
@@ -371,7 +357,16 @@ class DSR():
                                             cell,
                                             dsr_dict['part'])
             if resinumber:
-                self.restraints_and_dfix(dfix, resi.get_resiclass, resinumber)
+                if self.external:
+                    externalfile_name = write_dbhead_to_file(basefilename+'.dfx', dfix, resi.get_resiclass, resinumber)
+                for n, line in enumerate(reslist):
+                    if line.upper().startswith('RESI'):
+                        if line.split()[1] == str(resinumber):
+                            if self.external:
+                                line = '{}\nREM The restraints for residue {} are in this file:\n+{}\n'.format(line, resinumber, externalfile_name) 
+                            else:
+                                line = '\n{} \n{}'.format(line, dfix) 
+                            reslist[n] = line    
             else:
                 line = '{}'.format(dfix) # insert restraints after dsrline
                 reslist[dsrline] = reslist[dsrline]+line
