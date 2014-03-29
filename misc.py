@@ -101,15 +101,17 @@ def wrap_headlines(dbhead):
     for num, line in enumerate(dbhead):
         line = textwrap.wrap(line, 77, subsequent_indent = '  ')
         if len(line) > 1:
-            line[0] = line[0]+' ='
-            line[1] = line[1]+'\n'
-            line = '\n'.join(line)
-            dbhead[num] = line
+            newline = []
+            for n, l in enumerate(line):
+                if n < len(line)-1:
+                    l = l+' =\n'
+                newline.append(l)
+            dbhead[num] = ' '.join(newline)
+            #print(newline)
     for num, line in enumerate(dbhead):
         line = ' '.join(line.strip().split(' '))
         dbhead[num] = line+'\n'
     return dbhead
-
 
 
 # this is deprecated:
@@ -365,6 +367,7 @@ if __name__ == '__main__':
     from atomhandling import FindAtoms
     from dsrparse import DSR_Parser
     import math as m
+    import sys
     res_file = 'p21c.res'
     res_list = ResList(res_file)
     reslist = res_list.get_res_list()
@@ -389,8 +392,10 @@ if __name__ == '__main__':
     print('volume of Benzene ring atoms:')
     print(vol_tetrahedron(a, b, c, d, cell))    
     
+    head = ['FLAT C C1 C10 C11 C12 C13 C2 C3', 'FLAT C C1 C10 C11 C12 C13 C2 C3 C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL  C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CLx']
     
-    
+    print(wrap_headlines(head))
+    sys.exit()
     dsr_string = dsrp.find_dsr_command(line=True).lower()
 
     regex = 'Q2.*'
