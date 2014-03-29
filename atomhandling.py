@@ -297,23 +297,16 @@ def rename_dbhead_atoms(new_atoms, old_atoms, dbhead):
     dbhead = [SAME F5A F6A F6A F4A F7A F8A F8A F9A F9A F7A\n', 'SIMU O1A > F9A\n', 
                 'RIGU O1A > F9A\n']
     '''
-    new_atoms = list(reversed(new_atoms))
-    for x, i in enumerate(old_atoms):
-        i = i[0]
-        for num, line in enumerate(dbhead):
-            line = ' '.join(line.strip().split(' '))
-            line = line.replace(i, new_atoms[x])
-            dbhead[num] = line+'\n'
-    #new_atoms = list(reversed(new_atoms))
-    #for x, i in enumerate(old_atoms):
-    #    i = i[0]
-    #    for line in dbhead:
-    #        line = line.split()
-    #        for n, atom in enumerate(line):
-    #            if line == i:
-    #                line[n] = new_atoms[x]
-    #                dbhead[num] = line+'\n'
-    return dbhead
+    new = list(reversed(new_atoms))
+    headneu = []
+    for line in dbhead:
+        line = line.split()
+        for x, a in enumerate(old_atoms):
+            for n,i in enumerate(line):
+                if i == a:
+                    line[n] = new[x]
+        headneu.append(' '.join(line)+'\n')
+    return headneu
 
 
 

@@ -119,15 +119,15 @@ class InsertAfix(object):
         atype = []       # list of atomtypes in reverse order
         afix_list = []   # the final list with atoms, sfac and coordinates
         e2s = Elem_2_Sfac(self.__sfac)
-        real_atomnames = list(reversed(self.numberscheme)) # i reverse it to pop() later
+        new_atomnames = list(reversed(self.numberscheme)) # i reverse it to pop() later
         # all non-atoms between start tag and FRAG card with new names:
         dbhead = self.__dbhead
         if residue:
             dbhead = self.remove_duplicate_restraints(dbhead)
         else:
             # applies new naming scheme
-            dbhead = rename_dbhead_atoms(real_atomnames, self.__dbatoms, self.__dbhead)
-        #print(dbhead)
+            old_atoms = [ i[0] for i in self.__dbatoms]
+            dbhead = rename_dbhead_atoms(new_atomnames, old_atoms, dbhead)
         dbhead_distance = self.remove_all_restraints(dbhead)[0]
         dbhead_others = misc.wrap_headlines(self.remove_all_restraints(dbhead)[1])
         if self._dfix:
@@ -164,7 +164,7 @@ class InsertAfix(object):
                 afix_list[n][2:5] =  coord[self.target_atoms[ind]]
         newlist = []
         for i in afix_list:
-            i[0] = real_atomnames.pop()
+            i[0] = new_atomnames.pop()
             i[2] = i[2].ljust(8, '0').rjust(9, ' ') 
             i[3] = i[3].ljust(8, '0').rjust(9, ' ')
             i[4] = i[4].ljust(8, '0').rjust(9, ' ')

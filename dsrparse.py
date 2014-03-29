@@ -80,8 +80,8 @@ class DSR_Parser():
             if len(dsrlines) > 1:
                 dsrlines[0] = dsrlines[0]+' ='
             dsrlines = '\n'.join(dsrlines) 
-            dsrlines = dsrlines+'\n\n'
-            self.__reslist[indexnum[0]] = '' # delete old line
+            dsrlines = dsrlines+'\n'
+            self.__reslist[indexnum[0]] = ' rem tst' # delete old line
             if misc.multiline_test(dsr_str):
                 self.__reslist[indexnum[0]+1] = '' # delete old line
             self.__reslist.insert(indexnum[0]+1, dsrlines)

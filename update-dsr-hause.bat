@@ -30,8 +30,8 @@ xcopy /Y %GIT%\dsr_db.txt %DSRDIR%
 xcopy /Y %GIT%\manuals\DSR-manual.pdf %DSRDIR%
 rem xcopy /Y %GIT%\update-dsr.bat %DSRDIR%
 xcopy /Y %GIT%\example\p21c.res %DSRDIR%\example
-del c:\Programme\DSR\*.pyc
-del c:\Program Files (x86)\DSR\*.pyc
+del "c:\Programme\DSR\*.pyc"
+del "C:\Program Files (x86)\DSR\*.pyc"
 rem copy %GIT%\dsr.bat %DSRDIR%
 rem sleep 2s
 rem pause
