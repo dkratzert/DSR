@@ -1,4 +1,6 @@
 Recent changes
+-1.4.2  serious bug with wrong naming scheme of fragment atoms fixed.
+-1.4.1  serious bug with wrapped lines in the database header fixed.
 -1.4.0  Big database update (Many thanks to Ilia A. Guzei providing molecular fragments). The automatic generation 
         of DFIX/DANG and FLAT restraints with the "DFIX" DSR-command is now implemented. 
         Success and fail reports about the restraint generation would be highly appreciated!
