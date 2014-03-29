@@ -115,7 +115,7 @@ def wrap_headlines(dbhead):
 
 
         
-def unwrap_head_lines(headlines):
+def unwrap_head_lines_old(headlines):
     '''
     if a line is wrapped like "SADI C1 C2 =\n  C3 C4" or "SADI C1 C2=\n  C3 C4"
     this function returns "SADI C1 C2 C3 C4"
@@ -133,6 +133,74 @@ def unwrap_head_lines(headlines):
             continue
         #if line:
         new_head.append(line)
+    return new_head
+
+
+def unwrap_head_lines(headlines):
+    '''
+    if a line is wrapped like "SADI C1 C2 =\n  C3 C4" or "SADI C1 C2=\n  C3 C4"
+    this function returns "SADI C1 C2 C3 C4"
+    '''
+    import constants
+    for n, i in enumerate(headlines):
+        multi = False
+        multiline = []
+        for n in range(0, 10):
+            try:
+                line = headlines[i+n].upper()
+            except(IndexError):
+                continue
+            if headlines[n][:4] in constants.RESTRAINT_CARDS:
+                break # 
+            if headlines[n][:4] in constants.RESTRAINT_CARDS and line.rstrip('\n ').endswith('='): # stop also if next restrraint begins
+                multiline.append(headlines[i+n])
+                del(headlines[i+n])
+                multi = True # turn on afix flag if first afix is found
+                continue
+            if line.startswith('AFIX') and line.split()[1] == '0':
+                afix = False # turn of afix flag if afix is closed with "afix 0" 
+                self._reslist[i+n] = ''
+                break
+            if afix:
+                try: 
+                    atom = line.split()[0].upper()
+                    if atom in SHX_CARDS:
+                        continue
+                    print('Deleted atom {}'.format(line.split()[0]))
+                    self._reslist[i+n] = ''
+                except(IndexError):
+                    continue
+
+
+
+    for num, line in enumerate(headlines):
+        if multiline:
+            new_head.append(' '.join(multiline))
+            multiline = []
+        for i in range(10):
+            try:
+                headlines[num]
+            except(IndexError):
+                
+            if multiline_test(headlines[num]):
+                combiline = line.rstrip('\n= ')+' '+headlines[num+1].rstrip('\n= ')
+                multiline.append(combiline)
+                try:
+                    del(headlines[num+1])
+                except(IndexError):
+                    pass
+                try:
+                    if headlines[num+2][:4] in constants.RESTRAINT_CARDS:
+                        continue
+                except(IndexError):
+                    break
+            else:
+                new_head.append(line)    
+                try:
+                    del(headlines[num])
+                except(IndexError):
+                    pass
+
     return new_head
 
 
@@ -390,12 +458,27 @@ if __name__ == '__main__':
     from dsrparse import DSR_Parser
     import math as m
     import sys
+    from dbfile import global_DB
     res_file = 'p21c.res'
     res_list = ResList(res_file)
     reslist = res_list.get_res_list()
     find_atoms = FindAtoms(reslist)
     rle = ResListEdit(reslist, find_atoms)
     dsrp = DSR_Parser(reslist, rle)
+    
+    gdb = global_DB()
+    db = gdb.build_db_dict()
+    fragment = 'PFAnion'
+    fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
+    #dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
+    dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
+    resi = True #gdb.get_resi_from_fragment(fragment)
+    uhead = unwrap_head_lines(dbhead)
+    print(uhead)
+    sys.exit()
+    
+    
+    
     
     cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     # CF3:
@@ -417,9 +500,9 @@ if __name__ == '__main__':
     head = ['FLAT C C1 C10 C11 C12 C13 C2 C3', 'FLAT C C1 C10 C11 C12 C13 C2 C3 C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL  C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CLx']
     
     whead = wrap_headlines(head)
-    print(whead)
+    #print(whead)
     uhead = unwrap_head_lines(whead)
-    print(uhead)
+    #print(uhead)
     sys.exit()
     dsr_string = dsrp.find_dsr_command(line=True).lower()
 

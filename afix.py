@@ -100,6 +100,7 @@ class InsertAfix(object):
         others = []
         for num, headline in enumerate(dbhead):
             headline = headline.strip().split()
+            print(headline)
             try:
                 headline[0]
             except(IndexError):    
@@ -129,8 +130,11 @@ class InsertAfix(object):
             old_atoms = [ i[0] for i in self.__dbatoms]
             dbhead = rename_dbhead_atoms(new_atomnames, old_atoms, dbhead)
         removed_restr = self.remove_all_restraints(dbhead)
+        
         dbhead_distance = removed_restr[0]
+        
         dbhead_others = misc.wrap_headlines(removed_restr[1])
+        print(dbhead_others)
         if self._dfix:
             dbhead = dbhead_others
         if external_restraints and not self._dfix:
@@ -208,11 +212,11 @@ if __name__ == '__main__':
     rle = ResListEdit(reslist, find_atoms)
     gdb = global_DB()
     db = gdb.build_db_dict()
-    fragment = 'pfan'
+    fragment = 'PFAnion'
     fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
     dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
     dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
-    resi = False #gdb.get_resi_from_fragment(fragment)
+    resi = True #gdb.get_resi_from_fragment(fragment)
     dbtypes = get_atomtypes(dbatoms)
     #resi = Resi(reslist, dsr_dict, dbhead, residue, find_atoms)
     #dbhead = resi.make_resihead()
