@@ -114,6 +114,28 @@ def wrap_headlines(dbhead):
     return dbhead
 
 
+        
+def unwrap_head_lines(headlines):
+    '''
+    if a line is wrapped like "SADI C1 C2 =\n  C3 C4" or "SADI C1 C2=\n  C3 C4"
+    this function returns "SADI C1 C2 C3 C4"
+    '''
+    new_head = []
+    for num, line in enumerate(headlines):
+        if multiline_test(line):
+            line = line.rstrip('\n\r= ')
+            linecombi = line+' '+headlines[num+1].rstrip('\n\r= ')
+            try:
+                del(headlines[num+1])
+            except(IndexError):
+                pass
+            new_head.append(linecombi)
+            continue
+        #if line:
+        new_head.append(line)
+    return new_head
+
+
 # this is deprecated:
 def get_replace_mode(dsr_string):
     '''returns the put/replace keyword'''
@@ -394,7 +416,10 @@ if __name__ == '__main__':
     
     head = ['FLAT C C1 C10 C11 C12 C13 C2 C3', 'FLAT C C1 C10 C11 C12 C13 C2 C3 C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL  C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CLx']
     
-    print(wrap_headlines(head))
+    whead = wrap_headlines(head)
+    print(whead)
+    uhead = unwrap_head_lines(whead)
+    print(uhead)
     sys.exit()
     dsr_string = dsrp.find_dsr_command(line=True).lower()
 

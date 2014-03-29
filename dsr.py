@@ -50,22 +50,22 @@ class DSR():
     '''
     main class 
     '''
-    def __init__(self, res_file=None, res_file_external=None, export_fragment=None, import_grade=None, 
+    def __init__(self, res_file=None, external_restr=None, export_fragment=None, import_grade=None, 
                 export_all=None, list_db=None, no_refine=None):
         # options from the commandline options parser:
         self.options = OptionsParser(progname)
         self.external = False
         
-        if not res_file and not res_file_external:
+        if not res_file and not external_restr:
             if not self.options.res_file:
-                self.res_file = self.options.res_file_external
+                self.res_file = self.options.external_restr
                 self.external = True
             else:
                 self.res_file = self.options.res_file
                 self.external = False
         else:
             if not res_file:
-                self.res_file = res_file_external
+                self.res_file = external_restr
                 self.external = True
             else:
                 self.res_file = res_file
@@ -313,7 +313,7 @@ class DSR():
                           sfac_table, find_atoms, numberscheme)
         afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfx', resi.get_resiclass)
         # line where the dsr command is found in the resfile:
-        dsrline = dsrp.find_dsr_command(reslist) 
+        dsrline = dsrp.find_dsr_command(line=False) 
         reslist[dsrline] = reslist[dsrline]+'\n'
         reslist.insert(dsrline+1, afix_entry)
     
@@ -365,11 +365,11 @@ class DSR():
                             if self.external:
                                 line = '{}\nREM The restraints for residue {} are in this file:\n+{}\n'.format(line, resinumber, externalfile_name) 
                             else:
-                                line = '\n{} \n{}'.format(line, dfix) 
+                                line = '{} \n{}\n'.format(line, dfix) 
                             reslist[n] = line    
             else:
                 line = '{}'.format(dfix) # insert restraints after dsrline
-                reslist[dsrline] = reslist[dsrline]+line
+                reslist[dsrline-2] = reslist[dsrline-2]+line
  
         if not self.no_refine:
             rl.write_resfile(reslist, '.res')
