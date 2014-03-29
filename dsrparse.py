@@ -55,7 +55,7 @@ class DSR_Parser():
             print('only one dsr command at once is allowed! Exiting...')
             sys.exit(-1)
     
-        if line is True:  # returns the string
+        if line:  # returns the string
             dsr_str = str(self.__reslist[indexnum[0]])
             if misc.multiline_test(dsr_str):
                 # in case of a multiline command, strip the '=' and the newline
@@ -81,7 +81,8 @@ class DSR_Parser():
                 dsrlines[0] = dsrlines[0]+' ='
             dsrlines = '\n'.join(dsrlines) 
             dsrlines = dsrlines+'\n'
-            self.__reslist[indexnum[0]] = ' rem tst' # delete old line
+            self.__reslist[indexnum[0]] = '' # delete old line
+            self.__reslist[indexnum[0]+1] = '' # delete old line
             if misc.multiline_test(dsr_str):
                 self.__reslist[indexnum[0]+1] = '' # delete old line
             self.__reslist.insert(indexnum[0]+1, dsrlines)

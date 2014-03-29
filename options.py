@@ -50,8 +50,8 @@ class OptionsParser():
         return self._options.res_file
     
     @property
-    def res_file_external(self):
-        return self._options.res_file_external
+    def external_restr(self):
+        return self._options.external_restr
     
     @property
     def no_refine(self):
@@ -97,7 +97,7 @@ class OptionsParser():
         )
         self.parser.add_argument("-r", dest="res_file", metavar='"res file"', \
                                 help="res file with DSR command", default=False)
-        self.parser.add_argument("-re", dest="res_file_external", metavar='"res file"', \
+        self.parser.add_argument("-re", dest="external_restr", metavar='"res file"', \
                                 help="res file with DSR command (writes restraints to external file)", default=False)
         self.parser.add_argument("-e", dest="export_fragment", metavar='"fragment"', \
                                 help="export fragment from the database", default=False)

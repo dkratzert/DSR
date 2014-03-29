@@ -263,26 +263,7 @@ class global_DB():
                 print('Bad line {} in header of database entry "{}" found!'.format(n, fragment))
                 sys.exit(-1)
 
-        
-    def unwrap_head_lines(self, headlines):
-        '''
-        if a line is wrapped like "SADI C1 C2 =\n  C3 C4" or "SADI C1 C2=\n  C3 C4"
-        this function returns "SADI C1 C2 C3 C4"
-        '''
-        new_head = []
-        for num, line in enumerate(headlines):
-            if misc.multiline_test(line):
-                line = line.rstrip('\n\r= ')
-                linecombi = line+' '+headlines[num+1].rstrip('\n\r= ')
-                try:
-                    del(headlines[num+1])
-                except(IndexError):
-                    pass
-                new_head.append(linecombi)
-                continue
-            #if line:
-            new_head.append(line)
-        return new_head
+
         
 
 
@@ -311,7 +292,7 @@ class global_DB():
                 continue
             nhead.append(line)
         # nhead is list of strings
-        nhead = self.unwrap_head_lines(nhead)
+        nhead = misc.unwrap_head_lines(nhead)
         if not comment:
             comment = ['']
         try:
@@ -678,7 +659,7 @@ if __name__ == '__main__':
    # fragline = gl.get_fragline_from_fragment(fragment)  # full string of FRAG line
    # dbatoms = gl.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
     dbhead = gl.get_head_from_fragment(fragment)        # this is only executed once
-    dbhead = gl.unwrap_head_lines(dbhead)
+    dbhead = misc.unwrap_head_lines(dbhead)
     
     #print dbatoms
    # print('residue:', db['toluene']['resi'])

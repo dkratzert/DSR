@@ -128,8 +128,9 @@ class InsertAfix(object):
             # applies new naming scheme
             old_atoms = [ i[0] for i in self.__dbatoms]
             dbhead = rename_dbhead_atoms(new_atomnames, old_atoms, dbhead)
-        dbhead_distance = self.remove_all_restraints(dbhead)[0]
-        dbhead_others = misc.wrap_headlines(self.remove_all_restraints(dbhead)[1])
+        removed_restr = self.remove_all_restraints(dbhead)
+        dbhead_distance = removed_restr[0]
+        dbhead_others = misc.wrap_headlines(removed_restr[1])
         if self._dfix:
             dbhead = dbhead_others
         if external_restraints and not self._dfix:
