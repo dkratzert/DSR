@@ -26,7 +26,7 @@
 # <name>                           <- Start tag.
 # RESI class                       <- Required, defines the residue name of db entry.
 # RESTRAINTS                       <- Any restraints and comments following the SHELXL syntax.
-#                                     You must enter at least one restraint! e.g. RIGU     
+#                                     You must enter at least one restraint! e.g. RIGU C1 > C7
 # FRAG 17 a b c alpha beta gamma   <- FRAG card with afix number and cell parameters.
 # Atom sfac-number coordinates     <- One isotropic atom per line following SHELX syntax.
 #   e.g. O1  2  x  y  z            <- The SFAC number is arbitrary. 
@@ -36,6 +36,9 @@
 # - Anything not being an atom after FRAG is ignored.
 # - Only lines beginning with valid SHELXL instructions are allowed in the header.
 # - Anything behind the 5th column in the atom list is ignored.
+# - Long lines can be wrapped with an equal sign (=) and a space character in the next line
+#   like in SHELXL, but the can also be of any length. All lines will be wrapped to fit 
+#   in the SHELXL file.
 ########################################################################################
 
 
@@ -371,6 +374,84 @@ F1  1  -2.377336  1.372555 0.000000
 F2  1  -2.377336 -1.372555 0.000000 
 </Pentafl>
 
+
+<PFAnion>
+RESI AlPF
+REM Name: [Al{OC(CF3)3}4]-
+DFIX 1.72 0.03 Al1 O1 Al1 O2 Al1 O3 Al1 O4
+SADI O1 O2 O1 O3 O1 O4 O2 O3 O2 O4 O3 O4
+SADI 0.05 Al1 C1 Al1 C5 Al1 C9 Al1 C13
+DFIX 1.359 0.03 O1 C1 O2 C5 O3 c9 o4 c13
+SADI 0.04 O1 C2 O1 C3 O1 C4  O2 C6 O2 C7 O2 C8  O3 c10 O3 C11 O3 C12  O4 C14 O4 C15 O4 C16
+SADI C1 C2 C1 C3 C1 C4  C5 C6 C5 C7 C5 C8  C9 C10 C9 C11 C9 C12  C13 C14 C13 C15 C13 C16
+SADI 0.04 C2 C3 C2 C4 C3 C4  C6 C7 C6 C8 C7 C8  C10 C11 C10 C12 C11 C12  C14 C15 C14 C16 C15 C16
+SADI C2 F1 C2 F2 C2 F3  C3 F4 C3 F5 C3 F6  C4 F7 C4 F8 C4 F9  C6 F10 C6 F11 C6 F12 =
+   C7 F13 C7 F14 C7 F15  C8 F16 C8 F17 C8 F18  C10 F19 C10 F20 C10 F21  C11 F22 C11 F23 C11 F24 =
+   C12 F25 C12 F26 C12 F27  C14 F28 C14 F29 C14 F30  C15 F31 C15 F32 C15 F33 =
+   C16 F34 C16 F35 C16 F36
+SADI 0.04 F1 F2 F2 F3 F3 F2  F4 F5 F4 F6 F6 F5  F7 F8 F7 F9 F9 F8 =
+   F10 F11 F10 F12 F12 F11  F13 F14 F14 F15 F15 F14  F16 F17 F17 F18 F18 F17
+SIMU Al1 > C16
+RIGU Al1 > C16
+FRAG 17 9.4620  13.6925  13.6839   89.907   90.021   89.967
+Al1   4   1.00003   -0.24999   0.24991
+F1   3   0.76039   -0.12578   0.14352
+F2   3   0.65458   -0.00077   0.19964
+F3   3   0.60136   -0.1442   0.25378
+F4   3   0.8422   -0.03373   0.47124
+F5   3   0.64763   0.00199   0.40068
+F6   3   0.69647   -0.14768   0.43829
+F7   3   1.03912   0.00061   0.33222
+F8   3   0.95606   0.00961   0.18765
+F9   3   0.86098   0.09309   0.30265
+F10   3   1.35267   -0.09964   -0.00219
+F11   3   1.15822   -0.02854   0.03388
+F12   3   1.30359   -0.06129   0.14775
+F13   3   1.04406   -0.31273   -0.00996
+F14   3   1.1391   -0.19743   -0.09343
+F15   3   0.96103   -0.16779   -0.00123
+F16   3   1.34556   -0.30038   0.00011
+F17   3   1.3987   -0.24629   0.14414
+F18   3   1.23917   -0.35636   0.12591
+F19   3   0.84106   -0.46611   0.02811
+F20   3   0.69563   -0.35186   0.06198
+F21   3   0.64682   -0.50132   0.09984
+F22   3   1.03851   -0.50096   0.16689
+F23   3   0.95612   -0.51042   0.31195
+F24   3   0.8603   -0.59299   0.19724
+F25   3   0.6544   -0.49974   0.29975
+F26   3   0.60165   -0.35545   0.24678
+F27   3   0.76048   -0.37476   0.35585
+F28   3   1.23934   -0.14395   0.37421
+F29   3   1.39836   -0.25309   0.3554
+F30   3   1.34619   -0.20046   0.49926
+F31   3   0.96136   -0.33238   0.50142
+F32   3   1.04419   -0.18827   0.51
+F33   3   1.1395   -0.30272   0.59288
+F34   3   1.35264   -0.4004    0.50181
+F35   3   1.15795   -0.4718    0.46603
+F36   3   1.30411   -0.43804   0.35185
+O1   2   0.89982   -0.16394   0.30981
+O2   2   1.10084   -0.19017   0.16392
+O3   2   0.89912   -0.33599   0.18953
+O4   2   1.10011   -0.31016   0.33563
+C1   1   0.82344   -0.08068   0.30489
+C2   1   0.70803   -0.08678   0.22317
+C3   1   0.75104   -0.06441   0.40583
+C4   1   0.92076   0.00761   0.28224
+C5   1   1.1771   -0.19489   0.08059
+C6   1   1.24979   -0.09469   0.06457
+C7   1   1.07893   -0.21746   -0.00736
+C8   1   1.29159   -0.27688   0.08693
+C9   1   0.8235   -0.41942   0.19462
+C10   1   0.75035   -0.43562   0.09451
+C11   1   0.92081   -0.50768   0.2177
+C12   1   0.7078   -0.41321   0.2772
+C13   1   1.17691   -0.30561   0.41945
+C14   1   1.29276   -0.22284   0.41335
+C15   1   1.07947   -0.2825   0.50778
+C16   1   1.24936   -0.40511   0.43566
+</PFAnion>
 
 
 <hfipO>

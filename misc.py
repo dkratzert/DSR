@@ -107,33 +107,11 @@ def wrap_headlines(dbhead):
                     l = l+' =\n'
                 newline.append(l)
             dbhead[num] = ' '.join(newline)
-            #print(newline)
     for num, line in enumerate(dbhead):
         line = ' '.join(line.strip().split(' '))
         dbhead[num] = line+'\n'
     return dbhead
 
-
-        
-def unwrap_head_lines_old(headlines):
-    '''
-    if a line is wrapped like "SADI C1 C2 =\n  C3 C4" or "SADI C1 C2=\n  C3 C4"
-    this function returns "SADI C1 C2 C3 C4"
-    '''
-    new_head = []
-    for num, line in enumerate(headlines):
-        if multiline_test(line):
-            line = line.rstrip('\n\r= ')
-            linecombi = line+' '+headlines[num+1].rstrip('\n\r= ')
-            try:
-                del(headlines[num+1])
-            except(IndexError):
-                pass
-            new_head.append(linecombi)
-            continue
-        #if line:
-        new_head.append(line)
-    return new_head
 
 
 def unwrap_head_lines(headlines):
@@ -142,65 +120,16 @@ def unwrap_head_lines(headlines):
     this function returns "SADI C1 C2 C3 C4"
     '''
     import constants
-    for n, i in enumerate(headlines):
-        multi = False
-        multiline = []
-        for n in range(0, 10):
-            try:
-                line = headlines[i+n].upper()
-            except(IndexError):
-                continue
-            if headlines[n][:4] in constants.RESTRAINT_CARDS:
-                break # 
-            if headlines[n][:4] in constants.RESTRAINT_CARDS and line.rstrip('\n ').endswith('='): # stop also if next restrraint begins
-                multiline.append(headlines[i+n])
-                del(headlines[i+n])
-                multi = True # turn on afix flag if first afix is found
-                continue
-            if line.startswith('AFIX') and line.split()[1] == '0':
-                afix = False # turn of afix flag if afix is closed with "afix 0" 
-                self._reslist[i+n] = ''
-                break
-            if afix:
-                try: 
-                    atom = line.split()[0].upper()
-                    if atom in SHX_CARDS:
-                        continue
-                    print('Deleted atom {}'.format(line.split()[0]))
-                    self._reslist[i+n] = ''
-                except(IndexError):
-                    continue
-
-
-
-    for num, line in enumerate(headlines):
-        if multiline:
-            new_head.append(' '.join(multiline))
-            multiline = []
-        for i in range(10):
-            try:
-                headlines[num]
-            except(IndexError):
-                
-            if multiline_test(headlines[num]):
-                combiline = line.rstrip('\n= ')+' '+headlines[num+1].rstrip('\n= ')
-                multiline.append(combiline)
-                try:
-                    del(headlines[num+1])
-                except(IndexError):
-                    pass
-                try:
-                    if headlines[num+2][:4] in constants.RESTRAINT_CARDS:
-                        continue
-                except(IndexError):
-                    break
-            else:
-                new_head.append(line)    
-                try:
-                    del(headlines[num])
-                except(IndexError):
-                    pass
-
+    tmp = ''
+    new_head = []
+    for line in headlines:
+        line = line.strip(' \n=')+' '
+        tmp = tmp+line
+    line = tmp.split()
+    for n, i in enumerate(line):
+        if i in constants.SHX_CARDS:
+            line[n] = '\n'+line[n]
+    new_head = ' '.join(line).strip().split('\n')
     return new_head
 
 
