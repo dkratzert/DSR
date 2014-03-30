@@ -100,7 +100,6 @@ class InsertAfix(object):
         others = []
         for num, headline in enumerate(dbhead):
             headline = headline.strip().split()
-            print(headline)
             try:
                 headline[0]
             except(IndexError):    
@@ -130,11 +129,8 @@ class InsertAfix(object):
             old_atoms = [ i[0] for i in self.__dbatoms]
             dbhead = rename_dbhead_atoms(new_atomnames, old_atoms, dbhead)
         removed_restr = self.remove_all_restraints(dbhead)
-        
         dbhead_distance = removed_restr[0]
-        
         dbhead_others = misc.wrap_headlines(removed_restr[1])
-        print(dbhead_others)
         if self._dfix:
             dbhead = dbhead_others
         if external_restraints and not self._dfix:
@@ -174,7 +170,6 @@ class InsertAfix(object):
             i[3] = i[3].ljust(8, '0').rjust(9, ' ')
             i[4] = i[4].ljust(8, '0').rjust(9, ' ')
             newlist.append('    '.join(i).rstrip())
-            
         atoms = '\n'.join(newlist)
         self.afixnumber = '179'   # makes afix 179 default 
         if not self.occ:

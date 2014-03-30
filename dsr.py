@@ -29,7 +29,6 @@ from restraints import Restraints, Adjacency_Matrix
 # TODO and ideas:
 
 # -remove all ACTA befor fragment fit
-# -renaming of atoms with number ofer 10 fails
 # -list of available fragments on homepage
 # -To the manual: Avogradro/res-file -> rename -> mercury -> mol2-file -> GRADE
 # -To manual: what to do if something does not work.
@@ -233,9 +232,6 @@ class DSR():
             print(e)
             sys.exit() 
 
-    
-
-       
     
     def generate_dfix_restraints(self, lf, reslist, dbatoms, residue, cell, part=''):
         '''

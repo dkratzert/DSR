@@ -110,9 +110,10 @@ class ShelxlRefine():
         removes the ACTA card, bacause we refine with L.S. 0, wich is incompatible!
         '''
         regex = '^ACTA'
-        acta_line = misc.find_line(self.__reslist, regex)
+        acta_line = misc.find_multi_lines(self.__reslist, regex)
         if acta_line:
-            del self.__reslist[acta_line]
+            for i in acta_line:
+                self.__reslist[i] = 'rem ACTA\n'
         
     
     def afix_is_closed(self, line):
@@ -208,6 +209,7 @@ class ShelxlRefine():
             if i.startswith(' +  Copyright(C)'):
                 print(' SHELXL '+' '.join(i.split()[6:8]))
             # wR2
+           # These values are always bad after a simple LS fit without any atom movement:
             if i.startswith(' wR2') and not wr2:
                 wr2 = True
                 line = i[:].split()

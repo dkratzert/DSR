@@ -347,7 +347,7 @@ class global_DB():
         '''
         comment = self._dbentry_dict[fragment.lower()]['comment']
         for i in comment:
-            if re.match('.*[n|N]ame.*', i):
+            if re.match('.*[n|N]ame:.*', i):
                 i = i.split(' ', 1)[1:]
                 comment = i
                 break
@@ -487,7 +487,6 @@ class ImportGRADE():
                 'line'    : None,
                 'db'      : 'dsr-user-db',
                 'comment' : self._comments,
-                #'comment' : ['REM Source: GRADE import'.split(), 'REM ja ja'.split()],
                 'name'    : resi_name
                 }
         return db_import_dict
@@ -620,7 +619,7 @@ class ImportGRADE():
 
     def get_name_from_mol2(self):
         '''
-        This methos is deprecated, because we now collect the name from
+        This method is deprecated, because we now collect the name from
         the obprop file!
         
         get the residue name
@@ -655,7 +654,8 @@ if __name__ == '__main__':
     db = gl.build_db_dict()
     #print db.values()[3]
     
-    fragment = 'pfan'
+    #fragment = 'pfanion'
+    fragment = 'toluene'
    # fragline = gl.get_fragline_from_fragment(fragment)  # full string of FRAG line
    # dbatoms = gl.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
     dbhead = gl.get_head_from_fragment(fragment)        # this is only executed once
@@ -673,7 +673,11 @@ if __name__ == '__main__':
     print('### DB head:\n')
     for i in dbhead:
         print(i)
-    
+    print()
+    dbhead = misc.wrap_headlines(dbhead)
+    print('### DB head:\n')
+    for i in dbhead:
+        print(i.strip('\n'))
     sys.exit()
     #mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz')
     #mog = ImportGRADE('./test-data/LIG.gradeserver_all.tgz')
