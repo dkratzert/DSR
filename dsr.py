@@ -35,7 +35,6 @@ from restraints import Restraints, Adjacency_Matrix
 # -try to iterate all target atoms if fit is really bad
 # -select atoms in shelxle > export to db
 # -If second part of a disordered atom is very close to the first, make EADP?
-# -If e.g. OCC in dsrline and index(OCC)+1 != ' ', then dsrline.insert(' ', index(OCC)+1)
 # -detect empty residues and parts after atom deletion
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 
@@ -214,11 +213,14 @@ class DSR():
         fa = FindAtoms(reslist)
         print('Replace mode active.')
         target_lines = fa.get_atom_line_numbers(res_target_atoms)
-        #print target_lines, res_target_atoms
+        #rp = False
         for i in target_lines:
             i = int(i)
-            #reslist[i]=' '+reslist[i]
             rle.remove_line(i, rem=False, remove=False, frontspace=True)
+            #if reslist[i-1][:4] in ['RESI', 'PART']:
+            #    rp = True
+            #if reslist[i+1][:4] in ['RESI', 'PART'] and rp:
+            #    print('empty resi/part?')
         fa.remove_adjacent_hydrogens(res_target_atoms)    
     
     
