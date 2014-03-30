@@ -261,7 +261,7 @@ class Export():
         if misc.which('montage'): # i check for montage, because windows also ha a convert.exe
             pass
         else:
-            print('Could not write a .png image. ImageMagic is not installed.')
+            print('Could not write a .ps and .png image. ImageMagic is not installed.')
             plat.terminate()
             return
         try:
