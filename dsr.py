@@ -28,7 +28,6 @@ from restraints import Restraints, Adjacency_Matrix
 
 # TODO and ideas:
 
-# -remove all ACTA befor fragment fit
 # -list of available fragments on homepage
 # -To the manual: Avogradro/res-file -> rename -> mercury -> mol2-file -> GRADE
 # -To manual: what to do if something does not work.
@@ -39,7 +38,7 @@ from restraints import Restraints, Adjacency_Matrix
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 
 
-VERSION = '1.4.3'
+VERSION = '1.4.4'
 progname = '\n-----------------------------'\
            ' D S R - v{}' \
            ' ----------------------------------'.format(VERSION)

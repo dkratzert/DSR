@@ -317,7 +317,12 @@ class global_DB():
         '''
         returns the line with FRAG 17 cell from the dbentry
         '''
-        return self._dbentry_dict[fragment.lower()]['fragline']
+        try:
+            fragline = self._dbentry_dict[fragment.lower()]['fragline']
+        except(KeyError):
+            print('Fragment "{}" not found in database!'.format(fragment))
+            sys.exit()
+        return fragline
         
     
     def get_line_number_from_fragment(self, fragment):
