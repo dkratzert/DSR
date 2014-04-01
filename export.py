@@ -126,6 +126,7 @@ class Export():
         res_export.append('REM '+comment+'\n')
         res_export.append('CELL  0.71  '+self.__cell+'\n')   # the cell with wavelength
         res_export.append('LATT  -1\n')
+        res_export.append('ZERR    1.00   0.0000   0.0000   0.0000   0.000   0.000   0.000\n')
         res_export.append('SFAC '+'  '.join(sfac)+'\n')
         res_export.append('UNIT '+' '.join(unit)+'\n')
         res_export.append('WGHT  0.1'+'\n')
