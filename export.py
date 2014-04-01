@@ -60,7 +60,7 @@ class Export():
         except(AttributeError):
             pass
         self.format_calced_coords()  # expands the cell of calculated structures
-        self.__cell = '  '.join(self.__cell)
+        self.__cell = '    {}      {}      {}      {}      {}      {}'.format(*self.__cell)
         self._comment_regex = '^REM .*$'.upper()
         print('Exporting "{0}" to {0}.res'.format(self.__fragment))
     
@@ -124,7 +124,7 @@ class Export():
             pass
         comment = '\nREM '.join(self._comment)
         res_export.append('REM '+comment+'\n')
-        res_export.append('CELL  0.71  '+self.__cell+'\n')   # the cell with wavelength
+        res_export.append('CELL 0.71073  '+self.__cell+'\n')   # the cell with wavelength
         res_export.append('ZERR    1.00   0.0000   0.0000   0.0000   0.000   0.000   0.000\n')
         res_export.append('LATT  -1\n')
         res_export.append('SFAC '+'  '.join(sfac)+'\n')
