@@ -37,7 +37,7 @@ class Export():
     C6   1  0.376630  0.447580  0.201340  11.00   0.04
     C7   1  0.221500  0.430400  0.060360  11.00   0.04
     HKLF 4
-    END
+    END 
     '''
     
     def __init__(self, fragment_name):
@@ -51,6 +51,7 @@ class Export():
         self._gdb.check_consistency(self.__db, self.__fragment)
         self._comment = self.__db['comment']
         self.__dbatoms = self.__db['atoms']
+        self._gdb.check_db_atom_consistency(self.__dbatoms, self.__fragment)
         self.__atomtypes = at.get_atomtypes(self.__dbatoms)
         self.__fragline = self.__db['fragline']
         self.__cell = self.__fragline[2:]

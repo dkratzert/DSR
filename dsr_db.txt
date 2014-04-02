@@ -494,7 +494,7 @@ F6    3     -1.39094        0.54896       -1.34009
 
 <OCH2CF3>
 rem Src: TURBOMOLE V6.0  B-P86/def-SV(P)
-rem Name: Trifluoroethanol, C2H3F3O
+rem Name: Trifluoroethanol, OCH2CF3-
 RESI OCCF
 DFIX 1.376 O1 C1 
 DFIX 1.530 C1 C2

@@ -193,7 +193,11 @@ class DSR_Parser():
     
     @property
     def occupancy(self):
-        return self.parse_dsr_line()['occupancy']
+        occupancy = self.parse_dsr_line()['occupancy']
+        if float(occupancy) > 999:
+            print('only 99 free variables allowed in SHELXL!')
+            sys.exit()
+        return occupancy
     
     @property
     def command(self):
@@ -201,7 +205,11 @@ class DSR_Parser():
     
     @property
     def part(self):
-        return self.parse_dsr_line()['part']
+        part = self.parse_dsr_line()['part']
+        if float(part) > 999:
+            print('only 99 parts allowed in SHELXL!')
+            sys.exit()
+        return part
     
     @property
     def source(self):
