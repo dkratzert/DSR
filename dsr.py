@@ -28,7 +28,7 @@ from restraints import Restraints, Adjacency_Matrix
 
 # TODO and ideas:
 
-# -list of available fragments on homepage
+# -FLAT: see for every ring atom if there is also an atteched atom in the same plane
 # -To the manual: Avogradro/res-file -> rename -> mercury -> mol2-file -> GRADE
 # -To manual: what to do if something does not work.
 # -try to iterate all target atoms if fit is really bad
