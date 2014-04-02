@@ -296,13 +296,11 @@ class DSR():
             sys.exit()
             
         print('Inserting {} into res File.'.format(fragment))
-        db_source_atoms = dsr_dict['source']
-        print('Source atoms:', ', '.join(db_source_atoms))
-        res_target_atoms = dsr_dict['target']
-        print('Target atoms:', ', '.join(res_target_atoms))
+        print('Source atoms:', ', '.join(dsrp.source))
+        print('Target atoms:', ', '.join(dsrp.target))
         
         # several checks if the atoms in the dsr command line are consistent
-        check_source_target(db_source_atoms, res_target_atoms, dbatoms)
+        check_source_target(dsrp.source, dsrp.target, dbatoms)
         basefilename = filename_wo_ending(self.res_file)
         num = NumberScheme(reslist, dbatoms, resi.get_resinumber)
         numberscheme = num.get_fragment_number_scheme()
@@ -315,8 +313,8 @@ class DSR():
         reslist.insert(dsrline+1, afix_entry)
     
         ##### comment out all target atom lines in replace mode:  
-        if dsr_dict['command'] == 'REPLACE':
-            self.replacemode(res_target_atoms, rle, reslist)
+        if dsrp.command == 'REPLACE':
+            self.replacemode(dsrp.target, rle, reslist)
 
         # write to file:
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
@@ -352,7 +350,7 @@ class DSR():
                                             numberscheme, 
                                             resinumber,
                                             cell,
-                                            dsr_dict['part'])
+                                            dsrp.part)
             if resinumber:
                 if self.external:
                     externalfile_name = write_dbhead_to_file(basefilename+'.dfx', dfix, resi.get_resiclass, resinumber)
@@ -375,8 +373,8 @@ class DSR():
     
 if __name__ == '__main__':
     '''main function'''
-    #dsr = DSR(no_refine=True, res_file='p21c.res')
-    dsr = DSR()
+    dsr = DSR(no_refine=False, res_file='p21c.res')
+    #dsr = DSR()
 
     
 
