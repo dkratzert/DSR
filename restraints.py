@@ -377,6 +377,14 @@ class Restraints():
         #print('The list of rings:', list_of_rings)
         if not list_of_rings:
             return False 
+        # This creates a list of attached atoms but is unused atm:
+        #attached_atoms = []
+        #for ring in list_of_rings:
+        #    for atom in ring:
+        #        nb = G.neighbors(atom)[1:]
+        #        for i in nb:
+        #            attached_atoms.append(i)
+        #attached_atoms = tuple(set(attached_atoms))
         flats = []
         for ring in list_of_rings:
             if len(ring) < 4:
@@ -475,12 +483,12 @@ if __name__ == '__main__':
     res_list = rl.get_res_list()
     dsrp = DSR_Parser(res_list, rl)
     dsr_dict = dsrp.parse_dsr_line()
-    fragment = 'naphthalene'#dsr_dict['fragment']
+    fragment = 'benzene'#dsr_dict['fragment']
     
     gdb = global_DB()
  
     residue = '4'
-    part = '3'
+    part = '2'
     
     lf = ListFile(basefilename)
     cell = lf.get_cell_params
@@ -498,15 +506,16 @@ if __name__ == '__main__':
     am = Adjacency_Matrix(fragment_atoms, conntable, coords, cell)
     G = am.get_adjmatrix
     print('nodes:', G.nodes())
-    print('dihkstra (kürzester pfad):')
-    print(nx.dijkstra_path(G, 'C1_4C', 'C4_4C'))
-    print('\ncycle_basis')
+   # print('dihkstra (kürzester pfad):')
+   # print(nx.dijkstra_path(G, 'C1_4C', 'C4_4C'))
+   # print('\ncycle_basis')
     l = nx.cycle_basis(G)
-    print('liste der cycles im Graph:')
+   # print('liste der cycles im Graph:')
     print(sorted(l))
     print('end\n')
     re = Restraints(coords, am.get_adjmatrix, fragment_atoms, cell)
-    dfixes = re.get_formated_12_dfixes
-    dfixes_13 = re.get_formated_13_dfixes
-    #print(''.join(dfixes))
+    #dfixes = re.get_formated_12_dfixes
+    #dfixes_13 = re.get_formated_13_dfixes
+    flats = re.get_formated_flats
+    print(''.join(flats), 'flats')
     #print(''.join(dfixes_13))
