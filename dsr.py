@@ -48,8 +48,8 @@ class DSR():
     '''
     main class 
     '''
-    def __init__(self, res_file=None, external_restr=None, export_fragment=None, import_grade=None, 
-                export_all=None, list_db=None, no_refine=None):
+    def __init__(self, res_file=None, external_restr=None, export_fragment=None, 
+        export_clip=None, import_grade=None, export_all=None, list_db=None, no_refine=None):
         # options from the commandline options parser:
         self.options = OptionsParser(progname)
         self.external = False
@@ -72,6 +72,10 @@ class DSR():
             self.export_fragment = self.options.export_fragment
         else:
             self.export_fragment = export_fragment
+        if not export_clip:
+            self.export_clip = self.options.export_clip
+        else:
+            self.export_clip = export_clip
         if not import_grade:
             self.import_grade = self.options.import_grade
         else:
@@ -101,6 +105,11 @@ class DSR():
                 self.do_export_fragment()
             except() as e:
                 print(e)
+        if self.export_clip:
+            try:
+                self.export_to_clip()
+            except() as e:
+                print(e)
         ## Import a GRADE fragment          
         if self.import_grade:
             self.import_from_grade()
@@ -121,6 +130,16 @@ class DSR():
         from export import Export
         export = Export(self.export_fragment)
         export.write_file()
+        sys.exit(1)
+    
+    
+    def export_to_clip(self):
+        ''' 
+        Exports the current fragment to the clipboard.
+        '''
+        from export import Export
+        export = Export(self.export_clip)
+        export.export_to_clip()
         sys.exit(1)
     
     
@@ -374,8 +393,8 @@ class DSR():
     
 if __name__ == '__main__':
     '''main function'''
-    dsr = DSR(no_refine=False, res_file='p21c.res')
-    #dsr = DSR()
+    #dsr = DSR(no_refine=False, res_file='p21c.res')
+    dsr = DSR()
 
     
 

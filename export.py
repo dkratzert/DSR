@@ -55,15 +55,10 @@ class Export():
         self.__atomtypes = at.get_atomtypes(self.__dbatoms)
         self.__fragline = self.__db['fragline']
         self.__cell = self.__fragline[2:]
-        self.__clipcell = self.__fragline[:]
-        try: 
-            self.copy_to_clipboard()
-        except(AttributeError):
-            pass
+        self.__clipcell = self.__fragline[2:]
         self.format_calced_coords()  # expands the cell of calculated structures
         self.__cell = '    {}      {}      {}      {}      {}      {}'.format(*self.__cell)
         self._comment_regex = '^REM .*$'.upper()
-        print('Exporting "{0}" to {0}.res'.format(self.__fragment))
     
     
     
@@ -88,6 +83,7 @@ class Export():
         '''
         exports a .res file from a database entry to be viewed in a GUI
         '''
+        print('Exporting "{0}" to {0}.res'.format(self.__fragment))
         try:
             from dsr import VERSION
         except(ImportError):
@@ -144,18 +140,31 @@ class Export():
         from misc import frac_to_cart
         import copy
         clip_text = []
-        cell = self.__cell[:]
+        cell = self.__clipcell[:]
         cell = [float(x) for x in cell]
         atoms = copy.deepcopy(self.__dbatoms)
         for line in atoms:
             frac_coord = [  float(i) for i in line[2:5] ]
             coord = frac_to_cart(frac_coord, cell)
             line[2:5] = coord
+        newlist = []
+        for i in atoms:
+            newlist.append('{:4.4s} {:4.2s} {:>7.4f}  {:>7.4f}  {:>7.4f}'.format(*i))
+        newlist = '\n'.join(newlist)
         clip_text.append('FRAG')
-        clip_text.append('\n'+ll_to_string(atoms))
+        clip_text.append('\n'+newlist)
         clip_text.append('\nFEND')
         text = ' '.join(clip_text)
         pyperclip.setcb(text)
+
+    
+    def export_to_clip(self):
+        try: 
+            self.copy_to_clipboard()
+        except(AttributeError), e:
+            print(e)
+        print('Exported "{0}" to the clipboard.'.format(self.__fragment))
+        sys.exit()
 
 
     def file_is_opened(self, base, ending):
@@ -300,8 +309,9 @@ if __name__ == '__main__':
     db = gdb.build_db_dict()['toluene']
     
     export = Export('toluene')
-    for i in export.export_resfile():
-        print(i.strip('\n'))
+    export.export_to_clip()
+    #for i in export.export_resfile():
+    #    print(i.strip('\n'))
     #import pyperclip
     #pyperclip.setcb('The text to be copied to the clipboard.')
     #spam = pyperclip.getcb()

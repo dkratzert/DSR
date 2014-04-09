@@ -15,6 +15,7 @@ IF NOT "%3"=="" GOTO argloop
 IF "%cmd%"=="-r" GOTO resfile
 IF "%cmd%"=="-re" GOTO resfile_ext
 IF "%cmd%"=="-e" GOTO export
+IF "%cmd%"=="-o" GOTO clip
 IF "%cmd%"=="-h" GOTO help
 IF "%cmd%"=="-l" GOTO list
 IF "%cmd%"=="-n" GOTO noref
@@ -32,6 +33,11 @@ GOTO end
 
 :export
 "%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py -e %args%
+GOTO end
+
+:clip
+rem IF "%args%" == "" GOTO help
+"%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py -o "%args%"
 GOTO end
 
 :help

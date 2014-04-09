@@ -30,14 +30,6 @@ class OptionsParser():
     def __init__(self, progname=''):
         self.progname = progname
         self._options = self.parse_commandline()
-
-#        if not  self.res_file\
-#        and not self.export_fragment\
-#        and not self.list_db\
-#        and not self.export_all\
-#        and not self.import_grade\
-#        and not self.no_refine:
-#            self.error()
         return
     
     def error(self):
@@ -60,6 +52,10 @@ class OptionsParser():
     @property
     def export_fragment(self):
         return self._options.export_fragment
+    
+    @property
+    def export_clip(self):
+        return self._options.export_clip
     
     @property
     def export_all(self):
@@ -100,7 +96,9 @@ class OptionsParser():
         self.parser.add_argument("-re", dest="external_restr", metavar='"res file"', \
                                 help="res file with DSR command (writes restraints to external file)", default=False)
         self.parser.add_argument("-e", dest="export_fragment", metavar='"fragment"', \
-                                help="export fragment from the database", default=False)
+                                help="export fragment as .res/.png", default=False)
+        self.parser.add_argument("-o", dest="export_clip", metavar='"fragment"', \
+                                help="export fragment to clipboard", default=False)
         self.parser.add_argument("-i", dest="import_grade", metavar='"tgz file"', \
                                 help="import a fragment from GRADE (needs .tgz file)", default=False)
         self.parser.add_argument("-ea", dest="export_all", action='store_true', \
