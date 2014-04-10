@@ -368,7 +368,7 @@ class global_DB():
         
 class ImportGRADE():
     '''
-    class to import fragments from GRADE of globalphasing 
+    class to import fragments from GRADE of Global Phasing Ltd. 
     '''
     def __init__(self, gradefile):
         self._getdb = getDB()
