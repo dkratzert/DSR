@@ -73,6 +73,9 @@ class OptionsParser():
     def all_options(self):
         return self._options
     
+    @property
+    def invert(self):
+        return self._options.invert
     
     def parse_commandline(self):
         '''parses the command line options and returns 
@@ -99,6 +102,8 @@ class OptionsParser():
                                 help="export fragment as .res/.png", default=False)
         self.parser.add_argument("-o", dest="export_clip", metavar='"fragment"', \
                                 help="export fragment to clipboard", default=False)
+        self.parser.add_argument("-t", dest="invert", metavar='"invert fragment"', \
+                                help="inverts the inserted or exported fragment", default=False)
         self.parser.add_argument("-i", dest="import_grade", metavar='"tgz file"', \
                                 help="import a fragment from GRADE (needs .tgz file)", default=False)
         self.parser.add_argument("-ea", dest="export_all", action='store_true', \

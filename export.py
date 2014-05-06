@@ -40,7 +40,8 @@ class Export():
     END 
     '''
     
-    def __init__(self, fragment_name):
+    def __init__(self, fragment_name, invert=False):
+        self._invert = invert
         self.__fragment = fragment_name
         self._gdb = global_DB()
         try:
@@ -51,6 +52,8 @@ class Export():
         self._gdb.check_consistency(self.__db, self.__fragment)
         self._comment = self.__db['comment']
         self.__dbatoms = self.__db['atoms']
+        if self._invert:
+            self.__dbatoms = invert_dbatoms_coordinates(self.__dbatoms)
         self._gdb.check_db_atom_consistency(self.__dbatoms, self.__fragment)
         self.__atomtypes = at.get_atomtypes(self.__dbatoms)
         self.__fragline = self.__db['fragline']
@@ -61,6 +64,16 @@ class Export():
         self._comment_regex = '^REM .*$'.upper()
     
     
+    def invert_dbatoms_coordinates(atoms):
+        '''
+        invert the coordinates for atoms like 
+        [[C1  1  0.44  0.21  -1.23 ][ ...]]
+        '''
+        for line in atoms:
+            inv_coord = [ str(-float(i)) for i in line[2:5] ]
+            line[2:5] = inv_coord
+        return atoms
+        
     
     def format_calced_coords(self):
         '''
@@ -147,6 +160,10 @@ class Export():
             frac_coord = [  float(i) for i in line[2:5] ]
             coord = frac_to_cart(frac_coord, cell)
             line[2:5] = coord
+#        if self._invert: # nicht nötig weil ja schon in Export()
+#            for line in atoms:
+#                inv_coord = [ -i for i in line[2:5] ]
+#                line[2:5] = inv_coord
         newlist = []
         for i in atoms:
             newlist.append('{:4.4s} {:4.2s} {:>7.4f}  {:>7.4f}  {:>7.4f}'.format(*i))

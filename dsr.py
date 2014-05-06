@@ -49,7 +49,7 @@ class DSR():
     main class 
     '''
     def __init__(self, res_file=None, external_restr=None, export_fragment=None, 
-        export_clip=None, import_grade=None, export_all=None, list_db=None, no_refine=None):
+        export_clip=None, import_grade=None, export_all=None, list_db=None, no_refine=None, invert=None):
         # options from the commandline options parser:
         self.options = OptionsParser(progname)
         self.external = False
@@ -92,6 +92,10 @@ class DSR():
             self.no_refine = self.options.no_refine
         else:
             self.no_refine = no_refine
+        if not invert:
+            self.invert = self.options.invert
+        else:
+            self.invert = invert
 
         #  List of Database Fragments:   
         if self.list_db:
@@ -102,7 +106,7 @@ class DSR():
         ## Export one fragment         
         if self.export_fragment:
             try:
-                self.do_export_fragment()
+                self.do_export_fragment(invert)
             except() as e:
                 print(e)
         if self.export_clip:
@@ -123,12 +127,12 @@ class DSR():
         print('\nDSR run complete.')
         
 
-    def do_export_fragment(self):
+    def do_export_fragment(self, invert):
         ''' 
         Exports the current fragment.
         '''
         from export import Export
-        export = Export(self.export_fragment)
+        export = Export(self.export_fragment, invert)
         export.write_file()
         sys.exit(1)
     
@@ -138,7 +142,7 @@ class DSR():
         Exports the current fragment to the clipboard.
         '''
         from export import Export
-        export = Export(self.export_clip)
+        export = Export(self.export_clip, self.invert)
         export.export_to_clip()
         sys.exit(1)
     
