@@ -52,8 +52,9 @@ class Export():
         self._gdb.check_consistency(self.__db, self.__fragment)
         self._comment = self.__db['comment']
         self.__dbatoms = self.__db['atoms']
+        print(self._invert)
         if self._invert:
-            self.__dbatoms = invert_dbatoms_coordinates(self.__dbatoms)
+            self.__dbatoms = self.invert_dbatoms_coordinates(self.__dbatoms)
         self._gdb.check_db_atom_consistency(self.__dbatoms, self.__fragment)
         self.__atomtypes = at.get_atomtypes(self.__dbatoms)
         self.__fragline = self.__db['fragline']
@@ -64,7 +65,7 @@ class Export():
         self._comment_regex = '^REM .*$'.upper()
     
     
-    def invert_dbatoms_coordinates(atoms):
+    def invert_dbatoms_coordinates(self, atoms):
         '''
         invert the coordinates for atoms like 
         [[C1  1  0.44  0.21  -1.23 ][ ...]]

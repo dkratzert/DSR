@@ -39,7 +39,7 @@ from restraints import Restraints, Adjacency_Matrix
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 
 
-VERSION = '1.4.4'
+VERSION = '1.4.5'
 progname = '\n-----------------------------'\
            ' D S R - v{}' \
            ' ----------------------------------'.format(VERSION)
@@ -106,7 +106,7 @@ class DSR():
         ## Export one fragment         
         if self.export_fragment:
             try:
-                self.do_export_fragment(invert)
+                self.do_export_fragment()
             except() as e:
                 print(e)
         if self.export_clip:
@@ -127,12 +127,12 @@ class DSR():
         print('\nDSR run complete.')
         
 
-    def do_export_fragment(self, invert):
+    def do_export_fragment(self):
         ''' 
         Exports the current fragment.
         '''
         from export import Export
-        export = Export(self.export_fragment, invert)
+        export = Export(self.export_fragment, self.invert)
         export.write_file()
         sys.exit(1)
     
@@ -213,7 +213,7 @@ class DSR():
         db = gdb.build_db_dict()
         dbnames = list(db.keys())
         for name in dbnames:
-            export = Export(name)
+            export = Export(name, self.invert)
             export.write_file()
         sys.exit(1)
     

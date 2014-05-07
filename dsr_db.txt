@@ -569,10 +569,10 @@ C7  1   -2.208691  3.809544 -6.204619
 </Heptane>
 
 
-<THF-R>
+<THF>
 rem Src: Gaussian 03 B3LYP/6-311++G(d,p) Opt
-Rem Name: THF twisted, R
-RESI THFR
+Rem Name: THF twisted
+RESI THF
 SAME O1 > C4
 SAME O1 C4 < C1
 SIMU O1 > C4
@@ -585,22 +585,6 @@ C3    6       0.734171    0.995898   -0.225052
 C4    6       1.169778   -0.428974    0.130832
 </THF-R>
 
-
-<THF-S>
-rem Src: Gaussian 03 B3LYP/6-311++G(d,p) Opt
-Rem Name: THF twisted, S
-RESI THFS
-SADI C1 C2 C3 C4 C2 C3 
-SAME O1 C4 < C1
-SIMU O1 > C4
-RIGU O1 > C4
-FRAG 17 1  1  1  90  90  90
-O1    8     0.000002   -1.252130   -0.000006
-C1    6     1.170073   -0.428759   -0.130718
-C2    6     0.734294    0.995788    0.224818
-C3    6    -0.734300    0.995783   -0.224821
-C4    6    -1.170070   -0.428764    0.130725
-</THF-S>
 
 
 <12-dichlorobenz>

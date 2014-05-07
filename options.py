@@ -99,10 +99,10 @@ class OptionsParser():
         self.parser.add_argument("-re", dest="external_restr", metavar='"res file"', \
                                 help="res file with DSR command (writes restraints to external file)", default=False)
         self.parser.add_argument("-e", dest="export_fragment", metavar='"fragment"', \
-                                help="export fragment as .res/.png", default=False)
-        self.parser.add_argument("-o", dest="export_clip", metavar='"fragment"', \
+                                help="export fragment as .res/.png file", default=False)
+        self.parser.add_argument("-c", dest="export_clip", metavar='"fragment"', \
                                 help="export fragment to clipboard", default=False)
-        self.parser.add_argument("-t", dest="invert", metavar='"invert fragment"', \
+        self.parser.add_argument("-t", dest="invert", action='store_true', \
                                 help="inverts the inserted or exported fragment", default=False)
         self.parser.add_argument("-i", dest="import_grade", metavar='"tgz file"', \
                                 help="import a fragment from GRADE (needs .tgz file)", default=False)
