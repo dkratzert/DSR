@@ -27,8 +27,7 @@ from restraints import ListFile, Lst_Deviations, format_atom_names
 from restraints import Restraints, Adjacency_Matrix
 
 # TODO and ideas:
-# -negative part numbers not working with dfix?
-# -make export to clipboard alone possible.
+# -automatically invert fragment if fit fails and fit again?
 # -FLAT: see for every ring atom if there is also an atteched atom in the same plane
 # -To the manual: Avogradro/res-file -> rename -> mercury -> mol2-file -> GRADE
 # -To manual: what to do if something does not work.
