@@ -316,7 +316,7 @@ if __name__ == '__main__':
     dsr_dict = dsrp.parse_dsr_line()
     #fragment = dsr_dict['fragment']
     fragment = 'toluene'
-    gdb = global_DB()
+    gdb = global_DB(self.invert)
     db = gdb.build_db_dict()
     fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
     dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list

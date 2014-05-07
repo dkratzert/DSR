@@ -129,12 +129,28 @@ class global_DB():
     }   
     '''
     
-    def __init__(self):
+    def __init__(self, invert=False):
+        self.invert = invert
         self._getdb = getDB()
         self._dbnames = self._getdb.find_db_tags()
         self._db_plain_dict = self._getdb.getDB_files_dict()
         self._dbentry_dict = self.build_db_dict()
     
+    
+    def invert_dbatoms_coordinates(self, atoms):
+        '''
+        invert the coordinates for atoms like 
+        [[C1  1  0.44  0.21  -1.23 ][ ...]]
+        '''
+        for line in atoms:
+            try:
+                inv_coord = [ str(-float(i)) for i in line[2:5] ]
+            except:
+                print('Unable to invert fragment coordinates.')
+                return atoms
+            line[2:5] = inv_coord
+        return atoms
+
     
     def build_db_dict(self):
         '''
@@ -202,6 +218,8 @@ class global_DB():
             print('Could not find end of dbentry for fragment '\
                 '"{}"  Exiting...'.format(fragment))
             sys.exit(-1)
+        if self.invert:
+            atoms = self.invert_dbatoms_coordinates(atoms)
         return atoms
 
 
@@ -370,11 +388,12 @@ class ImportGRADE():
     '''
     class to import fragments from GRADE of Global Phasing Ltd. 
     '''
-    def __init__(self, gradefile):
+    def __init__(self, gradefile, invert=False):
+        self.invert = invert
         self._getdb = getDB()
         self._db_dir = os.environ["DSR_DB_DIR"]
         self._dbnames = self._getdb.find_db_tags()
-        self._gdb = global_DB()
+        self._gdb = global_DB(self.invert)
         self._db = self._gdb.build_db_dict()
         self._gradefile = gradefile
         gradefiles = self.get_gradefiles()
@@ -567,7 +586,8 @@ class ImportGRADE():
                     comment = imported_entry[name]['comment']
                     comment = '\n'.join([' '.join(i) for i in comment if i])
                     head = '\n'.join([' '.join(x) for x in imported_entry[name]['head']])
-                    atoms = '\n'.join(['{:<6} 1  {:>10}{:>10}{:>10}'.format(*y) for y in atomlist])
+                    atoms = '\n'.join(['{:<6}  1  {:>8.3f}{:>8.3f}{:>8.3f}'\
+                            .format(y[0], float(y[1]), float(y[2]), float(y[3])) for y in atomlist])
                     resi_name = str(name)
                     cell = '  '.join(imported_entry[name]['fragline'])
                     dbentry = '<{}> \n{} \nRESI {} \n{} \n{} \n{} \n</{}>\n''\
@@ -585,7 +605,8 @@ class ImportGRADE():
                         #userdb = list(self._db[i].keys())
                         atomlist = self._db[i]['atoms']
                         head = '\n'.join([''.join(x) for x in self._db[i]['head']])
-                        atoms = '\n'.join(['{:<6}{:<2}{:>10}{:>10}{:>10}'.format(*y) for y in atomlist])
+                        atoms = '\n'.join(['{:<6}{:<2}{:>8.3f}{:>8.3f}{:>8.3f}'\
+                            .format(y[0], y[1], float(y[2]), float(y[3]), float(y[4])) for y in atomlist])
                         resi_name = self._db[i]['resi']
                         comment = self._db[i]['comment']
                         comment = '\nREM '.join(comment)
@@ -655,7 +676,7 @@ if __name__ == '__main__':
     #for i in dbnames:
     #    print ' {:<18}| {:<6}| {:<15}'.format(i[0], i[1], i[2])
     # no valid
-    gl = global_DB()
+    gl = global_DB(self.invert)
     db = gl.build_db_dict()
     #print db.values()[3]
     

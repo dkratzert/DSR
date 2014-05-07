@@ -205,7 +205,7 @@ if __name__ == '__main__':
     dsr_dict = dsrp.parse_dsr_line()
     find_atoms = FindAtoms(reslist)
     rle = ResListEdit(reslist, find_atoms)
-    gdb = global_DB()
+    gdb = global_DB(self.invert)
     db = gdb.build_db_dict()
     fragment = 'PFAnion'
     fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line

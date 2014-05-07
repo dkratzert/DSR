@@ -211,7 +211,7 @@ if __name__ == '__main__':
     find_atoms = FindAtoms(reslist)
     rle = ResListEdit(reslist, find_atoms)
     fvarlines = rle.find_fvarlines()
-    gdb = global_DB()
+    gdb = global_DB(self.invert)
     db = gdb.build_db_dict()
     fragment = 'toluene'
     dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list

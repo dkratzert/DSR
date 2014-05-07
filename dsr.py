@@ -142,7 +142,7 @@ class DSR():
         Exports the current fragment to the clipboard.
         '''
         from export import Export
-        export = Export(self.export_clip, self.invert)
+        export = Export(self.export_clip)
         export.export_to_clip()
         sys.exit(1)
     
@@ -187,7 +187,7 @@ class DSR():
         '''
         imports a fragment from the GRADE webserver.
         '''
-        mog = ImportGRADE(self.import_grade)
+        mog = ImportGRADE(self.import_grade, self.invert)
         mog.write_user_database()
         sys.exit(1)
     
@@ -209,11 +209,11 @@ class DSR():
         export all database entries at once
         '''
         from export import Export
-        gdb = global_DB()
+        gdb = global_DB(self.invert)
         db = gdb.build_db_dict()
         dbnames = list(db.keys())
         for name in dbnames:
-            export = Export(name, self.invert)
+            export = Export(name)
             export.write_file()
         sys.exit(1)
     
@@ -286,7 +286,7 @@ class DSR():
         '''
         print(progname) 
         # The database content:
-        gdb = global_DB()
+        gdb = global_DB(self.invert)
         rl = ResList(self.res_file)
         reslist = rl.get_res_list()
         find_atoms = FindAtoms(reslist)
@@ -320,6 +320,8 @@ class DSR():
             sys.exit()
             
         print('Inserting {} into res File.'.format(fragment))
+        if self.invert:
+            print('Fragment inverted.')
         print('Source atoms:', ', '.join(dsrp.source))
         print('Target atoms:', ', '.join(dsrp.target))
         
