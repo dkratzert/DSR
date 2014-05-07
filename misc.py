@@ -218,7 +218,10 @@ def format_atom_names(atoms, part, resinum):
         resinum = ''
     try:
         int(part)
-        partsymbol = alphabet[int(part)-1] # turns part number into a letter
+        if int(part) > 0:
+            partsymbol = alphabet[int(part)-1] # turns part number into a letter
+        else:
+            partsymbol = ''
     except(ValueError):
         partsymbol = ''
     if resinum and partsymbol:
