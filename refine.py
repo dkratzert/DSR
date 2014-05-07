@@ -75,6 +75,7 @@ class ShelxlRefine():
             version = version.split('/')
             if int(version[0]) < 2013:
                 print('Your SHELXL version is too old. Please use SHELXL 2013/4 or above!')
+                print('You can download SHELXL at http://shelx.uni-ac.gwdg.de/SHELX')
                 sys.exit()
             else:
                 return exe
