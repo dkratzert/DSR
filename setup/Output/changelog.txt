@@ -1,4 +1,6 @@
 Recent changes
+-1.4.5  Introduced the ability to invert the fragment (-t option). Simplified startup script for windows.
+        Splitted export to clipboard (-c option) and to res/png file (-e option) in two options.
 -1.4.4  small db updates, small fix in error handling.
 -1.4.3  very long lines of restraints were not correctly wrapped.
 -1.4.2  serious bug with wrong naming scheme of fragment atoms fixed.

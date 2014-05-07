@@ -3,67 +3,24 @@
 rem DSR startup script for windows
 rem echo %DSRDIR%
 rem set DSRDIR="C:\Program Files (x86)\DSR\"
+
 SET cmd=%1
-SET args=%2
+SET args=%*
+
 rem cls
-IF "%cmd%"=="" GOTO help
 
-:argloop
-IF NOT "%3"=="" SET args=%args% %3
-SHIFT
-IF NOT "%3"=="" GOTO argloop
-IF "%cmd%"=="-r" GOTO resfile
-IF "%cmd%"=="-re" GOTO resfile_ext
-IF "%cmd%"=="-e" GOTO export
-IF "%cmd%"=="-o" GOTO clip
-IF "%cmd%"=="-ea" GOTO export-all
-IF "%cmd%"=="-h" GOTO help
-IF "%cmd%"=="-l" GOTO list
-IF "%cmd%"=="-n" GOTO noref
-IF "%cmd%"=="-i" GOTO import
-IF "%cmd%"=="--help" GOTO help
-GOTO end
+IF "%args%"=="" (GOTO help)
 
-:resfile
-rem IF "%args%" == "" GOTO help
-"%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py -r %args%
-GOTO end
 
-:resfile_ext
-rem IF "%args%" == "" GOTO help
-"%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py -re %args%
-GOTO end
+GOTO main
 
-:export
-rem IF "%args%" == "" GOTO help
-"%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py -e "%args%"
-GOTO end
-
-:clip
-rem IF "%args%" == "" GOTO help
-"%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py -o "%args%"
-GOTO end
-
-:export-all
-"%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py -ea
+:main
+    "%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py %args%
 GOTO end
 
 :help
-"%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py -h
+    "%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py -h
 GOTO end
 
-:list
-"%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py -l
-GOTO end
-
-:noref
-IF "%args%" == "" GOTO help
-"%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py -n %args%
-GOTO end
-
-:import
-rem IF "%args%" == "" GOTO help
-"%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py -i %args%
-GOTO end
 
 :end
