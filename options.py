@@ -103,7 +103,7 @@ class OptionsParser():
         self.parser.add_argument("-c", dest="export_clip", metavar='"fragment"', \
                                 help="export fragment to clipboard", default=False)
         self.parser.add_argument("-t", dest="invert", action='store_true', \
-                                help="inverts the inserted or exported fragment", default=False)
+                                help="inverts the current fragment", default=False)
         self.parser.add_argument("-i", dest="import_grade", metavar='"tgz file"', \
                                 help="import a fragment from GRADE (needs .tgz file)", default=False)
         self.parser.add_argument("-ea", dest="export_all", action='store_true', \

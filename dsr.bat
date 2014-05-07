@@ -9,7 +9,7 @@ SET args=%*
 
 rem cls
 
-IF "%args%"=="" (GOTO help)
+IF DEFINED args (GOTO main) ELSE (GOTO help)
 
 
 GOTO main

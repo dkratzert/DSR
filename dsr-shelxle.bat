@@ -7,12 +7,12 @@ rem set DSRDIR="C:\Program Files (x86)\DSR\"
 SET cmd=%1
 SET args=%*
 
-rem cls
+rem deletes '"' from arguments for compatibility with ShelXle:
+SET args=%args:"=%
 
-IF "%args%"=="" (GOTO help)
 
+IF DEFINED args (GOTO main) ELSE (GOTO help)
 
-GOTO main
 
 :main
     "%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py %args%
