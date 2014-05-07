@@ -21,6 +21,21 @@ from collections import Counter
 
 
 
+def invert_dbatoms_coordinates(atoms):
+    '''
+    invert the coordinates for atoms like 
+    [[C1  1  0.44  0.21  -1.23 ][ ...]]
+    '''
+    for line in atoms:
+        try:
+            inv_coord = [ str(-float(i)) for i in line[-3:] ]
+        except:
+            print('Unable to invert fragment coordinates.')
+            return atoms
+        line[-3:] = inv_coord
+    return atoms
+
+
 __metaclass__ = type  # use new-style classes
 
 # hardwired names of the database files:
@@ -137,21 +152,7 @@ class global_DB():
         self._dbentry_dict = self.build_db_dict()
     
     
-    def invert_dbatoms_coordinates(self, atoms):
-        '''
-        invert the coordinates for atoms like 
-        [[C1  1  0.44  0.21  -1.23 ][ ...]]
-        '''
-        for line in atoms:
-            try:
-                inv_coord = [ str(-float(i)) for i in line[2:5] ]
-            except:
-                print('Unable to invert fragment coordinates.')
-                return atoms
-            line[2:5] = inv_coord
-        return atoms
-
-    
+   
     def build_db_dict(self):
         '''
         returns the global db dictionary
@@ -219,7 +220,7 @@ class global_DB():
                 '"{}"  Exiting...'.format(fragment))
             sys.exit(-1)
         if self.invert:
-            atoms = self.invert_dbatoms_coordinates(atoms)
+            atoms = invert_dbatoms_coordinates(atoms)
         return atoms
 
 
@@ -393,7 +394,7 @@ class ImportGRADE():
         self._getdb = getDB()
         self._db_dir = os.environ["DSR_DB_DIR"]
         self._dbnames = self._getdb.find_db_tags()
-        self._gdb = global_DB(self.invert)
+        self._gdb = global_DB(invert=False)
         self._db = self._gdb.build_db_dict()
         self._gradefile = gradefile
         gradefiles = self.get_gradefiles()
@@ -486,6 +487,8 @@ class ImportGRADE():
                 atomlines.append(tmp)
         if not atomlines:
             self.import_error()
+        if self.invert:
+            atomlines = invert_dbatoms_coordinates(atomlines)
         return atomlines
 
 
