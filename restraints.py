@@ -485,7 +485,7 @@ if __name__ == '__main__':
     dsr_dict = dsrp.parse_dsr_line()
     fragment = 'benzene'#dsr_dict['fragment']
     
-    gdb = global_DB()
+    gdb = global_DB(self.invert)
  
     residue = '4'
     part = '2'

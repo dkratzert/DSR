@@ -533,7 +533,7 @@ if __name__ == '__main__':
     reslist =  res_list.get_res_list()
     find_atoms = FindAtoms(reslist)
     rle = ResListEdit(reslist, find_atoms)
-    gdb = global_DB()
+    gdb = global_DB(self.invert)
     db = gdb.build_db_dict()
     
     #resiopt = dsr_dict['resi']

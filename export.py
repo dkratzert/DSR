@@ -41,9 +41,9 @@ class Export():
     '''
     
     def __init__(self, fragment_name, invert=False):
-        self._invert = invert
+        self.invert = invert
         self.__fragment = fragment_name
-        self._gdb = global_DB()
+        self._gdb = global_DB(self.invert)
         try:
             self.__db = self._gdb.build_db_dict()[self.__fragment.lower()]
         except(KeyError):
@@ -52,9 +52,6 @@ class Export():
         self._gdb.check_consistency(self.__db, self.__fragment)
         self._comment = self.__db['comment']
         self.__dbatoms = self.__db['atoms']
-        print(self._invert)
-        if self._invert:
-            self.__dbatoms = self.invert_dbatoms_coordinates(self.__dbatoms)
         self._gdb.check_db_atom_consistency(self.__dbatoms, self.__fragment)
         self.__atomtypes = at.get_atomtypes(self.__dbatoms)
         self.__fragline = self.__db['fragline']
@@ -64,17 +61,7 @@ class Export():
         self.__cell = '    {}      {}      {}      {}      {}      {}'.format(*self.__cell)
         self._comment_regex = '^REM .*$'.upper()
     
-    
-    def invert_dbatoms_coordinates(self, atoms):
-        '''
-        invert the coordinates for atoms like 
-        [[C1  1  0.44  0.21  -1.23 ][ ...]]
-        '''
-        for line in atoms:
-            inv_coord = [ str(-float(i)) for i in line[2:5] ]
-            line[2:5] = inv_coord
-        return atoms
-        
+
     
     def format_calced_coords(self):
         '''
@@ -98,6 +85,8 @@ class Export():
         exports a .res file from a database entry to be viewed in a GUI
         '''
         print('Exporting "{0}" to {0}.res'.format(self.__fragment))
+        if self.invert:
+            print("Fragment inverted.")
         try:
             from dsr import VERSION
         except(ImportError):
@@ -161,10 +150,6 @@ class Export():
             frac_coord = [  float(i) for i in line[2:5] ]
             coord = frac_to_cart(frac_coord, cell)
             line[2:5] = coord
-#        if self._invert: # nicht nötig weil ja schon in Export()
-#            for line in atoms:
-#                inv_coord = [ -i for i in line[2:5] ]
-#                line[2:5] = inv_coord
         newlist = []
         for i in atoms:
             newlist.append('{:4.4s} {:4.2s} {:>7.4f}  {:>7.4f}  {:>7.4f}'.format(*i))
@@ -323,7 +308,7 @@ class Export():
 
 if __name__ == '__main__':
     from dbfile import global_DB
-    gdb = global_DB()
+    gdb = global_DB(self.invert)
     db = gdb.build_db_dict()['toluene']
     
     export = Export('toluene')
