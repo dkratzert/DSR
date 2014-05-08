@@ -58,7 +58,7 @@ class Export():
         self.__cell = self.__fragline[2:]
         self.__clipcell = self.__fragline[2:]
         self.format_calced_coords()  # expands the cell of calculated structures
-        self.__cell = '    {}      {}      {}      {}      {}      {}'.format(*self.__cell)
+        self.__cell = ' {:>8.4f} {:>8.4f} {:>8.4f} {:>8.4f} {:>8.4f} {:>8.4f}'.format(*[float(i) for i in self.__cell])
         self._comment_regex = '^REM .*$'.upper()
     
 
@@ -124,7 +124,8 @@ class Export():
             pass
         comment = '\nREM '.join(self._comment)
         res_export.append('REM '+comment+'\n')
-        res_export.append('CELL 0.71073  '+self.__cell+'\n')   # the cell with wavelength
+        print(self.__cell)
+        res_export.append('CELL 0.71073 '+self.__cell+'\n')   # the cell with wavelength
         res_export.append('ZERR    1.00   0.0000   0.0000   0.0000   0.000   0.000   0.000\n')
         res_export.append('LATT  -1\n')
         res_export.append('SFAC '+'  '.join(sfac)+'\n')
