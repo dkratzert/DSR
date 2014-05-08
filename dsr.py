@@ -193,7 +193,7 @@ class DSR():
         '''
         searches the Name: comments in the database for a given name
         '''
-        from misc import ll_to_string
+        from misc import dice_coefficient
         gdb = global_DB()
         db = gdb.build_db_dict()
         frags = sorted(db.keys())
@@ -204,78 +204,15 @@ class DSR():
         search_results = {}
         for i in names_list:
             #search_results[self.levenshtein(self.search_string, i[1])] = i #Levenshtein gibt bei kurzen Suchstrings zu schlechte Ergebnisse
-            search_results[self.dice_coefficient(self.search_string, i[1])] = i
-        #result = search_results[min(search_results)]
+            search_results[dice_coefficient(self.search_string, i[1])] = i
         print('\n\n Found following database entrys:\n')
         print(' Fragment         |  Full name, Comments')
         print(' ---------------------------------------------------------------------------')
-        #print(search_results)
         selected_results = [search_results[i] for i in sorted(search_results)[0:5]]
         for line in selected_results:
             print(' {:15s}    {:20s}'.format(line[0], line[1]))
-        #print('Found database entry "{:s}" with Name: "{:s}"'.format(result[0], result[1]))
         sys.exit()
 
-
-    def dice_coefficient(self, a, b):
-        """dice coefficient 2nt/na + nb."""
-        a = a.lower()
-        b = b.lower()
-        if not len(a) or not len(b): return 0.0
-        if len(a) == 1:  a=a+u'.'
-        if len(b) == 1:  b=b+u'.'
-    
-        a_bigram_list=[]
-        for i in range(len(a)-1):
-            a_bigram_list.append(a[i:i+2])
-        
-        b_bigram_list=[]
-        for i in range(len(b)-1):
-            b_bigram_list.append(b[i:i+2])
-    
-        a_bigrams = set(a_bigram_list)
-        b_bigrams = set(b_bigram_list)
-        overlap = len(a_bigrams & b_bigrams)
-        dice_coeff = overlap * 2.0/(len(a_bigrams) + len(b_bigrams))
-        if (1-dice_coeff) < 0.7:
-            #print(1-dice_coeff)
-            return 0.0
-        return 1-round(dice_coeff, 5)
-
-
-    def longest_common_substring(self, s1, s2):
-        m = [[0] * (1 + len(s2)) for i in xrange(1 + len(s1))]
-        longest, x_longest = 0, 0
-        for x in xrange(1, 1 + len(s1)):
-            for y in xrange(1, 1 + len(s2)):
-                if s1[x - 1] == s2[y - 1]:
-                    m[x][y] = m[x - 1][y - 1] + 1
-                    if m[x][y] > longest:
-                        longest = m[x][y]
-                        x_longest = x
-                else:
-                    m[x][y] = 0
-        return s1[x_longest - longest: x_longest]
-
-    
-    def levenshtein(self, s1, s2):
-        s1 = s1.lower()
-        s2 = s2.lower()
-        if len(s1) < len(s2):
-            return self.levenshtein(s2, s1)
-        if len(s2) == 0:
-            return len(s1)
-        previous_row = xrange(len(s2) + 1)
-        for i, c1 in enumerate(s1):
-            current_row = [i + 1]
-            for j, c2 in enumerate(s2):
-                insertions = previous_row[j + 1] + 1 # j+1 instead of j since previous_row and current_row are one character longer
-                deletions = current_row[j] + 1       # than s2
-                substitutions = previous_row[j] + (c1 != c2)
-                current_row.append(min(insertions, deletions, substitutions))
-            previous_row = current_row
-    
-        return previous_row[-1]
 
     
     def import_from_grade(self):
