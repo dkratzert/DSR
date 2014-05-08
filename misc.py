@@ -355,6 +355,108 @@ def vol_tetrahedron(a, b, c, d, cell):
     return volume
     
 
+def dice_coefficient(a, b):
+    """dice coefficient 2nt/na + nb."""
+    a = a.lower()
+    b = b.lower()
+    if not len(a) or not len(b): return 0.0
+    if len(a) == 1:  a=a+u'.'
+    if len(b) == 1:  b=b+u'.'
+
+    a_bigram_list=[]
+    for i in range(len(a)-1):
+        a_bigram_list.append(a[i:i+2])
+    
+    b_bigram_list=[]
+    for i in range(len(b)-1):
+        b_bigram_list.append(b[i:i+2])
+
+    a_bigrams = set(a_bigram_list)
+    b_bigrams = set(b_bigram_list)
+    overlap = len(a_bigrams & b_bigrams)
+    dice_coeff = overlap * 2.0/(len(a_bigrams) + len(b_bigrams))
+    dice_coeff = 1-dice_coeff # invert the result
+    if dice_coeff < 0.7:  # make a cutoff for the best matches
+        return 0.0
+    return round(dice_coeff, 5)
+
+
+def dice_coefficient2(a,b):
+    """ 
+    duplicate bigrams in a word should be counted distinctly
+    (per discussion), otherwise 'AA' and 'AAAA' would have a 
+    dice coefficient of 1...
+    """
+
+    if not len(a) or not len(b): return 0.0
+    """ quick case for true duplicates """
+    if a == b: return 1.0
+    """ if a != b, and a or b are single chars, then they can't possibly match """
+    if len(a) == 1 or len(b) == 1: return 0.0
+
+    """ use python list comprehension, preferred over list.append() """
+    a_bigram_list = [a[i:i+2] for i in range(len(a)-1)]
+    b_bigram_list = [b[i:i+2] for i in range(len(b)-1)]
+
+    a_bigram_list.sort()
+    b_bigram_list.sort()
+
+    # assignments to save function calls
+    lena = len(a_bigram_list)
+    lenb = len(b_bigram_list)
+    # initialize match counters
+    matches = i = j = 0
+    while (i < lena and j < lenb):
+        if a_bigram_list[i] == b_bigram_list[j]:
+            matches += 2
+            i += 1
+            j += 1
+        elif a_bigram_list[i] < b_bigram_list[j]:
+            i += 1
+        else:
+            j += 1
+
+    score = 1-(float(matches)/float(lena + lenb))
+    if score < 0.7:
+        score = 0.0
+    return score
+
+
+def longest_common_substring(s1, s2):
+    m = [[0] * (1 + len(s2)) for i in xrange(1 + len(s1))]
+    longest, x_longest = 0, 0
+    for x in xrange(1, 1 + len(s1)):
+        for y in xrange(1, 1 + len(s2)):
+            if s1[x - 1] == s2[y - 1]:
+                m[x][y] = m[x - 1][y - 1] + 1
+                if m[x][y] > longest:
+                    longest = m[x][y]
+                    x_longest = x
+            else:
+                m[x][y] = 0
+    return s1[x_longest - longest: x_longest]
+
+
+def levenshtein(s1, s2):
+    s1 = s1.lower()
+    s2 = s2.lower()
+    if len(s1) < len(s2):
+        return self.levenshtein(s2, s1)
+    if len(s2) == 0:
+        return len(s1)
+    previous_row = xrange(len(s2) + 1)
+    for i, c1 in enumerate(s1):
+        current_row = [i + 1]
+        for j, c2 in enumerate(s2):
+            insertions = previous_row[j + 1] + 1 # j+1 instead of j since previous_row and current_row are one character longer
+            deletions = current_row[j] + 1       # than s2
+            substitutions = previous_row[j] + (c1 != c2)
+            current_row.append(min(insertions, deletions, substitutions))
+        previous_row = current_row
+
+    return previous_row[-1]
+
+
 
 #def bond_angle(dx1, dx2, cell):
 #    pass
