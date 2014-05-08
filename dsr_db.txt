@@ -390,7 +390,7 @@ F2  1  -2.377336 -1.372555 0.000000
 
 <PFAnion>
 RESI AlPF
-REM Name: [Al{OC(CF3)3}4]-
+REM Name: [Al{OC(CF3)3}4]- PF-Anion
 DFIX 1.72 0.03 Al1 O1 Al1 O2 Al1 O3 Al1 O4
 SADI O1 O2 O1 O3 O1 O4 O2 O3 O2 O4 O3 O4
 SADI 0.05 Al1 C1 Al1 C5 Al1 C9 Al1 C13
@@ -1484,7 +1484,7 @@ Cl4    2    0.198841    1.733330   -0.406054
 
 <CH2Cl2>
 rem Src: Gaussian 03, pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei
-REM Name: Dichloromethane, (CH2Cl2)
+REM Name: Dichloromethane, CH2Cl2
 RESI CCL2
 SIMU C1 > CL2
 RIGU C1 > CL2
