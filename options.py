@@ -68,14 +68,20 @@ class OptionsParser():
     @property
     def import_grade(self):
         return self._options.import_grade
+
+    @property
+    def invert(self):
+        return self._options.invert
+        
+    @property
+    def search_string(self):
+        return self._options.search_string
     
     @property
     def all_options(self):
         return self._options
     
-    @property
-    def invert(self):
-        return self._options.invert
+
     
     def parse_commandline(self):
         '''parses the command line options and returns 
@@ -94,23 +100,25 @@ class OptionsParser():
         +'   REPLACE: Replace existing target atoms or q-peaks.'
         +sep_line
         )
-        self.parser.add_argument("-r", dest="res_file", metavar='"res file"', \
+        self.parser.add_argument("-r ", dest="res_file", metavar='"res file"', \
                                 help="res file with DSR command", default=False)
         self.parser.add_argument("-re", dest="external_restr", metavar='"res file"', \
                                 help="res file with DSR command (writes restraints to external file)", default=False)
-        self.parser.add_argument("-e", dest="export_fragment", metavar='"fragment"', \
+        self.parser.add_argument("-e ", dest="export_fragment", metavar='"fragment"', \
                                 help="export fragment as .res/.png file", default=False)
-        self.parser.add_argument("-c", dest="export_clip", metavar='"fragment"', \
+        self.parser.add_argument("-c ", dest="export_clip", metavar='"fragment"', \
                                 help="export fragment to clipboard", default=False)
-        self.parser.add_argument("-t", dest="invert", action='store_true', \
+        self.parser.add_argument("-t ", dest="invert", action='store_true', \
                                 help="inverts the current fragment", default=False)
-        self.parser.add_argument("-i", dest="import_grade", metavar='"tgz file"', \
+        self.parser.add_argument("-i ", dest="import_grade", metavar='"tgz file"', \
                                 help="import a fragment from GRADE (needs .tgz file)", default=False)
         self.parser.add_argument("-ea", dest="export_all", action='store_true', \
                                 help=SUPPRESS, default=False)
-        self.parser.add_argument("-l", dest="list_db", action="store_true", \
+        self.parser.add_argument("-l ", dest="list_db", action="store_true", \
                                 help="list names of all database entries", default=False)
-        self.parser.add_argument("-n", dest="no_refine", action="store_true", \
+        self.parser.add_argument("-s ", dest="search_string", metavar='"string"', \
+                                help="seach the database for given string", default=False)
+        self.parser.add_argument("-n ", dest="no_refine", action="store_true", \
                                 help="do not refine after fragment transfer", default=False)
         return self.parser.parse_args()
         

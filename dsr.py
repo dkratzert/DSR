@@ -27,7 +27,6 @@ from restraints import ListFile, Lst_Deviations, format_atom_names
 from restraints import Restraints, Adjacency_Matrix
 
 # TODO and ideas:
-# cell during export too wide
 # -automatically invert fragment if fit fails and fit again?
 # -FLAT: see for every ring atom if there is also an atteched atom in the same plane
 # -To the manual: Avogradro/res-file -> rename -> mercury -> mol2-file -> GRADE
@@ -39,7 +38,7 @@ from restraints import Restraints, Adjacency_Matrix
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 
 
-VERSION = '1.4.6'
+VERSION = '1.5.0'
 progname = '\n-----------------------------'\
            ' D S R - v{}' \
            ' ----------------------------------'.format(VERSION)
@@ -48,7 +47,7 @@ class DSR():
     '''
     main class 
     '''
-    def __init__(self, res_file=None, external_restr=None, export_fragment=None, 
+    def __init__(self, res_file=None, external_restr=None, export_fragment=None, search_string = None, 
         export_clip=None, import_grade=None, export_all=None, list_db=None, no_refine=None, invert=None):
         # options from the commandline options parser:
         self.options = OptionsParser(progname)
@@ -96,10 +95,15 @@ class DSR():
             self.invert = self.options.invert
         else:
             self.invert = invert
-
+        if not search_string:
+            self.search_string = self.options.search_string
+        else:
+            self.search_string = search_string
         #  List of Database Fragments:   
         if self.list_db:
             self.list_dbentrys()
+        if self.search_string:
+            self.search_fragment_name()
         ## Export !all! fragments   
         if self.export_all:
             self.export_all_fragments()
@@ -182,7 +186,6 @@ class DSR():
             gdb.check_consistency(db[fragment], fragment)
             gdb.check_db_atom_consistency(db[fragment]['atoms'], fragment)
             gdb.check_db_header_consistency(db[fragment]['head'], fragment)
-        self.search_fragment_name()
         sys.exit()
     
 
@@ -200,33 +203,44 @@ class DSR():
             names_list.append([i, fragname])
         search_results = {}
         for i in names_list:
-            search_results[self.levenshtein('CF3', i[1])] = i
-        result = search_results[min(search_results)]
-        print('Found following database entrys:')
-        selected_results = [search_results[i] for i in sorted(search_results)[0:11]]
-        for line in reversed(selected_results):
-            print('{:15s}    {:20s}'.format(line[0], line[1]))
+            #search_results[self.levenshtein(self.search_string, i[1])] = i #Levenshtein gibt bei kurzen Suchstrings zu schlechte Ergebnisse
+            search_results[self.dice_coefficient(self.search_string, i[1])] = i
+        #result = search_results[min(search_results)]
+        print('\n\n Found following database entrys:\n')
+        print(' Fragment         |  Full name, Comments')
+        print(' ---------------------------------------------------------------------------')
+        #print(search_results)
+        selected_results = [search_results[i] for i in sorted(search_results)[0:5]]
+        for line in selected_results:
+            print(' {:15s}    {:20s}'.format(line[0], line[1]))
         #print('Found database entry "{:s}" with Name: "{:s}"'.format(result[0], result[1]))
+        sys.exit()
 
 
     def dice_coefficient(self, a, b):
         """dice coefficient 2nt/na + nb."""
+        a = a.lower()
+        b = b.lower()
         if not len(a) or not len(b): return 0.0
         if len(a) == 1:  a=a+u'.'
         if len(b) == 1:  b=b+u'.'
     
         a_bigram_list=[]
         for i in range(len(a)-1):
-        a_bigram_list.append(a[i:i+2])
+            a_bigram_list.append(a[i:i+2])
+        
         b_bigram_list=[]
         for i in range(len(b)-1):
-        b_bigram_list.append(b[i:i+2])
+            b_bigram_list.append(b[i:i+2])
     
         a_bigrams = set(a_bigram_list)
         b_bigrams = set(b_bigram_list)
         overlap = len(a_bigrams & b_bigrams)
         dice_coeff = overlap * 2.0/(len(a_bigrams) + len(b_bigrams))
-        return dice_coeff
+        if (1-dice_coeff) < 0.7:
+            #print(1-dice_coeff)
+            return 0.0
+        return 1-round(dice_coeff, 5)
 
 
     def longest_common_substring(self, s1, s2):
@@ -245,11 +259,12 @@ class DSR():
 
     
     def levenshtein(self, s1, s2):
+        s1 = s1.lower()
+        s2 = s2.lower()
         if len(s1) < len(s2):
             return self.levenshtein(s2, s1)
         if len(s2) == 0:
             return len(s1)
-    
         previous_row = xrange(len(s2) + 1)
         for i, c1 in enumerate(s1):
             current_row = [i + 1]
@@ -479,8 +494,8 @@ class DSR():
     
 if __name__ == '__main__':
     '''main function'''
-    dsr = DSR(list_db=True)
-    #dsr = DSR()
+    #dsr = DSR(list_db=True)
+    dsr = DSR()
 
     
 
