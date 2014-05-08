@@ -163,10 +163,12 @@ class DSR():
         print(' ---------------------------------------------------------------------------')
     
         frags = sorted(db.keys())
+        names_list = []
         for i in frags:
+            fragname = ', '.join(gdb.get_comment_from_fragment(i))
+            names_list.append([i, fragname])
             line = ' {:<17}| {:<5}| {:<11}| {}'.format(
-                    i, gdb.get_line_number_from_fragment(i), gdb.get_db_from_fragment(i), 
-                    ', '.join(gdb.get_comment_from_fragment(i)))
+                    i, gdb.get_line_number_from_fragment(i), gdb.get_db_from_fragment(i), fragname)
             print(line[:width-1])
         try:
             if os.environ["DSR_DB_DIR"]:
@@ -180,8 +182,86 @@ class DSR():
             gdb.check_consistency(db[fragment], fragment)
             gdb.check_db_atom_consistency(db[fragment]['atoms'], fragment)
             gdb.check_db_header_consistency(db[fragment]['head'], fragment)
+        self.search_fragment_name()
         sys.exit()
     
+
+    def search_fragment_name(self):
+        '''
+        searches the Name: comments in the database for a given name
+        '''
+        from misc import ll_to_string
+        gdb = global_DB()
+        db = gdb.build_db_dict()
+        frags = sorted(db.keys())
+        names_list = []
+        for i in frags:
+            fragname = ', '.join(gdb.get_comment_from_fragment(i))
+            names_list.append([i, fragname])
+        search_results = {}
+        for i in names_list:
+            search_results[self.levenshtein('CF3', i[1])] = i
+        result = search_results[min(search_results)]
+        print('Found following database entrys:')
+        selected_results = [search_results[i] for i in sorted(search_results)[0:11]]
+        for line in reversed(selected_results):
+            print('{:15s}    {:20s}'.format(line[0], line[1]))
+        #print('Found database entry "{:s}" with Name: "{:s}"'.format(result[0], result[1]))
+
+
+    def dice_coefficient(self, a, b):
+        """dice coefficient 2nt/na + nb."""
+        if not len(a) or not len(b): return 0.0
+        if len(a) == 1:  a=a+u'.'
+        if len(b) == 1:  b=b+u'.'
+    
+        a_bigram_list=[]
+        for i in range(len(a)-1):
+        a_bigram_list.append(a[i:i+2])
+        b_bigram_list=[]
+        for i in range(len(b)-1):
+        b_bigram_list.append(b[i:i+2])
+    
+        a_bigrams = set(a_bigram_list)
+        b_bigrams = set(b_bigram_list)
+        overlap = len(a_bigrams & b_bigrams)
+        dice_coeff = overlap * 2.0/(len(a_bigrams) + len(b_bigrams))
+        return dice_coeff
+
+
+    def longest_common_substring(self, s1, s2):
+        m = [[0] * (1 + len(s2)) for i in xrange(1 + len(s1))]
+        longest, x_longest = 0, 0
+        for x in xrange(1, 1 + len(s1)):
+            for y in xrange(1, 1 + len(s2)):
+                if s1[x - 1] == s2[y - 1]:
+                    m[x][y] = m[x - 1][y - 1] + 1
+                    if m[x][y] > longest:
+                        longest = m[x][y]
+                        x_longest = x
+                else:
+                    m[x][y] = 0
+        return s1[x_longest - longest: x_longest]
+
+    
+    def levenshtein(self, s1, s2):
+        if len(s1) < len(s2):
+            return self.levenshtein(s2, s1)
+        if len(s2) == 0:
+            return len(s1)
+    
+        previous_row = xrange(len(s2) + 1)
+        for i, c1 in enumerate(s1):
+            current_row = [i + 1]
+            for j, c2 in enumerate(s2):
+                insertions = previous_row[j + 1] + 1 # j+1 instead of j since previous_row and current_row are one character longer
+                deletions = current_row[j] + 1       # than s2
+                substitutions = previous_row[j] + (c1 != c2)
+                current_row.append(min(insertions, deletions, substitutions))
+            previous_row = current_row
+    
+        return previous_row[-1]
+
     
     def import_from_grade(self):
         '''
@@ -277,7 +357,7 @@ class DSR():
         dfixes = re.get_formated_12_dfixes+re.get_formated_13_dfixes+re.get_formated_flats
         return ''.join(dfixes)
     
-    
+
     
     
     def main(self): 
@@ -399,8 +479,8 @@ class DSR():
     
 if __name__ == '__main__':
     '''main function'''
-    #dsr = DSR(no_refine=False, res_file='p21c.res')
-    dsr = DSR()
+    dsr = DSR(list_db=True)
+    #dsr = DSR()
 
     
 
