@@ -103,7 +103,9 @@ class DSR():
         if self.list_db:
             self.list_dbentrys()
         if self.search_string:
-            self.search_fragment_name()
+            result = self.search_fragment_name()
+            self.print_search_results(result)
+            sys.exit()
         ## Export !all! fragments   
         if self.export_all:
             self.export_all_fragments()
@@ -194,6 +196,7 @@ class DSR():
         searches the Name: comments in the database for a given name
         '''
         from misc import dice_coefficient
+        #from misc import levenshtein
         gdb = global_DB()
         db = gdb.build_db_dict()
         frags = sorted(db.keys())
@@ -203,16 +206,26 @@ class DSR():
             names_list.append([i, fragname])
         search_results = {}
         for i in names_list:
-            #search_results[self.levenshtein(self.search_string, i[1])] = i #Levenshtein gibt bei kurzen Suchstrings zu schlechte Ergebnisse
-            search_results[dice_coefficient(self.search_string, i[1])] = i
-        print('\n\n Found following database entrys:\n')
-        print(' Fragment         |  Full name, Comments')
-        print(' ---------------------------------------------------------------------------')
+            db_entry = i[1]
+            #search_results[levenshtein(self.search_string, i[1])] = i #Levenshtein gibt bei kurzen Suchstrings zu schlechte Ergebnisse
+            coefficient = dice_coefficient(self.search_string, db_entry)
+            search_results[coefficient] = i
+        # select the best 5 results:
         selected_results = [search_results[i] for i in sorted(search_results)[0:5]]
-        for line in selected_results:
+        return selected_results
+
+    
+    def print_search_results(self, results):
+        '''
+        prints the results of a database search to screen and exit.
+        results are 
+        '''
+        print('\n\n Found following database entrys:\n')
+        print(' Fragment          |  Full name, Comments')
+        print(' ---------------------------------------------------------------------------')
+        for line in results:
             print(' {:15s}    {:20s}'.format(line[0], line[1]))
         sys.exit()
-
 
     
     def import_from_grade(self):

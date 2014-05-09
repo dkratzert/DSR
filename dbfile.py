@@ -404,8 +404,9 @@ class ImportGRADE():
         self._atoms = self.get_pdbatoms(self._pdbfile)
         self._firstlast = self.get_first_last_atom()
         self._restraints = self.get_restraints()
-        self._comments = self.get_comments()
         self._resi_name = self.get_name_from_obprop(self._obpropfile) 
+        self._comments = self.get_comments()
+
         
 
 
@@ -419,6 +420,8 @@ class ImportGRADE():
             if regex.match(line):
                 line = line.split()
                 break
+            else:
+                line = ['found', 'NONE']
         return line[1]
 
 
@@ -439,6 +442,8 @@ class ImportGRADE():
             for line in self._dfixfile:
                 if line.startswith(m):
                     comments.append(line.split())
+        name = 'REM Name: '+self._resi_name
+        comments.append(name.split())
         return comments
 
     
