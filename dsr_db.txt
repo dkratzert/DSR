@@ -1484,7 +1484,7 @@ Cl4    2    0.198841    1.733330   -0.406054
 
 <CH2Cl2>
 rem Src: Gaussian 03, pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei
-REM Name: Dichloromethane, CH2Cl2
+REM Name: Dichloromethane, CH2Cl2, DCM
 RESI CCL2
 SIMU C1 > CL2
 RIGU C1 > CL2
