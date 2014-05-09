@@ -151,6 +151,21 @@ class FindAtoms():
                     residues[resinum].append([atom[0], atom[2:5], num, resiclass])
         return residues
             
+    
+    def get_atoms_resiclass(self, atom):
+        '''
+        returns the residue class of a given atom. C1 would be 'None'
+        C1_1 would be 'CF3' for example
+        '''
+        #all_resi_numbers = self._residues.keys()
+        num = self.get_atoms_resinumber(atom)
+        atom = atom.split('_')[0]
+        #print(all_resi_numbers)
+        residue = self._residues[num]
+        if atom in residue[1]:
+            #  atom-name  class
+            return residue[1][3]
+        
 
     def get_atoms_resinumber(self, atom):    
         '''
@@ -532,13 +547,13 @@ if __name__ == '__main__':
     reslist =  res_list.get_res_list()
     find_atoms = FindAtoms(reslist)
     rle = ResListEdit(reslist, find_atoms)
-    gdb = global_DB(self.invert)
+    gdb = global_DB()
     db = gdb.build_db_dict()
     
     #resiopt = dsr_dict['resi']
     resiopt = False
     
-    fragment = 'pfan'
+    fragment = 'oc(cf3)3'
     fragline = gdb.get_fragline_from_fragment(fragment)  
     dbatoms = gdb.get_atoms_from_fragment(fragment)      
     dbhead = gdb.get_head_from_fragment(fragment)
@@ -560,27 +575,35 @@ if __name__ == '__main__':
     
     newnames = rename_dbhead_atoms(numbers, dbatoms, dbhead)
     
-    print(newnames)
+    #print(newnames)
     #for i in dbhead:
     #    print(i.strip('\n'))
     
     
-    import misc
-    filename = 'testfile.txt'
-    misc.remove_file(filename)
-    try:
-        dfix_file = open(filename, 'w')  # open the ins file
-    except(IOError):
-        print('Unable to write res file!')
-        sys.exit(-1)
-    for i in dbhead:            #modified reslist
-        dfix_file.write("%s" %i)    #write the new file
-    dfix_file.close()
+#    import misc
+#    filename = 'testfile.txt'
+#    misc.remove_file(filename)
+#    try:
+#        dfix_file = open(filename, 'w')  # open the ins file
+#    except(IOError):
+#        print('Unable to write res file!')
+#        sys.exit(-1)
+#    for i in dbhead:            #modified reslist
+#        dfix_file.write("%s" %i)    #write the new file
+#    dfix_file.close()
+    
+    
+    #sys.exit()
+    
+    fa = FindAtoms(reslist)
+    
+    # this might be used to find nearest atoms in same class to make eadp
+    print(fa.get_atoms_resiclass('C1_2'))
+    
     
     
     sys.exit()
     
-    fa = FindAtoms(reslist)
     print('Residue dict:', fa.get_resinum('RESI 1 TOL'.split()))
  #   print fa.get_atomcoordinates(['C12', 'C29', 'Q12'])
     print('line number:', fa.get_atom_line_numbers(['C12', 'C333', 'Q12']))
@@ -601,6 +624,9 @@ if __name__ == '__main__':
         print('{}:\t{:<9} {:<9} {:<9}'.format(i, *coord[i]))
     print()
     print()
+    
+    
+    
     dsrp = DSR_Parser(reslist)
     dsr_dict = dsrp.parse_dsr_line()
     
