@@ -151,7 +151,6 @@ class ListFile():
         num = 0
         for line in self._listfile_list[start_line:]:
             line = line.split()
-            #print(line)
             try:
                 line[0]
             except(IndexError):

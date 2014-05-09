@@ -124,7 +124,6 @@ class Export():
             pass
         comment = '\nREM '.join(self._comment)
         res_export.append('REM '+comment+'\n')
-        print(self.__cell)
         res_export.append('CELL 0.71073 '+self.__cell+'\n')   # the cell with wavelength
         res_export.append('ZERR    1.00   0.0000   0.0000   0.0000   0.000   0.000   0.000\n')
         res_export.append('LATT  -1\n')

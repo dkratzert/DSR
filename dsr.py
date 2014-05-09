@@ -207,11 +207,12 @@ class DSR():
         search_results = {}
         for i in names_list:
             db_entry = i[1]
-            #search_results[levenshtein(self.search_string, i[1])] = i #Levenshtein gibt bei kurzen Suchstrings zu schlechte Ergebnisse
+            #Levenshtein gibt bei kurzen Suchstrings zu schlechte Ergebnisse:
+            #search_results[levenshtein(self.search_string, i[1])] = i 
             coefficient = dice_coefficient(self.search_string, db_entry)
             search_results[coefficient] = i
-        # select the best 5 results:
-        selected_results = [search_results[i] for i in sorted(search_results)[0:5]]
+        # select the best 4 results:
+        selected_results = [search_results[i] for i in sorted(search_results)[0:4]]
         return selected_results
 
     

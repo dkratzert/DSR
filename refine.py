@@ -49,7 +49,6 @@ class ShelxlRefine():
             if position > 0:
                 f.seek(position+8, 0) # seek to version string
                 version = f.read(6)   # read version string
-                #print(version, 'found')
                 return version.decode('ascii')
 
 

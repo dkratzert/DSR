@@ -188,7 +188,6 @@ class FindAtoms():
         atom_dict = {}
         for i in atoms:
             num = self.get_atoms_resinumber(i)
-            #print(num, 'rdg')
             try:
                 self._residues[num]
             except(KeyError):
