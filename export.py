@@ -14,6 +14,7 @@ import sys, re, os
 import atomhandling as at
 from misc import ll_to_string
 from dbfile import global_DB
+import copy
 import pyperclip
 
 
@@ -52,6 +53,7 @@ class Export():
         self._gdb.check_consistency(self.__db, self.__fragment)
         self._comment = self.__db['comment']
         self.__dbatoms = self.__db['atoms']
+        self._clipatoms = copy.deepcopy(self.__dbatoms)
         self._gdb.check_db_atom_consistency(self.__dbatoms, self.__fragment)
         self.__atomtypes = at.get_atomtypes(self.__dbatoms)
         self.__fragline = self.__db['fragline']
@@ -141,11 +143,10 @@ class Export():
         copys the exported atoms to the clipboard including FRAG cel FEND commands
         '''
         from misc import frac_to_cart
-        import copy
         clip_text = []
         cell = self.__clipcell[:]
         cell = [float(x) for x in cell]
-        atoms = copy.deepcopy(self.__dbatoms)
+        atoms = self._clipatoms        
         for line in atoms:
             frac_coord = [  float(i) for i in line[2:5] ]
             coord = frac_to_cart(frac_coord, cell)
