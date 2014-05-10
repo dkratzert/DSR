@@ -77,10 +77,11 @@ class OptionsParser():
     @property
     def search_string(self):
         if not self._options.search_string:
-            return None
-        alpha = re.match('^[\w-]+$', self._options.search_string)
+            return None 
+        # search characters allowed: a-z A-Z 0-9 _ - , () {} [] ' " + * | = .
+        alpha = re.match('^[\w\-,\(\)\[\]\{\}\'\"\+\*\|\=\.]+$', self._options.search_string)
         if not alpha:
-            print('Only aplhanumeric characters allowed for searching.')
+            print('Characters not allowed for searching.')
             sys.exit()
         else:
             return self._options.search_string
