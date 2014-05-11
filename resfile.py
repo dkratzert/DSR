@@ -152,9 +152,9 @@ class ResListEdit():
         db = atoms[:]
         db = [list(map(str, i)) for i in db]
         for i in db:
-            i[2] = i[2].ljust(8, '0').rjust(9, ' ') 
-            i[3] = i[3].ljust(8, '0').rjust(9, ' ')
-            i[4] = i[4].ljust(8, '0').rjust(9, ' ')
+            i[2] = '{:>10.6f}'.format(float(i[2]))
+            i[3] = '{:>10.6f}'.format(float(i[3]))
+            i[4] = '{:>10.6f}'.format(float(i[4]))
             dblines.append('    '.join(i).rstrip())
         dblines = '\n'.join(dblines)        
         dblines = '  '.join(fragline)+'\n'+dblines
