@@ -166,10 +166,10 @@ class InsertAfix(object):
         newlist = []
         for i in afix_list:
             i[0] = new_atomnames.pop()
-            i[2] = i[2].ljust(8, '0').rjust(9, ' ') 
-            i[3] = i[3].ljust(8, '0').rjust(9, ' ')
-            i[4] = i[4].ljust(8, '0').rjust(9, ' ')
-            newlist.append('    '.join(i).rstrip())
+            i[2] = '{:>10.6f}'.format(float(i[2]))
+            i[3] = '{:>10.6f}'.format(float(i[3]))
+            i[4] = '{:>10.6f}'.format(float(i[4]))
+            newlist.append('   '.join(i).rstrip())
         atoms = '\n'.join(newlist)
         self.afixnumber = '179'   # makes afix 179 default 
         if not self.occ:
