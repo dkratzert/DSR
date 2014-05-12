@@ -140,7 +140,20 @@ class Export():
             
     def copy_to_clipboard(self):
         '''
-        copys the exported atoms to the clipboard including FRAG cel FEND commands
+        copys the exported atoms to the clipboard including FRAG  FEND commands
+        fractional coordinates are converted to cartesian
+        
+        Export example:
+        
+        FRAG 
+        C1   1     1.2000  -0.0230   3.6150
+        C2   1     1.2030  -0.0120   2.1060
+        C3   1     0.0150  -0.0110   1.3900
+        C4   1     0.0150  -0.0010   0.0050
+        C5   1     1.2080   0.0080  -0.6880
+        C6   1     2.3980   0.0060   0.0090
+        C7   1     2.3940  -0.0040   1.3940 
+        FEND
         '''
         from misc import frac_to_cart
         clip_text = []
@@ -177,6 +190,8 @@ class Export():
         returns True if file can be opened
         returns False if file is locked
         '''
+        if not '.' in ending:
+            ending = '.'+ending
         arg = base+ending
         try:
             print('try to open...')
@@ -188,7 +203,9 @@ class Export():
         
 
     def write_file(self):
-        '''Writes the data to a res file'''
+        '''
+        Writes the data to a res file
+        '''
         ## write to file:
         resfile = str(self.__fragment)+'.res'
         try:
@@ -211,7 +228,9 @@ class Export():
         import misc
         import subprocess
         '''
-        ellipsoid plot of the molecule
+        ellipsoid plot of the molecule. This method depend on PLATON from Ton Spek.
+        The windows version of Platon needs some special care because of its nasty output 
+        window.
         '''
         resfile = str(self.__fragment)+'.res'
         insfile = str(self.__fragment)+'.ins'
@@ -246,7 +265,8 @@ class Export():
                 timeticks = timeticks+1
                 time.sleep(0.01)
                 if timeticks > 1500:
-                    print('Platon run took too long to execute.')
+                    print('Platon run took too long to execute. Killing Platon...')
+                    plat.terminate()
                     break
             size1 = os.stat(psfile).st_size
             size2 = 99999999
