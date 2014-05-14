@@ -71,6 +71,7 @@ gzip -f $GIT/setup/Output/$OUTFILE
 
 rm -r $BUILDDIR
 cp -r $TMPDIR/* $BUILDDIR
+cp -r $TMPDIR/* /usr/src/packages/BUILD/dsr
 
 if [ -e $GIT/setup/Output/$OUTFILE.gz ]
 then
