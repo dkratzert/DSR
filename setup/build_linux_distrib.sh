@@ -5,6 +5,7 @@ TMP="/tmp"
 #GIT="/cygdrive/c/Users/$USERNAME/Documents/GitHub/DSR"
 #GIT="/home/daniel/GitHub/DSR"
 GIT="/home/daniel/Downloads/DSR"
+BUILDDIR="/usr/src/packages/build"
 VERSION=$(cat $GIT/dsr.py|grep -e "VERSION ="|cut -d ' ' -f3|tr -d "\'")
 echo $VERSION
 OUTFILE=DSR-$VERSION.tar
@@ -67,6 +68,9 @@ cd $TMP
 tar -rf $GIT/setup/Output/$OUTFILE DSR-$VERSION 2> /dev/null
 
 gzip -f $GIT/setup/Output/$OUTFILE
+
+rm -r $BUILDDIR
+cp -r $TMPDIR/* $BUILDDIR
 
 if [ -e $GIT/setup/Output/$OUTFILE.gz ]
 then
