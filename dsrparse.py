@@ -30,11 +30,12 @@ class DSR_Parser():
     '''
     def __init__(self, reslist, rle):
         self.__reslist = reslist
+        self.__endline = misc.find_line(self.__reslist, '^HKLF\s+[1-6]')
         self.__rle = rle
         self.__regex = '^rem\s{1,5}DSR\s{1,5}.*'.lower()
         self.__dsr_string = self.find_dsr_command(line=True).lower()
         self.__dsr = misc.makelist(self.__dsr_string)
-    
+
     
     def find_dsr_command(self, line=False):
         '''
@@ -44,6 +45,9 @@ class DSR_Parser():
         default or the text string when line is set to True'''
         dsr_str = ''
         indexnum = [i for i, l in enumerate(self.__reslist) for m in [re.search(self.__regex, l.lower())] if m]
+        if int(indexnum[0]) > int(self.__endline):
+            print('A DSR command after HKLF is not allowed! Check line {}'.format(indexnum[0]))
+            sys.exit()
         try:
             indexnum[0]
         except(IndexError):
