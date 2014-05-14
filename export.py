@@ -9,6 +9,7 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
+
 from __future__ import print_function
 import sys, re, os
 import atomhandling as at
@@ -329,11 +330,55 @@ class Export():
 
 if __name__ == '__main__':
     from dbfile import global_DB
-    gdb = global_DB(self.invert)
+    gdb = global_DB()
     db = gdb.build_db_dict()['toluene']
     
-    export = Export('toluene')
-    export.export_to_clip()
+    #export = Export('toluene')
+    #export.export_to_clip()
+    
+    from pngcanvas import PNGCanvas
+
+    BUFSIZE = 8*1024  # Taken from filecmp module
+    HEIGHT = WIDTH = 512
+    c = PNGCanvas(WIDTH, HEIGHT, color=(0xff, 0, 0, 0xff))
+    c.rectangle(0, 0, WIDTH - 1, HEIGHT - 2)
+    c.rectangle(100,100, 10, 10)
+    c.filled_rectangle(100,100, 10, 10)
+    c.color = bytearray((0, 0, 0, 0xff))
+    c.line(0, 0, WIDTH - 1, HEIGHT - 1)
+    c.line(50, 50, 50, HEIGHT - 30)
+ #         .|------|
+    #atom1--|------|atom2
+  #         |------|
+    with open('reference.png', 'wb+') as reference:
+        reference.write(c.dump())
+
+#    reference.close()
+#    http://en.wikipedia.org/wiki/Molecular_graphics
+#    // assume:
+#    // atoms with x, y, z coordinates (Angstrom) and elementSymbol
+#    // bonds with pointers/references to atoms at ends (bond pairs)
+#    // need pairs of bonded atoms and thus covalence radii
+#    // table of colors for elementTypes
+#    // find limits of molecule in molecule coordinates as xMin, yMin, xMax, yMax
+#    scale = min(xScreenMax/(xMax-xMin), yScreenMax/(yMax-yMin))
+#    xOffset = -xMin * scale; yOffset = -yMin * scale
+#    for (bond in $bonds) {
+#    atom0 = bond.getAtom(0)
+#    atom1 = bond.getAtom(1)
+#    x0 = xOffset+atom0.getX()*scale; y0 = yOffset+atom0.getY()*scale // (1)
+#    x1 = xOffset+atom1.getX()*scale; y1 = yOffset+atom1.getY()*scale // (2)
+#    x1 = atom1.getX();  y1 = atom1.getY()
+#    xMid = (x0 + x1) /2;  yMid = (y0 + y1) /2;
+#    color0 = ColorTable.getColor(atom0.getSymbol())
+#    drawLine (color0, x0, y0, xMid, yMid)
+#    color1 = ColorTable.getColor(atom1.getSymbol())
+#    drawLine (color1, x1, y1, xMid, yMid)
+#    }
+    
+    
+    
+    
     #for i in export.export_resfile():
     #    print(i.strip('\n'))
     #import pyperclip

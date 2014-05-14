@@ -22,7 +22,7 @@ from atomhandling import FindAtoms, NumberScheme
 from afix import InsertAfix, write_dbhead_to_file
 from refine import ShelxlRefine
 from resi import Resi
-from misc import get_replace_mode, find_line
+from misc import find_line
 from restraints import ListFile, Lst_Deviations, format_atom_names
 from restraints import Restraints, Adjacency_Matrix
 
@@ -99,6 +99,7 @@ class DSR():
             self.search_string = self.options.search_string
         else:
             self.search_string = search_string
+        
         #  List of Database Fragments:   
         if self.list_db:
             self.list_dbentrys()
@@ -132,6 +133,9 @@ class DSR():
         print('Runtime: {:>.1f} s'.format(runtime))
         print('\nDSR run complete.')
         
+
+################################################################################
+
 
     def do_export_fragment(self):
         ''' 

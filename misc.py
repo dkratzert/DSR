@@ -20,10 +20,14 @@ alphabet = string.ascii_uppercase
 __metaclass__ = type  # use new-style classes
 
 def get_atoms(atlist):
-    '''returns all atoms found in the input as list'''
+    '''
+    returns all atoms found in the input as list
+    input:
+    ['F8    4    0.349210   0.073474   0.519443 -21.00000   0.03106', '...']
+    '''
     atoms = []
     for i in atlist:
-        if re.search(atomregex, str(i)):        # search atoms
+        if re.match(atomregex, str(i)):        # search atoms
             l = i.split()[:5]              # convert to list and use only first 5 columns
             if l[0].upper() not in SHX_CARDS:      # exclude all non-atom cards
                 atoms.append(l)
@@ -80,7 +84,7 @@ def find_multi_lines(inputlist, regex):
 
 def remove_file(filename, exit_dsr=False, terminate=False):
     '''
-    removes the file from disk
+    removes the file "filename" from disk
     program exits when exit is true
     platon gets terminated if terminate is true
     '''
@@ -131,17 +135,6 @@ def unwrap_head_lines(headlines):
             line[n] = '\n'+line[n]
     new_head = ' '.join(line).strip().split('\n')
     return new_head
-
-
-# this is deprecated:
-def get_replace_mode(dsr_string):
-    '''returns the put/replace keyword'''
-    dsr = makelist(dsr_string)
-    action = dsr[2]
-    if action == 'REPLACE':
-        return True
-    else:
-        return False
 
 
 def makelist(string):
@@ -206,12 +199,9 @@ def matrix_mult(matrix1,matrix2):
     return new_matrix
 
 
-
-
-
 def format_atom_names(atoms, part, resinum):
     '''
-    needs a list of atoms ['C1', 'C2', 'O1', ..] witg part number and a residue number
+    needs a list of atoms ['C1', 'C2', 'O1', ..] with part number and a residue number.
     returns a list with atoms like ['C1_4b', 'C2_4b', 'O1_4b', ..]
     '''
     if not resinum:
@@ -356,7 +346,9 @@ def vol_tetrahedron(a, b, c, d, cell):
     
 
 def dice_coefficient(a, b):
-    """dice coefficient 2nt/na + nb."""
+    '''
+    dice coefficient 2nt/na + nb
+    '''
     a = a.lower()
     b = b.lower()
     if not len(a) or not len(b): return 0.0
@@ -547,7 +539,6 @@ if __name__ == '__main__':
     print('found multiline in lines', multi)
     if not multi:
         print('nix gefunbden!!!!!!!!')
-    print('replace mode:', get_replace_mode(dsr_string))
     print('#'+reslist[123].strip('\n')+'#')
     print('multiline?', multiline_test(reslist[123]))
     print('#'+reslist[24].strip('\n')+'#')

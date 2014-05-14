@@ -55,11 +55,11 @@ def get_atomtypes(dbatoms):
 
 def check_db_names_for_consistency(dbhead, dbatoms):
     '''Checks if the Atomnames in the restraints of the dbhead are also in
-    the list of the atoms of the respective dbentry'''
-    
+    the list of the atoms of the respective dbentry
+    '''
     for i in dbhead:
         if i not in dbatoms:
-            print('Atom', i, 'is in a restraint but not in the dbentry!')
+            print('Restraints inconsistent! Atom {} is in a restraint but not in the dbentry!'.format(i))
         else:
             pass
 

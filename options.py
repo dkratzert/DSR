@@ -126,7 +126,7 @@ class OptionsParser():
         self.parser.add_argument("-l", dest="list_db", action="store_true", \
                                 help="list names of all database entries", default=False)
         self.parser.add_argument("-s", dest="search_string", metavar='"string"', \
-                                help="seach the database for given string", default=False)
+                                help="seach the database for a name", default=False)
         self.parser.add_argument("-n", dest="no_refine", action="store_true", \
                                 help="do not refine after fragment transfer", default=False)
         return self.parser.parse_args()
