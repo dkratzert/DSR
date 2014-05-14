@@ -16,4 +16,8 @@ else
 fi
 
 # finally start dsr
-$PYTHON_EXE $DSR_DIR/dsr.py $1 $2 $3 $4
+if [ $# -eq 0 ]; then
+    $PYTHON_EXE $DSR_DIR/dsr.py --help
+else
+    $PYTHON_EXE $DSR_DIR/dsr.py $*
+fi
