@@ -76,6 +76,7 @@ class ListFile():
         self._listfile_list = self.read_lst_file()
         self._single_atom = None
         
+        
     def read_lst_file(self):
         '''
         reads the .lst file and returns it as list. 
@@ -87,7 +88,6 @@ class ListFile():
         O2        2.1054 (0.0083)   85.87 (0.35)
         O3        2.1176 (0.0082)   83.95 (0.34)  85.10 (0.35)
                     Sn1 -         O1_a          O2 
-        
         '''
         listfile = []
         try:

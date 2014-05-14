@@ -28,7 +28,7 @@ def filename_wo_ending(resfilename):
         file_ext = os.path.splitext(resfilename)
         basefile = file_ext[0]
         if file_ext[1] != '.res':
-            print("Please give a res-file name as argument!")
+            print("Please give a res-file name with a file extension as an argument!")
             sys.exit(0)
     except(AttributeError): 
         basefile = ''

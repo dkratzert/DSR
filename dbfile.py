@@ -89,7 +89,9 @@ class getDB():
 
 
     def find_db_tags(self):
-        '''This method lists all fragment names in the database'''
+        '''
+        This method lists all fragment names in the database
+        '''
         dbnames = []
         dbkeys = list(self._databases.keys()) #names of the databases
         regex = r'^<[^/].*>'
@@ -198,6 +200,7 @@ class global_DB():
     def get_fragment_atoms(self, fragment, db, line):
         '''
         returns the atoms of a fragment as list
+        [['C1', '1', '7.600', '-1.044', '4.188'], [...]]
         '''
         atoms = []
         end = False
@@ -628,27 +631,27 @@ class ImportGRADE():
         print('User database successfully updated.')
                     
 
-    def read_mol2_file(self, filename):
-        '''
-        This methos is deprecated, because we now collect the atoms from
-        the pdb file!
-        
-        reads the atom coordiantes from a mol2-file
-        '''
-        inputfile = []
-        print(filename)
-        try:
-            gfile = tarfile.open(self._gradefile)
-            gfile = self._gradefile.extractfile(filename)
-            inputfile = gfile.readlines()
-            
-            #with open(filename, 'r') as f:
-            #    for line in f:
-            #        inputfile.append(line)
-        except(IOError) as e:
-            print(e)
-            sys.exit(-1)
-        return inputfile
+    #def read_mol2_file(self, filename):
+    #    '''
+    #    This methos is deprecated, because we now collect the atoms from
+    #    the pdb file!
+    #    
+    #    reads the atom coordiantes from a mol2-file
+    #    '''
+    #    inputfile = []
+    #    print(filename)
+    #    try:
+    #        gfile = tarfile.open(self._gradefile)
+    #        gfile = self._gradefile.extractfile(filename)
+    #        inputfile = gfile.readlines()
+    #        
+    #        #with open(filename, 'r') as f:
+    #        #    for line in f:
+    #        #        inputfile.append(line)
+    #    except(IOError) as e:
+    #        print(e)
+    #        sys.exit(-1)
+    #    return inputfile
 
 
     def get_name_from_mol2(self):

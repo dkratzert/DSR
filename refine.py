@@ -156,7 +156,8 @@ class ShelxlRefine():
     
 
     def checkFileExist(self, filename):
-        '''check if shelxl as written a res file successfully
+        '''
+        check if shelxl as written a res file successfully
         '''
         status = False
         res_filesize = 0
@@ -234,7 +235,9 @@ class ShelxlRefine():
     
 
     def run_shelxl(self):
-        '''This method runs shelxl 2013 on the res file self.resfile_name'''
+        '''
+        This method runs shelxl 2013 on the res file self.resfile_name
+        '''
         
         resfile = self.resfile_name+'.res'
         hklfile = self.resfile_name+'.hkl'
