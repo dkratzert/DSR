@@ -5,8 +5,8 @@ TMP="/tmp"
 #GIT="/cygdrive/c/Users/$USERNAME/Documents/GitHub/DSR"
 #GIT="/home/daniel/GitHub/DSR"
 GIT="/home/daniel/Downloads/DSR"
-BUILDDIR="/usr/src/packages/build"
 VERSION=$(cat $GIT/dsr.py|grep -e "VERSION ="|cut -d ' ' -f3|tr -d "\'")
+BUILDDIR="/usr/src/packages/BUILD/DSR-$VERSION"
 echo $VERSION
 OUTFILE=DSR-$VERSION.tar
 
