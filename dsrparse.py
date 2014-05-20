@@ -45,15 +45,16 @@ class DSR_Parser():
         default or the text string when line is set to True'''
         dsr_str = ''
         indexnum = [i for i, l in enumerate(self.__reslist) for m in [re.search(self.__regex, l.lower())] if m]
-        if int(indexnum[0]) > int(self.__endline):
-            print('A DSR command after HKLF is not allowed! Check line {}'.format(indexnum[0]))
-            sys.exit()
         try:
             indexnum[0]
         except(IndexError):
             print(' no proper DSR command found! \n\n '\
                     'Have you really saved your .res file?\n')
             sys.exit()
+        if int(indexnum[0]) > int(self.__endline):
+            print('A DSR command after HKLF is not allowed! Check line {}'.format(indexnum[0]))
+            sys.exit()
+
 
         if len(indexnum) > 1:
             print('only one dsr command at once is allowed! Exiting...')
