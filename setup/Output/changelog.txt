@@ -1,4 +1,5 @@
 Recent changes
+-1.5.1  Fixed handling of atom names like C0W0. Exception handling for missing dsr command fixed.
 -1.5.0  New option "-s" to search for fragments in the database. Improved file formating.
 -1.4.6  Fixed negative part numbers.
 -1.4.5  Introduced the ability to invert the fragment (-t option). Simplified startup script for windows.

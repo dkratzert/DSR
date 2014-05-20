@@ -128,13 +128,14 @@ class FindAtoms():
         resiclass = None
         residues = {'0': []}
         for num, i in enumerate(self._reslist):
-            if re.match(r'^RESI\s+0', i.upper()) and resi:
+            i = i.upper()
+            if re.match(r'^RESI\s+0', i) and resi:
                 resi = False
                 continue
-            if i.upper().startswith(('END', 'HKLF')) and resi:
+            if i.startswith(('END', 'HKLF')) and resi:
                 resi = False
                 continue
-            if i.upper().startswith('RESI') and not re.match(r'^RESI\s+0', i.upper()):
+            if i.startswith('RESI') and not re.match(r'^RESI\s+0', i):
                 resi = True
                 resinum = self.get_resinum(i.split())['number']
                 resiclass = self.get_resinum(i.split())['class']
