@@ -34,6 +34,6 @@ DIST_RESTRAINT_CARDS = ('SAME', 'SADI', 'FREE', 'DFIX', 'BUMP', 'CHIV', 'FLAT', 
     # one or more whitespaces, one digit, one or more whitespaces, one or more digits,
     # a dot, one or more digits, ... 
 
-atomregex = r'^(([A-Za-z]{1,4})[0-9]{0,3}[A-Za-z\'\"]{0,2})\s+[0-9]{1,2}\s+[-+]?[0-9]*\.?[0-9]+\s+[-+]?[0-9]*\.?[0-9]+\s+[-+]?[0-9]*\.?[0-9]+'
+atomregex = r'^(([A-Za-z]{1,4})[0-9]{0,3}[A-Za-z\'\"]{0,2}[0-9]{0,1})\s+[0-9]{1,2}\s+[-+]?[0-9]*\.?[0-9]+\s+[-+]?[0-9]*\.?[0-9]+\s+[-+]?[0-9]*\.?[0-9]+'
 
   
