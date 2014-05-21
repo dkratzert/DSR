@@ -27,7 +27,8 @@ def write_dbhead_to_file(filename, dbhead, resi, resinumber):
     else:
         filename = resi+'_'+filename
     if os.path.isfile(filename):
-        print('Previous restraint file found. Using restraints from "{}"'.format(filename))
+        print('Previous restraint file found.'\
+            ' Using restraints from "{}"'.format(filename))
         return filename
     else:
         print('Restraints were written to "{}"'.format(filename))
@@ -45,7 +46,8 @@ def write_dbhead_to_file(filename, dbhead, resi, resinumber):
 class InsertAfix(object):
     '''
     methods for the AFIX entry
-    - dbhead is modified by Resi() if residues are used! RESI num class ist inserted there
+    - dbhead is modified by Resi() if residues are used! 
+      RESI num class ist inserted there
     '''
     
     def __init__(self, reslist, dbatoms, dbtypes, dbhead, dsr_line, sfac_table, 
@@ -69,7 +71,7 @@ class InsertAfix(object):
         return warn
     
 
-    def remove_duplicate_restraints(self, dbhead):
+    def remove_duplicate_restraints(self, dbhead, resiclass):
         '''
         removes restraints from the header which are already 
         in the res-file
@@ -86,7 +88,8 @@ class InsertAfix(object):
                     modified = True
                     break
         if modified:
-            print('\nAlready existing residue restraints were not inserted.')
+            print('\nAlready existing restraints for residue "{}" were not ' 
+                    'applied again.'.format(resiclass))
         return newhead
 
     
@@ -115,6 +118,7 @@ class InsertAfix(object):
     def build_afix_entry(self, external_restraints, filename, residue): 
         '''
         build an afix entry with coordinates from the targetatoms
+        residue = residue class
         '''
         atype = []       # list of atomtypes in reverse order
         afix_list = []   # the final list with atoms, sfac and coordinates
@@ -123,7 +127,7 @@ class InsertAfix(object):
         # all non-atoms between start tag and FRAG card with new names:
         dbhead = self.__dbhead
         if residue:
-            dbhead = self.remove_duplicate_restraints(dbhead)
+            dbhead = self.remove_duplicate_restraints(dbhead, residue)
         else:
             # applies new naming scheme
             old_atoms = [ i[0] for i in self.__dbatoms]
