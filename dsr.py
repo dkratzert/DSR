@@ -39,7 +39,7 @@ from restraints import Restraints, Adjacency_Matrix
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 
 
-VERSION = '1.5.1'
+VERSION = '1.5.2'
 progname = '\n-----------------------------'\
            ' D S R - v{}' \
            ' ----------------------------------'.format(VERSION)
