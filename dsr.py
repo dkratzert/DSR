@@ -280,7 +280,7 @@ class DSR():
             line[1] = e2s.elem_2_sfac(atype.pop())       # replace scattering factor (line[1]) with true one
     
     
-    def replacemode(self, res_target_atoms, rle, reslist):
+    def replacemode(self, res_target_atoms, rle, reslist, sfac_table):
         '''
         Target atoms are being replaced if this is executed
         '''
@@ -295,7 +295,7 @@ class DSR():
             #    rp = True
             #if reslist[i+1][:4] in ['RESI', 'PART'] and rp:
             #    print('empty resi/part?')
-        fa.remove_adjacent_hydrogens(res_target_atoms)    
+        fa.remove_adjacent_hydrogens(res_target_atoms, sfac_table)    
     
     
     def go_refine(self, shx):
@@ -391,7 +391,7 @@ class DSR():
     
         ##### comment out all target atom lines in replace mode:  
         if dsrp.command == 'REPLACE':
-            self.replacemode(dsrp.target, rle, reslist)
+            self.replacemode(dsrp.target, rle, reslist, sfac_table)
 
         # write to file:
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
@@ -451,7 +451,8 @@ class DSR():
 if __name__ == '__main__':
     '''main function'''
     #dsr = DSR(list_db=True)
-    dsr = DSR()
+    dsr = DSR(res_file='p21c.res')
+    #dsr = DSR()
 
     
 

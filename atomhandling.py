@@ -238,7 +238,7 @@ class FindAtoms():
         return lines
     
 
-    def remove_adjacent_hydrogens(self, atoms):
+    def remove_adjacent_hydrogens(self, atoms, sfac_table):
         #print(atoms)
         '''
         if an atom is replaced, its hydrogen atoms are deleted
@@ -246,6 +246,12 @@ class FindAtoms():
         deletes all lines until AFIX 0, HKLF or the 10th line appears.
         '''
         lines = self.get_atom_line_numbers(atoms)
+        try:
+            hydrogen_sfac = sfac_table.index('H')+1
+        except(ValueError):
+            hydrogen_sfac = False
+            return
+        
         for i in lines:
             afix = False
             if i == '':
@@ -255,6 +261,7 @@ class FindAtoms():
             for n in range(0, 10):
                 try:
                     line = self._reslist[i+n].upper()
+                    atom = line.split()[0].upper()
                     #print('Zeile:', i, 'range:', n, 'line:', line)
                 except(IndexError):
                     continue
@@ -262,7 +269,12 @@ class FindAtoms():
                     break # stop in this case because the file has ended anyway
                 if re.match(atomregex, line) and not afix:
                     # stop if next line is an atom and we are not inside an "AFIX MN"
-                    break
+                    if str(line.split()[1]) == str(hydrogen_sfac):
+                        print('Deleted hydrogen atom {}'.format(atom))
+                        self._reslist[i+n] = ''
+                        continue
+                    else:
+                        break
                 if line.startswith('AFIX') and afix and line.split()[1] != '0':
                     #print('next afix begins', i)
                     afix = False
@@ -270,7 +282,7 @@ class FindAtoms():
                     break
                 if line.startswith('AFIX') and line.split()[1] != '0':
                     #print('AFIX MN starts:', line)
-                    self._reslist[i+n] = '' 
+                    self._reslist[i+n] = ''
                     afix = True # turn on afix flag if first "AFIX mn" is found
                     continue
                 if line.startswith('AFIX') and line.split()[1] == '0':
@@ -280,13 +292,12 @@ class FindAtoms():
                     break
                 if afix:
                     try: 
-                        atom = line.split()[0].upper()
                         #print('Atom:', atom)
                         if atom in SHX_CARDS:
                             continue
                         # delete the hydrogen atom
                         self._reslist[i+n] = ''
-                        print('Deleted atom {}'.format(line.split()[0]))
+                        print('Deleted Hydrogen atom {}'.format(atom))
                     except(IndexError):
                         continue
                 
