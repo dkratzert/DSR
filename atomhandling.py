@@ -289,7 +289,7 @@ class FindAtoms():
                     #print('AFIX 0:', line)
                     afix = False # turn of afix flag if afix is closed with "AFIX 0" 
                     self._reslist[i+n] = ''
-                    break
+                    continue
                 if afix:
                     try: 
                         #print('Atom:', atom)
