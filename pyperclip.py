@@ -156,7 +156,7 @@ elif os.name == 'posix' or platform.system() == 'Linux':
                 print('Pyperclip requires the xclip command or the gtk or PyQt4 module installed.\n')
 #               sys.exit()
 try:
-  copy = setcb
-  paste = getcb
+    copy = setcb
+    paste = getcb
 except(NameError):
-  pass
+    pass

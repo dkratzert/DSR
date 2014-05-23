@@ -210,7 +210,7 @@ class ShelxlRefine():
             if i.startswith(' +  Copyright(C)'):
                 print(' SHELXL '+' '.join(i.split()[6:8]))
             # wR2
-           # These values are always bad after a simple LS fit without any atom movement:
+            # These values are always bad after a simple LS fit without any atom movement:
             if i.startswith(' wR2') and not wr2:
                 wr2 = True
                 line = i[:].split()
