@@ -16,16 +16,16 @@ import misc
 import textwrap
 
 
-__metaclass__ = type  # use new-style classes 
+__metaclass__ = type  # use new-style classes
 
 class DSR_Parser():
     '''
     handles the parsing of the DSR command
-    
-    This Class should have the reslist object as input and 
+
+    This Class should have the reslist object as input and
     should output the dictionary of the parsed dsr command.
-    
-    Additionally the FVAR line in the reslist gets corrected by set_fvar() at 
+
+    Additionally the FVAR line in the reslist gets corrected by set_fvar() at
     the end of parse_dsr_line().
     '''
     def __init__(self, reslist, rle):
@@ -36,12 +36,12 @@ class DSR_Parser():
         self.__dsr_string = self.find_dsr_command(line=True).lower()
         self.__dsr = misc.makelist(self.__dsr_string)
 
-    
+
     def find_dsr_command(self, line=False):
         '''
         line = False  -> Line number
         line = True  -> Text string
-        find the lines with a DSR command entry and return its line number as 
+        find the lines with a DSR command entry and return its line number as
         default or the text string when line is set to True'''
         dsr_str = ''
         indexnum = [i for i, l in enumerate(self.__reslist) for m in [re.search(self.__regex, l.lower())] if m]
@@ -59,7 +59,7 @@ class DSR_Parser():
         if len(indexnum) > 1:
             print('only one dsr command at once is allowed! Exiting...')
             sys.exit(-1)
-    
+
         if line:  # returns the string
             dsr_str = str(self.__reslist[indexnum[0]])
             if misc.multiline_test(dsr_str):
@@ -84,7 +84,7 @@ class DSR_Parser():
             dsrlines = textwrap.wrap(txt, 75, initial_indent='rem ', subsequent_indent = 'rem ')
             if len(dsrlines) > 1:
                 dsrlines[0] = dsrlines[0]+' ='
-            dsrlines = '\n'.join(dsrlines) 
+            dsrlines = '\n'.join(dsrlines)
             dsrlines = dsrlines+'\n'
             self.__reslist[indexnum[0]] = '' # delete old line
             self.__reslist[indexnum[0]+1] = '' # delete old line
@@ -95,9 +95,9 @@ class DSR_Parser():
                 return indexnum[0]+1
             else:
                 return indexnum[0]                     # return the line index number
-    
-    
-    
+
+
+
     def find_commands(self, command):
         '''returns the value of the input string argument as string'''
         # hier vielleicht sogar mit match, damit OCCC nicht gültig ist
@@ -135,8 +135,8 @@ class DSR_Parser():
 
     def minimal_requirements(self):
         '''
-        Checks if minimal requirements of the dsr command are met. 
-        E.g. the WITH and ON command 
+        Checks if minimal requirements of the dsr command are met.
+        E.g. the WITH and ON command
         '''
         check = ('WITH', 'ON')
         for i in check:
@@ -182,20 +182,20 @@ class DSR_Parser():
         dsr_dict = {
             'command': str(command),
             'fragment': str(fragment),
-            'source': source, 
+            'source': source,
             'target': target,
             'part': self.find_commands('PART'),
             'dfix': dfix,
-            'occupancy': self.find_commands('OCC'), 
+            'occupancy': self.find_commands('OCC'),
             'resi': residue
             };
         return dsr_dict
-    
-    
+
+
     @property
     def fragment(self):
         return self.parse_dsr_line()['fragment']
-    
+
     @property
     def occupancy(self):
         occupancy = self.parse_dsr_line()['occupancy']
@@ -203,11 +203,11 @@ class DSR_Parser():
             print('only 99 free variables allowed in SHELXL!')
             sys.exit()
         return occupancy
-    
+
     @property
     def command(self):
         return self.parse_dsr_line()['command']
-    
+
     @property
     def part(self):
         part = self.parse_dsr_line()['part']
@@ -215,19 +215,19 @@ class DSR_Parser():
             print('only 99 parts allowed in SHELXL!')
             sys.exit()
         return part
-    
+
     @property
     def source(self):
         return self.parse_dsr_line()['source']
-    
+
     @property
     def target(self):
-        return self.parse_dsr_line()['target']    
-        
+        return self.parse_dsr_line()['target']
+
     @property
     def resi(self):
         return self.parse_dsr_line()['resi']
-    
+
     @property
     def dfix(self):
         dfix = self.parse_dsr_line()['dfix']
@@ -237,13 +237,10 @@ class DSR_Parser():
             print('               No restraints inserted!')
             sys.exit()
         return dfix
-    
-    @property
-    def source(self):
-        return self.parse_dsr_line()['source']    
-        
-    
-    
+
+
+
+
 
 
 
@@ -257,28 +254,28 @@ if __name__ == '__main__':
     reslist = rl.get_res_list()
     rle = ResListEdit(reslist, res_file)
     #dsr_line = dsrp.parse_dsr_line()
-    dsrp = DSR_Parser(reslist, rle)    
+    dsrp = DSR_Parser(reslist, rle)
     #dsr_line = dsrp.parse_dsr_line()
     #print dsr_line
  #   dsr_str = dsrp.find_dsr_command(line=False)
- 
+
  #   dsr_num = dsrp.find_dsr_command(line=False)
- #   
-  
-    
+ #
+
+
     print('\ncheck for FVAR:')
     for i in reslist:
         if i.upper().startswith('FVAR'):
             print(i)
     print()
-    
+
 #    for i in dsr_line:
 #        print i.ljust(9), '=', str(dsr_line.get(i)).ljust(11)
-#    print 
-   
+#    print
+
 
     print('String:', dsrp.find_dsr_command(line=True))
     print('Zeile mit dbentry:\n', dsrp.find_dsr_command(line=False), '\n')
-    
 
-    
+
+

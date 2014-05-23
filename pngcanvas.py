@@ -31,13 +31,13 @@ __license__ = "MIT"
 
 
 import struct
-import sys
+#import sys
 import zlib
 
 
 # Py2 - Py3 compatibility
-if sys.version < '3':
-    range = xrange  # NOQA
+#if sys.version < '3':
+    #range = xrange  # NOQA
 
 
 SIGNATURE = struct.pack(b"8B", 137, 80, 78, 71, 13, 10, 26, 10)

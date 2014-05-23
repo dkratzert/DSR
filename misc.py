@@ -1,5 +1,5 @@
 #-*- encoding: utf-8 -*-
-#möp
+#mï¿½p
 #
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
@@ -98,7 +98,7 @@ def remove_file(filename, exit_dsr=False, terminate=False):
                 pgrogname.terminate()
             if exit_dsr:
                 sys.exit(0)
-    
+
 
 def wrap_headlines(dbhead):
     import textwrap
@@ -144,10 +144,10 @@ def makelist(string):
         stringlist.append(i.upper())
     return stringlist
 
-    
+
 def which(name, flags=os.X_OK):
     '''Search PATH for executable files with the given name.
-    
+
     On newer versions of MS-Windows, the PATHEXT environment variable will be
     set to the list of file extensions for files considered executable. This
     will normally include things like ".EXE". This fuction will also find files
@@ -170,9 +170,9 @@ def which(name, flags=os.X_OK):
             pext = p + e
             if os.access(pext, flags):
                 result.append(pext)
-    return result    
-    
-    
+    return result
+
+
 def zero(m,n):
     '''
     Create zero matrix of dimension m,n
@@ -180,7 +180,7 @@ def zero(m,n):
     new_matrix = [[0 for row in range(n)] for col in range(m)]
     return new_matrix
 
- 
+
 def matrix_mult(matrix1,matrix2):
     '''
     Multiplies matrix1 with matrix2.
@@ -249,8 +249,8 @@ def atomic_distance(p1, p2, cell):
     p1 and p2 are x, y , z coordinates as list ['x', 'y', 'z']
     cell are the cell parameters as list: ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
     returns the distance between the two points.
-    ''' 
-    from math import cos, sin, sqrt, radians
+    '''
+    from math import cos, sqrt, radians
     cell = [float(y) for y in cell]
     a , b, c =  cell[:3]
     al = radians(cell[3])
@@ -314,17 +314,17 @@ def vol_tetrahedron(a, b, c, d, cell):
             |u1 u2 u3|
     v = 1/6*|v1 v2 v3|
             |w1 w2 w3|
-    
+
     AB = (1-3, 2-2, 4-1) = (-2, 0, 3)
     AC = ...
     AD = ...
-    
+
     V = 1/6[u,v,w]
-    
+
               |-2,  0, 3|
     [u,v,w] = | 1, -2, 2| = 24-3-12 = 5
               |-2, -1, 6|
-        
+
     V = 1/6*5
     '''
     a = [float(i) for i in a]
@@ -335,7 +335,7 @@ def vol_tetrahedron(a, b, c, d, cell):
     B = frac_to_cart(b, cell)
     C = frac_to_cart(c, cell)
     D = frac_to_cart(d, cell)
-    
+
     AB = subtract(A, B)
     AC = subtract(A, C)
     AD = subtract(A, D)
@@ -343,7 +343,7 @@ def vol_tetrahedron(a, b, c, d, cell):
     volume = abs((D/6))
 
     return volume
-    
+
 
 def dice_coefficient(a, b):
     '''
@@ -358,7 +358,7 @@ def dice_coefficient(a, b):
     a_bigram_list=[]
     for i in range(len(a)-1):
         a_bigram_list.append(a[i:i+2])
-    
+
     b_bigram_list=[]
     for i in range(len(b)-1):
         b_bigram_list.append(b[i:i+2])
@@ -374,9 +374,9 @@ def dice_coefficient(a, b):
 
 
 def dice_coefficient2(a,b):
-    """ 
+    """
     duplicate bigrams in a word should be counted distinctly
-    (per discussion), otherwise 'AA' and 'AAAA' would have a 
+    (per discussion), otherwise 'AA' and 'AAAA' would have a
     dice coefficient of 1...
     """
 
@@ -452,7 +452,7 @@ def levenshtein(s1, s2):
 
 #def bond_angle(dx1, dx2, cell):
 #    pass
-#    # cos(phi) = {a**2*dxr*dxs + b**2*dyr*dys + c**2 * dzr*dzs + b*c*cos(alpha)(dyr*dzs + dys*dzr) +  
+#    # cos(phi) = {a**2*dxr*dxs + b**2*dyr*dys + c**2 * dzr*dzs + b*c*cos(alpha)(dyr*dzs + dys*dzr) +
 #   #      c*a*cos(beta)(dzr*dxs + dzs*xr) + a*b*cos(gamma)*(dxr*dys + dxs*dyr) } / r s
 #    vector1 = (2,3,5)
 #    vector2 = (3,4,6)
@@ -491,7 +491,7 @@ if __name__ == '__main__':
     find_atoms = FindAtoms(reslist)
     rle = ResListEdit(reslist, find_atoms)
     dsrp = DSR_Parser(reslist, rle)
-    
+
     gdb = global_DB(self.invert)
     db = gdb.build_db_dict()
     fragment = 'PFAnion'
@@ -502,10 +502,10 @@ if __name__ == '__main__':
     uhead = unwrap_head_lines(dbhead)
     print(uhead)
     sys.exit()
-    
-    
-    
-    
+
+
+
+
     cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     # CF3:
     a = (0.281319, 0.368769, 0.575106)
@@ -521,10 +521,10 @@ if __name__ == '__main__':
     c = (0.789290,   0.456520,   0.301616)
     d = (0.674054,   0.430194,   0.280727)
     print('volume of Benzene ring atoms:')
-    print(vol_tetrahedron(a, b, c, d, cell))    
-    
+    print(vol_tetrahedron(a, b, c, d, cell))
+
     head = ['FLAT C C1 C10 C11 C12 C13 C2 C3', 'FLAT C C1 C10 C11 C12 C13 C2 C3 C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL  C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CLx']
-    
+
     whead = wrap_headlines(head)
     #print(whead)
     uhead = unwrap_head_lines(whead)
@@ -543,15 +543,15 @@ if __name__ == '__main__':
     print('multiline?', multiline_test(reslist[123]))
     print('#'+reslist[24].strip('\n')+'#')
     print('multiline?', multiline_test(reslist[24]))
-    
-    
+
+
     cell90 = (1, 1, 1, 90, 90, 90)
     cell90 = [ float(i) for i in cell90 ]
     coord1 = (-0.186843,   0.282708,   0.526803) # C5
     #                                              -2.741   5.912  10.774
     coord2 = (-0.155278,   0.264593,   0.600644) # C7
     # 1.573 A                                      -2.520   5.533  12.289
-    
+
     N1 = frac_to_cart(coord1, cell)
     N2 = frac_to_cart(coord2, cell)
     print(N1, '-2.741   5.912  10.774 must be same')
@@ -559,18 +559,18 @@ if __name__ == '__main__':
     x1 = float(N1[0])
     y1 = float(N1[1])
     z1 = float(N1[2])
-    
+
     x2 = float(N2[0])
     y2 = float(N2[1])
     z2 = float(N2[2])
-    
+
     d = m.sqrt((x1-x2)**2+(y1-y2)**2+(z1-z2)**2)
-    
+
     print('\ndist_frac_to_cart           : {:.3f}'.format(d))
     print('dist_frac_to_cart_atomicdist: {:.3f}'.format(atomic_distance(N1, N2, cell90)))
     print('atomicdist_direct:          : {:.3f}'.format(atomic_distance(coord1, coord2, cell)))
     print('korrekte dist:              : 1.573 A\n')
-    
+
     coo = frac_to_cart((0.312, 0.37, 0.754), (10.5086, 20.9035, 20.5072, 90, 94.13, 90))
     #print coo
     print('{:8.6} {:8.6} {:8.6}'.format(*coo), 'neue koordianten')

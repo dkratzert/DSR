@@ -4,8 +4,8 @@ import shlex
 import struct
 import platform
 import subprocess
- 
- 
+
+
 def get_terminal_size():
     """ getTerminalSize()
      - get width and height of console
@@ -23,11 +23,11 @@ def get_terminal_size():
     if current_os in ['Linux', 'Darwin'] or current_os.startswith('CYGWIN'):
         tuple_xy = _get_terminal_size_linux()
     if tuple_xy is None:
-        print "default"
+        #print("default")
         tuple_xy = (80, 25)      # default value
     return tuple_xy
- 
- 
+
+
 def _get_terminal_size_windows():
     try:
         from ctypes import windll, create_string_buffer
@@ -46,8 +46,8 @@ def _get_terminal_size_windows():
             return sizex, sizey
     except:
         pass
- 
- 
+
+
 def _get_terminal_size_tput():
     # get terminal width
     # src: http://stackoverflow.com/questions/263890/how-do-i-find-the-width-height-of-a-terminal-window
@@ -57,8 +57,8 @@ def _get_terminal_size_tput():
         return (cols, rows)
     except:
         pass
- 
- 
+
+
 def _get_terminal_size_linux():
     def ioctl_GWINSZ(fd):
         try:
@@ -83,7 +83,7 @@ def _get_terminal_size_linux():
         except:
             return None
     return int(cr[1]), int(cr[0])
- 
+
 if __name__ == "__main__":
     sizex, sizey = get_terminal_size()
-    print  'width =', sizex, 'height =', sizey
+    print(('width =', sizex, 'height =', sizey))

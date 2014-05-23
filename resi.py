@@ -9,12 +9,12 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
-# each residue number must always have the same class! 
+# each residue number must always have the same class!
 # e.g 1 can be only TOL, not also NET4 but Tol can be 1 or 2.
 #
 # Wenn das dict leer ist werden überhaupt keine RESI betreffenden dinge in das insfile übernommen
 
-from __future__ import print_function    
+from __future__ import print_function
 import sys
 from resfile import ResList
 from constants import RESTRAINT_CARDS
@@ -25,8 +25,8 @@ class Resi(object):
     reslist: the resfile as list
     dsr_line: the resi command from the dsr_line. e.g. RESI TOL or RESI 2 TOL
     dbhead: db header from dbfile module
-    
-    self.__com_resi_list : list of RESI commands from command line. 
+
+    self.__com_resi_list : list of RESI commands from command line.
                           self.__com_resi_list is == 'dbentry' if only RESI is given in res file.
     self.__resi_dict_com : dictionary of commands after get_resi_syntax()
                 If self.__com_resi_list is == 'dbentry' then self.__resi_dict_com == False
@@ -61,13 +61,13 @@ class Resi(object):
     @property
     def get_resinumber(self):
         return self.__combined_resi['number']
-        
+
 
     @property
     def get_resiclass(self):
         return self.__combined_resi['class']
-        
-    
+
+
     def remove_resi(self, head):
         '''removes all resi commands and classes from head'''
         rhead = [] #head without resi
@@ -81,12 +81,12 @@ class Resi(object):
                 continue
             line = ' '.join(line)
             delhead.append(line)
-        
+
         for line in delhead:
             line = line.strip(' \n\r').upper()
             if line.startswith('RESI'):
                     continue
-            rhead.append(line) 
+            rhead.append(line)
         return rhead
 
 
@@ -94,17 +94,17 @@ class Resi(object):
     def make_resihead(self):
         '''
         Finally builds up the afix header with residue informations.
-        
+
         '''
         resi_to_insert = []
         resi = False
         #we need at least a class
         if self.__dsr_dict['resi'] or self.__combined_resi['class']:
             resi = True
-        if resi: 
+        if resi:
             head = self.remove_resi(self.__dbhead)
-            residef = (['RESI', self.__combined_resi['number'], 
-                        self.__combined_resi['class'], 
+            residef = (['RESI', self.__combined_resi['number'],
+                        self.__combined_resi['class'],
                         self.__combined_resi['alias']])
             for i in residef:
                 if i:
@@ -117,9 +117,9 @@ class Resi(object):
             # residues deactivated, removing resi from head
             head = self.remove_resi(self.__dbhead)
             return head
-    
-    
-    
+
+
+
     def format_restraints(self, head):
         '''
         in case of RESI, format the restraints like "SAME_class"
@@ -136,8 +136,8 @@ class Resi(object):
             newhead.append(line)
         #print newhead
         return newhead
-    
-            
+
+
     def get_unique_resinumber(self, resinum):
         '''
         Finds a unique resi number. If the number is already unique
@@ -156,19 +156,19 @@ class Resi(object):
             print('         I am using number "{}" instead.\n'.format(new_num))
             return new_num
         else:
-            return resinum    
-    
-    
+            return resinum
+
+
     def build_up_residue(self):
         '''
-        Decides which class and resideue number should be used for the fragment. 
+        Decides which class and resideue number should be used for the fragment.
         Returns a final dict with the residue settings.
         '''
         final_residue = {'class': None, 'number': None, 'alias': None}
         resiclass = None
         resinum = None
         resialias = None
-        
+
         #### for the db entry
         if self.__resi_dict_db['alias']:
             resialias = self.__resi_dict_db['alias']
@@ -176,7 +176,7 @@ class Resi(object):
             resiclass = self.__resi_dict_db['class']
         if self.__resi_dict_db['number']:
             resinum = self.__resi_dict_db['number']
-        #### for the comlist entry    
+        #### for the comlist entry
         if not self.__resi_dict_com:
             return final_residue
         if self.__resi_dict_com != 'Empty':
@@ -190,9 +190,9 @@ class Resi(object):
         final_residue['number'] = self.get_unique_resinumber(resinum)
         if final_residue['class']:# and final_residue['number']:
             return final_residue
-    
- 
-    
+
+
+
     def get_resi_from_db(self):
         '''
         gets the RESI num class from the db
@@ -208,9 +208,9 @@ class Resi(object):
         if not resi_list:
             print('No valid RESI instruction found in the database entry.')
             sys.exit()
-        
-    
-    
+
+
+
     def _wrong_syntax(self):
         print('This is not a valid RESIDUE syntax!')
 
@@ -222,17 +222,17 @@ class Resi(object):
         start with letter-> rest letter or digit -> residue class
 
         The return value of this method is {'class', 'number', 'alias'}
-        as a dictionary. Alias is empty if not given. 
-        
+        as a dictionary. Alias is empty if not given.
+
         Is it important which one is the number and which one the alias?
-        
+
         The return value of just "RESI" in the command line is an empty dict
         '''
         resi_dict = {
-            'class' : None, 
-            'number': None, 
+            'class' : None,
+            'number': None,
             'alias' : None}
-        
+
         if resi == None:
             print('No valid RESI instruction found in the database entry!')
             sys.exit()
@@ -261,7 +261,7 @@ class Resi(object):
                     self._wrong_syntax()
                     print('Only four digits allowed in residue number!')
                     sys.exit()
-            else: 
+            else:
                 if self.__com_resi_list == 'dbentry': # in this case no residue number is given at all.
                     number = self.get_unique_resinumber(resinum=False)
                     print('No residue number was given. Using residue number {}.'.format(number))
@@ -276,13 +276,13 @@ class Resi(object):
         for num in self._atoms_in_reslist.keys():
             print(num, len(self._atoms_in_reslist[num]), self._atoms_in_reslist[num][:][0][3], \
                     [i[0] for i in self._atoms_in_reslist[num][:]])
-        
+
 
     def get_unique_residue_name(self):
         '''if not given, finds a unique RESIdue name
-        
+
         this method does not work!!
-        
+
         '''
         num = 1
         resi_name = self._resi_name[:3]+str(num)
@@ -306,7 +306,8 @@ if __name__ == '__main__':
     from dsrparse import DSR_Parser
     from dbfile import global_DB
     from atomhandling import FindAtoms
-    from resfile import ResList, ResListEdit
+    from resfile import ResListEdit
+    res_file = 'p21c.res'
     #dbhead = ['REM test\n', 'RESI 1 TOL\n', 'SADI_TOL C1 C2\n']
     rl = ResList(res_file)
     res_list = rl.get_res_list()
@@ -316,12 +317,13 @@ if __name__ == '__main__':
     dsr_dict = dsrp.parse_dsr_line()
     #fragment = dsr_dict['fragment']
     fragment = 'toluene'
-    gdb = global_DB(self.invert)
+    invert = True
+    gdb = global_DB(invert)
     db = gdb.build_db_dict()
     fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
     dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
     dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
-    
+
     for i in dbhead:
         print(i)
     residue = '5 CCF3'
@@ -333,7 +335,7 @@ if __name__ == '__main__':
     head = resi.make_resihead()
     #for i in head:
     #    print(i)
-    
+
     resiatoms = find_atoms.collect_residues()
     print(resiatoms['1'])
     #if resi:

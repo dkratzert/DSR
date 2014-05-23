@@ -11,11 +11,11 @@
 #
 from __future__ import print_function
 import misc
-import shutil
-import re
+#import shutil
+#import re
 import sys
 import os
-import constants
+#import constants
 
 
 __metaclass__ = type  # use new-style classes
@@ -30,7 +30,7 @@ def filename_wo_ending(resfilename):
         if file_ext[1] != '.res':
             print("Please give a res-file name with a file extension as an argument!")
             sys.exit(0)
-    except(AttributeError): 
+    except(AttributeError):
         basefile = ''
     return str(basefile)
 
@@ -41,7 +41,7 @@ class ResList():
         self.__resfilename = res_file
         self.__basefile = filename_wo_ending(self.__resfilename)
 
-    
+
     def get_res_list(self):
         '''read the resfile and return it as list'''
         filename = self.__basefile+'.res'
@@ -54,7 +54,7 @@ class ResList():
             print('Unable to read {} file.'.format(filename))
             sys.exit()
         return reslist
-        
+
 
     def write_resfile(self, reslist, ending):
         '''
@@ -69,7 +69,7 @@ class ResList():
         for i in reslist:            #modified reslist
             nfile.write("%s" %i)    #write the new file
         nfile.close()
-    
+
 
 
 class ResListEdit():
@@ -79,7 +79,7 @@ class ResListEdit():
         self.__reslist = reslist
         self._find_atoms = find_atoms
 
-    
+
     def add_line(self, linenum, new_line):
         '''adds a single line of string to the res file
         checks are missing which make sure the data structure of new_line is correct!
@@ -88,11 +88,11 @@ class ResListEdit():
         self.__reslist.insert(linenum, new_line+'\n')
         return self.__reslist
 
-    
+
     def remove_line(self, linenum, rem=False, remove=False, frontspace=False):
-        '''removes a single line from the res file with tree different methods. 
-           The default is a space character in front of the line (frontspace). 
-           This removes the line in the next refinement cycle. "rem" writes rem 
+        '''removes a single line from the res file with tree different methods.
+           The default is a space character in front of the line (frontspace).
+           This removes the line in the next refinement cycle. "rem" writes rem
            in front of the line and "remove" clears the line.'''
         line = self.__reslist[linenum]
         if rem:   # comment out with 'rem ' in front
@@ -108,26 +108,31 @@ class ResListEdit():
             if misc.multiline_test(line):
                 self.__reslist[linenum+1] = ' '+self.__reslist[linenum+1]
         return self.__reslist
-    
-    
+
+
     def list_lines(self, startline, endline):
-        '''returns the lines between startline and endline as list'''
+        '''
+        returns the lines between startline and endline as list
+        '''
         lines = []
-        start = int(startline)
-        end = int(endline)
+        try:
+            start = int(startline)
+            end = int(endline)
+        except(NameError, SyntaxError):
+            return False
         for line, i in enumerate(self.__reslist):
-            if line >= startline:
+            if line >= start:
                 lines.append(i)
-            if line == endline:
+            if line == end:
                 break
         return lines
-        
-    
+
+
     def getAll(self):
         '''returns the whole resfile as list'''
         return self.__reslist
 
-    
+
     def find_fvarlines(self):
         '''
         Finds the FVAR line or the first line with an atom.
@@ -142,8 +147,8 @@ class ResListEdit():
             fvarlines.append(first_atom-1)
             self.__reslist.insert(first_atom-1, ' \n')
         return fvarlines
-    
-    
+
+
     def insert_frag_fend_entry(self, atoms, fragline, fvarlines):
         '''
         Inserts the FRAG ... FEND entry in the res file.
@@ -156,7 +161,7 @@ class ResListEdit():
             i[3] = '{:>10.6f}'.format(float(i[3]))
             i[4] = '{:>10.6f}'.format(float(i[4]))
             dblines.append('    '.join(i).rstrip())
-        dblines = '\n'.join(dblines)        
+        dblines = '\n'.join(dblines)
         dblines = '  '.join(fragline)+'\n'+dblines
         dblines = '\n The following is from DSR:\n'+dblines
         dblines = dblines+'\nFEND\n\n'
@@ -167,12 +172,12 @@ class ResListEdit():
     def set_fvar(self, occupancynumber, fvarlines):
         '''
         Inserts additional free variables according to the occ parameter
-        This function starts at the end of parse_dsr_line() so we don't have 
-        to care about it anywhere else. 
+        This function starts at the end of parse_dsr_line() so we don't have
+        to care about it anywhere else.
         '''
         occupancynumber = occupancynumber.strip('-')
         fvar_list = []
-        
+
         for line in fvarlines:
             fvar = self.__reslist[line].split()
             if fvar:
@@ -191,7 +196,7 @@ class ResListEdit():
                 fvar_list.append('0.5')   # if an fvar is missing, add a new one
         line_length = 7
         lines = []
-                
+
         for i in range(0, len(fvar_list), line_length):
             l = 'FVAR  '+'  '.join( "{:<8}".format(x[:6].ljust(6, '0')) for x in fvar_list[i:i+line_length] )
             lines.append(l)
@@ -199,59 +204,61 @@ class ResListEdit():
             fvars = fvars+'\n'
         self.__reslist.insert(fvarlines[0]+1, fvars)
 
-    
-    
+
+
 # for testing
 if __name__ == '__main__':
     from dbfile import global_DB
     from atomhandling import FindAtoms
     from resfile import ResList, ResListEdit
+    invert = True
+    res_file = 'p21c.res'
     res_list = ResList(res_file)
     reslist =  res_list.get_res_list()
     find_atoms = FindAtoms(reslist)
     rle = ResListEdit(reslist, find_atoms)
     fvarlines = rle.find_fvarlines()
-    gdb = global_DB(self.invert)
+    gdb = global_DB(invert)
     db = gdb.build_db_dict()
     fragment = 'toluene'
     dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
     dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
-    
+
     fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
-    rle.insert_frag_fend_entry(dbatoms, fragline, fvarlines)    
+    rle.insert_frag_fend_entry(dbatoms, fragline, fvarlines)
     rle.set_fvar('91.1234', fvarlines)
-    
+
     for num, i in  enumerate(reslist):
         print(num+1, ''.join(i.strip('\n\r')))
         if num > 15:
             break
     print()
-    
+
     reslist = rle.add_line(3, 'Hallo Welt!!!!!!!!!!!!!')
-    
+
     print()
     for num, i in  enumerate(reslist):
         print(num+1, ''.join(i.strip('\n')))
         if num > 15:
             break
-    
+
 
     reslist = rle.add_line(2, 'xghrzdg###################fdghgfdgh')
-    
+
 
     print()
     for n, i in enumerate(reslist):
         print(n+1, ''.join(i.strip('\n')))
         if n > 5:
             break
-            
+
     res_list.write_resfile(reslist, '.tst')
-    
+
     print('\n########################################\n')
-        
+
     for i in rle.list_lines(15, 33):
         print(i.strip('\n'))
-    
+
     print(misc.ll_to_string(dbatoms))
-    
+
 

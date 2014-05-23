@@ -75,19 +75,19 @@ class ListFile():
         self._conntable_regex = r'^.*radii and connectivity'
         self._listfile_list = self.read_lst_file()
         self._single_atom = None
-        
-        
+
+
     def read_lst_file(self):
         '''
-        reads the .lst file and returns it as list. 
+        reads the .lst file and returns it as list.
         ['Sn1 -       Distance       Angles\n', 'O1_a      2.0997 (0.0088)\n''...']
-        
+
         Connectivity list:
         Sn1 -       Distance       Angles
-        O1_a      2.0997 (0.0088) 
+        O1_a      2.0997 (0.0088)
         O2        2.1054 (0.0083)   85.87 (0.35)
         O3        2.1176 (0.0082)   83.95 (0.34)  85.10 (0.35)
-                    Sn1 -         O1_a          O2 
+                    Sn1 -         O1_a          O2
         '''
         listfile = []
         try:
@@ -98,12 +98,12 @@ class ListFile():
             print('Unable to read {} file.'.format(self._listfile))
             sys.exit()
         return listfile
-    
-    
+
+
     def read_conntable(self):
         '''
         reads the connectivity table from self._listfile_list
-        returns a list of all bonded atompairs. Symmetry equivalent atoms 
+        returns a list of all bonded atompairs. Symmetry equivalent atoms
         are filtered out.
         '''
         symmeq = False
@@ -148,7 +148,6 @@ class ListFile():
         '''
         atom_coords = {}
         start_line = int(misc.find_line(self._listfile_list, self._coord_regex))+2
-        num = 0
         for line in self._listfile_list[start_line:]:
             line = line.split()
             try:
@@ -165,7 +164,7 @@ class ListFile():
             atom_coords.update(atom)
         return atom_coords
 
-    
+
     def get_cell(self):
         '''
         Returns the unit cell parameters from the list file as list:
@@ -177,7 +176,7 @@ class ListFile():
                 cell = line.split()[2:]
                 try:
                     cell = [float(i) for i in cell]
-                except(ValueError, e):
+                except(ValueError) as e:
                     print(e, '\nbad cell parameters in line {} in the list file.'.format(num+1))
                     sys.exit()
                 break
@@ -185,15 +184,15 @@ class ListFile():
             print('Unable to find unit cell parameters in th list file.')
             sys.exit()
         return cell
-    
+
     @property
     def get_cell_params(self):
         return self.get_cell()
-    
+
     @property
     def get_all_coordinates(self):
         '''
-        return all atom coordinates as property 
+        return all atom coordinates as property
         {'atom' : ['x', 'y', 'z'], 'atom2' : [...]}
         '''
         return self.coordinates()
@@ -220,17 +219,17 @@ class Adjacency_Matrix():
     '''
     returns an adjacence matrix for all atoms in the .lst file.
     edge property is the bond length
-    
+
     needs atoms with numpart
     '''
-    
+
     def __init__(self, atoms, conntable, coords, cell):
         self._atoms = atoms
         self._conntable = conntable
         self._coords = coords
         self._cell = cell
         self.adjmatrix()
-        
+
     def adjmatrix(self):
         '''
         create a distance matrix for the atom coords
@@ -245,18 +244,18 @@ class Adjacency_Matrix():
                 dist = misc.atomic_distance(coord1, coord2, self._cell)
                 G.add_edge(atom1, atom2, weight=dist)
         return G
-        
-    
+
+
     @property
     def get_adjmatrix(self):
         return self.adjmatrix()
 
-    
+
 
 class Restraints():
     '''
-    This class uses the 1,2- and 1,3-bonds from Connections and tries to generate 
-    relative distance restraints. 
+    This class uses the 1,2- and 1,3-bonds from Connections and tries to generate
+    relative distance restraints.
     Maybe also absolute distance restraints?
     '''
     def __init__(self, coords, G, atoms, cell):
@@ -280,8 +279,8 @@ class Restraints():
                 atom2 = i
                 dfix.append((atom1, atom2, dist))
         return dfix
-    
-    
+
+
     @property
     def get_formated_12_dfixes(self):
         dfix_format = []
@@ -308,7 +307,7 @@ class Restraints():
                 #sys.exit()
             neighbors.append([at, nb])
         return(neighbors)
-    
+
 
     def get_next_neighbors(self):
         '''
@@ -334,8 +333,8 @@ class Restraints():
                 for at in nb: # nb -> neighbors of n
                     nn.append((atom1, at))
         return(nn)
-        
-    
+
+
     def make_13_dist(self, nn):
         '''
         return 1,3-distance as [('at1', 'at2', 'distance'), ('at1', 'at2', 'distance'), ...]
@@ -350,7 +349,7 @@ class Restraints():
             dist_13.append((atom1, atom2, misc.atomic_distance(c1, c2, self._cell)))
         return dist_13
 
-    
+
     def get_overlapped_chunks(self, ring, size):
         '''
         returns a list of chunks of size 'size' which overlap with one field.
@@ -363,8 +362,8 @@ class Restraints():
                 chunk = ring[-size:]
             chunks.append(chunk)
         return chunks
-    
-    
+
+
     def make_flat_restraints(self):
         '''
         searches for rings in the graph G, splits it in 4-member chunks and tests if
@@ -375,7 +374,7 @@ class Restraints():
         list_of_rings = nx.cycle_basis(self._G)
         #print('The list of rings:', list_of_rings)
         if not list_of_rings:
-            return False 
+            return False
         # This creates a list of attached atoms but is unused atm:
         #attached_atoms = []
         #for ring in list_of_rings:
@@ -417,19 +416,19 @@ class Restraints():
             i = [misc.remove_partsymbol(x) for x in i]
             flat_format.append('FLAT {}\n'.format(' '.join(i)))
         return flat_format
-    
-    
+
+
     @property
     def get_formated_13_dfixes(self):
         nextneighbors = remove_duplicate_bonds(self.get_next_neighbors())
         dfixes_13 = self.make_13_dist(nextneighbors)
         dfix_13_format = []
         for i in dfixes_13:
-            dfix_13_format.append('DANG {:.4f}  {:7}{:7}\n'.format(i[2], 
+            dfix_13_format.append('DANG {:.4f}  {:7}{:7}\n'.format(i[2],
                 misc.remove_partsymbol(i[0]), misc.remove_partsymbol(i[1])))
         return dfix_13_format
-        
-        
+
+
 
 
 
@@ -455,7 +454,7 @@ class Lst_Deviations():
                 deviations[line[2]] = line[5]
         return deviations
 
-    
+
     def print_deviations(self):
         '''
         pretty output of the deviations
@@ -470,11 +469,11 @@ class Lst_Deviations():
 
 if __name__ == '__main__':
 
-    
+
     from dbfile import global_DB
-    from atomhandling import FindAtoms
+    #from atomhandling import FindAtoms
     from resfile import filename_wo_ending
-    import networkx as nx
+    #import networkx as nx
     from atomhandling import NumberScheme
     res_file = 'p21c.res'
     basefilename = filename_wo_ending(res_file)
@@ -483,19 +482,19 @@ if __name__ == '__main__':
     dsrp = DSR_Parser(res_list, rl)
     dsr_dict = dsrp.parse_dsr_line()
     fragment = 'benzene'#dsr_dict['fragment']
-    
-    gdb = global_DB(self.invert)
- 
+    invert = True
+    gdb = global_DB(invert)
+
     residue = '4'
     part = '2'
-    
+
     lf = ListFile(basefilename)
     cell = lf.get_cell_params
     lst_file = lf.read_lst_file()
     coords = lf.get_all_coordinates
     conntable = lf.read_conntable()
     dbatoms = gdb.get_atoms_from_fragment(fragment)
-    
+
     num = NumberScheme(res_list, dbatoms, residue)
     fragment_atoms = num.get_fragment_number_scheme()
     #print(numberscheme)
@@ -512,9 +511,9 @@ if __name__ == '__main__':
    # print('liste der cycles im Graph:')
     print(sorted(l))
     print('end\n')
-    re = Restraints(coords, am.get_adjmatrix, fragment_atoms, cell)
+    restr = Restraints(coords, am.get_adjmatrix, fragment_atoms, cell)
     #dfixes = re.get_formated_12_dfixes
     #dfixes_13 = re.get_formated_13_dfixes
-    flats = re.get_formated_flats
+    flats = restr.get_formated_flats
     print(''.join(flats), 'flats')
     #print(''.join(dfixes_13))
