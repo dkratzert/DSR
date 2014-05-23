@@ -12,7 +12,7 @@
 from __future__ import print_function
 import os, sys
 import re
-import fileinput
+#import fileinput
 from constants import *
 import misc
 import tarfile
@@ -23,7 +23,7 @@ from collections import Counter
 
 def invert_dbatoms_coordinates(atoms):
     '''
-    invert the coordinates for atoms like 
+    invert the coordinates for atoms like
     [[C1  1  0.44  0.21  -1.23 ][ ...]]
     '''
     for line in atoms:
@@ -44,10 +44,10 @@ __metaclass__ = type  # use new-style classes
 
 class getDB():
     '''
-    reads in the system and user db files (self._db_names) and makes 
+    reads in the system and user db files (self._db_names) and makes
     a dictionary of them.
     '''
-    
+
     def __init__(self):
         self._db_names = ("dsr_db.txt", "dsr_user_db.txt")
         try:
@@ -103,7 +103,7 @@ class getDB():
         nameset = []
         for i in dbnames:
             nameset.append(i[0])
-        
+
         if len(set(nameset)) != len(nameset):
             c1 = Counter(nameset)
             c2 = Counter(set(nameset))
@@ -120,12 +120,12 @@ class getDB():
         return dbnames
 
 
-        
+
 class global_DB():
     '''
     creates a final dictionary where all dbs are included:
-    
-    {'toluene': 
+
+    {'toluene':
        {'head'   : ('rem Source: Gaussian', 'SADI C1 C2 ...')
         'resi'   : 'TOL'
         'frag'   : 'FRAG 17 1 1 1 90 90 90'
@@ -143,18 +143,18 @@ class global_DB():
         'db'     : 'dsr_db' or 'dsr_user_db'
         'comment': ''
        }
-    }   
+    }
     '''
-    
+
     def __init__(self, invert=False):
         self.invert = invert
         self._getdb = getDB()
         self._dbnames = self._getdb.find_db_tags()
         self._db_plain_dict = self._getdb.getDB_files_dict()
         self._dbentry_dict = self.build_db_dict()
-    
-    
-   
+
+
+
     def build_db_dict(self):
         '''
         returns the global db dictionary
@@ -183,7 +183,7 @@ class global_DB():
                 }
         return db_dict
 
-    
+
     def get_residue_from_head(self, head):
         '''
         extracts the residue from the head
@@ -195,8 +195,8 @@ class global_DB():
                 del head[index] #remove resi from head
                 return resiline[1].upper()
         return False
-                
-    
+
+
     def get_fragment_atoms(self, fragment, db, line):
         '''
         returns the atoms of a fragment as list
@@ -268,7 +268,7 @@ class global_DB():
 
     def check_db_header_consistency(self, head, fragment):
         '''This method check the db header for consistency
-         - before frag only comments or cards. in case off error raise warning 
+         - before frag only comments or cards. in case off error raise warning
            with line number
         '''
         multiline = False  # multiline is here to be able to skip the next line after a continuation line
@@ -286,15 +286,15 @@ class global_DB():
                 sys.exit(-1)
 
 
-        
+
 
 
     def get_head_lines(self, fragment, db, line):
         '''
         return the head of the dbentry of the fragment as
         list of strings
-        ['RESI CBZ', 'SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1', 
-        'SADI Cl1 C2 Cl1 C6', 
+        ['RESI CBZ', 'SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1',
+        'SADI Cl1 C2 Cl1 C6',
         'FLAT Cl1 > C6', 'SIMU Cl1 > C6', 'RIGU Cl1 > C6']
         '''
         head = []
@@ -326,15 +326,15 @@ class global_DB():
             print('Please add these parameters!')
             sys.exit(0)
         return (nhead, fragline, comment)
-        
-        
+
+
     def get_atoms_from_fragment(self, fragment):
         '''
         returns the atoms from the dbentry
         '''
         return self._dbentry_dict[fragment.lower()]['atoms']
-        
-    
+
+
     def get_fragline_from_fragment(self, fragment):
         '''
         returns the line with FRAG 17 cell from the dbentry
@@ -345,29 +345,29 @@ class global_DB():
             print('Fragment "{}" not found in database!'.format(fragment))
             sys.exit()
         return fragline
-        
-    
+
+
     def get_line_number_from_fragment(self, fragment):
         '''
         returns the line lumber from the dbentry
         '''
         return self._dbentry_dict[fragment.lower()]['line']
-        
-    
+
+
     def get_head_from_fragment(self, fragment):
         '''
         returns the header of the dbentry of fragment
         '''
         return self._dbentry_dict[fragment.lower()]['head']
 
-    
+
     def get_resi_from_fragment(self, fragment):
         '''
         returns the residue name of the dbentry of fragment
         '''
         return self._dbentry_dict[fragment.lower()]['resi']
-    
-    
+
+
     def get_comment_from_fragment(self, fragment):
         '''
         returns the first comment line of the dbentry of fragment x
@@ -380,17 +380,17 @@ class global_DB():
                 break
         return comment
 
-    
+
     def get_db_from_fragment(self, fragment):
         '''
         returns the fragment database name of fragment x
         '''
         return self._dbentry_dict[fragment.lower()]['db']
 
-        
+
 class ImportGRADE():
     '''
-    class to import fragments from GRADE of Global Phasing Ltd. 
+    class to import fragments from GRADE of Global Phasing Ltd.
     '''
     def __init__(self, gradefile, invert=False):
         self.invert = invert
@@ -407,17 +407,17 @@ class ImportGRADE():
         self._atoms = self.get_pdbatoms(self._pdbfile)
         self._firstlast = self.get_first_last_atom()
         self._restraints = self.get_restraints()
-        self._resi_name = self.get_name_from_obprop(self._obpropfile) 
+        self._resi_name = self.get_name_from_obprop(self._obpropfile)
         self._comments = self.get_comments()
 
-        
+
 
 
     def get_name_from_obprop(self, obprop):
         '''
         get the fragment name from the obprop.txt file
         '''
-        regex = re.compile(r'sequence') 
+        regex = re.compile(r'sequence')
         for line in obprop:
             line = line.decode('ascii')
             if regex.match(line):
@@ -431,7 +431,7 @@ class ImportGRADE():
     def get_comments(self):
         '''
         returns a detailed comment where the fragment was imported from
-        
+
         #   REM Produced by Grade Web Server http://grade.globalphasing.org
         #   REM GEN: Generated by GRADE 1.2.5 (December 20 2013)
         #   REM GEN: from SMILES C1=CC=C2C(=C1)C=C(C3=CC=CC=C23)Br
@@ -449,7 +449,7 @@ class ImportGRADE():
         comments.append(name.split())
         return comments
 
-    
+
     def get_first_last_atom(self):
         '''
         returns the first and the last atom from the imported atom list
@@ -458,7 +458,7 @@ class ImportGRADE():
         last = self._atoms[-1][0]
         return (first, last)
 
-    
+
     def get_restraints(self):
         '''
         reads the restraints from a dfx-file
@@ -476,13 +476,13 @@ class ImportGRADE():
             restraints.append(['SIMU '+atoms])
             restraints.append(['RIGU '+atoms])
         return restraints
-        
+
 
     def get_pdbatoms(self, pdb):
         '''
         returns the atoms from a pdb file
         '''
-        atomlines = []            
+        atomlines = []
         for line in pdb:
             line = line.decode('ascii')
             line = line.split()
@@ -502,7 +502,7 @@ class ImportGRADE():
 
     def bild_grade_db_entry(self):
         '''
-        builds a dbentry from the information supplied by GRADEs 
+        builds a dbentry from the information supplied by GRADEs
         .mol2 and .dfx file
         '''
         db_import_dict = {}
@@ -513,7 +513,7 @@ class ImportGRADE():
                 num = num + 1
                 resi_name = resi_name[:3]+str(num)
         #print 'using {} as resiname'.format(resi_name)
-        fragline = 'FRAG 17 1  1  1  90  90  90' 
+        fragline = 'FRAG 17 1  1  1  90  90  90'
         db_import_dict[resi_name] = {
                 'head'    : self._restraints,
                 'resi'    : resi_name,
@@ -537,9 +537,9 @@ class ImportGRADE():
         else:
             print('File {} is not a valid file to import from!'.format(grade_base_filename[1]))
             sys.exit(0)
-        names = []
+        #names = []
         pdbfile = False
-        dfixfile = False 
+        dfixfile = False
         propfile = False
         for i in gradefile.getnames():
             if i.endswith('.pdb'):
@@ -564,8 +564,8 @@ class ImportGRADE():
         output.append(dfixfile.readlines())
         output.append(propfile.readlines())
         return output
-    
-    
+
+
     def import_error(self, filename):
         '''
         warns for import errors
@@ -573,11 +573,11 @@ class ImportGRADE():
         print('Unable to import GRADE file {}'.format(filename))
         print('GRADE import relies on GRADE v1.100 and up.')
         sys.exit()
-        
-    
+
+
     def write_user_database(self):
         '''
-        writes content of existing dsr_user_db.txt and the imported GRADE entry to 
+        writes content of existing dsr_user_db.txt and the imported GRADE entry to
         the dsr_user_db.txt
         '''
         filename = os.path.join(self._db_dir, 'dsr_user_db.txt')
@@ -629,13 +629,13 @@ class ImportGRADE():
             print(e)
             sys.exit(-1)
         print('User database successfully updated.')
-                    
+
 
     #def read_mol2_file(self, filename):
     #    '''
     #    This methos is deprecated, because we now collect the atoms from
     #    the pdb file!
-    #    
+    #
     #    reads the atom coordiantes from a mol2-file
     #    '''
     #    inputfile = []
@@ -644,7 +644,7 @@ class ImportGRADE():
     #        gfile = tarfile.open(self._gradefile)
     #        gfile = self._gradefile.extractfile(filename)
     #        inputfile = gfile.readlines()
-    #        
+    #
     #        #with open(filename, 'r') as f:
     #        #    for line in f:
     #        #        inputfile.append(line)
@@ -658,7 +658,7 @@ class ImportGRADE():
         '''
         This method is deprecated, because we now collect the name from
         the obprop file!
-        
+
         get the residue name
         '''
         mol_list = self.read_file(self._molfile)
@@ -676,11 +676,11 @@ class ImportGRADE():
         return raw_name
 
 
-        
+
 
 
 if __name__ == '__main__':
-    
+
     gdb = getDB()
     dbnames = gdb.find_db_tags()
     #print 'dbcontent:'
@@ -690,20 +690,20 @@ if __name__ == '__main__':
     gl = global_DB(self.invert)
     db = gl.build_db_dict()
     #print db.values()[3]
-    
+
     #fragment = 'pfanion'
     fragment = 'toluene'
    # fragline = gl.get_fragline_from_fragment(fragment)  # full string of FRAG line
    # dbatoms = gl.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
     dbhead = gl.get_head_from_fragment(fragment)        # this is only executed once
     dbhead = misc.unwrap_head_lines(dbhead)
-    
+
     #print dbatoms
    # print('residue:', db['toluene']['resi'])
    # print('line of db:', db['toluene']['line'])
    # print('database:', db['toluene']['db'])
     #print(fragline)
-    
+
     #for i in dbatoms:
     #    print i
     #head = db['toluene']['head']
@@ -718,9 +718,9 @@ if __name__ == '__main__':
     sys.exit()
     #mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz')
     #mog = ImportGRADE('./test-data/LIG.gradeserver_all.tgz')
-    
+
     #import tempfile
-    import tarfile
+    #import tarfile
     gf = './test-data/LIG.gradeserver_all.tgz'
     gradefile = tarfile.open(gf)
     #create a temporary file and download platon to it.
@@ -728,7 +728,7 @@ if __name__ == '__main__':
 #    print
     #list content of tgz file
     #print gradefile.getmembers()
-    
+
     for i in gradefile.getnames():
         if i.endswith(('.pdb', '.dfx', '.mol2')):
             if re.match('.*obabel.*', i):
@@ -741,7 +741,7 @@ if __name__ == '__main__':
             #print i
 
 
-    
+
     #print localFile.readlines()
     print()
     #print misc.ll_to_string(mog.get_molatoms())
@@ -753,7 +753,7 @@ if __name__ == '__main__':
 
    # for i in mog.get_restraints('./test-data/TOL.dfx'):
     #    print i
-    
+
     #mog.bild_grade_db_entry()
     #print mog.bild_grade_db_entry('{}.mol2', '{}.dfx').format(dsr_dict[import_grade], dsr_dict[import_grade])
     mog.write_user_database()

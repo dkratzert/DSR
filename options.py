@@ -32,40 +32,40 @@ class OptionsParser():
         self.progname = progname
         self._options = self.parse_commandline()
         return
-    
+
     def error(self):
         print("\nPlease give one of the options as argument!\n")
         self.parser.print_help()
         sys.exit()
-    
+
     @property
     def res_file(self):
         return self._options.res_file
-    
+
     @property
     def external_restr(self):
         return self._options.external_restr
-    
+
     @property
     def no_refine(self):
         return self._options.no_refine
-    
+
     @property
     def export_fragment(self):
         return self._options.export_fragment
-    
+
     @property
     def export_clip(self):
         return self._options.export_clip
-    
+
     @property
     def export_all(self):
         return self._options.export_all
-    
+
     @property
     def list_db(self):
         return self._options.list_db
-    
+
     @property
     def import_grade(self):
         return self._options.import_grade
@@ -73,11 +73,11 @@ class OptionsParser():
     @property
     def invert(self):
         return self._options.invert
-        
+
     @property
     def search_string(self):
         if not self._options.search_string:
-            return None 
+            return None
         # search characters allowed: a-z A-Z 0-9 _ - , () {} [] ' " + * | = .
         alpha = re.match('^[\w\-,\(\)\[\]\{\}\'\"\+\*\|\=\.]+$', self._options.search_string)
         if not alpha:
@@ -85,20 +85,20 @@ class OptionsParser():
             sys.exit()
         else:
             return self._options.search_string
-    
+
     @property
     def all_options(self):
         return self._options
-    
 
-    
+
+
     def parse_commandline(self):
-        '''parses the command line options and returns 
+        '''parses the command line options and returns
            the command line options as dict'''
         # Options parser for the command line:
         sep_line = '\n------------------------------------------------'\
                     '--------------------------------\n'
-        self.parser = ArgumentParser(prog='dsr', formatter_class=RawTextHelpFormatter, 
+        self.parser = ArgumentParser(prog='dsr', formatter_class=RawTextHelpFormatter,
         description='Disordered solvent refinement (DSR)\n'
         +'\n'+self.progname
         +'\nExample DSR res-file command line:\n'
@@ -130,7 +130,7 @@ class OptionsParser():
         self.parser.add_argument("-n", dest="no_refine", action="store_true", \
                                 help="do not refine after fragment transfer", default=False)
         return self.parser.parse_args()
-        
+
 
 
 
@@ -142,4 +142,4 @@ if __name__ == '__main__':
     print(optparse.parse_commandline())
     optparse.parser.print_help()
 
-    
+

@@ -40,7 +40,7 @@ class ShelxlRefine():
             print('\nSHELXL executable not found! No fragment fitting possible.\n')
             print('You can download SHELXL at http://shelx.uni-ac.gwdg.de/SHELX/index.php\n')
             sys.exit()
-    
+
 
     def get_xl_version_string(self, exe):
         with open(exe, 'rb') as f:
@@ -78,8 +78,8 @@ class ShelxlRefine():
                 sys.exit()
             else:
                 return exe
-                
-    
+
+
     def approx_natoms(self):
         '''
         approximates the number of atoms to set the B array accordingly
@@ -87,11 +87,11 @@ class ShelxlRefine():
         '''
         barray = self.number_of_atoms * 9
         return barray
-        
-    
+
+
     def set_refinement_cycles(self, cycles='8'):
         '''
-        Modifies the number of refinement cycles in the reslist. 
+        Modifies the number of refinement cycles in the reslist.
         '''
         status=self.checkFileExist(self.resfile_name+'.res')
         if not status:
@@ -104,7 +104,7 @@ class ShelxlRefine():
         self.__reslist[ls_line] = '  '.join(ls_list)
 
 
-        
+
     def remove_acta(self):
         '''
         removes the ACTA card, bacause we refine with L.S. 0, wich is incompatible!
@@ -114,12 +114,12 @@ class ShelxlRefine():
         if acta_line:
             for i in acta_line:
                 self.__reslist[i] = 'rem ACTA\n'
-        
-    
+
+
     def afix_is_closed(self, line):
         '''
         check if last afix was closed with afix 0
-        
+
         - returns False if last AFIX was not closed
         - returns True if last AFIX was closed
         - returns True if no AFIX found at all
@@ -139,7 +139,7 @@ class ShelxlRefine():
             return True
 
 
-    
+
     def remove_afix(self):
         '''
         removes the AFIX 17X after refinement.
@@ -152,8 +152,8 @@ class ShelxlRefine():
                 del self.__reslist[afix_line]
         else:
             self.__reslist[afix_line] = 'AFIX 0\n'
-        
-    
+
+
 
     def checkFileExist(self, filename):
         '''
@@ -170,7 +170,7 @@ class ShelxlRefine():
             status = True
         return status
 
-        
+
     def backup_shx_file(self):
         '''
         makes a copy of the res file
@@ -232,22 +232,22 @@ class ShelxlRefine():
             if re.match(r'.*\*\*.*', i):
                 print(' SHELXL says:')
                 print(' {}'.format(i.strip('\n\r')))
-    
+
 
     def run_shelxl(self):
         '''
         This method runs shelxl 2013 on the res file self.resfile_name
         '''
-        
+
         resfile = self.resfile_name+'.res'
         hklfile = self.resfile_name+'.hkl'
-        
+
         if not self.checkFileExist(hklfile):
             print('You need a proper hkl file to use DSR.')
             sys.exit()
-        
+
         command_line='{} -b{} {}'.format(self.__shelx_command, self.b_array, self.resfile_name).split()
-        
+
         self.backup_shx_file()
         print('-----------------------------------------------------------------')
         print(' refining with "{}" and "L.S. 0"'.format(' '.join(command_line)))
@@ -255,14 +255,14 @@ class ShelxlRefine():
                             stdout = subprocess.PIPE, stderr=subprocess.STDOUT)
         (child_stdin, child_stdout_and_stderr) = (p.stdin, p.stdout)
         child_stdin.close()
-        
+
         # Watch the output for successful termination
         out = child_stdout_and_stderr.readline().decode('ascii')
         output = []
         while out:
             output.append(out)
             out = child_stdout_and_stderr.readline().decode('ascii')
-        
+
         child_stdout_and_stderr.close()
         # output only the most importand things from shelxl:
         self.pretty_shx_output(output)
@@ -281,14 +281,15 @@ class ShelxlRefine():
                 misc.remove_file(self.bakfile)
             except(IOError):
                 print('Unable to delete backup file {}.'.format(self.bakfile))
-            
-        
-        
-        
+
+
+
+
 if __name__ == '__main__':
+    res_file = 'p21c.res'
     rl = ResList(res_file)
     res_list = rl.get_res_list()
-    
+
     shx = ShelxlRefine(res_list, 'testfile')
     print(shx.afix_is_closed(110))
     print(shx.remove_afix())

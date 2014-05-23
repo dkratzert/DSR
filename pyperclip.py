@@ -146,16 +146,15 @@ elif os.name == 'posix' or platform.system() == 'Linux':
             try:
                 import PyQt4.QtCore
                 import PyQt4.QtGui
-                app = QApplication([])
+                #app = QApplication([])
                 cb = PyQt4.QtGui.QApplication.clipboard()
                 getcb = qtGetClipboard
                 setcb = qtSetClipboard
             except:
-                import sys
+#                import sys
                 print('\nDSR requires Pyperclip to export fragments to the clipboard.')
                 print('Pyperclip requires the xclip command or the gtk or PyQt4 module installed.\n')
-                
-#                sys.exit()
+#               sys.exit()
 try:
   copy = setcb
   paste = getcb

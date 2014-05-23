@@ -46,11 +46,11 @@ def write_dbhead_to_file(filename, dbhead, resi, resinumber):
 class InsertAfix(object):
     '''
     methods for the AFIX entry
-    - dbhead is modified by Resi() if residues are used! 
+    - dbhead is modified by Resi() if residues are used!
       RESI num class ist inserted there
     '''
-    
-    def __init__(self, reslist, dbatoms, dbtypes, dbhead, dsr_line, sfac_table, 
+
+    def __init__(self, reslist, dbatoms, dbtypes, dbhead, dsr_line, sfac_table,
                 find_atoms, numberscheme):
         self.__reslist = reslist
         self._find_atoms = find_atoms
@@ -64,16 +64,16 @@ class InsertAfix(object):
         self.source_atoms = dsr_line['source']
         self.target_atoms = dsr_line['target']
         self._dfix = dsr_line['dfix']
-    
+
 
     def insert_dsr_warning(self):
         warn = 'rem the following was inserted by DSR:\n'
         return warn
-    
+
 
     def remove_duplicate_restraints(self, dbhead, resiclass):
         '''
-        removes restraints from the header which are already 
+        removes restraints from the header which are already
         in the res-file
         '''
         modified = False
@@ -88,11 +88,11 @@ class InsertAfix(object):
                     modified = True
                     break
         if modified:
-            print('\nAlready existing restraints for residue "{}" were not ' 
+            print('\nAlready existing restraints for residue "{}" were not '
                     'applied again.'.format(resiclass))
         return newhead
 
-    
+
     def remove_all_restraints(self, dbhead):
         '''
         Devides header in distance restraints (distance)
@@ -105,7 +105,7 @@ class InsertAfix(object):
             headline = headline.strip().split()
             try:
                 headline[0]
-            except(IndexError):    
+            except(IndexError):
                 continue
             if headline[0][:4] in constants.DIST_RESTRAINT_CARDS:
                 distance.append(' '.join(headline)+'\n')
@@ -113,9 +113,9 @@ class InsertAfix(object):
                 others.append(' '.join(headline)+'\n')
         return [distance, others]
 
-    
-    
-    def build_afix_entry(self, external_restraints, filename, residue): 
+
+
+    def build_afix_entry(self, external_restraints, filename, residue):
         '''
         build an afix entry with coordinates from the targetatoms
         residue = residue class
@@ -148,7 +148,7 @@ class InsertAfix(object):
             dbhead = dbhead_others+dbhead_distance
         atype = list(reversed(self.__dbtypes))
         coord = self._find_atoms.get_atomcoordinates(self.target_atoms)
-        target = self.target_atoms[:]  # a copy because we edit it later
+        #target = self.target_atoms[:]  # a copy because we edit it later
         # a list of zeroed atomcoordianes (afix_list) is built:
         for i in self.__dbatoms:
             l = []
@@ -175,7 +175,7 @@ class InsertAfix(object):
             i[4] = '{:>10.6f}'.format(float(i[4]))
             newlist.append('   '.join(i).rstrip())
         atoms = '\n'.join(newlist)
-        self.afixnumber = '179'   # makes afix 179 default 
+        self.afixnumber = '179'   # makes afix 179 default
         if not self.occ:
             self.occ = ''
         if self.part:
@@ -201,7 +201,7 @@ if __name__ == '__main__':
     from dsrparse import DSR_Parser
     from atomhandling import SfacTable
     from resfile import ResList, ResListEdit
-    from resi import Resi
+   # from resi import Resi
     res_file = 'p21c.res'
     rl = ResList(res_file)
     reslist = rl.get_res_list()

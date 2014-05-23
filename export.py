@@ -11,7 +11,7 @@
 #
 
 from __future__ import print_function
-import sys, re, os
+import sys, os
 import atomhandling as at
 from misc import ll_to_string
 from dbfile import global_DB
@@ -19,18 +19,18 @@ import copy
 import pyperclip
 
 
-__metaclass__ = type  # use new-style classes   
-    
+__metaclass__ = type  # use new-style classes
+
 
 class Export():
     '''
-    This class implements the export of a database entry to a .res file. 
+    This class implements the export of a database entry to a .res file.
     Included are the minimal informations which are needed to get a valid res file.
     e.g.:
     TITL toluene
     CELL  0.71  11.430  12.082  15.500  106.613  100.313  90.68
     SFAC C
-    UNIT 1 
+    UNIT 1
     C1   1  0.268330  0.478380  0.161680  11.00   0.04
     C2   1  0.205960  0.555770  0.217990  11.00   0.04
     C3   1  0.249400  0.600760  0.310040  11.00   0.04
@@ -39,9 +39,9 @@ class Export():
     C6   1  0.376630  0.447580  0.201340  11.00   0.04
     C7   1  0.221500  0.430400  0.060360  11.00   0.04
     HKLF 4
-    END 
+    END
     '''
-    
+
     def __init__(self, fragment_name, invert=False):
         self.invert = invert
         self.__fragment = fragment_name
@@ -63,12 +63,12 @@ class Export():
         self.format_calced_coords()  # expands the cell of calculated structures
         self.__cell = ' {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f}'.format(*[float(i) for i in self.__cell])
         self._comment_regex = '^REM .*$'.upper()
-    
 
-    
+
+
     def format_calced_coords(self):
         '''
-        In calculated structure the cell is 1 1 1 90 90 90. Shelxle has problems 
+        In calculated structure the cell is 1 1 1 90 90 90. Shelxle has problems
         with that when growing. So the cell is expanded to 100 100 100
         '''
         summe = None
@@ -81,8 +81,8 @@ class Export():
             # now the new 10,10,10 cell:
             for n in range(0,3):
                 self.__cell[n] = '100'
-        
-    
+
+
     def export_resfile(self):
         '''
         exports a .res file from a database entry to be viewed in a GUI
@@ -105,10 +105,10 @@ class Export():
             for y, x in enumerate(sfac):
                 if x == i:
                     atlist.append(y+1)
-    
+
         for n, i in enumerate(atlist):
             self.__dbatoms[n][1] = i
-        
+
         # build the UNIT table:
         unit = []
         for i in sfac:
@@ -118,7 +118,7 @@ class Export():
         for i in self.__dbatoms:
             i[0] = i[0]+' ' # more space for long atom names
             i.append('11.00   0.04')  #make it a full qualified atom line with occupancy and U value
-            
+
         a = ll_to_string(self.__dbatoms)      #convert to string
         res_export.append('TITL '+self.__fragment+'\n')     #title card with fragment name
         try:
@@ -138,29 +138,29 @@ class Export():
         res_export.append('\nHKLF 4\nEND\n')         # the end
         return res_export
 
-            
+
     def copy_to_clipboard(self):
         '''
         copys the exported atoms to the clipboard including FRAG  FEND commands
         fractional coordinates are converted to cartesian
-        
+
         Export example:
-        
-        FRAG 
+
+        FRAG
         C1   1     1.2000  -0.0230   3.6150
         C2   1     1.2030  -0.0120   2.1060
         C3   1     0.0150  -0.0110   1.3900
         C4   1     0.0150  -0.0010   0.0050
         C5   1     1.2080   0.0080  -0.6880
         C6   1     2.3980   0.0060   0.0090
-        C7   1     2.3940  -0.0040   1.3940 
+        C7   1     2.3940  -0.0040   1.3940
         FEND
         '''
         from misc import frac_to_cart
         clip_text = []
         cell = self.__clipcell[:]
         cell = [float(x) for x in cell]
-        atoms = self._clipatoms        
+        atoms = self._clipatoms
         for line in atoms:
             frac_coord = [  float(i) for i in line[2:5] ]
             coord = frac_to_cart(frac_coord, cell)
@@ -175,11 +175,11 @@ class Export():
         text = ' '.join(clip_text)
         pyperclip.setcb(text)
 
-    
+
     def export_to_clip(self):
-        try: 
+        try:
             self.copy_to_clipboard()
-        except(AttributeError), e:
+        except(AttributeError) as e:
             print(e)
         print('Exported "{0}" to the clipboard.'.format(self.__fragment))
         sys.exit()
@@ -196,12 +196,12 @@ class Export():
         arg = base+ending
         try:
             print('try to open...')
-            f = open(arg, 'w')
+            open(arg, 'w')
             return True
         except IOError:
             print('can not open file')
             return False
-        
+
 
     def write_file(self):
         '''
@@ -211,7 +211,7 @@ class Export():
         resfile = str(self.__fragment)+'.res'
         try:
             f = open(resfile, 'w')
-            for line in self.export_resfile(): 
+            for line in self.export_resfile():
                 line = ''.join(line)
                 f.write(line)
             print('Database entry of "{}" successfully written to {}.'\
@@ -222,7 +222,7 @@ class Export():
         f.close()
         self.make_image()
 
-    
+
     def make_image(self, debug=False):
         import shutil
         import time
@@ -230,7 +230,7 @@ class Export():
         import subprocess
         '''
         ellipsoid plot of the molecule. This method depend on PLATON from Ton Spek.
-        The windows version of Platon needs some special care because of its nasty output 
+        The windows version of Platon needs some special care because of its nasty output
         window.
         '''
         resfile = str(self.__fragment)+'.res'
@@ -243,8 +243,8 @@ class Export():
             info.wShowWindow = 0
         except(AttributeError):
             pass
-            
-        misc.remove_file(insfile) #platon runs faster if no ins file is present! 
+
+        misc.remove_file(insfile) #platon runs faster if no ins file is present!
         misc.remove_file(self.__fragment+'.png', exit_dsr=True)
         if misc.which('platon'):
             pass
@@ -272,7 +272,7 @@ class Export():
             size1 = os.stat(psfile).st_size
             size2 = 99999999
             timeticks = 0
-            while size1 < size2: 
+            while size1 < size2:
                 timeticks = timeticks+1
                 size2 = os.stat(psfile).st_size
                 time.sleep(0.1)
@@ -286,13 +286,13 @@ class Export():
             for i in extensions:
                 misc.remove_file(self.__fragment+i)
             sys.exit()
-        
+
         misc.remove_file('platon.out', terminate=plat)
         extensions = ('.lis', '.eld', '.def', '.pjn')
         for i in extensions:
             misc.remove_file(self.__fragment+i)
         misc.remove_file(insfile)
-        
+
         # test for convert from ImageMagic
         if misc.which('montage'): # i check for montage, because windows also ha a convert.exe
             pass
@@ -302,7 +302,7 @@ class Export():
             return
         try:
             convert = 'convert'
-            options_convert = '-crop 84%x90%+40%+40% -rotate 90 -trim' 
+            options_convert = '-crop 84%x90%+40%+40% -rotate 90 -trim'
             print('converting from .ps to .png')
             files = '"{}.ps" "{}.png"'.format(self.__fragment, self.__fragment)
             image_commandline = '{} {} {}'.format(convert, options_convert, files)
@@ -318,24 +318,24 @@ class Export():
                 plat.terminate()
         except(EnvironmentError) as e:
             print('unable to convert file', e)
-        
+
         misc.remove_file(self.__fragment+'.lis')
         misc.remove_file(self.__fragment+'.eld')
         plat.terminate()
-    
-    
-    
+
+
+
 
 
 
 if __name__ == '__main__':
-    from dbfile import global_DB
+    #from dbfile import global_DB
     gdb = global_DB()
     db = gdb.build_db_dict()['toluene']
-    
+
     #export = Export('toluene')
     #export.export_to_clip()
-    
+
     from pngcanvas import PNGCanvas
 
     BUFSIZE = 8*1024  # Taken from filecmp module
@@ -375,10 +375,10 @@ if __name__ == '__main__':
 #    color1 = ColorTable.getColor(atom1.getSymbol())
 #    drawLine (color1, x1, y1, xMid, yMid)
 #    }
-    
-    
-    
-    
+
+
+
+
     #for i in export.export_resfile():
     #    print(i.strip('\n'))
     #import pyperclip
@@ -386,4 +386,4 @@ if __name__ == '__main__':
     #spam = pyperclip.getcb()
     #export.write_file()
     #export.make_image(debug=True)
-    
+
