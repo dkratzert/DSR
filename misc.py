@@ -433,7 +433,7 @@ def levenshtein(s1, s2):
     s1 = s1.lower()
     s2 = s2.lower()
     if len(s1) < len(s2):
-        return self.levenshtein(s2, s1)
+        return levenshtein(s2, s1)
     if len(s2) == 0:
         return len(s1)
     previous_row = xrange(len(s2) + 1)
@@ -491,8 +491,8 @@ if __name__ == '__main__':
     find_atoms = FindAtoms(reslist)
     rle = ResListEdit(reslist, find_atoms)
     dsrp = DSR_Parser(reslist, rle)
-
-    gdb = global_DB(self.invert)
+    invert = True
+    gdb = global_DB(invert)
     db = gdb.build_db_dict()
     fragment = 'PFAnion'
     fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line

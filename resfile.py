@@ -210,7 +210,6 @@ class ResListEdit():
 if __name__ == '__main__':
     from dbfile import global_DB
     from atomhandling import FindAtoms
-    from resfile import ResList, ResListEdit
     invert = True
     res_file = 'p21c.res'
     res_list = ResList(res_file)
