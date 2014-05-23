@@ -30,9 +30,9 @@ class DSR_Parser():
     '''
     def __init__(self, reslist, rle):
         self.__reslist = reslist
-        self.__endline = misc.find_line(self.__reslist, '^HKLF\s+[1-6]')
+        self.__HKLF_endline = misc.find_line(self.__reslist, '^HKLF\s+[1-6]')
         self.__rle = rle
-        self.__regex = '^rem\s{1,5}DSR\s{1,5}.*'.lower()
+        self.__regex = '^rem\s{1,5}DSR\s{1,5}.*'
         self.__dsr_string = self.find_dsr_command(line=True).lower()
         self.__dsr = misc.makelist(self.__dsr_string)
 
@@ -44,40 +44,43 @@ class DSR_Parser():
         find the lines with a DSR command entry and return its line number as
         default or the text string when line is set to True'''
         dsr_str = ''
-        indexnum = [i for i, l in enumerate(self.__reslist) for m in [re.search(self.__regex, l.lower())] if m]
+        multiline = False
+#        indexnum = ([i for i, l in enumerate(self.__reslist) for m in
+#                   [re.search(self.__regex, l.lower())] if m])
+        indexnum = misc.find_multi_lines(self.__reslist, self.__regex)
         try:
-            indexnum[0]
+            line_number = int(indexnum[0])
         except(IndexError):
             print(' no proper DSR command found! \n\n '\
                     'Have you really saved your .res file?\n')
             sys.exit()
-        if int(indexnum[0]) > int(self.__endline):
-            print('A DSR command after HKLF is not allowed! Check line {}'.format(indexnum[0]))
+        if int(line_number)-1 > int(self.__HKLF_endline):
+            print('A DSR command after HKLF is not allowed! Check line {}'.format(line_number))
             sys.exit()
-
-
         if len(indexnum) > 1:
             print('only one dsr command at once is allowed! Exiting...')
             sys.exit(-1)
 
         if line:  # returns the string
-            dsr_str = str(self.__reslist[indexnum[0]])
+            dsr_str = str(self.__reslist[line_number])
             if misc.multiline_test(dsr_str):
+                multiline = True
                 # in case of a multiline command, strip the '=' and the newline
                 dsr_str = dsr_str.rstrip('\n\r= ')
                 dsr_str = re.sub(' +',' ', dsr_str)
-                dsr_str = dsr_str+self.__reslist[indexnum[0]+1]
+                dsr_str = dsr_str+self.__reslist[line_number+1]
                 return dsr_str                    # return the dsr text string
             else:
                 # just return the dsr command as string in one line
                 return dsr_str
         else:  # returns the index number of the command
-            dsr_str = str(self.__reslist[indexnum[0]])
+            dsr_str = str(self.__reslist[line_number])
             dsr_str = re.sub(' +',' ', dsr_str)
             if misc.multiline_test(dsr_str):
+                multiline = True
                 # in case of a multiline command, strip the '=' and the newline
                 dsr_str = dsr_str.rstrip('\n\r= ')
-                dsr_str = dsr_str+' '+self.__reslist[indexnum[0]+1]
+                dsr_str = dsr_str+' '+self.__reslist[line_number+1]
             dsr_list = dsr_str.split()
             txt = ' '.join(dsr_list)
             # wrap the line after 75 chars:
@@ -86,15 +89,11 @@ class DSR_Parser():
                 dsrlines[0] = dsrlines[0]+' ='
             dsrlines = '\n'.join(dsrlines)
             dsrlines = dsrlines+'\n'
-            self.__reslist[indexnum[0]] = '' # delete old line
-            self.__reslist[indexnum[0]+1] = '' # delete old line
-            if misc.multiline_test(dsr_str):
-                self.__reslist[indexnum[0]+1] = '' # delete old line
-            self.__reslist.insert(indexnum[0]+1, dsrlines)
-            if misc.multiline_test(dsr_str):
-                return indexnum[0]+1
-            else:
-                return indexnum[0]                     # return the line index number
+            self.__reslist[line_number] = '' # delete old line
+            if multiline:
+                self.__reslist[line_number+1] = '' # delete old line
+            self.__reslist.insert(line_number+1, dsrlines)
+            return line_number                     # return the line index number
 
 
 

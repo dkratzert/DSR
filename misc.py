@@ -72,7 +72,7 @@ def find_multi_lines(inputlist, regex):
     '''
     returns the index number of all lines where regex is found in the inputlist
     '''
-    reg = re.compile(regex)
+    reg = re.compile(regex, re.IGNORECASE)
     foundlist = []
     for i, string in enumerate(inputlist):
         if reg.match(string):
