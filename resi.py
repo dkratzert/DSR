@@ -32,12 +32,12 @@ class Resi(object):
                 If self.__com_resi_list is == 'dbentry' then self.__resi_dict_com == False
     '''
 
-    def __init__(self, reslist, dsr_line, dbhead, residue, find_atoms):
+    def __init__(self, reslist, dsr_line_dict, dbhead, residue, find_atoms):
         self.__reslist = reslist
         self._find_atoms = find_atoms
         self._atoms_in_reslist = self._find_atoms.collect_residues()
         self._residues_in_res = sorted(self._atoms_in_reslist.keys())
-        self.__dsr_dict = dsr_line.copy()
+        self.__dsr_dict = dsr_line_dict.copy()
         self.__command = self.__dsr_dict['command']
         self.__com_resi_list = self.__dsr_dict['resi'][:] # makes a copy because we need it also later
         if self.__com_resi_list:
