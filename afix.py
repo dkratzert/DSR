@@ -1,5 +1,5 @@
 #-*- encoding: utf-8 -*-
-#möp
+#mÃ¶p
 #
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
@@ -10,22 +10,27 @@
 # ----------------------------------------------------------------------------
 #
 from __future__ import print_function
-from atomhandling import *
+from atomhandling import Elem_2_Sfac, rename_dbhead_atoms
 import misc
 import os
+import sys
 import constants
 
 __metaclass__ = type  # use new-style classes
 
 
-def write_dbhead_to_file(filename, dbhead, resi, resinumber):
+def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
     '''
     write the restraints to an external file
+    :param filename:     filename of database file
+    :param dbhead:       database header
+    :param resi_class:   SHELXL residue class
+    :param resi_number:  SHELXL residue number
     '''
-    if resinumber:
-        filename = resi+'_'+resinumber+'_'+filename
+    if resi_number:
+        filename = resi_class+'_'+resi_number+'_'+filename
     else:
-        filename = resi+'_'+filename
+        filename = resi_class+'_'+filename
     if os.path.isfile(filename):
         print('Previous restraint file found.'\
             ' Using restraints from "{}"'.format(filename))
@@ -44,6 +49,7 @@ def write_dbhead_to_file(filename, dbhead, resi, resinumber):
 
 
 class InsertAfix(object):
+
     '''
     methods for the AFIX entry
     - dbhead is modified by Resi() if residues are used!
@@ -115,19 +121,22 @@ class InsertAfix(object):
 
 
 
-    def build_afix_entry(self, external_restraints, filename, residue):
+    def build_afix_entry(self, external_restraints, filename, residue_class):
         '''
-        build an afix entry with coordinates from the targetatoms
-        residue = residue class
+        build an afix entry with atom coordinates from the target atoms
+
+        :param external_restraints:  True/False decision if restraints should be
+                                     written to external file
+        :param filename:             name of file for external restraints
+        :param residue_class:        SHELXL residue class
         '''
-        atype = []       # list of atomtypes in reverse order
         afix_list = []   # the final list with atoms, sfac and coordinates
         e2s = Elem_2_Sfac(self.__sfac)
         new_atomnames = list(reversed(self.numberscheme)) # i reverse it to pop() later
         # all non-atoms between start tag and FRAG card with new names:
         dbhead = self.__dbhead
-        if residue:
-            dbhead = self.remove_duplicate_restraints(dbhead, residue)
+        if residue_class:
+            dbhead = self.remove_duplicate_restraints(dbhead, residue_class)
         else:
             # applies new naming scheme
             old_atoms = [ i[0] for i in self.__dbatoms]
@@ -142,10 +151,11 @@ class InsertAfix(object):
             dbhead = dbhead_others
             resinumber = False
             dbhead_distance = misc.wrap_headlines(dbhead_distance)
-            filename = write_dbhead_to_file(filename, dbhead_distance, residue, resinumber)
+            write_dbhead_to_file(filename, dbhead_distance, residue_class, resinumber)
         if not external_restraints and not self._dfix:
             dbhead_distance = misc.wrap_headlines(dbhead_distance)
             dbhead = dbhead_others+dbhead_distance
+        # list of atomtypes in reverse order
         atype = list(reversed(self.__dbtypes))
         coord = self._find_atoms.get_atomcoordinates(self.target_atoms)
         #target = self.target_atoms[:]  # a copy because we edit it later
@@ -184,12 +194,12 @@ class InsertAfix(object):
         else:
             part = ''
             part2 = ''
-        if residue:
+        if residue_class:
             resi = 'RESI 0\n'
         else:
             resi = ''
         if external_restraints and not self._dfix:
-            dbhead.append('REM The restraints for residue {} are in this file:\n+{}\n'.format(residue, filename))
+            dbhead.append('REM The restraints for residue_class {} are in this file:\n+{}\n'.format(residue_class, filename))
         dbhead = ''.join(dbhead)
         warn = self.insert_dsr_warning()
         afix = warn+dbhead+str(part)+'AFIX '+str(self.afixnumber)+'\n'+atoms+'\nAFIX 0\n'+part2+resi+'rem The end of the DSR entry\n\n'
