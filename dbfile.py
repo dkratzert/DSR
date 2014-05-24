@@ -13,10 +13,11 @@ from __future__ import print_function
 import os, sys
 import re
 #import fileinput
-from constants import *
+from constants import
 import misc
 import tarfile
 from collections import Counter
+from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS
 
 
 
@@ -687,7 +688,7 @@ if __name__ == '__main__':
     #for i in dbnames:
     #    print ' {:<18}| {:<6}| {:<15}'.format(i[0], i[1], i[2])
     # no valid
-    gl = global_DB(self.invert)
+    gl = global_DB(invert)
     db = gl.build_db_dict()
     #print db.values()[3]
 
