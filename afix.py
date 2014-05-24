@@ -10,7 +10,8 @@
 # ----------------------------------------------------------------------------
 #
 from __future__ import print_function
-from atomhandling import Elem_2_Sfac, rename_dbhead_atoms
+from atomhandling import Elem_2_Sfac, rename_dbhead_atoms, FindAtoms,\
+    get_atomtypes, NumberScheme
 import misc
 import os
 import sys
@@ -49,38 +50,60 @@ def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
 
 
 class InsertAfix(object):
-
     '''
     methods for the AFIX entry
     - dbhead is modified by Resi() if residues are used!
       RESI num class ist inserted there
     '''
 
-    def __init__(self, reslist, dbatoms, dbtypes, dbhead, dsr_line, sfac_table,
+    def __init__(self, reslist, dbatoms, db_atom_types, dbhead, dsr_line_dict, sfac_table,
                 find_atoms, numberscheme):
+        '''
+        :param reslist:      list of the .res file
+        :param dbatoms:      list of the atoms in the database entry
+                             [['O1', 3, '-0.01453', '1.66590', '0.10966'], ... ]
+        :param db_atom_types:      ['N', 'C', 'C', 'C']
+        :param dbhead:       database header
+        :param dsr_line_dict: {'occupancy': 'str',
+                                    'dfix': True/False,
+                                    'part': 'str',
+                                    'fragment': 'str',
+                                    'resi': ['class'] or ['number'] or ['class', [number]],
+                                    'target': ['atom1', 'atom2', ...],
+                                    'source': ['atom1', 'atom2', ...],
+                                    'command': 'PUT/REPLACE'}
+        :param sfac_table:   SHELXL SFAC table as list like: ['C', 'H', 'O', 'F', 'Al', 'Ga']
+        :param find_atoms:   FindAtoms() object
+        :param numberscheme: atoms numbering scheme like: ['O1', 'C1', 'C2', 'F1', 'F2', 'F3', 'C3']
+        '''
         self.__reslist = reslist
         self._find_atoms = find_atoms
         self.__dbatoms = dbatoms
         self.__dbhead = dbhead
-        self.__dbtypes = dbtypes
+        self.__dbtypes = db_atom_types
         self.__sfac = sfac_table
         self.numberscheme = numberscheme
-        self.part = dsr_line['part']
-        self.occ = dsr_line['occupancy']
-        self.source_atoms = dsr_line['source']
-        self.target_atoms = dsr_line['target']
-        self._dfix = dsr_line['dfix']
+        self.part = dsr_line_dict['part']
+        self.occ = dsr_line_dict['occupancy']
+        self.source_atoms = dsr_line_dict['source']
+        self.target_atoms = dsr_line_dict['target']
+        self._dfix = dsr_line_dict['dfix']
 
 
     def insert_dsr_warning(self):
-        warn = 'rem the following was inserted by DSR:\n'
-        return warn
+        '''
+        information to insert into .res-file
+        '''
+        return 'rem the following was inserted by DSR:\n'
 
 
-    def remove_duplicate_restraints(self, dbhead, resiclass):
+    def remove_duplicate_restraints(self, dbhead, residue_class):
         '''
         removes restraints from the header which are already
         in the res-file
+
+        :param dbhead:         database header (list of strings)
+        :param residue_class:  SHELXL residue class
         '''
         modified = False
         newhead = dbhead[:]
@@ -95,7 +118,7 @@ class InsertAfix(object):
                     break
         if modified:
             print('\nAlready existing restraints for residue "{}" were not '
-                    'applied again.'.format(resiclass))
+                    'applied again.'.format(residue_class))
         return newhead
 
 
@@ -103,11 +126,13 @@ class InsertAfix(object):
         '''
         Devides header in distance restraints (distance)
         and all other lines (oldhead)
-        Restraints are instead inserted after fragment fit.
+        Restraints are instead inserted after fragment fit
+
+        :param dbhead:  database header
         '''
         distance = []
         others = []
-        for num, headline in enumerate(dbhead):
+        for num, headline in enumerate(dbhead):  # @UnusedVariable
             headline = headline.strip().split()
             try:
                 headline[0]
@@ -156,14 +181,14 @@ class InsertAfix(object):
             dbhead_distance = misc.wrap_headlines(dbhead_distance)
             dbhead = dbhead_others+dbhead_distance
         # list of atomtypes in reverse order
-        atype = list(reversed(self.__dbtypes))
-        coord = self._find_atoms.get_atomcoordinates(self.target_atoms)
+        atom_types = list(reversed(self.__dbtypes))
+        coordinates = self._find_atoms.get_atomcoordinates(self.target_atoms)
         #target = self.target_atoms[:]  # a copy because we edit it later
         # a list of zeroed atomcoordianes (afix_list) is built:
         for i in self.__dbatoms:
             l = []
             l.insert(0, str(i[0]))         # Atomname
-            l.insert(1, str(e2s.elem_2_sfac(atype.pop())))  # SFAC number
+            l.insert(1, str(e2s.elem_2_sfac(atom_types.pop())))  # SFAC number
             l.insert(2, '0       ')
             l.insert(3, '0       ')
             l.insert(4, '0       ')
@@ -176,7 +201,7 @@ class InsertAfix(object):
         for n, i in enumerate(afix_list):
             if i[0].upper() in self.source_atoms:
                 ind = self.source_atoms.index(i[0].upper())
-                afix_list[n][2:5] =  coord[self.target_atoms[ind]]
+                afix_list[n][2:5] =  coordinates[self.target_atoms[ind]]
         newlist = []
         for i in afix_list:
             i[0] = new_atomnames.pop()
@@ -211,15 +236,16 @@ if __name__ == '__main__':
     from dsrparse import DSR_Parser
     from atomhandling import SfacTable
     from resfile import ResList, ResListEdit
-   # from resi import Resi
+    # from resi import Resi
     res_file = 'p21c.res'
+    invert = True
     rl = ResList(res_file)
     reslist = rl.get_res_list()
     dsrp = DSR_Parser(reslist, rl)
     dsr_dict = dsrp.parse_dsr_line()
     find_atoms = FindAtoms(reslist)
     rle = ResListEdit(reslist, find_atoms)
-    gdb = global_DB(self.invert)
+    gdb = global_DB(invert)
     db = gdb.build_db_dict()
     fragment = 'PFAnion'
     fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line

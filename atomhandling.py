@@ -13,8 +13,8 @@ from __future__ import print_function
 import re, sys
 import string
 from atoms import Element as el
-from constants import *
 from misc import find_line, get_atoms
+from constants import atomregex, SHX_CARDS
 #import textwrap
 
 
@@ -24,6 +24,12 @@ def get_atomtypes(dbatoms):
     '''
     find all atoms in a list of shelxl format atom lines.
     returns a list like ['N', 'C', 'C', 'C'].
+
+    :param dbatoms:  atoms in a database entry
+                     [['O1', 3, '-0.01453', '1.66590', '0.10966'],
+                      ['C1', 1, '-0.00146', '0.26814', '0.06351'],
+                      [...]
+                     ]
     '''
     found = []
     # find lines with atoms and see if they are in the atom list
@@ -33,7 +39,7 @@ def get_atomtypes(dbatoms):
         atom=''
         for x in i:       # iterate over characters in i
             if re.match("^[A-Za-z]", x):
-                atom = atom.upper()+x.upper()  # add characters to atoms until numbers occure
+                atom = atom.upper()+x.upper()  # add characters to atoms until numbers occur
             else:                          # now we have atoms like C, Ca, but also Caaa
                 break
 
@@ -48,7 +54,7 @@ def get_atomtypes(dbatoms):
             print('\n {} is not a valid atom!!\n'.format(atom))
             sys.exit()
     if len(dbatoms) != len(found):    # do we really need this here??
-        print("One of the Atoms in the dbentry is not correct! Exiting...")
+        print("One of the Atoms in the database entry is not correct! Exiting...")
         sys.exit(-1)
     return found
 
@@ -71,6 +77,9 @@ class FindAtoms():
     '''
 
     def __init__(self, reslist):
+        '''
+        :param reslist: SHELXL .res file as list
+        '''
         self._reslist = reslist
         self._residues = self.collect_residues()
 
@@ -78,6 +87,8 @@ class FindAtoms():
     def get_atom(self, atomline):
         '''
         returns all atoms found in the input as list
+
+        :param atomline:  'O1    3    0.120080   0.336659   0.494426  11.00000   0.01445 ...'
         '''
         atom = ''
         if re.search(atomregex, str(atomline)):        # search atoms
@@ -93,6 +104,8 @@ class FindAtoms():
         returns the residue number and class of a string like 'RESI TOL 1'
         or 'RESI 1 TOL'
         {'class': 'TOL', 'number': '1'}
+
+        :param resi: 'RESI number class'
         '''
         resi_dict = {
             'class' : None,
@@ -157,6 +170,8 @@ class FindAtoms():
         '''
         returns the residue class of a given atom. C1 would be 'None'
         C1_1 would be 'CF3' for example
+
+        :param atom: an atom name with or without residue number like C1 or C1_1
         '''
         #all_resi_numbers = self._residues.keys()
         num = self.get_atoms_resinumber(atom)
@@ -172,6 +187,8 @@ class FindAtoms():
         '''
         returns the residue number of a given atom. C1 would be '0'
         C1_1 would be '1', ...
+
+        :param atom: an atom name with or without residue number like C1 or C1_1
         '''
         if '_' in atom:
             suffix = atom.split('_')
@@ -193,13 +210,15 @@ class FindAtoms():
         start with digit-> rest auch digit-> resinumber or alias
         start with letter-> rest letter or digit -> residue class
 
-        Negative parts habe no letter? part -1 resi 2 is C1_2
+        Negative parts have no letter? part -1 resi 2 is C1_2
 
-        Atom C1 in residue 2 would be adressable with C1_2
+        Atom C1 in residue 2 would be addressable with C1_2
         searching for PART is Afaik not neccesary, because inside a residue
         the atom names have to be unique anyway.
         e.g.
         rem DSR put toluene with C1 C2 C3 on C1_2 q2 q3
+
+        :param atoms: list of atoms like ['C1', 'Q2', 'C3_2', ...]
         '''
         atom_dict = {}
         for i in atoms:
@@ -239,11 +258,14 @@ class FindAtoms():
 
 
     def remove_adjacent_hydrogens(self, atoms, sfac_table):
-        #print(atoms)
         '''
         if an atom is replaced, its hydrogen atoms are deleted
         this method searches for the first afix behind the atom,
         deletes all lines until AFIX 0, HKLF or the 10th line appears.
+        Also Hydrogen atoms outside AFIX are deleted. They are recognized by their
+        SFAC number.
+        :param atoms:   list   list of non-Hydrogen atoms
+        :param sfac_table: list of atom types ['C', 'H', 'N', ...]
         '''
         lines = self.get_atom_line_numbers(atoms)
         try:
@@ -306,6 +328,9 @@ class FindAtoms():
 def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
     '''
     several checks if the atoms in the dsr command line are consistent
+    :param db_source_atoms:   ['C1', 'O1', 'C2', ...]
+    :param res_target_atoms:  ['C1', 'Q2', 'C3_2', ...]
+    :param dbatoms:           ['C1', 'C2', 'C3', ...]
     '''
     dbat = []
     for i in dbatoms:
@@ -335,7 +360,10 @@ def rename_dbhead_atoms(new_atoms, old_atoms, dbhead):
     '''
     returns the dbentry header with the old atom names replaced by the new
     number scheme
-    dbhead = [SAME F5A F6A F6A F4A F7A F8A F8A F9A F9A F7A\n', 'SIMU O1A > F9A\n',
+
+    :param new_atoms: ['C1A', 'O1A', 'C2A', ...]
+    :param old_atoms: ['C1', 'O1', 'C2', ...]
+    :param dbhead:    [SAME F5A F6A F6A F4A F7A F8A F8A F9A F9A F7A\n', 'SIMU O1A > F9A\n',
                 'RIGU O1A > F9A\n']
     '''
     new = list(reversed(new_atoms))
@@ -357,14 +385,22 @@ class SfacTable():
     SFAC table for the new res file.
     '''
 
-    def __init__(self, reslist, dbtypes, res_file):
+    def __init__(self, reslist, db_atom_types, res_file):
+        '''
+
+        :param reslist:  SHELXL .res file as list
+        :param db_atom_types:  list ['N', 'C', 'C', 'C']
+        :param res_file: str file name like 'p21c.res'
+        '''
         self.__reslist = reslist
-        self.__db = dbtypes
+        self.__db = db_atom_types
         self.__resfilename = res_file
 
 
     def set_sfac_table(self):
-        '''sets the new global sfac table in the res file'''
+        '''
+        sets the new global sfac table in the res file
+        '''
         sfacline = find_line(self.__reslist, 'SFAC\s+[a-zA-Z]+')  # position of the SFAC card
         unitline = find_line(self.__reslist, 'UNIT\s+[0-9]+')     # position of the UNIT card
         unit = []
@@ -397,6 +433,7 @@ class Elem_2_Sfac():
     def elem_2_sfac(self, atom):
         '''
         returns an sfac-number for the element given in "atom"
+        :param atom: string 'C1'
         '''
         for num, element in enumerate(self.__sfac):
             num = num+1
@@ -408,6 +445,7 @@ class Elem_2_Sfac():
     def sfac_2_elem(self, sfacnum):
         '''
         returns an element and needs an sfac-number
+        :param sfacnum: string like '2'
         '''
         for num, element in enumerate(self.__sfac):
             num = num+1
@@ -449,7 +487,7 @@ class NumberScheme():
 
     def get_number_of_at_in_type(self, atomtype, check):
         '''returns the number of atoms which have the same type'''
-        num = 0
+        num = 0  # @UnusedVariable
         num = atomtype.count(check)
         return num
 
@@ -517,49 +555,6 @@ class NumberScheme():
         print('Fragment atom names:', ', '.join(orglist))
         return orglist
 
-
-
-#####################################################################################
-# This function is not used atm.
-def get_next_free_name(res, atomtype):
-    '''expects a list of atoms and returns the highest index number
-    of an atomtype given as string with atomtype'''
-    atomlist = []
-    suffix = []
-    at = AtomHandling()
-    for i in at.get_atoms(res):
-        if not re.match('H[0-9]+', i[0]):
-            if not re.match('Q[0-9]+', i[0]):
-                if i[0].startswith(atomtype):
-                    atomlist.append(i)
-    # return zero for non-existing atoms. then we can start with the next higher number 1!
-    if not atomlist:
-        return [0]
-
-    types = at.get_atomtypes(atomlist)
-    atoms = list(reversed(atomlist))
-    #print types
-    #for i in atoms:
-    #    print i[0]
-
-    # for every atom, get the full name minus the atom string length:
-    for i in types:
-        if i == atomtype:
-            x = atoms.pop()
-            l = len(i)
-            suff = x[0][l:].upper()
-            suffix.append(suff)
-
-
-    # this function sorts numbers with strings like C1a, C1b, C2:
-    def SortNumericStringList(original):
-        newList = [NumericString(x) for x in original]
-        newList.sort()
-        return [x.rawValue for x in newList]
-
-    sortedlist = SortNumericStringList(suffix)
-    return sortedlist[-1]
-#################################################################################
 
 
 if __name__ == '__main__':
@@ -632,7 +627,7 @@ if __name__ == '__main__':
     sys.exit()
 
     print('Residue dict:', fa.get_resinum('RESI 1 TOL'.split()))
- #   print fa.get_atomcoordinates(['C12', 'C29', 'Q12'])
+#   print fa.get_atomcoordinates(['C12', 'C29', 'Q12'])
     print('line number:', fa.get_atom_line_numbers(['C12', 'C333', 'Q12']))
 
     fa.remove_adjacent_hydrogens(['C2', 'c4', 'c5'])
