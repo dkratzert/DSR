@@ -422,7 +422,7 @@ class DSR():
 
         if dsrp.dfix:
             resinumber = resi.get_resinumber
-            dfix = self.generate_dfix_restraints(lf,
+            dfix_restraints = self.generate_dfix_restraints(lf,
                                             reslist,
                                             numberscheme,
                                             resinumber,
@@ -430,17 +430,18 @@ class DSR():
                                             dsrp.part)
             if resinumber:
                 if self.external:
-                    externalfile_name = write_dbhead_to_file(basefilename+'.dfx', dfix, resi.get_resiclass, resinumber)
+                    externalfile_name = basefilename+'.dfx'
+                    write_dbhead_to_file(externalfile_name, dfix_restraints, resi.get_resiclass, resinumber)
                 for n, line in enumerate(reslist):
                     if line.upper().startswith('RESI'):
                         if line.split()[1] == str(resinumber):
                             if self.external:
                                 line = '{}\nREM The restraints for residue {} are in this file:\n+{}\n'.format(line, resinumber, externalfile_name)
                             else:
-                                line = '{} \n{}\n'.format(line, dfix)
+                                line = '{} \n{}\n'.format(line, dfix_restraints)
                             reslist[n] = line
             else:
-                line = '{}'.format(dfix) # insert restraints after dsrline
+                line = '{}'.format(dfix_restraints) # insert restraints after dsrline
                 reslist[dsrline-2] = reslist[dsrline-2]+line
 
         if not self.no_refine:
