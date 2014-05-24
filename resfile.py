@@ -22,7 +22,10 @@ __metaclass__ = type  # use new-style classes
 
 
 def filename_wo_ending(resfilename):
-    '''returns the input file name without ending'''
+    '''
+    returns the input file name without ending
+    :param resfilename: string like 'p21c.res'
+    '''
     file_ext = ''
     try:
         file_ext = os.path.splitext(resfilename)
@@ -36,14 +39,21 @@ def filename_wo_ending(resfilename):
 
 
 class ResList():
-    '''Reads and writes the res-file as list data structure'''
-    def __init__(self, res_file):
-        self.__resfilename = res_file
-        self.__basefile = filename_wo_ending(self.__resfilename)
+    '''
+    Reads and writes the res-file as list
+    '''
+    def __init__(self, res_file_name):
+        '''
+        :param res_file_name: string like 'p21c.res'
+        '''
+        self.__res_file_name = res_file_name
+        self.__basefile = filename_wo_ending(self.__res_file_name)
 
 
     def get_res_list(self):
-        '''read the resfile and return it as list'''
+        '''
+        read the res-file and return it as list
+        '''
         filename = self.__basefile+'.res'
         reslist = []
         try:
@@ -60,11 +70,13 @@ class ResList():
         '''
         makes a copy of the resfile and writes basefile+ending.
         ending should be '.ins' or '.res'
+        :param reslist: SHELXL .res file as list
+        :param ending:  string, file ending like '.res'
         '''
         try:
             nfile = open(self.__basefile+ending, 'w')  # open the ins file
         except(IOError):
-            print('Unable to write res file!')
+            print('Unable to write .res file!')
             sys.exit(-1)
         for i in reslist:            #modified reslist
             nfile.write("%s" %i)    #write the new file
@@ -73,16 +85,25 @@ class ResList():
 
 
 class ResListEdit():
-    '''Class to add, remove and list lines of the resfile
+    '''
+    Class to add, remove and list lines of the resfile
     '''
     def __init__(self, reslist, find_atoms):
+        '''
+
+        :param reslist: SHELXL .res file as list
+        :param find_atoms: FindAtoms() object
+        '''
         self.__reslist = reslist
         self._find_atoms = find_atoms
 
 
     def add_line(self, linenum, new_line):
-        '''adds a single line of string to the res file
+        '''
+        adds a single line of string to the res file
         checks are missing which make sure the data structure of new_line is correct!
+        :param linenum:  integer, line number to add string
+        :param new_line: new string to insert like 'foo bar'
         '''
         linenum = linenum-1
         self.__reslist.insert(linenum, new_line+'\n')
@@ -90,10 +111,17 @@ class ResListEdit():
 
 
     def remove_line(self, linenum, rem=False, remove=False, frontspace=False):
-        '''removes a single line from the res file with tree different methods.
-           The default is a space character in front of the line (frontspace).
-           This removes the line in the next refinement cycle. "rem" writes rem
-           in front of the line and "remove" clears the line.'''
+        '''
+        removes a single line from the res file with tree different methods.
+        The default is a space character in front of the line (frontspace).
+        This removes the line in the next refinement cycle. "rem" writes rem
+        in front of the line and "remove" clears the line.
+        :param linenum: integer, line number
+        :param rem:     True/False, activate comment with 'REM' in front
+        :param remove:  True/False, remove the line
+        :param frontspace: True/False, activate removing with a front space
+        '''
+
         line = self.__reslist[linenum]
         if rem:   # comment out with 'rem ' in front
             self.__reslist[linenum] = 'rem '+line
@@ -113,6 +141,8 @@ class ResListEdit():
     def list_lines(self, startline, endline):
         '''
         returns the lines between startline and endline as list
+        :param startline: integer
+        :param endline:   integer
         '''
         lines = []
         try:
@@ -149,13 +179,15 @@ class ResListEdit():
         return fvarlines
 
 
-    def insert_frag_fend_entry(self, atoms, fragline, fvarlines):
+    def insert_frag_fend_entry(self, dbatoms, fragline, fvarlines):
         '''
         Inserts the FRAG ... FEND entry in the res file.
+        :param dbatoms:   list of atoms in the database entry
+        :param fragline:  string with "FRAG 17 cell" from the database entry
+        :param fvarlines: line where FVAR or the first atom is located
         '''
         dblines = []
-        db = atoms[:]
-        db = [list(map(str, i)) for i in db]
+        db = [list(map(str, i)) for i in dbatoms]
         for i in db:
             i[2] = '{:>10.6f}'.format(float(i[2]))
             i[3] = '{:>10.6f}'.format(float(i[3]))
@@ -166,14 +198,17 @@ class ResListEdit():
         dblines = '\n The following is from DSR:\n'+dblines
         dblines = dblines+'\nFEND\n\n'
         #dblines = misc.ll_to_string(db)+'\n'
-        self.__reslist.insert(fvarlines[0]+2, dblines)   # insert the db entry right after FVAR
+        self.__reslist.insert(fvarlines[-1]+1, dblines)   # insert the db entry right after FVAR
 
 
-    def set_fvar(self, occupancynumber, fvarlines):
+    def set_free_variables(self, occupancynumber, fvarlines):
         '''
         Inserts additional free variables according to the occ parameter
         This function starts at the end of parse_dsr_line() so we don't have
         to care about it anywhere else.
+        :param occupancynumber: string, like '21.0'
+        :param fvarlines:       list, list of line numbers where FVAR is located
+                                      in the res file
         '''
         occupancynumber = occupancynumber.strip('-')
         fvar_list = []
@@ -225,7 +260,7 @@ if __name__ == '__main__':
 
     fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
     rle.insert_frag_fend_entry(dbatoms, fragline, fvarlines)
-    rle.set_fvar('91.1234', fvarlines)
+    rle.set_free_variables('91.1234', fvarlines)
 
     for num, i in  enumerate(reslist):
         print(num+1, ''.join(i.strip('\n\r')))

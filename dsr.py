@@ -48,13 +48,13 @@ class DSR():
     '''
     main class
     '''
-    def __init__(self, res_file=None, external_restr=None, export_fragment=None, search_string = None,
+    def __init__(self, res_file_name=None, external_restr=None, export_fragment=None, search_string = None,
         export_clip=None, import_grade=None, export_all=None, list_db=None, no_refine=None, invert=None):
         # options from the commandline options parser:
         self.options = OptionsParser(progname)
         self.external = False
 
-        if not res_file and not external_restr:
+        if not res_file_name and not external_restr:
             if not self.options.res_file:
                 self.res_file = self.options.external_restr
                 self.external = True
@@ -62,11 +62,11 @@ class DSR():
                 self.res_file = self.options.res_file
                 self.external = False
         else:
-            if not res_file:
+            if not res_file_name:
                 self.res_file = external_restr
                 self.external = True
             else:
-                self.res_file = res_file
+                self.res_file = res_file_name
                 self.external = False
         if not export_fragment:
             self.export_fragment = self.options.export_fragment
@@ -164,7 +164,7 @@ class DSR():
         '''
         try:
             from terminalsize import get_terminal_size
-            (width, height) = get_terminal_size()
+            (width, height) = get_terminal_size()  # @UnusedVariable
         except():
             width = 80
         gdb = global_DB()
@@ -347,7 +347,7 @@ class DSR():
         fvarlines = rle.find_fvarlines()
 
         if dsrp.occupancy:
-            rle.set_fvar(dsrp.occupancy, fvarlines)
+            rle.set_free_variables(dsrp.occupancy, fvarlines)
 
         fragment = dsrp.fragment
 

@@ -385,16 +385,16 @@ class SfacTable():
     SFAC table for the new res file.
     '''
 
-    def __init__(self, reslist, db_atom_types, res_file):
+    def __init__(self, reslist, db_atom_types, res_file_name):
         '''
 
         :param reslist:  SHELXL .res file as list
         :param db_atom_types:  list ['N', 'C', 'C', 'C']
-        :param res_file: str file name like 'p21c.res'
+        :param res_file_name: str file name like 'p21c.res'
         '''
         self.__reslist = reslist
         self.__db = db_atom_types
-        self.__resfilename = res_file
+        self.__res_file_name = res_file_name
 
 
     def set_sfac_table(self):
