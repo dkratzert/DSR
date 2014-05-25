@@ -33,7 +33,7 @@ class Resi(object):
     '''
 
     def __init__(self, reslist, dsr_line_dict, dbhead, residue, find_atoms):
-        self.__reslist = reslist
+        self._reslist = reslist
         self._find_atoms = find_atoms
         self._atoms_in_reslist = self._find_atoms.collect_residues()
         self._residues_in_res = sorted(self._atoms_in_reslist.keys())

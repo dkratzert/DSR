@@ -392,8 +392,8 @@ class SfacTable():
         :param db_atom_types:  list ['N', 'C', 'C', 'C']
         :param res_file_name: str file name like 'p21c.res'
         '''
-        self.__reslist = reslist
-        self.__db = db_atom_types
+        self._reslist = reslist
+        self._db = db_atom_types
         self.__res_file_name = res_file_name
 
 
@@ -401,15 +401,15 @@ class SfacTable():
         '''
         sets the new global sfac table in the res file
         '''
-        sfacline = find_line(self.__reslist, 'SFAC\s+[a-zA-Z]+')  # position of the SFAC card
-        unitline = find_line(self.__reslist, 'UNIT\s+[0-9]+')     # position of the UNIT card
+        sfacline = find_line(self._reslist, r'SFAC\s+[a-zA-Z]+')  # position of the SFAC card
+        unitline = find_line(self._reslist, r'UNIT\s+[0-9]+')     # position of the UNIT card
         unit = []
-        sfac = self.__reslist[sfacline]      # SFAC string in the reslist
+        sfac = self._reslist[sfacline]      # SFAC string in the reslist
         sfac = sfac.split()
         del sfac[0]
-        #dbtypes = list(set(self.__db))    # atomtypes in the dbentry
+        #dbtypes = list(set(self._db))    # atomtypes in the dbentry
 
-        for i in self.__db:                 # this is to compare the occurence of element type from resfile ant db
+        for i in self._db:                 # this is to compare the occurence of element type from resfile ant db
             if i not in sfac:             # all atom types from db not already in sfac
                 sfac.append(i)        # get appended to sfac
 
@@ -417,10 +417,10 @@ class SfacTable():
             i = str(1)        # only unity because we can change this later
             unit.append(i)
         # now the sfac and unit tables are written to the resfile
-        self.__reslist[sfacline] = 'SFAC  {}\n'.format('  '.join(sfac))
-        self.__reslist[unitline] = 'UNIT  {}\n'.format('  '.join(unit))  # builds the UNIT line
-        #print self.__reslist[sfacline]
-        #print self.__reslist[unitline]
+        self._reslist[sfacline] = 'SFAC  {}\n'.format('  '.join(sfac))
+        self._reslist[unitline] = 'UNIT  {}\n'.format('  '.join(unit))  # builds the UNIT line
+        #print self._reslist[sfacline]
+        #print self._reslist[unitline]
         return sfac
 
 
@@ -468,9 +468,9 @@ class NumberScheme():
 
     def __init__(self, reslist, dbatome, resi):
         self.__resi = resi
-        self.__reslist = reslist
+        self._reslist = reslist
         self.__rlist = []
-        for i in get_atoms(self.__reslist):
+        for i in get_atoms(self._reslist):
             if not re.match('H[0-9]+', i[0]):
                 if not re.match('Q[0-9]+', i[0]):
                     self.__rlist.append(i[0])

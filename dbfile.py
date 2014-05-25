@@ -13,7 +13,6 @@ from __future__ import print_function
 import os, sys
 import re
 #import fileinput
-from constants import
 import misc
 import tarfile
 from collections import Counter
@@ -665,7 +664,7 @@ class ImportGRADE():
         mol_list = self.read_file(self._molfile)
         regex = r'@<TRIPOS>MOLECULE'
         found = False
-        for num, line in enumerate(mol_list):
+        for num, line in enumerate(mol_list):  # @UnusedVariable
             line = line.strip('\n\r')
             if found:
                 raw_name = line
@@ -688,21 +687,22 @@ if __name__ == '__main__':
     #for i in dbnames:
     #    print ' {:<18}| {:<6}| {:<15}'.format(i[0], i[1], i[2])
     # no valid
+    invert = True
     gl = global_DB(invert)
     db = gl.build_db_dict()
     #print db.values()[3]
 
     #fragment = 'pfanion'
     fragment = 'toluene'
-   # fragline = gl.get_fragline_from_fragment(fragment)  # full string of FRAG line
-   # dbatoms = gl.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
+    # fragline = gl.get_fragline_from_fragment(fragment)  # full string of FRAG line
+    # dbatoms = gl.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
     dbhead = gl.get_head_from_fragment(fragment)        # this is only executed once
     dbhead = misc.unwrap_head_lines(dbhead)
 
     #print dbatoms
-   # print('residue:', db['toluene']['resi'])
-   # print('line of db:', db['toluene']['line'])
-   # print('database:', db['toluene']['db'])
+    # print('residue:', db['toluene']['resi'])
+    # print('line of db:', db['toluene']['line'])
+    # print('database:', db['toluene']['db'])
     #print(fragline)
 
     #for i in dbatoms:
@@ -752,9 +752,9 @@ if __name__ == '__main__':
     #    #print i[3], i[0], i[1], i[2]
     #print mog.get_atomnumbers()
 
-   # for i in mog.get_restraints('./test-data/TOL.dfx'):
+    # for i in mog.get_restraints('./test-data/TOL.dfx'):
     #    print i
 
     #mog.bild_grade_db_entry()
     #print mog.bild_grade_db_entry('{}.mol2', '{}.dfx').format(dsr_dict[import_grade], dsr_dict[import_grade])
-    mog.write_user_database()
+    #mog.write_user_database()

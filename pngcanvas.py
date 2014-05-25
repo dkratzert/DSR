@@ -180,7 +180,7 @@ class PNGCanvas(object):
         e_acc = 0
         if dy > dx:  # vertical displacement
             e = (dx << 16) // dy
-            for i in range(y0, y1 - 1):
+            for i in range(y0, y1 - 1):  # @UnusedVariable
                 e_acc_temp, e_acc = e_acc, (e_acc + e) & 0xFFFF
                 if e_acc <= e_acc_temp:
                     x0 += sx
@@ -193,7 +193,7 @@ class PNGCanvas(object):
 
         # horizontal displacement
         e = (dy << 16) // dx
-        for i in range(x0, x1 - sx, sx):
+        for i in range(x0, x1 - sx, sx):  # @UnusedVariable
             e_acc_temp, e_acc = e_acc, (e_acc + e) & 0xFFFF
             if e_acc <= e_acc_temp:
                 y0 += 1

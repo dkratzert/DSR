@@ -20,10 +20,16 @@ import misc
 __metaclass__ = type  # use new-style classes
 
 class ShelxlRefine():
-    '''A class to do a shelxl refinement. It is only for shelxl 2013!
+    '''
+    A class to do a shelxl refinement. It is only for shelxl 2013 and above!
     The resfilename should be without ending.
     '''
     def __init__(self, reslist, resfile_name, find_atoms):
+        '''
+        :param reslist: SHELXL .res file as list
+        :param resfile_name: SHELXL res file name
+        :param find_atoms: FindAtoms() object
+        '''
         self._find_atoms = find_atoms
         self._atoms_in_reslist = self._find_atoms.collect_residues()
         self.atoms = []
@@ -32,11 +38,11 @@ class ShelxlRefine():
                 self.atoms.append(i[0])
         self.number_of_atoms = len(self.atoms)
         self.resfile_name = str(resfile_name)
-        self.__reslist = reslist
-        self.__shelx_command = self.find_shelxl_exe()
+        self._reslist = reslist
+        self._shelx_command = self.find_shelxl_exe()
         self.b_array = self.approx_natoms()
         self.bakfile = str(self.resfile_name+'.dsr-bak')
-        if not self.__shelx_command:
+        if not self._shelx_command:
             print('\nSHELXL executable not found! No fragment fitting possible.\n')
             print('You can download SHELXL at http://shelx.uni-ac.gwdg.de/SHELX/index.php\n')
             sys.exit()
@@ -55,10 +61,9 @@ class ShelxlRefine():
     def find_shelxl_exe(self):
         '''
         returns the appropriate shelxl executable
-        filesize 2013/4: 4900352
-        filesize 97    : 1703936
         '''
         names = ['shelxl', 'xl']
+        download = 'You can download SHELXL at http://shelx.uni-ac.gwdg.de/SHELX'
         shx_exe = []
         for name in names:
             shx_exe.extend(misc.which(name))  # list of shelxl executables in path
@@ -70,11 +75,12 @@ class ShelxlRefine():
             if not version:
                 print('Your SHELXL version', exe, 'is too old for this Program')
                 print('Please use SHELXL 2013/4 or above!')
+                print(download)
                 sys.exit(-1)
             version = version.split('/')
             if int(version[0]) < 2013:
                 print('Your SHELXL version is too old. Please use SHELXL 2013/4 or above!')
-                print('You can download SHELXL at http://shelx.uni-ac.gwdg.de/SHELX')
+                print(download)
                 sys.exit()
             else:
                 return exe
@@ -97,11 +103,11 @@ class ShelxlRefine():
         if not status:
             print('Error: unable to find res file!')
             sys.exit(-1)
-        regex = '(^L\.S\.\s)|(^CGLS\s)'
-        ls_line = misc.find_line(self.__reslist, regex)
-        ls_list = self.__reslist[ls_line].split()
+        regex = r'(^L\.S\.\s)|(^CGLS\s)'
+        ls_line = misc.find_line(self._reslist, regex)
+        ls_list = self._reslist[ls_line].split()
         ls_list[1] = str(cycles)+'\n'
-        self.__reslist[ls_line] = '  '.join(ls_list)
+        self._reslist[ls_line] = '  '.join(ls_list)
 
 
 
@@ -109,11 +115,11 @@ class ShelxlRefine():
         '''
         removes the ACTA card, bacause we refine with L.S. 0, wich is incompatible!
         '''
-        regex = '^ACTA'
-        acta_line = misc.find_multi_lines(self.__reslist, regex)
+        regex = r'^ACTA'
+        acta_line = misc.find_multi_lines(self._reslist, regex)
         if acta_line:
             for i in acta_line:
-                self.__reslist[i] = 'rem ACTA\n'
+                self._reslist[i] = 'rem ACTA\n'
 
 
     def afix_is_closed(self, line):
@@ -125,10 +131,10 @@ class ShelxlRefine():
         - returns True if no AFIX found at all
         '''
         afixes = []
-        for num, i in enumerate(self.__reslist):
+        for num, i in enumerate(self._reslist):
             i = i.upper()
             if num <= line:
-                if i.startswith('AFIX'):
+                if re.match(r'AFIX', i, re.IGNORECASE):
                     afixes.append(i.split()[1])
         try:
             if str(afixes[-2]) != '0':
@@ -145,19 +151,19 @@ class ShelxlRefine():
         removes the AFIX 17X after refinement.
         note: find_line matches case insensitive
         '''
-        regex = '^AFIX\s+9'
-        afix_line = misc.find_line(self.__reslist, regex)
+        regex = r'^AFIX\s+9'
+        afix_line = misc.find_line(self._reslist, regex)
         if self.afix_is_closed(afix_line): # only delete afix if last afix was closed
             if afix_line:
-                del self.__reslist[afix_line]
+                del self._reslist[afix_line]
         else:
-            self.__reslist[afix_line] = 'AFIX 0\n'
+            self._reslist[afix_line] = 'AFIX 0\n'
 
 
 
     def checkFileExist(self, filename):
         '''
-        check if shelxl as written a res file successfully
+        check if shelxl has written a res file successfully
         '''
         status = False
         res_filesize = 0
@@ -198,14 +204,14 @@ class ShelxlRefine():
             print('Unable to delete backup file {}.'.format(self.bakfile))
 
 
-    def pretty_shx_output(self, out):
+    def pretty_shx_output(self, output):
         '''
         selectively prints the output from shelx
         '''
         wr2 = False
         r1 = False
         gof = False
-        for i in out:
+        for i in output:
             #if re.match(r'.*Command line parameters', i):
             if i.startswith(' +  Copyright(C)'):
                 print(' SHELXL '+' '.join(i.split()[6:8]))
@@ -246,7 +252,7 @@ class ShelxlRefine():
             print('You need a proper hkl file to use DSR.')
             sys.exit()
 
-        command_line='{} -b{} {}'.format(self.__shelx_command, self.b_array, self.resfile_name).split()
+        command_line='{} -b{} {}'.format(self._shelx_command, self.b_array, self.resfile_name).split()
 
         self.backup_shx_file()
         print('-----------------------------------------------------------------')

@@ -117,24 +117,24 @@ class ListFile():
                     start_line = num+start_line+1
                     break
         connpairs = []
-        connlist = []
+        connections_list = []
         for i in self._listfile_list[start_line:]:
             line = i.split()
             if not line:
                 break
             if 'found' in line:
                 continue
-            connlist.append(i.strip(os.linesep).replace('-', '').split())
-        for i in connlist:
+            connections_list.append(i.strip(os.linesep).replace('-', '').split())
+        for i in connections_list:
             atom = i.pop(0)
-            for conatom in i:
-                if '$' in conatom:
+            for connected_atom in i:
+                if '$' in connected_atom:
                     symmeq = True
                     continue
                 # uppper case for case insensitivity:
                 atom = atom.upper()
-                conatom = conatom.upper()
-                connpairs.append((atom, conatom))
+                connected_atom = connected_atom.upper()
+                connpairs.append((atom, connected_atom))
         if symmeq:
             print('\nConnections to symmetry equivalent atoms found.'\
                     ' \nGenerated DFIX restraints might be nonsense!!')
@@ -146,7 +146,7 @@ class ListFile():
         reads all atom coordinates of the lst-file
         returns a dictionary with {'atom' : ['x', 'y', 'z']}
         '''
-        atom_coords = {}
+        atom_coordinates = {}
         start_line = int(misc.find_line(self._listfile_list, self._coord_regex))+2
         for line in self._listfile_list[start_line:]:
             line = line.split()
@@ -161,8 +161,8 @@ class ListFile():
                 print('No atoms found in list file!')
                 sys.exit(0)
             atom = {str(line[0]).upper(): xyz}
-            atom_coords.update(atom)
-        return atom_coords
+            atom_coordinates.update(atom)
+        return atom_coordinates
 
 
     def get_cell(self):
@@ -225,22 +225,22 @@ class Adjacency_Matrix():
 
     def __init__(self, atoms, conntable, coords, cell):
         self._atoms = atoms
-        self._conntable = conntable
-        self._coords = coords
+        self._connectivity_table = conntable
+        self._coordinates = coords
         self._cell = cell
         self.adjmatrix()
 
     def adjmatrix(self):
         '''
-        create a distance matrix for the atom coords
+        create a distance matrix for the atom coordinates
         '''
         G=nx.Graph()
-        for i in self._conntable:
+        for i in self._connectivity_table:
             atom1 = i[0]
             atom2 = i[1]
             if atom1 in self._atoms:
-                coord1 = self._coords[atom1]
-                coord2 = self._coords[atom2]
+                coord1 = self._coordinates[atom1]
+                coord2 = self._coordinates[atom2]
                 dist = misc.atomic_distance(coord1, coord2, self._cell)
                 G.add_edge(atom1, atom2, weight=dist)
         return G
@@ -259,7 +259,7 @@ class Restraints():
     Maybe also absolute distance restraints?
     '''
     def __init__(self, coords, G, atoms, cell):
-        self.coords = coords
+        self.coordinates = coords
         self.atoms = atoms
         cell = [float(i) for i in cell]
         self._cell = cell
@@ -344,8 +344,8 @@ class Restraints():
         for i in nn:
             atom1 = i[0]
             atom2 = i[1]
-            c1 = self.coords[atom1]
-            c2 = self.coords[atom2]
+            c1 = self.coordinates[atom1]
+            c2 = self.coordinates[atom2]
             dist_13.append((atom1, atom2, misc.atomic_distance(c1, c2, self._cell)))
         return dist_13
 
@@ -375,7 +375,7 @@ class Restraints():
         #print('The list of rings:', list_of_rings)
         if not list_of_rings:
             return False
-        # This creates a list of attached atoms but is unused atm:
+        # This creates a list of attached tetrahedron_atoms but is unused atm:
         #attached_atoms = []
         #for ring in list_of_rings:
         #    for atom in ring:
@@ -389,11 +389,11 @@ class Restraints():
                 continue #wenn ring zu wenig atome hat dann nächsten
             chunks = self.get_overlapped_chunks(ring, 4)
             for p in chunks:
-                atoms = []
+                tetrahedron_atoms = []
                 for atom in p:
-                    coord = self.coords[atom]
-                    atoms.append(coord)
-                a, b, c, d = atoms
+                    single_atom_coordinate = self.coordinates[atom]
+                    tetrahedron_atoms.append(single_atom_coordinate)
+                a, b, c, d = tetrahedron_atoms
                 volume = (vol_tetrahedron(a, b, c, d, self._cell))
                 if volume < 0.1:
                     flats.append(p)
@@ -504,11 +504,11 @@ if __name__ == '__main__':
     am = Adjacency_Matrix(fragment_atoms, conntable, coords, cell)
     G = am.get_adjmatrix
     print('nodes:', G.nodes())
-   # print('dihkstra (kürzester pfad):')
-   # print(nx.dijkstra_path(G, 'C1_4C', 'C4_4C'))
-   # print('\ncycle_basis')
+    # print('dihkstra (kürzester pfad):')
+    # print(nx.dijkstra_path(G, 'C1_4C', 'C4_4C'))
+    # print('\ncycle_basis')
     l = nx.cycle_basis(G)
-   # print('liste der cycles im Graph:')
+    # print('liste der cycles im Graph:')
     print(sorted(l))
     print('end\n')
     restr = Restraints(coords, am.get_adjmatrix, fragment_atoms, cell)

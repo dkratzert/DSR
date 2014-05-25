@@ -43,25 +43,30 @@ class Export():
     '''
 
     def __init__(self, fragment_name, invert=False):
+        '''
+
+        :param fragment_name: string, name of the database fragment
+        :param invert:        bool, should the coordinates be inverted?
+        '''
         self.invert = invert
-        self.__fragment = fragment_name
+        self._fragment_name = fragment_name
         self._gdb = global_DB(self.invert)
         try:
-            self.__db = self._gdb.build_db_dict()[self.__fragment.lower()]
+            self._db = self._gdb.build_db_dict()[self._fragment_name.lower()]
         except(KeyError):
-            print('Fragment "{}" was not found in the database!!'.format(self.__fragment))
+            print('Fragment "{}" was not found in the database!!'.format(self._fragment_name))
             sys.exit()
-        self._gdb.check_consistency(self.__db, self.__fragment)
-        self._comment = self.__db['comment']
-        self.__dbatoms = self.__db['atoms']
-        self._clipatoms = copy.deepcopy(self.__dbatoms)
-        self._gdb.check_db_atom_consistency(self.__dbatoms, self.__fragment)
-        self.__atomtypes = at.get_atomtypes(self.__dbatoms)
-        self.__fragline = self.__db['fragline']
-        self.__cell = self.__fragline[2:]
-        self.__clipcell = self.__fragline[2:]
+        self._gdb.check_consistency(self._db, self._fragment_name)
+        self._comment = self._db['comment']
+        self._dbatoms = self._db['atoms']
+        self._clipatoms = copy.deepcopy(self._dbatoms)
+        self._gdb.check_db_atom_consistency(self._dbatoms, self._fragment_name)
+        self._atomtypes = at.get_atomtypes(self._dbatoms)
+        self._fragline = self._db['fragline']
+        self._cell = self._fragline[2:]
+        self._clipcell = self._fragline[2:]  # cell parameters for clipboard export
         self.format_calced_coords()  # expands the cell of calculated structures
-        self.__cell = ' {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f}'.format(*[float(i) for i in self.__cell])
+        self._cell = ' {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f}'.format(*[float(i) for i in self._cell])
         self._comment_regex = '^REM .*$'.upper()
 
 
@@ -71,23 +76,22 @@ class Export():
         In calculated structure the cell is 1 1 1 90 90 90. Shelxle has problems
         with that when growing. So the cell is expanded to 100 100 100
         '''
-        summe = None
-        summe = int(sum(float(i) for i in self.__cell[0:3])) # this is to detect calculated structures
+        summe = int(sum(float(i) for i in self._cell[0:3])) # this is to detect calculated structures
         if summe == 3:  # 1+1+1=3!
             for coord in range(2,5):  # x, y, z of coordinates
-                for line in self.__dbatoms:   # for every atom line
+                for line in self._dbatoms:   # for every atom line
                     num = float(line[coord])/100
                     line[coord] = "{:10.6f}".format(num)
-            # now the new 10,10,10 cell:
+            # now the new 100,100,100 cell:
             for n in range(0,3):
-                self.__cell[n] = '100'
+                self._cell[n] = '100'
 
 
     def export_resfile(self):
         '''
         exports a .res file from a database entry to be viewed in a GUI
         '''
-        print('Exporting "{0}" to {0}.res'.format(self.__fragment))
+        print('Exporting "{0}" to {0}.res'.format(self._fragment_name))
         if self.invert:
             print("Fragment inverted.")
         try:
@@ -96,18 +100,18 @@ class Export():
             pass
         sfac = []
         res_export = []
-        for i in self.__atomtypes:       #build sfac table from atomtypes
+        for i in self._atomtypes:       #build sfac table from atomtypes
             if i not in sfac:
                 sfac.append(i)
 
         atlist = []
-        for i in self.__atomtypes:       #atomtypes in the db_entry
+        for i in self._atomtypes:       #atomtypes in the db_entry
             for y, x in enumerate(sfac):
                 if x == i:
                     atlist.append(y+1)
 
         for n, i in enumerate(atlist):
-            self.__dbatoms[n][1] = i
+            self._dbatoms[n][1] = i
 
         # build the UNIT table:
         unit = []
@@ -115,26 +119,26 @@ class Export():
             unit.append('1 ')   #no matter what number
 
         ## Now put all infos together:
-        for i in self.__dbatoms:
+        for i in self._dbatoms:
             i[0] = i[0]+' ' # more space for long atom names
             i.append('11.00   0.04')  #make it a full qualified atom line with occupancy and U value
 
-        a = ll_to_string(self.__dbatoms)      #convert to string
-        res_export.append('TITL '+self.__fragment+'\n')     #title card with fragment name
+        final_atomlist = ll_to_string(self._dbatoms)      #convert to string
+        res_export.append('TITL '+self._fragment_name+'\n')     #title card with fragment name
         try:
             res_export.append('REM This file was exported by DSR version {}\n'.format(VERSION))
         except(NameError):
             pass
         comment = '\nREM '.join(self._comment)
         res_export.append('REM '+comment+'\n')
-        res_export.append('CELL 0.71073 '+self.__cell+'\n')   # the cell with wavelength
+        res_export.append('CELL 0.71073 '+self._cell+'\n')   # the cell with wavelength
         res_export.append('ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n')
         res_export.append('LATT  -1\n')
         res_export.append('SFAC '+'  '.join(sfac)+'\n')
         res_export.append('UNIT '+' '.join(unit)+'\n')
         res_export.append('WGHT  0.1'+'\n')
         res_export.append('FVAR  1'+'\n')
-        res_export.append(a)                         # the atoms
+        res_export.append(final_atomlist)                         # the atoms
         res_export.append('\nHKLF 4\nEND\n')         # the end
         return res_export
 
@@ -158,11 +162,11 @@ class Export():
         '''
         from misc import frac_to_cart
         clip_text = []
-        cell = self.__clipcell[:]
+        cell = self._clipcell[:]
         cell = [float(x) for x in cell]
         atoms = self._clipatoms
         for line in atoms:
-            frac_coord = [  float(i) for i in line[2:5] ]
+            frac_coord = [ float(i) for i in line[2:5] ]
             coord = frac_to_cart(frac_coord, cell)
             line[2:5] = coord
         newlist = []
@@ -181,7 +185,7 @@ class Export():
             self.copy_to_clipboard()
         except(AttributeError) as e:
             print(e)
-        print('Exported "{0}" to the clipboard.'.format(self.__fragment))
+        print('Exported "{0}" to the clipboard.'.format(self._fragment_name))
         sys.exit()
 
 
@@ -203,19 +207,19 @@ class Export():
             return False
 
 
-    def write_file(self):
+    def write_res_file(self):
         '''
-        Writes the data to a res file
+        Writes the atom data to a "self._fragment_name".res file
         '''
         ## write to file:
-        resfile = str(self.__fragment)+'.res'
+        resfile = str(self._fragment_name)+'.res'
         try:
             f = open(resfile, 'w')
             for line in self.export_resfile():
                 line = ''.join(line)
                 f.write(line)
             print('Database entry of "{}" successfully written to {}.'\
-                    ''.format(self.__fragment, resfile))
+                    ''.format(self._fragment_name, resfile))
         except(IOError):
             print('could not write file {}'.format(resfile))
             sys.exit(-1)
@@ -224,7 +228,7 @@ class Export():
 
 
     def make_image(self, debug=False):
-        import shutil
+        from shutil import copyfile
         import time
         import misc
         import subprocess
@@ -233,8 +237,8 @@ class Export():
         The windows version of Platon needs some special care because of its nasty output
         window.
         '''
-        resfile = str(self.__fragment)+'.res'
-        insfile = str(self.__fragment)+'.ins'
+        resfile = str(self._fragment_name)+'.res'
+        insfile = str(self._fragment_name)+'.ins'
         info=None
         commandline = 'platon -O {}'.format(insfile).split()
         try:
@@ -245,14 +249,14 @@ class Export():
             pass
 
         misc.remove_file(insfile) #platon runs faster if no ins file is present!
-        misc.remove_file(self.__fragment+'.png', exit_dsr=True)
+        misc.remove_file(self._fragment_name+'.png', exit_dsr=True)
         if misc.which('platon'):
             pass
         else:
             print('Could not write a .png image. No platon executable in PATH.')
             sys.exit()
         try:
-            shutil.copyfile(resfile, insfile)
+            copyfile(resfile, insfile)
         except(IOError):
             print('unable to write .ins file for plotting!')
             sys.exit(-1)
@@ -261,7 +265,7 @@ class Export():
             plat = subprocess.Popen(commandline, stdin = subprocess.PIPE,
                             stdout = subprocess.PIPE, stderr=subprocess.STDOUT, startupinfo=info)
             timeticks = 0
-            psfile = self.__fragment+'.ps'
+            psfile = self._fragment_name+'.ps'
             while not os.path.isfile(psfile):
                 timeticks = timeticks+1
                 time.sleep(0.01)
@@ -284,13 +288,13 @@ class Export():
             extensions = ('.bin', '.def', '.hkp', '.ins', '.pjn', '.lis', '.res', '.sar', '.sum', '.eld', '.out')
             plat.terminate()
             for i in extensions:
-                misc.remove_file(self.__fragment+i)
+                misc.remove_file(self._fragment_name+i)
             sys.exit()
 
         misc.remove_file('platon.out', terminate=plat)
         extensions = ('.lis', '.eld', '.def', '.pjn')
         for i in extensions:
-            misc.remove_file(self.__fragment+i)
+            misc.remove_file(self._fragment_name+i)
         misc.remove_file(insfile)
 
         # test for convert from ImageMagic
@@ -304,12 +308,12 @@ class Export():
             convert = 'convert'
             options_convert = '-crop 84%x90%+40%+40% -rotate 90 -trim'
             print('converting from .ps to .png')
-            files = '"{}.ps" "{}.png"'.format(self.__fragment, self.__fragment)
+            files = '"{}.ps" "{}.png"'.format(self._fragment_name, self._fragment_name)
             image_commandline = '{} {} {}'.format(convert, options_convert, files)
             conv = os.popen(image_commandline)
             conv.close()
             # were we successful?
-            if os.path.isfile(self.__fragment+'.png'):
+            if os.path.isfile(self._fragment_name+'.png'):
                 print('success!')
                 # in case of success remove the postscript file
                 misc.remove_file(psfile, terminate=plat)
@@ -319,8 +323,8 @@ class Export():
         except(EnvironmentError) as e:
             print('unable to convert file', e)
 
-        misc.remove_file(self.__fragment+'.lis')
-        misc.remove_file(self.__fragment+'.eld')
+        misc.remove_file(self._fragment_name+'.lis')
+        misc.remove_file(self._fragment_name+'.eld')
         plat.terminate()
 
 
@@ -347,9 +351,9 @@ if __name__ == '__main__':
     c.color = bytearray((0, 0, 0, 0xff))
     c.line(0, 0, WIDTH - 1, HEIGHT - 1)
     c.line(50, 50, 50, HEIGHT - 30)
- #         .|------|
+    #      .|------|
     #atom1--|------|atom2
-  #         |------|
+    #       |------|
     with open('reference.png', 'wb+') as reference:
         reference.write(c.dump())
 
@@ -384,6 +388,6 @@ if __name__ == '__main__':
     #import pyperclip
     #pyperclip.setcb('The text to be copied to the clipboard.')
     #spam = pyperclip.getcb()
-    #export.write_file()
+    #export.write_res_file()
     #export.make_image(debug=True)
 
