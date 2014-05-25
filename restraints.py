@@ -44,8 +44,11 @@ def remove_duplicate_bonds(bonds):
 
 def format_atom_names(atoms, part, resinum):
     '''
-    needs a list of atoms ['C1', 'C2', 'O1', ..] witg part number and a residue number
+    needs a list of atoms ['C1', 'C2', 'O1', ..] with part number and a residue number
     returns a list with atoms like ['C1_4b', 'C2_4b', 'O1_4b', ..]
+    :param atoms:  list of plain atom names
+    :param part:  string, part number
+    :param resinum: string, residue number
     '''
     if resinum:
         pass
@@ -224,7 +227,7 @@ class Adjacency_Matrix():
     returns an adjacence matrix for all atoms in the .lst file.
     edge property is the bond length
 
-    needs atoms with numpart
+    needs atoms with numpart like C1_2b
     '''
 
     def __init__(self, atoms, conntable, coords, cell):
@@ -261,15 +264,14 @@ class Restraints():
     This class uses connectivity table from the SHELXL lst file and
     generates 1,2- and 1,3-bond distance restraints.
     '''
-    def __init__(self, coords, G, atoms, cell):
+    def __init__(self, coordinates, G, atoms, cell):
         '''
-
-        :param coords:
-        :param G:
-        :param atoms:
-        :param cell:
+        :param coordinates: list of coordinates for all atoms from the lst file
+        :param G:  adjacency matrix
+        :param atoms:  list, fragment atoms
+        :param cell: list, cell parameters
         '''
-        self.coordinates = coords
+        self.coordinates = coordinates
         self.atoms = atoms
         cell = [float(i) for i in cell]
         self._cell = cell
@@ -284,7 +286,7 @@ class Restraints():
         dfix = []
         for n,i in self._G.adjacency_iter():
             for i, x in list(i.items()):
-                dist=x['weight']
+                dist=x['weight'] # weight of edge is the atomic distance
                 atom1 = n
                 atom2 = i
                 dfix.append((atom1, atom2, dist))
@@ -296,7 +298,7 @@ class Restraints():
         dfix_formated = []
         dfix_restraints = self.get_12_dfixes
         dfix_restraints = remove_duplicate_bonds(dfix_restraints)
-        for n, i in enumerate(dfix_restraints, 1):
+        for n, i in enumerate(dfix_restraints, 1):  # @UnusedVariable
             dfix_formated.append('DFIX {:.4f}  {:7}{:7}\n'.format(i[2], \
                 misc.remove_partsymbol(i[0]), misc.remove_partsymbol(i[1])))
         return dfix_formated
