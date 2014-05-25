@@ -17,8 +17,8 @@ from dsrparse import DSR_Parser
 from options import OptionsParser
 from dbfile import global_DB, ImportGRADE
 from resfile import ResList, ResListEdit, filename_wo_ending
-from atomhandling import SfacTable, get_atomtypes, check_source_target, Elem_2_Sfac
-from atomhandling import FindAtoms, NumberScheme
+from atomhandling import SfacTable, get_atomtypes, check_source_target
+from atomhandling import FindAtoms, NumberScheme, Elem_2_Sfac
 from afix import InsertAfix, write_dbhead_to_file
 from refine import ShelxlRefine
 from resi import Resi
@@ -28,7 +28,7 @@ from restraints import Restraints, Adjacency_Matrix
 
 # TODO and ideas:
 # -automatically invert fragment if fit fails and fit again?
-# -FLAT: see for every ring atom if there is also an atteched atom in the same plane
+# -FLAT: see for every ring atom if there is also an attached atom in the same plane
 # -To the manual: Avogradro/res-file -> rename -> mercury -> mol2-file -> GRADE
 # -To manual: what to do if something does not work.
 # -try to iterate all target atoms if fit is really bad
@@ -43,12 +43,15 @@ progname = '\n-----------------------------'\
            ' D S R - v{}' \
            ' ----------------------------------'.format(VERSION)
 
+
 class DSR():
     '''
     main class
     '''
-    def __init__(self, res_file_name=None, external_restr=None, export_fragment=None, search_string = None,
-        export_clip=None, import_grade=None, export_all=None, list_db=None, no_refine=None, invert=None):
+    def __init__(self, res_file_name=None, external_restr=None,
+                 export_fragment=None, search_string=None,
+                 export_clip=None, import_grade=None, export_all=None,
+                 list_db=None, no_refine=None, invert=None):
         # options from the commandline options parser:
         self.options = OptionsParser(progname)
         self.external = False
@@ -129,13 +132,10 @@ class DSR():
         time1 = time.clock()
         self.main()
         time2 = time.clock()
-        runtime = (time2-time1)
+        runtime = (time2 - time1)
         print('Runtime: {:>.1f} s'.format(runtime))
         print('\nDSR run complete.')
-
-
-################################################################################
-
+###############################################################################
 
     def do_export_fragment(self):
         '''
@@ -146,7 +146,6 @@ class DSR():
         export.write_res_file()
         sys.exit(1)
 
-
     def export_to_clip(self):
         '''
         Exports the current fragment to the clipboard.
@@ -155,7 +154,6 @@ class DSR():
         export = Export(self.export_clip)
         export.export_to_clip()
         sys.exit(1)
-
 
     def list_dbentrys(self):
         '''
@@ -170,23 +168,24 @@ class DSR():
         db = gdb.build_db_dict()
         print('\n Entries found in the databases:\n')
         print(' Fragment         | Line | DB Name    | Full name, Comments ')
-        print(' ---------------------------------------------------------------------------')
-
+        print(' ----------------------------------------'
+                '-----------------------------------')
         frags = sorted(db.keys())
         names_list = []
         for i in frags:
             fragname = ', '.join(gdb.get_comment_from_fragment(i))
             names_list.append([i, fragname])
             line = ' {:<17}| {:<5}| {:<11}| {}'.format(
-                    i, gdb.get_line_number_from_fragment(i), gdb.get_db_from_fragment(i), fragname)
-            print(line[:width-1])
+                    i, gdb.get_line_number_from_fragment(i),
+                    gdb.get_db_from_fragment(i), fragname)
+            print(line[:width - 1])
         try:
             if os.environ["DSR_DB_DIR"]:
                 dbdir = os.environ["DSR_DB_DIR"]
         except(KeyError):
             dbdir = '.'
         print('\n Feel free to add more fragments to "{}dsr_user_db.txt"' \
-              '\n or mail them to dkratzert@gmx.de.'.format(dbdir+os.path.sep))
+              '\n or mail them to dkratzert@gmx.de.'.format(dbdir + os.path.sep))
 
         for fragment in list(db.keys()):
             gdb.check_consistency(db[fragment], fragment)
@@ -275,8 +274,9 @@ class DSR():
         '''
         e2s = Elem_2_Sfac(sfac_table)
         atype = list(reversed(db_atom_types))
-        for line in dbatoms:                             # go through db entry
-            line[1] = e2s.elem_2_sfac(atype.pop())       # replace scattering factor (line[1]) with true one
+        for line in dbatoms:                    # go through db entry
+            # replace scattering factor (line[1]) with true one
+            line[1] = e2s.elem_2_sfac(atype.pop())
 
 
     def replacemode(self, res_target_atoms, rle, reslist, sfac_table):
