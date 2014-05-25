@@ -11,9 +11,9 @@
 #
 from __future__ import print_function
 import string
-from constants import *
 import re
 import os
+from constants import atomregex, SHX_CARDS
 
 alphabet = string.ascii_uppercase
 
@@ -60,7 +60,7 @@ def multiline_test(line):
 
 def find_line(inputlist, regex):
     '''
-    returns the index number of the line where regex is found in the __inputlist
+    returns the index number of the line where regex is found in the inputlist
     '''
     for i, string in enumerate(inputlist):
         if re.match(regex, string, re.IGNORECASE):
@@ -125,7 +125,6 @@ def unwrap_head_lines(headlines):
     '''
     import constants
     tmp = ''
-    new_head = []
     for line in headlines:
         line = line.strip(' \n=')+' '
         tmp = tmp+line
@@ -146,12 +145,8 @@ def makelist(string):
 
 
 def which(name, flags=os.X_OK):
-    '''Search PATH for executable files with the given name.
-
-    On newer versions of MS-Windows, the PATHEXT environment variable will be
-    set to the list of file extensions for files considered executable. This
-    will normally include things like ".EXE". This fuction will also find files
-    with the given name ending with any of these extensions.
+    '''
+    Search PATH for executable files with the given name.
 
     On MS-Windows the only flag that has any meaning is os.F_OK. Any other
     flags will be ignored.
@@ -176,8 +171,10 @@ def which(name, flags=os.X_OK):
 def zero(m,n):
     '''
     Create zero matrix of dimension m,n
+    :param m: integer
+    :param n: integer
     '''
-    new_matrix = [[0 for row in range(n)] for col in range(m)]
+    new_matrix = [[0 for row in range(n)] for col in range(m)]  # @UnusedVariable
     return new_matrix
 
 
@@ -231,6 +228,7 @@ def format_atom_names(atoms, part, resinum):
 def remove_partsymbol(atom):
     '''
     strips the part symbol like C1_4b from an atom name
+    :param atom: string
     '''
     if '_' in atom:
         prefix = atom.split('_')[0]
@@ -273,6 +271,8 @@ def atomic_distance(p1, p2, cell):
 def frac_to_cart(frac_coord, cell):
     '''
     Converts fractional coordinates to cartesian coodinates
+    :param frac_coord: [float, float, float]
+    :param cell:       [float, float, float, float, float, float]
     '''
     from math import cos, sin, sqrt, radians
     a, b, c, alpha, beta, gamma = cell
@@ -300,6 +300,8 @@ def determinante(a):
 def subtract(a, b):
     '''
     subtract vector b from vector a
+    :param a: [float, float, float]
+    :param b: [float, float, float]
     '''
     return (a[0] - b[0],
             a[1] - b[1],
@@ -341,13 +343,15 @@ def vol_tetrahedron(a, b, c, d, cell):
     AD = subtract(A, D)
     D = determinante([AB, AC, AD])
     volume = abs((D/6))
-
     return volume
 
 
 def dice_coefficient(a, b):
     '''
     dice coefficient 2nt/na + nb
+    Compares the similarity of a and b
+    :param a: string
+    :param b: string
     '''
     a = a.lower()
     b = b.lower()
@@ -415,10 +419,10 @@ def dice_coefficient2(a,b):
 
 
 def longest_common_substring(s1, s2):
-    m = [[0] * (1 + len(s2)) for i in xrange(1 + len(s1))]
+    m = [[0] * (1 + len(s2)) for i in range(1 + len(s1))]  # @UnusedVariable
     longest, x_longest = 0, 0
-    for x in xrange(1, 1 + len(s1)):
-        for y in xrange(1, 1 + len(s2)):
+    for x in range(1, 1 + len(s1)):
+        for y in range(1, 1 + len(s2)):
             if s1[x - 1] == s2[y - 1]:
                 m[x][y] = m[x - 1][y - 1] + 1
                 if m[x][y] > longest:
@@ -436,7 +440,7 @@ def levenshtein(s1, s2):
         return levenshtein(s2, s1)
     if len(s2) == 0:
         return len(s1)
-    previous_row = xrange(len(s2) + 1)
+    previous_row = range(len(s2) + 1)
     for i, c1 in enumerate(s1):
         current_row = [i + 1]
         for j, c2 in enumerate(s2):
@@ -501,7 +505,7 @@ if __name__ == '__main__':
     resi = True #gdb.get_resi_from_fragment(fragment)
     uhead = unwrap_head_lines(dbhead)
     print(uhead)
-    sys.exit()
+   # sys.exit()
 
 
 
@@ -529,7 +533,7 @@ if __name__ == '__main__':
     #print(whead)
     uhead = unwrap_head_lines(whead)
     #print(uhead)
-    sys.exit()
+   # sys.exit()
     dsr_string = dsrp.find_dsr_command(line=True).lower()
 
     regex = 'Q2.*'
@@ -574,3 +578,9 @@ if __name__ == '__main__':
     coo = frac_to_cart((0.312, 0.37, 0.754), (10.5086, 20.9035, 20.5072, 90, 94.13, 90))
     #print coo
     print('{:8.6} {:8.6} {:8.6}'.format(*coo), 'neue koordianten')
+
+    print('\n\n')
+    print(levenshtein('hallo', 'holla'))
+    print(dice_coefficient('hallo', 'holla'))
+    print(dice_coefficient2('hallo', 'holla'))
+

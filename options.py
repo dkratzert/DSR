@@ -15,7 +15,7 @@ import re
 try:
     from argparse import RawTextHelpFormatter
 except(ImportError):
-    print('\nYour python version is incompatible with DSR! \nPlease use Python 2.7 or above.\n')
+    print('\nYour Python version is incompatible with DSR! \nPlease use Python 2.7 or above.\n')
     sys.exit()
 from argparse import ArgumentParser, SUPPRESS
 
@@ -79,8 +79,8 @@ class OptionsParser():
         if not self._options.search_string:
             return None
         # search characters allowed: a-z A-Z 0-9 _ - , () {} [] ' " + * | = .
-        alpha = re.match('^[\w\-,\(\)\[\]\{\}\'\"\+\*\|\=\.]+$', self._options.search_string)
-        if not alpha:
+        chars = re.match(r'^[\w\-,\(\)\[\]\{\}\'\"\+\*\|\=\.]+$', self._options.search_string)
+        if not chars:
             print('Characters not allowed for searching.')
             sys.exit()
         else:

@@ -29,12 +29,17 @@ class DSR_Parser():
     the end of parse_dsr_line().
     '''
     def __init__(self, reslist, rle):
-        self.__reslist = reslist
-        self.__HKLF_endline = misc.find_line(self.__reslist, '^HKLF\s+[1-6]')
-        self.__rle = rle
-        self.__regex = '^rem\s{1,5}DSR\s{1,5}.*'
-        self.__dsr_string = self.find_dsr_command(line=True).lower()
-        self.__dsr = misc.makelist(self.__dsr_string)
+        '''
+
+        :param reslist: list of strings of .res file
+        :param rle:  ResList() object
+        '''
+        self._reslist = reslist
+        self._HKLF_endline = misc.find_line(self._reslist, r'^HKLF\s+[1-6]')
+        self._rle = rle
+        self._dsr_regex = '^rem\s{1,5}DSR\s{1,5}.*'
+        self._dsr_string = self.find_dsr_command(line=True).lower()
+        self._dsr_list = misc.makelist(self._dsr_string)
 
 
     def find_dsr_command(self, line=False):
@@ -42,45 +47,48 @@ class DSR_Parser():
         line = False  -> Line number
         line = True  -> Text string
         find the lines with a DSR command entry and return its line number as
-        default or the text string when line is set to True'''
+        default or the text string when line is set to True
+        :param line: bool
+        '''
         dsr_str = ''
         multiline = False
-#        indexnum = ([i for i, l in enumerate(self.__reslist) for m in
-#                   [re.search(self.__regex, l.lower())] if m])
-        indexnum = misc.find_multi_lines(self.__reslist, self.__regex)
+#        indexnum = ([i for i, l in enumerate(self._reslist) for m in
+#                   [re.search(self._dsr_regex, l.lower())] if m])
+        indexnum = misc.find_multi_lines(self._reslist, self._dsr_regex)
         try:
             line_number = int(indexnum[0])
         except(IndexError):
-            print(' no proper DSR command found! \n\n '\
+            print(' no proper DSR command found! \n\n '
                     'Have you really saved your .res file?\n')
             sys.exit()
-        if int(line_number)-1 > int(self.__HKLF_endline):
-            print('A DSR command after HKLF is not allowed! Check line {}'.format(line_number))
+        if int(line_number)-1 > int(self._HKLF_endline):
+            print('A DSR command after HKLF is not allowed! '
+                    'Check line {}'.format(line_number))
             sys.exit()
         if len(indexnum) > 1:
-            print('only one dsr command at once is allowed! Exiting...')
+            print('Only one dsr command at once is allowed! Exiting...')
             sys.exit(-1)
 
         if line:  # returns the string
-            dsr_str = str(self.__reslist[line_number])
+            dsr_str = str(self._reslist[line_number])
             if misc.multiline_test(dsr_str):
                 multiline = True
                 # in case of a multiline command, strip the '=' and the newline
                 dsr_str = dsr_str.rstrip('\n\r= ')
                 dsr_str = re.sub(' +',' ', dsr_str)
-                dsr_str = dsr_str+self.__reslist[line_number+1]
+                dsr_str = dsr_str+self._reslist[line_number+1]
                 return dsr_str                    # return the dsr text string
             else:
                 # just return the dsr command as string in one line
                 return dsr_str
         else:  # returns the index number of the command
-            dsr_str = str(self.__reslist[line_number])
+            dsr_str = str(self._reslist[line_number])
             dsr_str = re.sub(' +',' ', dsr_str)
             if misc.multiline_test(dsr_str):
                 multiline = True
                 # in case of a multiline command, strip the '=' and the newline
                 dsr_str = dsr_str.rstrip('\n\r= ')
-                dsr_str = dsr_str+' '+self.__reslist[line_number+1]
+                dsr_str = dsr_str+' '+self._reslist[line_number+1]
             dsr_list = dsr_str.split()
             txt = ' '.join(dsr_list)
             # wrap the line after 75 chars:
@@ -89,21 +97,23 @@ class DSR_Parser():
                 dsrlines[0] = dsrlines[0]+' ='
             dsrlines = '\n'.join(dsrlines)
             dsrlines = dsrlines+'\n'
-            self.__reslist[line_number] = '' # delete old line
+            self._reslist[line_number] = '' # delete old line
             if multiline:
-                self.__reslist[line_number+1] = '' # delete old line
-            self.__reslist.insert(line_number+1, dsrlines)
+                self._reslist[line_number+1] = '' # delete old line
+            self._reslist.insert(line_number+1, dsrlines)
             return line_number                     # return the line index number
 
 
-
     def find_commands(self, command):
-        '''returns the value of the input string argument as string'''
+        '''
+        returns the value of the input string argument as string
+        :param command: string
+        '''
         # hier vielleicht sogar mit match, damit OCCC nicht gültig ist
-        if command in self.__dsr:
+        if command in self._dsr_list:
             try:
-                c_index = self.__dsr.index(command)+1  # find the index of the command+1
-                cnum = self.__dsr[c_index]             # get the index value
+                c_index = self._dsr_list.index(command)+1  # find the index of the command+1
+                cnum = self._dsr_list[c_index]             # get the index value
             except(IndexError):
                 cnum = False
         else:
@@ -112,10 +122,12 @@ class DSR_Parser():
 
 
     def find_atoms(self, start, *stop):
-        '''returns the source and target atoms between a single start argument
-        and one or several stop arguments'''
+        '''
+        returns the source and target atoms between a single start argument
+        and one or several stop arguments
+        '''
         try:
-            atindex = self.__dsr.index(start)+1
+            atindex = self._dsr_list.index(start)+1
         except(ValueError):
             if start == 'WITH':
                 print('No source atoms given!')
@@ -124,7 +136,7 @@ class DSR_Parser():
                 print('No target atoms given!')
                 sys.exit(-1)
         atoms = []
-        for i in self.__dsr[atindex:]: # start at the position of the first atom
+        for i in self._dsr_list[atindex:]: # start at the position of the first atom
             atoms.append(i.upper())
             if i in stop:   # stop if stop conditions met
                 atoms.pop() # erase the stop condition from the list
@@ -140,7 +152,7 @@ class DSR_Parser():
         check = ('WITH', 'ON')
         for i in check:
             try:
-                if i not in self.__dsr:
+                if i not in self._dsr_list:
                     raise Exception
             except:
                 print('\nNo "WITH" or "ON" statement in the dsr '\
@@ -155,19 +167,19 @@ class DSR_Parser():
         self.minimal_requirements()
         # syntax:
         # rem dsr put|add|replace fragment with source on target part xx AFIX 17x occ occupancy
-        command = self.__dsr[2]
+        command = self._dsr_list[2]
         # get the fragment:
-        fragment = self.__dsr[3]
+        fragment = self._dsr_list[3]
         # make sure the command is correct:
         command_list = ('PUT', 'REPLACE', 'ADD')
         if command not in command_list:
-            print('No proper command string found in DSR command line!\n')#, self.__dsr
+            print('No proper command string found in DSR command line!\n')#, self._dsr_list
             sys.exit(-1)
         # Source and target atoms:
         # In paerenteses are one start und one to multiple stop conditions:
         source = self.find_atoms('WITH', 'ON')
         target = self.find_atoms('ON', 'PART', 'OCC', 'RESI', 'DFIX', '')
-        if 'RESI' in self.__dsr:
+        if 'RESI' in self._dsr_list:
             residue = self.find_atoms('RESI', 'PART', 'OCC', 'RESI', 'DFIX', '')
             # RESI is True but no residue returns -> only RESI in command line
             # hence, return that we at least want residues from the db
@@ -176,7 +188,7 @@ class DSR_Parser():
         else:
             residue = ''
         dfix = False
-        if 'DFIX' in self.__dsr:
+        if 'DFIX' in self._dsr_list:
             dfix = True
         dsr_dict = {
             'command': str(command),
@@ -193,10 +205,16 @@ class DSR_Parser():
 
     @property
     def fragment(self):
+        '''
+        database fragment name
+        '''
         return self.parse_dsr_line()['fragment']
 
     @property
     def occupancy(self):
+        '''
+        occupancy of the fragment
+        '''
         occupancy = self.parse_dsr_line()['occupancy']
         if float(occupancy) > 999:
             print('only 99 free variables allowed in SHELXL!')
@@ -256,10 +274,10 @@ if __name__ == '__main__':
     dsrp = DSR_Parser(reslist, rle)
     #dsr_line = dsrp.parse_dsr_line()
     #print dsr_line
- #   dsr_str = dsrp.find_dsr_command(line=False)
+    #   dsr_str = dsrp.find_dsr_command(line=False)
 
- #   dsr_num = dsrp.find_dsr_command(line=False)
- #
+    #   dsr_num = dsrp.find_dsr_command(line=False)
+    #
 
 
     print('\ncheck for FVAR:')

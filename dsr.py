@@ -144,7 +144,7 @@ class DSR():
         '''
         from export import Export
         export = Export(self.export_fragment, self.invert)
-        export.write_file()
+        export.write_res_file()
         sys.exit(1)
 
 
@@ -265,7 +265,7 @@ class DSR():
         dbnames = list(db.keys())
         for name in dbnames:
             export = Export(name)
-            export.write_file()
+            export.write_res_file()
         sys.exit(1)
 
 

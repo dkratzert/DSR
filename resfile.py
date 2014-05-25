@@ -94,7 +94,7 @@ class ResListEdit():
         :param reslist: SHELXL .res file as list
         :param find_atoms: FindAtoms() object
         '''
-        self.__reslist = reslist
+        self._reslist = reslist
         self._find_atoms = find_atoms
 
 
@@ -106,8 +106,8 @@ class ResListEdit():
         :param new_line: new string to insert like 'foo bar'
         '''
         linenum = linenum-1
-        self.__reslist.insert(linenum, new_line+'\n')
-        return self.__reslist
+        self._reslist.insert(linenum, new_line+'\n')
+        return self._reslist
 
 
     def remove_line(self, linenum, rem=False, remove=False, frontspace=False):
@@ -122,20 +122,20 @@ class ResListEdit():
         :param frontspace: True/False, activate removing with a front space
         '''
 
-        line = self.__reslist[linenum]
+        line = self._reslist[linenum]
         if rem:   # comment out with 'rem ' in front
-            self.__reslist[linenum] = 'rem '+line
+            self._reslist[linenum] = 'rem '+line
             if misc.multiline_test(line):
-                self.__reslist[linenum+1] = 'rem '+self.__reslist[linenum+1]
+                self._reslist[linenum+1] = 'rem '+self._reslist[linenum+1]
         elif remove:  # really delete the line "linenum"
-            del self.__reslist[linenum]
+            del self._reslist[linenum]
             if misc.multiline_test(line):
-                del self.__reslist[linenum]
+                del self._reslist[linenum]
         if frontspace:  # only put a space in front
-            self.__reslist[linenum] = ' '+line
+            self._reslist[linenum] = ' '+line
             if misc.multiline_test(line):
-                self.__reslist[linenum+1] = ' '+self.__reslist[linenum+1]
-        return self.__reslist
+                self._reslist[linenum+1] = ' '+self._reslist[linenum+1]
+        return self._reslist
 
 
     def list_lines(self, startline, endline):
@@ -150,7 +150,7 @@ class ResListEdit():
             end = int(endline)
         except(NameError, SyntaxError):
             return False
-        for line, i in enumerate(self.__reslist):
+        for line, i in enumerate(self._reslist):
             if line >= start:
                 lines.append(i)
             if line == end:
@@ -160,22 +160,22 @@ class ResListEdit():
 
     def getAll(self):
         '''returns the whole resfile as list'''
-        return self.__reslist
+        return self._reslist
 
 
     def find_fvarlines(self):
         '''
         Finds the FVAR line or the first line with an atom.
         '''
-        fvarlines = misc.find_multi_lines(self.__reslist, r'^FVAR.+[0-9]+')
+        fvarlines = misc.find_multi_lines(self._reslist, r'^FVAR.+[0-9]+')
         if not fvarlines:   # There is no FVAR in the res file after SHELXS!
-            for num, i in enumerate(self.__reslist):
+            for num, i in enumerate(self._reslist):
                 if self._find_atoms.get_atom(i):
                     first_atom = num
                     break
             fvarlines = []
             fvarlines.append(first_atom-1)
-            self.__reslist.insert(first_atom-1, ' \n')
+            self._reslist.insert(first_atom-1, ' \n')
         return fvarlines
 
 
@@ -198,7 +198,7 @@ class ResListEdit():
         dblines = '\n The following is from DSR:\n'+dblines
         dblines = dblines+'\nFEND\n\n'
         #dblines = misc.ll_to_string(db)+'\n'
-        self.__reslist.insert(fvarlines[-1]+1, dblines)   # insert the db entry right after FVAR
+        self._reslist.insert(fvarlines[-1]+1, dblines)   # insert the db entry right after FVAR
 
 
     def set_free_variables(self, occupancynumber, fvarlines):
@@ -214,13 +214,13 @@ class ResListEdit():
         fvar_list = []
 
         for line in fvarlines:
-            fvar = self.__reslist[line].split()
+            fvar = self._reslist[line].split()
             if fvar:
                 del fvar[0]
             fvar_list.extend(fvar)
         if len(fvar_list) != 0:
             for line in fvarlines:
-                self.__reslist[line] = ' \n' # removes the old FVAR
+                self._reslist[line] = ' \n' # removes the old FVAR
 
         varlen = len(fvar_list) # how many numbers do we have?
         num = occupancynumber.split('.')   # the occupancynumber is split in the fvar part and the occupancy part
@@ -237,7 +237,7 @@ class ResListEdit():
             lines.append(l)
             fvars = '\n'.join(lines)
             fvars = fvars+'\n'
-        self.__reslist.insert(fvarlines[0]+1, fvars)
+        self._reslist.insert(fvarlines[0]+1, fvars)
 
 
 

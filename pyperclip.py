@@ -139,13 +139,13 @@ elif os.name == 'posix' or platform.system() == 'Linux':
             getcb = xselGetClipboard
             setcb = xselSetClipboard
         try:
-            import gtk
+            import gtk  # @UnresolvedImport
             getcb = gtkGetClipboard
             setcb = gtkSetClipboard
         except:
             try:
-                import PyQt4.QtCore
-                import PyQt4.QtGui
+                import PyQt4.QtCore  # @UnusedImport @UnresolvedImport
+                import PyQt4.QtGui  # @UnresolvedImport
                 #app = QApplication([])
                 cb = PyQt4.QtGui.QApplication.clipboard()
                 getcb = qtGetClipboard

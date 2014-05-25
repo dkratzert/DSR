@@ -76,9 +76,9 @@ class InsertAfix(object):
         :param find_atoms:   FindAtoms() object
         :param numberscheme: atoms numbering scheme like: ['O1', 'C1', 'C2', 'F1', 'F2', 'F3', 'C3']
         '''
-        self.__reslist = reslist
+        self._reslist = reslist
         self._find_atoms = find_atoms
-        self.__dbatoms = dbatoms
+        self._dbatoms = dbatoms
         self.__dbhead = dbhead
         self.__dbtypes = db_atom_types
         self.__sfac = sfac_table
@@ -107,7 +107,7 @@ class InsertAfix(object):
         '''
         modified = False
         newhead = dbhead[:]
-        for resline in self.__reslist:
+        for resline in self._reslist:
             resline = resline.strip().split()
             for num, headline in enumerate(dbhead):
                 headline = headline.strip().split()
@@ -164,7 +164,7 @@ class InsertAfix(object):
             dbhead = self.remove_duplicate_restraints(dbhead, residue_class)
         else:
             # applies new naming scheme
-            old_atoms = [ i[0] for i in self.__dbatoms]
+            old_atoms = [ i[0] for i in self._dbatoms]
             dbhead = rename_dbhead_atoms(new_atomnames, old_atoms, dbhead)
         removed_restr = self.remove_all_restraints(dbhead)
         dbhead_distance = removed_restr[0]
@@ -185,7 +185,7 @@ class InsertAfix(object):
         coordinates = self._find_atoms.get_atomcoordinates(self.target_atoms)
         #target = self.target_atoms[:]  # a copy because we edit it later
         # a list of zeroed atomcoordianes (afix_list) is built:
-        for i in self.__dbatoms:
+        for i in self._dbatoms:
             l = []
             l.insert(0, str(i[0]))         # Atomname
             l.insert(1, str(e2s.elem_2_sfac(atom_types.pop())))  # SFAC number
