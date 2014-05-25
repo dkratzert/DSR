@@ -393,7 +393,7 @@ class SfacTable():
         :param res_file_name: str file name like 'p21c.res'
         '''
         self._reslist = reslist
-        self._db = db_atom_types
+        self._db_atom_types = db_atom_types
         self.__res_file_name = res_file_name
 
 
@@ -407,9 +407,9 @@ class SfacTable():
         sfac = self._reslist[sfacline]      # SFAC string in the reslist
         sfac = sfac.split()
         del sfac[0]
-        #dbtypes = list(set(self._db))    # atomtypes in the dbentry
+        #dbtypes = list(set(self._db_atom_types))    # atomtypes in the dbentry
 
-        for i in self._db:                 # this is to compare the occurence of element type from resfile ant db
+        for i in self._db_atom_types:                 # this is to compare the occurence of element type from resfile ant db
             if i not in sfac:             # all atom types from db not already in sfac
                 sfac.append(i)        # get appended to sfac
 
