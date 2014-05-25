@@ -269,13 +269,13 @@ class DSR():
         sys.exit(1)
 
 
-    def set_final_db_sfac_types(self, dbtypes, dbatoms, sfac_table):
+    def set_final_db_sfac_types(self, db_atom_types, dbatoms, sfac_table):
         '''
         corrects the sfac types of the dbentry according to sfac card of the
         res file
         '''
         e2s = Elem_2_Sfac(sfac_table)
-        atype = list(reversed(dbtypes))
+        atype = list(reversed(db_atom_types))
         for line in dbatoms:                             # go through db entry
             line[1] = e2s.elem_2_sfac(atype.pop())       # replace scattering factor (line[1]) with true one
 
@@ -320,11 +320,11 @@ class DSR():
         #from misc import format_atom_names
         #fa = FindAtoms(reslist)
         #lst_file = lf.read_lst_file()
-        coords = lf.get_all_coordinates
-        conntable = lf.read_conntable()
+        lst_file_coordinates = lf.get_all_coordinates
+        lst_file_connectivity_table = lf.read_conntable()
         fragment_atoms = format_atom_names(dbatoms, part, residue)
-        am = Adjacency_Matrix(fragment_atoms, conntable, coords, cell)
-        re = Restraints(coords, am.get_adjmatrix, fragment_atoms, cell)
+        am = Adjacency_Matrix(fragment_atoms, lst_file_connectivity_table, lst_file_coordinates, cell)
+        re = Restraints(lst_file_coordinates, am.get_adjmatrix, fragment_atoms, cell)
         dfixes = re.get_formated_12_dfixes+re.get_formated_13_dfixes+re.get_formated_flats
         return ''.join(dfixes)
 
@@ -354,15 +354,15 @@ class DSR():
         fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
         dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
         dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
-        residue = gdb.get_resi_from_fragment(fragment)
-        dbtypes = get_atomtypes(dbatoms)                 # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
-        resi = Resi(reslist, dsr_dict, dbhead, residue, find_atoms)
+        residue_class = gdb.get_resi_from_fragment(fragment)
+        db_atom_types = get_atomtypes(dbatoms)                 # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
+        resi = Resi(reslist, dsr_dict, dbhead, residue_class, find_atoms)
         dbhead = resi.make_resihead()
-        sf = SfacTable(reslist, dbtypes, self.res_file)
+        sf = SfacTable(reslist, db_atom_types, self.res_file)
         sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
 
         ### corrects the atom type according to the previous defined global sfac table:
-        self.set_final_db_sfac_types(dbtypes, dbatoms, sfac_table)
+        self.set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table)
 
         ## Insert FRAG ... FEND entry:
         rle.insert_frag_fend_entry(dbatoms, fragline, fvarlines)
@@ -380,14 +380,14 @@ class DSR():
         check_source_target(dsrp.source, dsrp.target, dbatoms)
         basefilename = filename_wo_ending(self.res_file)
         num = NumberScheme(reslist, dbatoms, resi.get_resinumber)
-        numberscheme = num.get_fragment_number_scheme()
-        afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict,
-                          sfac_table, find_atoms, numberscheme)
+        fragment_numberscheme = num.get_fragment_number_scheme()
+        afix = InsertAfix(reslist, dbatoms, db_atom_types, dbhead, dsr_dict,
+                          sfac_table, find_atoms, fragment_numberscheme)
         afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfx', resi.get_resiclass)
         # line where the dsr command is found in the resfile:
-        dsrline = dsrp.find_dsr_command(line=False)
-        reslist[dsrline] = reslist[dsrline]+'\n'
-        reslist.insert(dsrline+1, afix_entry)
+        dsr_line_number = dsrp.find_dsr_command(line=False)
+        reslist[dsr_line_number] = reslist[dsr_line_number]+'\n'
+        reslist.insert(dsr_line_number+1, afix_entry)
 
         ##### comment out all target atom lines in replace mode:
         if dsrp.command == 'REPLACE':
@@ -397,7 +397,7 @@ class DSR():
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
         if not self.no_refine:
             shx.set_refinement_cycles('0')
-        shx.remove_acta()
+        shx.remove_acta_card()
 
         rl.write_resfile(reslist, '.ins')
 
@@ -409,8 +409,8 @@ class DSR():
         lf = ListFile(basefilename)
         lst_file = lf.read_lst_file()
         lfd = Lst_Deviations(lst_file)
-        lfd.print_deviations()
-        cell = lf.get_cell_params
+        lfd.print_LS_fit_deviations()
+        cell = lf.get_lst_cell_parameters
 
         # open res file again to restore 10 refinement cycles:
         rl = ResList(self.res_file)
@@ -420,29 +420,29 @@ class DSR():
         if not self.no_refine:
             self.set_post_refine_cycles(shx, '8')
 
-        if dsrp.dfix:
+        if dsrp.dfix_active:
             resinumber = resi.get_resinumber
             dfix_restraints = self.generate_dfix_restraints(lf,
                                             reslist,
-                                            numberscheme,
+                                            fragment_numberscheme,
                                             resinumber,
                                             cell,
                                             dsrp.part)
             if resinumber:
                 if self.external:
-                    externalfile_name = basefilename+'.dfx'
-                    write_dbhead_to_file(externalfile_name, dfix_restraints, resi.get_resiclass, resinumber)
+                    external_file_name = basefilename+'.dfx'
+                    write_dbhead_to_file(external_file_name, dfix_restraints, resi.get_resiclass, resinumber)
                 for n, line in enumerate(reslist):
                     if line.upper().startswith('RESI'):
                         if line.split()[1] == str(resinumber):
                             if self.external:
-                                line = '{}\nREM The restraints for residue {} are in this file:\n+{}\n'.format(line, resinumber, externalfile_name)
+                                line = '{}\nREM The restraints for residue {} are in this file:\n+{}\n'.format(line, resinumber, external_file_name)
                             else:
                                 line = '{} \n{}\n'.format(line, dfix_restraints)
                             reslist[n] = line
             else:
-                line = '{}'.format(dfix_restraints) # insert restraints after dsrline
-                reslist[dsrline-2] = reslist[dsrline-2]+line
+                line = '{}'.format(dfix_restraints) # insert restraints after dsr_line_number
+                reslist[dsr_line_number-2] = reslist[dsr_line_number-2]+line
 
         if not self.no_refine:
             rl.write_resfile(reslist, '.res')

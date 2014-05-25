@@ -243,10 +243,16 @@ class DSR_Parser():
 
     @property
     def resi(self):
+        '''
+        resi: empty string, dbfile, class, number or class and number
+        '''
         return self.parse_dsr_line()['resi']
 
     @property
-    def dfix(self):
+    def dfix_active(self):
+        '''
+        dfix: bool True/False
+        '''
         dfix = self.parse_dsr_line()['dfix']
         if dfix and not self.part:
             print('You have to use the "PART" command if you use DFIX in DSR!')

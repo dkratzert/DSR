@@ -41,7 +41,7 @@ class ShelxlRefine():
         self._reslist = reslist
         self._shelx_command = self.find_shelxl_exe()
         self.b_array = self.approx_natoms()
-        self.bakfile = str(self.resfile_name+'.dsr-bak')
+        self.backup_file = str(self.resfile_name+'.dsr-bak')
         if not self._shelx_command:
             print('\nSHELXL executable not found! No fragment fitting possible.\n')
             print('You can download SHELXL at http://shelx.uni-ac.gwdg.de/SHELX/index.php\n')
@@ -111,7 +111,7 @@ class ShelxlRefine():
 
 
 
-    def remove_acta(self):
+    def remove_acta_card(self):
         '''
         removes the ACTA card, bacause we refine with L.S. 0, wich is incompatible!
         '''
@@ -183,7 +183,7 @@ class ShelxlRefine():
         '''
         resfile = str(self.resfile_name+'.res')
         try:
-            shutil.copyfile(resfile, self.bakfile)
+            shutil.copyfile(resfile, self.backup_file)
         except(IOError):
             print('Unable to make backup file from {}.'.format(resfile))
             sys.exit(-1)
@@ -195,13 +195,13 @@ class ShelxlRefine():
         '''
         resfile = str(self.resfile_name+'.res')
         try:
-            shutil.copyfile(self.bakfile, resfile)
+            shutil.copyfile(self.backup_file, resfile)
         except(IOError):
-            print('Unable to make restore res file from {}.'.format(self.bakfile))
+            print('Unable to make restore res file from {}.'.format(self.backup_file))
         try:
-            misc.remove_file(self.bakfile)
+            misc.remove_file(self.backup_file)
         except(IOError):
-            print('Unable to delete backup file {}.'.format(self.bakfile))
+            print('Unable to delete backup file {}.'.format(self.backup_file))
 
 
     def pretty_shx_output(self, output):
@@ -284,9 +284,9 @@ class ShelxlRefine():
         else:          # sucess
             print('-----------------------------------------------------------------')
             try:
-                misc.remove_file(self.bakfile)
+                misc.remove_file(self.backup_file)
             except(IOError):
-                print('Unable to delete backup file {}.'.format(self.bakfile))
+                print('Unable to delete backup file {}.'.format(self.backup_file))
 
 
 
