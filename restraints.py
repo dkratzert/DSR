@@ -186,7 +186,11 @@ class ListFile():
         return cell
 
     @property
-    def get_cell_params(self):
+    def get_lst_cell_parameters(self):
+        '''
+        Returns the unit cell parameters from the list file as list:
+        ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
+        '''
         return self.get_cell()
 
     @property
@@ -254,11 +258,17 @@ class Adjacency_Matrix():
 
 class Restraints():
     '''
-    This class uses the 1,2- and 1,3-bonds from Connections and tries to generate
-    relative distance restraints.
-    Maybe also absolute distance restraints?
+    This class uses connectivity table from the SHELXL lst file and
+    generates 1,2- and 1,3-bond distance restraints.
     '''
     def __init__(self, coords, G, atoms, cell):
+        '''
+
+        :param coords:
+        :param G:
+        :param atoms:
+        :param cell:
+        '''
         self.coordinates = coords
         self.atoms = atoms
         cell = [float(i) for i in cell]
@@ -283,13 +293,13 @@ class Restraints():
 
     @property
     def get_formated_12_dfixes(self):
-        dfix_format = []
-        dfix = self.get_12_dfixes
-        dfix = remove_duplicate_bonds(dfix)
-        for n, i in enumerate(dfix, 1):
-            dfix_format.append('DFIX {:.4f}  {:7}{:7}\n'.format(i[2], \
+        dfix_formated = []
+        dfix_restraints = self.get_12_dfixes
+        dfix_restraints = remove_duplicate_bonds(dfix_restraints)
+        for n, i in enumerate(dfix_restraints, 1):
+            dfix_formated.append('DFIX {:.4f}  {:7}{:7}\n'.format(i[2], \
                 misc.remove_partsymbol(i[0]), misc.remove_partsymbol(i[1])))
-        return dfix_format
+        return dfix_formated
 
 
     def get_neighbors(self, atoms):
@@ -455,12 +465,12 @@ class Lst_Deviations():
         return deviations
 
 
-    def print_deviations(self):
+    def print_LS_fit_deviations(self):
         '''
-        pretty output of the deviations
+        pretty output of the LS-fit deviations
         '''
         if self._dev:
-            print('\n Fragment fit might have failed.')
+            print('\n Fragment fit might have failed!')
             print(' Deviations on fitting group:')
             for i in self._dev:
                 print(' {:<4}: {:>5} A'.format(i.strip(' \n\r'), self._dev[i][:4]))
@@ -489,7 +499,7 @@ if __name__ == '__main__':
     part = '2'
 
     lf = ListFile(basefilename)
-    cell = lf.get_cell_params
+    cell = lf.get_lst_cell_parameters
     lst_file = lf.read_lst_file()
     coords = lf.get_all_coordinates
     conntable = lf.read_conntable()

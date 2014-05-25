@@ -34,13 +34,13 @@ def _get_terminal_size_windows():
         # stdin handle is -10
         # stdout handle is -11
         # stderr handle is -12
-        h = windll.kernel32.GetStdHandle(-12)
+        h = windll.kernel32.GetStdHandle(-12)  # @UndefinedVariable
         csbi = create_string_buffer(22)
-        res = windll.kernel32.GetConsoleScreenBufferInfo(h, csbi)
+        res = windll.kernel32.GetConsoleScreenBufferInfo(h, csbi)  # @UndefinedVariable
         if res:
-            (bufx, bufy, curx, cury, wattr,
+            (bufx, bufy, curx, cury, wattr,  # @UnusedVariable
              left, top, right, bottom,
-             maxx, maxy) = struct.unpack("hhhhHhhhhhh", csbi.raw)
+             maxx, maxy) = struct.unpack("hhhhHhhhhhh", csbi.raw)  # @UnusedVariable
             sizex = right - left + 1
             sizey = bottom - top + 1
             return sizex, sizey
@@ -62,8 +62,8 @@ def _get_terminal_size_tput():
 def _get_terminal_size_linux():
     def ioctl_GWINSZ(fd):
         try:
-            import fcntl
-            import termios
+            import fcntl  # @UnresolvedImport
+            import termios  # @UnresolvedImport
             cr = struct.unpack('hh',
                                fcntl.ioctl(fd, termios.TIOCGWINSZ, '1234'))
             return cr
@@ -72,7 +72,7 @@ def _get_terminal_size_linux():
     cr = ioctl_GWINSZ(0) or ioctl_GWINSZ(1) or ioctl_GWINSZ(2)
     if not cr:
         try:
-            fd = os.open(os.ctermid(), os.O_RDONLY)
+            fd = os.open(os.ctermid(), os.O_RDONLY)  # @UndefinedVariable
             cr = ioctl_GWINSZ(fd)
             os.close(fd)
         except:
