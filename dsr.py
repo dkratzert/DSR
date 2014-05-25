@@ -382,7 +382,8 @@ class DSR():
         fragment_numberscheme = num.get_fragment_number_scheme()
         afix = InsertAfix(reslist, dbatoms, db_atom_types, dbhead, dsr_dict,
                           sfac_table, find_atoms, fragment_numberscheme)
-        afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfx', resi.get_resiclass)
+        afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfx',
+                                           resi.get_resiclass)
         # line where the dsr command is found in the resfile:
         dsr_line_number = dsrp.find_dsr_command(line=False)
         reslist[dsr_line_number] = reslist[dsr_line_number]+'\n'
@@ -430,12 +431,14 @@ class DSR():
             if resinumber:
                 if self.external:
                     external_file_name = basefilename+'.dfx'
-                    write_dbhead_to_file(external_file_name, dfix_restraints, resi.get_resiclass, resinumber)
+                    write_dbhead_to_file(external_file_name, dfix_restraints,
+                                         resi.get_resiclass, resinumber)
                 for n, line in enumerate(reslist):
                     if line.upper().startswith('RESI'):
                         if line.split()[1] == str(resinumber):
                             if self.external:
-                                line = '{}\nREM The restraints for residue {} are in this file:\n+{}\n'.format(line, resinumber, external_file_name)
+                                line = '{}\nREM The restraints for residue {} '
+                                'are in this file:\n+{}\n'.format(line, resinumber, external_file_name)
                             else:
                                 line = '{} \n{}\n'.format(line, dfix_restraints)
                             reslist[n] = line
