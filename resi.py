@@ -286,7 +286,7 @@ class Resi(object):
         '''
         num = 1
         resi_name = self._resi_name[:3]+str(num)
-        for i in self._dbnames:
+        for i in self._db_tags:
             while resi_name.upper() == i[0].upper():
                 num = num + 1
                 resi_name = resi_name[:3]+str(num)

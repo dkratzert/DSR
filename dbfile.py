@@ -23,15 +23,17 @@ from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS
 
 def invert_dbatoms_coordinates(atoms):
     '''
-    invert the coordinates for atoms like
+    Inverts SHELXL atom coordinates like
     [[C1  1  0.44  0.21  -1.23 ][ ...]]
+
+    :param atoms: list of atom list
     '''
     for line in atoms:
         try:
             inv_coord = [ str(-float(i)) for i in line[-3:] ]
         except:
             print('Unable to invert fragment coordinates.')
-            return atoms
+            return False
         line[-3:] = inv_coord
     return atoms
 
@@ -42,14 +44,14 @@ __metaclass__ = type  # use new-style classes
 # dsr_db.txt is the db from the distribution. This file should not be edited.
 # dsr_user_db.txt if this file exists, all its content is also read in.
 
-class getDB():
+class ReadDB():
     '''
-    reads in the system and user db files (self._db_names) and makes
+    reads in the system and user db files (self._db_file_names) and makes
     a dictionary of them.
     '''
 
     def __init__(self):
-        self._db_names = ("dsr_db.txt", "dsr_user_db.txt")
+        self._db_file_names = ("dsr_db.txt", "dsr_user_db.txt")
         try:
             self._db_dir = os.environ["DSR_DB_DIR"]
         except(KeyError):
@@ -70,7 +72,7 @@ class getDB():
         {'dsr-db': ('line1\n', 'line2\n', '...'), 'dsr-user-db': ('line1\n', 'line2\n', '...')}
         '''
         db_dict = {}
-        for name in self._db_names:
+        for name in self._db_file_names:
             dblist = []
             filename = self.getDBpath(name)
             base_filename = os.path.splitext(name)[0]
@@ -148,8 +150,8 @@ class global_DB():
 
     def __init__(self, invert=False):
         self.invert = invert
-        self._getdb = getDB()
-        self._dbnames = self._getdb.find_db_tags()
+        self._getdb = ReadDB()
+        self._db_tags = self._getdb.find_db_tags()
         self._db_plain_dict = self._getdb.getDB_files_dict()
         self._dbentry_dict = self.build_db_dict()
 
@@ -160,7 +162,7 @@ class global_DB():
         returns the global db dictionary
         '''
         db_dict = {}
-        for i in self._dbnames:
+        for i in self._db_tags:
             fragment = i[0].lower()
             line = str(i[1])
             db = str(i[2])
@@ -394,9 +396,9 @@ class ImportGRADE():
     '''
     def __init__(self, gradefile, invert=False):
         self.invert = invert
-        self._getdb = getDB()
+        self._getdb = ReadDB()
         self._db_dir = os.environ["DSR_DB_DIR"]
-        self._dbnames = self._getdb.find_db_tags()
+        self._db_tags = self._getdb.find_db_tags()
         self._gdb = global_DB(invert=False)
         self._db = self._gdb.build_db_dict()
         self._gradefile = gradefile
@@ -508,7 +510,7 @@ class ImportGRADE():
         db_import_dict = {}
         num = 1
         resi_name = self._resi_name[:3]+str(num)
-        for i in self._dbnames:
+        for i in self._db_tags:
             while resi_name.upper() == i[0].upper():
                 num = num + 1
                 resi_name = resi_name[:3]+str(num)
@@ -681,7 +683,7 @@ class ImportGRADE():
 
 if __name__ == '__main__':
 
-    gdb = getDB()
+    gdb = ReadDB()
     dbnames = gdb.find_db_tags()
     #print 'dbcontent:'
     #for i in dbnames:

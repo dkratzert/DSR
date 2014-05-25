@@ -505,7 +505,7 @@ if __name__ == '__main__':
     resi = True #gdb.get_resi_from_fragment(fragment)
     uhead = unwrap_head_lines(dbhead)
     print(uhead)
-   # sys.exit()
+    # sys.exit()
 
 
 
@@ -533,7 +533,7 @@ if __name__ == '__main__':
     #print(whead)
     uhead = unwrap_head_lines(whead)
     #print(uhead)
-   # sys.exit()
+    # sys.exit()
     dsr_string = dsrp.find_dsr_command(line=True).lower()
 
     regex = 'Q2.*'
