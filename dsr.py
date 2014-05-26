@@ -52,6 +52,29 @@ class DSR():
                  export_fragment=None, search_string=None,
                  export_clip=None, import_grade=None, export_all=None,
                  list_db=None, no_refine=None, invert=None):
+        '''
+
+        :param res_file_name:  name of the SHELXL res file, like 'p21c.res'
+        :type res_file_name:   string
+        :param external_restr: turn external restraints file on or off
+        :type external_restr:  boolean
+        :param export_fragment: name of fragment to be exported, like 'pfanion'
+        :type export_fragment: string
+        :param search_string:  search for this string in the database
+        :type search_string:   string
+        :param export_clip:    export fragment to clipboard, like 'pfanion'
+        :type export_clip:     string
+        :param import_grade:   import grade file to user database
+        :type import_grade:    string
+        :param export_all:     export all fragments at once
+        :type export_all:      boolean
+        :param list_db:        list database entrys
+        :type list_db:         boolean
+        :param no_refine:      turn refinement off
+        :type no_refine:       boolean
+        :param invert:         invert the fragment during import, export or LS-fit
+        :type invert:          boolean
+        '''
         # options from the commandline options parser:
         self.options = OptionsParser(progname)
         self.external = False
@@ -271,12 +294,20 @@ class DSR():
         '''
         corrects the sfac types of the dbentry according to sfac card of the
         res file
+        :param db_atom_types: element names of each atom in the database entry
+                              like ['C', 'C', 'N', ... ]
+        :type db_atom_types: list
+        :param dbatoms: full atoms of the database entry
+        :type dbatoms: list
+        :param sfac_table: list of scattering factors from SHELXL
+        :type sfac_table: list
         '''
         e2s = Elem_2_Sfac(sfac_table)
         atype = list(reversed(db_atom_types))
         for line in dbatoms:                    # go through db entry
             # replace scattering factor (line[1]) with true one
             line[1] = e2s.elem_2_sfac(atype.pop())
+        return dbatoms
 
 
     def replacemode(self, res_target_atoms, rle, reslist, sfac_table):
@@ -361,7 +392,7 @@ class DSR():
         sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
 
         ### corrects the atom type according to the previous defined global sfac table:
-        self.set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table)
+        dbatoms = self.set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table)
 
         ## Insert FRAG ... FEND entry:
         rle.insert_frag_fend_entry(dbatoms, fragline, fvarlines)
@@ -430,14 +461,13 @@ class DSR():
                                             dsrp.part)
             if resinumber:
                 if self.external:
-                    external_file_name = basefilename+'.dfx'
-                    write_dbhead_to_file(external_file_name, dfix_restraints,
+                    external_file_name = write_dbhead_to_file(basefilename+'.dfx', dfix_restraints,
                                          resi.get_resiclass, resinumber)
                 for n, line in enumerate(reslist):
                     if line.upper().startswith('RESI'):
                         if line.split()[1] == str(resinumber):
                             if self.external:
-                                line = '{}\nREM The restraints for residue {} '
+                                line = '{}\nREM The restraints for residue {} '\
                                 'are in this file:\n+{}\n'.format(line, resinumber, external_file_name)
                             else:
                                 line = '{} \n{}\n'.format(line, dfix_restraints)

@@ -148,13 +148,13 @@ class InsertAfix(object):
 
 
 
-    def build_afix_entry(self, external_restraints, filename, residue_class):
+    def build_afix_entry(self, external_restraints, dfx_file_name, residue_class):
         '''
         build an afix entry with atom coordinates from the target atoms
 
         :param external_restraints:  True/False decision if restraints should be
                                      written to external file
-        :param filename:             name of file for external restraints
+        :param dfx_file_name:             name of file for external restraints
         :param residue_class:        SHELXL residue class
         '''
         afix_list = []   # the final list with atoms, sfac and coordinates
@@ -178,7 +178,8 @@ class InsertAfix(object):
             dbhead = dbhead_others
             resinumber = False
             dbhead_for_dfix = misc.wrap_headlines(dbhead_for_dfix)
-            write_dbhead_to_file(filename, dbhead_for_dfix, residue_class, resinumber)
+            # returns the real name of the restraints file:
+            dfx_file_name = write_dbhead_to_file(dfx_file_name, dbhead_for_dfix, residue_class, resinumber)
         if not external_restraints and not self._dfix:
             dbhead_for_dfix = misc.wrap_headlines(dbhead_for_dfix)
             dbhead = dbhead_others+dbhead_for_dfix
@@ -226,8 +227,8 @@ class InsertAfix(object):
         else:
             resi = ''
         if external_restraints and not self._dfix:
-            dbhead.append('REM The restraints for residue_class {} are in this '
-                            'file:\n+{}\n'.format(residue_class, filename))
+            dbhead.append('REM The restraints for residue_class {} are in this'\
+                          ' file:\n+{}\n'.format(residue_class, dfx_file_name))
         dbhead = ''.join(dbhead)
         warn = self.insert_dsr_warning()
         afix = warn+dbhead+str(part)+'AFIX '+str(self.afixnumber)+'\n'+atoms+(
