@@ -626,28 +626,28 @@ if __name__ == '__main__':
 
     #sys.exit()
 
-  #  print('Residue dict:', fa.get_resinum('RESI 1 TOL'.split()))
-  #  print fa.get_atomcoordinates(['C12', 'C29', 'Q12'])
-  #  print('line number:', fa.get_atom_line_numbers(['C12', 'C333', 'Q12']))
-  #
-  #  fa.remove_adjacent_hydrogens(['C2', 'c4', 'c5'], SFAC)
-  #
-  # # for num, i in enumerate(reslist):
-  # #     if num > 65:
-  # #         print(i.strip('\r\n'))
-  # #     if num > 85:
-  # #         break
-  #
-  #  print('get_atomtypes', get_atomtypes(dbatoms))
-  #  print()
-  #  print('get_atomcoordinates:')
-  #  coord = fa.get_atomcoordinates(['C1', 'C22', 'C28', 'Q1'])
-  #  for i in coord:
-  #      print('{}:\t{:<9} {:<9} {:<9}'.format(i, *coord[i]))
-  #  print('jhdgfd')
-  #
-  #  dsrp = DSR_Parser(reslist)
-  #  dsr_dict = dsrp.parse_dsr_line()
+    #  print('Residue dict:', fa.get_resinum('RESI 1 TOL'.split()))
+    #  print fa.get_atomcoordinates(['C12', 'C29', 'Q12'])
+    #  print('line number:', fa.get_atom_line_numbers(['C12', 'C333', 'Q12']))
+    #
+    #  fa.remove_adjacent_hydrogens(['C2', 'c4', 'c5'], SFAC)
+    #
+    # # for num, i in enumerate(reslist):
+    # #     if num > 65:
+    # #         print(i.strip('\r\n'))
+    # #     if num > 85:
+    # #         break
+    #
+    #  print('get_atomtypes', get_atomtypes(dbatoms))
+    #  print()
+    #  print('get_atomcoordinates:')
+    #  coord = fa.get_atomcoordinates(['C1', 'C22', 'C28', 'Q1'])
+    #  for i in coord:
+    #      print('{}:\t{:<9} {:<9} {:<9}'.format(i, *coord[i]))
+    #  print('jhdgfd')
+    #
+    #  dsrp = DSR_Parser(reslist)
+    #  dsr_dict = dsrp.parse_dsr_line()
 
     print(check_source_target(dsr_dict.get('source'), dsr_dict.get('target'), dbatoms))
 
@@ -656,5 +656,5 @@ if __name__ == '__main__':
     num.get_fragment_number_scheme()
     dbtypes = get_atomtypes(dbatoms)
     print('#############', dbtypes, '########dbtypes###################')
-   # sfac = SfacTable(reslist, dbtypes)
-   # print(sfac.set_sfac_table())
+    # sfac = SfacTable(reslist, dbtypes)
+    # print(sfac.set_sfac_table())

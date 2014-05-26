@@ -72,7 +72,7 @@ class Resi(object):
         '''removes all resi commands and classes from head'''
         rhead = [] #head without resi
         delhead = []
-        for num, line in enumerate(head):
+        for dummy, line in enumerate(head):
             line = line.split()
             try:
                 if line[0][:4] in RESTRAINT_CARDS:
@@ -328,8 +328,8 @@ if __name__ == '__main__':
         print(i)
     residue = '5 CCF3'
     resi = Resi(res_list, dsr_dict, dbhead, residue, find_atoms)
-   # db_resi = resi.get_resi_from_db()
-   # print 'the new resinumber:', resi.get_unique_resinumber()
+    # db_resi = resi.get_resi_from_db()
+    # print 'the new resinumber:', resi.get_unique_resinumber()
     print()
     print()
     head = resi.make_resihead()
