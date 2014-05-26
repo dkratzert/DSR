@@ -27,7 +27,7 @@ from restraints import ListFile, Lst_Deviations, format_atom_names
 from restraints import Restraints, Adjacency_Matrix
 
 # TODO and ideas:
-# -automatically invert fragment if fit fails and fit again?
+# -create FileIO() object
 # -FLAT: see for every ring atom if there is also an attached atom in the same plane
 # -To the manual: Avogradro/res-file -> rename -> mercury -> mol2-file -> GRADE
 # -To manual: what to do if something does not work.
@@ -308,7 +308,7 @@ class DSR():
             sys.exit()
 
 
-    def generate_dfix_restraints(self, lf, reslist, dbatoms, residue, cell, part=''):
+    def generate_dfix_restraints(self, lf, reslist, dbatoms, residue_number, cell, part=''):
         '''
         returns a string of DFIX restraints for all 1,2- and 1,3-Bond distances
         in the current fragment.
@@ -321,7 +321,7 @@ class DSR():
         #lst_file = lf.read_lst_file()
         lst_file_coordinates = lf.get_all_coordinates
         lst_file_connectivity_table = lf.read_conntable()
-        fragment_atoms = format_atom_names(dbatoms, part, residue)
+        fragment_atoms = format_atom_names(dbatoms, part, residue_number)
         am = Adjacency_Matrix(fragment_atoms, lst_file_connectivity_table, lst_file_coordinates, cell)
         re = Restraints(lst_file_coordinates, am.get_adjmatrix, fragment_atoms, cell)
         dfixes = re.get_formated_12_dfixes+re.get_formated_13_dfixes+re.get_formated_flats
