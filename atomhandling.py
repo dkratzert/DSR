@@ -30,25 +30,24 @@ def get_atomtypes(dbatoms):
                       ['C1', 1, '-0.00146', '0.26814', '0.06351'],
                       [...]
                      ]
+    :type dbatoms: list
     '''
     found = []
     # find lines with atoms and see if they are in the atom list
     # print get_atoms(dbatoms)
+    elements = [x.upper() for x in el.atoms]
     for i in dbatoms:
-        i = i[0]    # i is the full atom name with number suffix like C1
+        i = i[0].upper()    # i is the full atom name with number suffix like C1
         atom=''
         for x in i:       # iterate over characters in i
-            if re.match("^[A-Za-z]", x):
-                atom = atom.upper()+x.upper()  # add characters to atoms until numbers occur
-            else:                          # now we have atoms like C, Ca, but also Caaa
+            if re.match(r'^[A-Za-z#]', x):
+                atom = atom+x      # add characters to atoms until numbers occur
+            else:                  # now we have atoms like C, Ca, but also Caaa
                 break
-
-        el.atoms = [x.upper() for x in el.atoms]
-
-        if atom[0:2].upper() in el.atoms:    # fixes names like Caaa to be just Ca
-            found.append(atom[0:2].upper())  # atoms first, search for all two-letter atoms
+        if atom[0:2] in elements:    # fixes names like Caaa to be just Ca
+            found.append(atom[0:2])  # atoms first, search for all two-letter atoms
             continue
-        elif atom[0] in el.atoms:
+        elif atom[0] in elements:
             found.append(atom[0])  # then for all one-letter atoms
         else:
             print('\n {} is not a valid atom!!\n'.format(atom))
@@ -62,6 +61,7 @@ def get_atomtypes(dbatoms):
 def check_db_names_for_consistency(dbhead, dbatoms):
     '''Checks if the Atomnames in the restraints of the dbhead are also in
     the list of the atoms of the respective dbentry
+    Not used ATM
     '''
     for i in dbhead:
         if i not in dbatoms:
@@ -585,9 +585,9 @@ if __name__ == '__main__':
     num = NumberScheme(reslist, dbatoms, resiopt)
     # das printet auch auf bilschirm:
     numbers = num.get_fragment_number_scheme()
-    print('#######################')
-    #print(numbers)
-    print('#######################')
+    #print('#######################')
+    print(numbers)
+    #print('#######################')
     dbtypes = get_atomtypes(dbatoms)
 
 
@@ -622,35 +622,32 @@ if __name__ == '__main__':
     # this might be used to find nearest atoms in same class to make eadp
     print(fa.get_atoms_resiclass('C1_2'))
 
+    SFAC = ['C', 'H', 'N']
 
+    #sys.exit()
 
-    sys.exit()
-
-    print('Residue dict:', fa.get_resinum('RESI 1 TOL'.split()))
-#   print fa.get_atomcoordinates(['C12', 'C29', 'Q12'])
-    print('line number:', fa.get_atom_line_numbers(['C12', 'C333', 'Q12']))
-
-    fa.remove_adjacent_hydrogens(['C2', 'c4', 'c5'])
-
-    for num, i in enumerate(reslist):
-        if num > 65:
-            print(i.strip('\r\n'))
-        if num > 85:
-            break
-
-    print('get_atomtypes', get_atomtypes(dbatoms))
-    print()
-    print('get_atomcoordinates:')
-    coord = fa.get_atomcoordinates(['C1', 'C22', 'C28', 'Q1'])
-    for i in coord:
-        print('{}:\t{:<9} {:<9} {:<9}'.format(i, *coord[i]))
-    print()
-    print()
-
-
-
-    dsrp = DSR_Parser(reslist)
-    dsr_dict = dsrp.parse_dsr_line()
+  #  print('Residue dict:', fa.get_resinum('RESI 1 TOL'.split()))
+  #  print fa.get_atomcoordinates(['C12', 'C29', 'Q12'])
+  #  print('line number:', fa.get_atom_line_numbers(['C12', 'C333', 'Q12']))
+  #
+  #  fa.remove_adjacent_hydrogens(['C2', 'c4', 'c5'], SFAC)
+  #
+  # # for num, i in enumerate(reslist):
+  # #     if num > 65:
+  # #         print(i.strip('\r\n'))
+  # #     if num > 85:
+  # #         break
+  #
+  #  print('get_atomtypes', get_atomtypes(dbatoms))
+  #  print()
+  #  print('get_atomcoordinates:')
+  #  coord = fa.get_atomcoordinates(['C1', 'C22', 'C28', 'Q1'])
+  #  for i in coord:
+  #      print('{}:\t{:<9} {:<9} {:<9}'.format(i, *coord[i]))
+  #  print('jhdgfd')
+  #
+  #  dsrp = DSR_Parser(reslist)
+  #  dsr_dict = dsrp.parse_dsr_line()
 
     print(check_source_target(dsr_dict.get('source'), dsr_dict.get('target'), dbatoms))
 
@@ -658,5 +655,6 @@ if __name__ == '__main__':
     num = NumberScheme(reslist, dbatoms, dsr_dict['resi'])
     num.get_fragment_number_scheme()
     dbtypes = get_atomtypes(dbatoms)
-    sfac = SfacTable(reslist, dbtypes)
-    print(sfac.set_sfac_table())
+    print('#############', dbtypes, '########dbtypes###################')
+   # sfac = SfacTable(reslist, dbtypes)
+   # print(sfac.set_sfac_table())
