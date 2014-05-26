@@ -56,13 +56,15 @@ class InsertAfix(object):
       RESI num class ist inserted there
     '''
 
-    def __init__(self, reslist, dbatoms, db_atom_types, dbhead, dsr_line_dict, sfac_table,
+    def __init__(self, reslist, dbatoms, fragment_atom_types, dbhead, dsr_line_dict, sfac_table,
                 find_atoms, numberscheme):
         '''
         :param reslist:      list of the .res file
+        :type reslist: list
         :param dbatoms:      list of the atoms in the database entry
                              [['O1', 3, '-0.01453', '1.66590', '0.10966'], ... ]
-        :param db_atom_types:      ['N', 'C', 'C', 'C']
+        :type dbatoms: list
+        :param fragment_atom_types:      ['N', 'C', 'C', 'C']
         :param dbhead:       database header
         :param dsr_line_dict: {'occupancy': 'str',
                                     'dfix': True/False,
@@ -74,14 +76,14 @@ class InsertAfix(object):
                                     'command': 'PUT/REPLACE'}
         :param sfac_table:   SHELXL SFAC table as list like: ['C', 'H', 'O', 'F', 'Al', 'Ga']
         :param find_atoms:   FindAtoms() object
-        :param numberscheme: atoms numbering scheme like: ['O1', 'C1', 'C2', 'F1', 'F2', 'F3', 'C3']
+        :param numberscheme: atoms numbering scheme like: ['O1', 'C1', 'C2', 'F1', 'F2', 'F3', 'C3']^^
         '''
         self._reslist = reslist
         self._find_atoms = find_atoms
         self._dbatoms = dbatoms
-        self.__dbhead = dbhead
-        self.__dbtypes = db_atom_types
-        self.__sfac = sfac_table
+        self._dbhead = dbhead
+        self._fragment_atom_types = fragment_atom_types
+        self._sfac = sfac_table
         self.numberscheme = numberscheme
         self.part = dsr_line_dict['part']
         self.occ = dsr_line_dict['occupancy']
@@ -156,10 +158,10 @@ class InsertAfix(object):
         :param residue_class:        SHELXL residue class
         '''
         afix_list = []   # the final list with atoms, sfac and coordinates
-        e2s = Elem_2_Sfac(self.__sfac)
+        e2s = Elem_2_Sfac(self._sfac)
         new_atomnames = list(reversed(self.numberscheme)) # i reverse it to pop() later
         # all non-atoms between start tag and FRAG card with new names:
-        dbhead = self.__dbhead
+        dbhead = self._dbhead
         if residue_class:
             dbhead = self.remove_duplicate_restraints(dbhead, residue_class)
         else:
@@ -167,7 +169,7 @@ class InsertAfix(object):
             old_atoms = [ i[0] for i in self._dbatoms]
             dbhead = rename_dbhead_atoms(new_atomnames, old_atoms, dbhead)
         removed_restr = self.remove_all_restraints(dbhead)
-        dbhead_distance = removed_restr[0]
+        dbhead_for_dfix = removed_restr[0]
         dbhead_others = misc.wrap_headlines(removed_restr[1])
         if self._dfix:
             dbhead = dbhead_others
@@ -175,20 +177,20 @@ class InsertAfix(object):
             # in case of dfix, write restraints ti file after fragment fit
             dbhead = dbhead_others
             resinumber = False
-            dbhead_distance = misc.wrap_headlines(dbhead_distance)
-            write_dbhead_to_file(filename, dbhead_distance, residue_class, resinumber)
+            dbhead_for_dfix = misc.wrap_headlines(dbhead_for_dfix)
+            write_dbhead_to_file(filename, dbhead_for_dfix, residue_class, resinumber)
         if not external_restraints and not self._dfix:
-            dbhead_distance = misc.wrap_headlines(dbhead_distance)
-            dbhead = dbhead_others+dbhead_distance
-        # list of atomtypes in reverse order
-        atom_types = list(reversed(self.__dbtypes))
+            dbhead_for_dfix = misc.wrap_headlines(dbhead_for_dfix)
+            dbhead = dbhead_others+dbhead_for_dfix
+        # list of atom types in reverse order
+        reversed_fragm_atom_types = list(reversed(self._fragment_atom_types))
         coordinates = self._find_atoms.get_atomcoordinates(self.target_atoms)
         #target = self.target_atoms[:]  # a copy because we edit it later
-        # a list of zeroed atomcoordianes (afix_list) is built:
+        # a list of zeroed atom coordinates (afix_list) is built:
         for i in self._dbatoms:
             l = []
             l.insert(0, str(i[0]))         # Atomname
-            l.insert(1, str(e2s.elem_2_sfac(atom_types.pop())))  # SFAC number
+            l.insert(1, str(e2s.elem_2_sfac(reversed_fragm_atom_types.pop())))  # SFAC number
             l.insert(2, '0       ')
             l.insert(3, '0       ')
             l.insert(4, '0       ')
@@ -224,10 +226,12 @@ class InsertAfix(object):
         else:
             resi = ''
         if external_restraints and not self._dfix:
-            dbhead.append('REM The restraints for residue_class {} are in this file:\n+{}\n'.format(residue_class, filename))
+            dbhead.append('REM The restraints for residue_class {} are in this '
+                            'file:\n+{}\n'.format(residue_class, filename))
         dbhead = ''.join(dbhead)
         warn = self.insert_dsr_warning()
-        afix = warn+dbhead+str(part)+'AFIX '+str(self.afixnumber)+'\n'+atoms+'\nAFIX 0\n'+part2+resi+'rem The end of the DSR entry\n\n'
+        afix = warn+dbhead+str(part)+'AFIX '+str(self.afixnumber)+'\n'+atoms+(
+                '\nAFIX 0\n'+part2+resi+'rem The end of the DSR entry\n\n')
         return afix
 
 

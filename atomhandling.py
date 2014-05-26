@@ -385,15 +385,15 @@ class SfacTable():
     SFAC table for the new res file.
     '''
 
-    def __init__(self, reslist, db_atom_types, res_file_name):
+    def __init__(self, reslist, fragment_atom_types, res_file_name):
         '''
 
         :param reslist:  SHELXL .res file as list
-        :param db_atom_types:  list ['N', 'C', 'C', 'C']
+        :param fragment_atom_types:  list ['N', 'C', 'C', 'C']
         :param res_file_name: str file name like 'p21c.res'
         '''
         self._reslist = reslist
-        self._db_atom_types = db_atom_types
+        self._db_atom_types = fragment_atom_types
         self.__res_file_name = res_file_name
 
 
@@ -428,14 +428,14 @@ class SfacTable():
 
 class Elem_2_Sfac():
     def __init__(self, sfac):
-        self.__sfac = sfac
+        self._sfac = sfac
 
     def elem_2_sfac(self, atom):
         '''
         returns an sfac-number for the element given in "atom"
         :param atom: string 'C1'
         '''
-        for num, element in enumerate(self.__sfac):
+        for num, element in enumerate(self._sfac):
             num = num+1
             if atom == element:
                 return num         # return sfac number
@@ -447,7 +447,7 @@ class Elem_2_Sfac():
         returns an element and needs an sfac-number
         :param sfacnum: string like '2'
         '''
-        for num, element in enumerate(self.__sfac):
+        for num, element in enumerate(self._sfac):
             num = num+1
             if sfacnum == num:
                 return element           # return Element name
