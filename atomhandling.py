@@ -44,17 +44,24 @@ def get_atomtypes(dbatoms):
                 atom = atom+x      # add characters to atoms until numbers occur
             else:                  # now we have atoms like C, Ca, but also Caaa
                 break
-        if atom[0:2] in elements:    # fixes names like Caaa to be just Ca
-            found.append(atom[0:2])  # atoms first, search for all two-letter atoms
-            continue
-        elif atom[0] in elements:
-            found.append(atom[0])  # then for all one-letter atoms
-        else:
+        try:
+            if atom[0:2] in elements:    # fixes names like Caaa to be just Ca
+                found.append(atom[0:2])  # atoms first, search for all two-letter atoms
+                continue
+            elif atom[0] in elements:
+                found.append(atom[0])  # then for all one-letter atoms
+            else:
+                print('\n {} is not a valid atom!!\n'.format(atom))
+                return False
+                sys.exit(0)
+        except(IndexError):
             print('\n {} is not a valid atom!!\n'.format(atom))
-            sys.exit()
+            return False
+            sys.exit(0)
     if len(dbatoms) != len(found):    # do we really need this here??
         print("One of the Atoms in the database entry is not correct! Exiting...")
-        sys.exit(-1)
+        return False
+        sys.exit(0)
     return found
 
 
@@ -105,12 +112,17 @@ class FindAtoms():
         or 'RESI 1 TOL'
         {'class': 'TOL', 'number': '1'}
 
-        :param resi: 'RESI number class'
+        :param resi: ['RESI', 'number', 'class']
+        :type resi: list or string
         '''
         resi_dict = {
             'class' : None,
             'number': None}
-        resi.remove('RESI')
+        try:
+            resi.remove('RESI')
+        except(AttributeError):
+            resi = resi.split()
+            resi.remove('RESI')
         resi.sort()
         if str.isalpha(resi[-1][0]):
             resi_dict['class'] = resi.pop()
@@ -172,6 +184,7 @@ class FindAtoms():
         C1_1 would be 'CF3' for example
 
         :param atom: an atom name with or without residue number like C1 or C1_1
+        :type atom: string
         '''
         #all_resi_numbers = self._residues.keys()
         num = self.get_atoms_resinumber(atom)
@@ -189,6 +202,7 @@ class FindAtoms():
         C1_1 would be '1', ...
 
         :param atom: an atom name with or without residue number like C1 or C1_1
+        :type atom: string
         '''
         if '_' in atom:
             suffix = atom.split('_')
@@ -658,3 +672,6 @@ if __name__ == '__main__':
     print('#############', dbtypes, '########dbtypes###################')
     # sfac = SfacTable(reslist, dbtypes)
     # print(sfac.set_sfac_table())
+    bad_dbatoms = [['lO1', 3, '-0.01453', '1.66590', '1.66590'], ['C1', 1, '-0.00146', '0.26814', '0.06351']]
+    print('test')
+    get_atomtypes(bad_dbatoms)
