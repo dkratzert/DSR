@@ -6,7 +6,6 @@ import sys, os
 import unittest
 from atomhandling import get_atomtypes, FindAtoms, check_source_target
 from resfile import ResList
-from msilib.schema import SelfReg
 
 
 
