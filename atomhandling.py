@@ -140,14 +140,15 @@ class FindAtoms():
         residues is a dictionary which includes a dictionary for each residue
         which in turn includes a list of its atoms.
 
-        residues = { {'0': ['C1', 'x y z', 'linenumber'], ['C2', 'x y z', 'linenumber']},
-                     {'1': ['C1', 'x y z', 'linenumber'], []} }
+        residues = { {'0': ['C1', 'x y z', linenumber], ['C2', 'x y z', linenumber]},
+                     {'1': ['C1', 'x y z', linenumber], []} }
 
         for i in residues.keys():
             ats = residues[i]
             for x in ats:
                 if 'C12' in x[0]:
                     print x #print C12 from all residues
+        :type linenumber: int
         '''
         resi = False
         resiclass = None
@@ -233,6 +234,7 @@ class FindAtoms():
         rem DSR put toluene with C1 C2 C3 on C1_2 q2 q3
 
         :param atoms: list of atoms like ['C1', 'Q2', 'C3_2', ...]
+        :type atoms: list
         '''
         atom_dict = {}
         for i in atoms:
@@ -251,7 +253,7 @@ class FindAtoms():
             i = i.upper()
             if i not in list(atom_dict.keys()):
                 print('\nTarget atom "{}" not found in res file!'.format(i))
-                sys.exit()
+                sys.exit(0)
         return atom_dict
 
 
@@ -260,6 +262,10 @@ class FindAtoms():
         returns the line numbers in the res_list of a given atom list
         one atom of self._residues[resinum]:
             ['C12', ['0.471727', '0.649578', '0.232054'], 98]
+        returns a list like ['98', 'xx', ..]
+        :param atoms: list of atom names
+        :type atoms: list
+        :type lines: list of integers
         '''
         lines = []
         for at in atoms:
@@ -287,7 +293,6 @@ class FindAtoms():
         except(ValueError):
             hydrogen_sfac = False
             return
-
         for i in lines:
             afix = False
             if i == '':
@@ -346,9 +351,7 @@ def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
     :param res_target_atoms:  ['C1', 'Q2', 'C3_2', ...]
     :param dbatoms:           ['C1', 'C2', 'C3', ...]
     '''
-    dbat = []
-    for i in dbatoms:
-        dbat.append(i[0].upper())
+    dbatoms = [i.upper() for i in dbatoms]
 
     # check if source and target are of same length:
     nsrc = len(db_source_atoms)
@@ -356,15 +359,17 @@ def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
     if nsrc != ntrg:
         print('Number of source and target atoms is different!! '\
                 '({} and {})'.format(nsrc, ntrg))
-        sys.exit()
-
+        return False
+        sys.exit(0)
     # do the source atoms exist at all?:
     for i in db_source_atoms:
-        if i.upper() not in dbat:
+        i = i.upper()
+        if i not in dbatoms:
             print('\nAtom {} not found in database entry! Exiting...\n'.format(i))
-            sys.exit(-1)
-
-    return 'check_source_target() succeded!\n'
+            return False
+            sys.exit(0)
+    return True
+    #return 'check_source_target() succeded!\n'
 
 
 
@@ -641,10 +646,10 @@ if __name__ == '__main__':
     #sys.exit()
 
     #  print('Residue dict:', fa.get_resinum('RESI 1 TOL'.split()))
-    #  print fa.get_atomcoordinates(['C12', 'C29', 'Q12'])
+    print( fa.get_atomcoordinates(['Fe1_1', 'C29', 'Q12']) )
     #  print('line number:', fa.get_atom_line_numbers(['C12', 'C333', 'Q12']))
     #
-    #  fa.remove_adjacent_hydrogens(['C2', 'c4', 'c5'], SFAC)
+    fa.remove_adjacent_hydrogens(['C2', 'c4', 'c5'], SFAC)
     #
     # # for num, i in enumerate(reslist):
     # #     if num > 65:
