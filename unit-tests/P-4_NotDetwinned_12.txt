@@ -1,0 +1,21 @@
+
+Betreff:
+DSR bug?
+Von:
+Przemys?aw Malinowski <pj.malinowski@gmail.com>
+Datum:
+23.05.2014 13:16
+An:
+Daniel Kratzert <daniel.kratzert@ac.uni-freiburg.de>
+
+If the dsr command is in the last line before HKLF command, it gives the
+report, that there cannot be any dsr command after HKLF
+
+Attached are the files
+
+Przemek
+
+
+Anhänge:
+P-4_NotDetwinned_12.res	45 Bytes
+P-4_NotDetwinned_12.hkl	45 Bytes

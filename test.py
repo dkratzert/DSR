@@ -11,13 +11,13 @@ from resfile import ResList
 
 class get_atomtypesTest(unittest.TestCase):
     def setUp(self):
-        self.dbatoms = [['O1', 3, '-0.01453', '1.66590', '0.10966'], 
+        self.dbatoms = [['O1', 3, '-0.01453', '1.66590', '0.10966'],
                         ['C1', 1, '-0.00146', '0.26814', '0.06351']]
         self.bad_dbatoms1 = [['lO1', 3, '-0.01453', '1.66590', '0.10966'],
                         ['C1', 1, '-0.00146', '0.26814', '0.06351']]
-        self.bad_dbatoms2 = [['O1', 3, '-0.01453', '1.66590', '0.10966'], 
+        self.bad_dbatoms2 = [['O1', 3, '-0.01453', '1.66590', '0.10966'],
                         ['1', 1, '-0.00146', '0.26814', '0.06351']]
-        
+
     def testrun_pos(self):
         self.assertEqual(get_atomtypes(self.dbatoms), ['O', 'C'])
     def testrun_neg1(self):
@@ -38,38 +38,54 @@ class reslistTest(unittest.TestCase):
         self.resi_list = ['RESI', 'TOL', '3']
         self.resi_list_class = ['RESI', 'TOL']
         self.resi_list_num = ['RESI', '3']
-    
+
     def testrun_pos(self):
         self.assertEqual(self.fa.get_atom(self.atom1), ['F10', '4', '-0.362398', '0.278516', '0.447770'])
         self.assertIsNone(self.fa.get_atom(self.atom2))
-    
+
     def testrun_resinum(self):
         #print(self.fa.get_resinum(self.resi_str))
         self.assertEqual(self.fa.get_resinum(self.resi_str)['number'], '3')
         self.assertEqual(self.fa.get_resinum(self.resi_list)['number'], '3')
         self.assertIsNone(self.fa.get_resinum(self.resi_list_class)['number'])
         self.assertIs(self.fa.get_resinum(self.resi_list_num)['number'], '3')
-    
+
     def testrun_resinum_class(self):
         self.assertEqual(self.fa.get_resinum(self.resi_str)['class'], 'TOL')
         self.assertEqual(self.fa.get_resinum(self.resi_list)['class'], 'TOL')
         self.assertIs(self.fa.get_resinum(self.resi_list_class)['class'], 'TOL')
         self.assertIsNone(self.fa.get_resinum(self.resi_list_num)['class'])
 
-#get_atoms_resiclass
-#collect_residues
+    def testrun_get_atoms_resiclass(self):
+        self.assertEqual(self.fa.get_atoms_resiclass('C1'), None)
+        self.assertEqual(self.fa.get_atoms_resiclass('C1_1'), 'CF3')
+        self.assertNotEqual(self.fa.get_atoms_resiclass('C1_1'), '1')
+
 
     def testrun_get_atoms_resinumber(self):
         self.assertEqual(self.fa.get_atoms_resinumber('C1_1'), '1')
         self.assertEqual(self.fa.get_atoms_resinumber('C1_1b'), '1')
         self.assertEqual(self.fa.get_atoms_resinumber('C1_b'), '0')
         self.assertEqual(self.fa.get_atoms_resinumber('C1_'), '0')
-        self.assertIsNot(self.fa.get_atoms_resinumber('C1_1'), 1)
-        self.assertIsNot(self.fa.get_atoms_resinumber('C1'), 0)
+        self.assertNotEqual(self.fa.get_atoms_resinumber('C1_1'), 1)
+        self.assertNotEqual(self.fa.get_atoms_resinumber('C1'), 0)
         self.assertEqual(self.fa.get_atoms_resinumber('C1_0'), '0')
         self.assertEqual(self.fa.get_atoms_resinumber('C1'), '0')
 
+class collect_residuesTest(unittest.TestCase):
+    def setUp(self):
+        self.res_file = 'unit-tests/collect_resi.res'
+        self.res_list = ResList(self.res_file)
+        self.reslist =  self.res_list.get_res_list()
+        self.fa = FindAtoms(self.reslist)
+
+    def testrun_collect_residues(self):
+        #print(self.fa.collect_residues())
+        collected_resi = {'1': [['O1', ['0.584527', '0.749093', '0.406892'], 19, 'CCF3'],
+                                ['C1', ['0.462797', '0.766414', '0.415951'], 21, 'CCF3']], '0': []}
+        self.assertEqual(self.fa.collect_residues(), collected_resi)
 
 
-if __name__ == "__main__": 
+
+if __name__ == "__main__":
     unittest.main()
