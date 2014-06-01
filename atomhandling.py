@@ -351,7 +351,9 @@ def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
     :param res_target_atoms:  ['C1', 'Q2', 'C3_2', ...]
     :param dbatoms:           ['C1', 'C2', 'C3', ...]
     '''
-    dbatoms = [i.upper() for i in dbatoms]
+    #print(dbatoms)
+    for i in dbatoms:
+        i[0].upper()
 
     # check if source and target are of same length:
     nsrc = len(db_source_atoms)
