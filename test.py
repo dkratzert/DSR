@@ -4,7 +4,8 @@
 
 import sys, os
 import unittest
-from atomhandling import get_atomtypes, FindAtoms, check_source_target
+from atomhandling import get_atomtypes, FindAtoms, check_source_target,\
+    rename_dbhead_atoms
 from resfile import ResList
 
 
@@ -133,23 +134,51 @@ class collect_residuesTest(unittest.TestCase):
         self.assertEqual(check_source_target(source_fail, target, dbatoms), False)
 
 class remove_hydrogenTest(unittest.TestCase):
-    def setUp(self):
+    #def setUp(self):
+        #self.res_file = 'unit-tests/collect_resi.res'
+        #self.res_list = ResList(self.res_file)
+        #self.reslist =  self.res_list.get_res_list()
+        #self.fa = FindAtoms(self.reslist)
+
+    def notworking_testrun_remove_adjacent_hydrogens(self):
         self.res_file = 'unit-tests/collect_resi.res'
         self.res_list = ResList(self.res_file)
         self.reslist =  self.res_list.get_res_list()
         self.fa = FindAtoms(self.reslist)
-
-    def not_working_testrun_remove_adjacent_hydrogens(self):
-        line1 = 'C1    1    0.462797    0.766414    0.415951    21.00000    0.01038    0.01899 =\n'
-        line2 = '\n'
+        #line1 = 'C1    1    0.462797    0.766414    0.415951    21.00000    0.01038    0.01899 =\n'
+        #line2 = '\n'
         sfac_table = ['C', 'O', 'F', 'AL', 'F', 'H']
         #print(self.reslist[37])
+        def showline(line):
+            for num, i in enumerate(self.reslist):
+                if num == line:
+                    print(i.strip('\n'))
         self.fa.remove_adjacent_hydrogens(['O1_1', 'C1_1'], sfac_table)
-        self.fa = FindAtoms(self.reslist)
-        # for i in self.reslist:
-        #     print(i.strip('\n'))
-        self.assertEqual(self.reslist[36], line1)
-        self.assertEqual(self.reslist[39], line2)
+        #self.fa = FindAtoms(self.reslist)
+        showline(39)
+        #self.assertEqual(self.reslist[36], line1)
+        #self.assertEqual(self.reslist[39], line2)
+
+
+class rename_DBHeadatomsTest(unittest.TestCase):
+    def setUp(self):
+        self.head =['SADI_CF3 C1 C2 C1 C3 C1 C4', 'SADI_CF3 F1 C2 F2 C2 F3 C2 F4 C3'\
+               ' F5 C3 F6 C3 F7 C4 F8 C4 F9 C4', 'SADI_CF3 0.04 C2 C3 C3 C4 C2 C4',
+               'SADI_CF3 0.04 O1 C2 O1 C3 O1 C4', 'SADI_CF3 0.04 F1 F2 F2 F3 F3'\
+               ' F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7', 'SADI_CF3 0.1 F1 C1 F2 '\
+               'C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1', 'SIMU_CF3 O1 > F9',
+               'RIGU_CF3 O1 > F9', 'RESI 4 CF3']
+        self.old = ('O1', 'C1', 'C2', 'F1', 'F2', 'F3', 'C3', 'F4', 'F5', 'F6', 'C4', 'F7', 'F8', 'F9')
+        self.new = ('F9A', 'F8A', 'F7A', 'C4A', 'F6A', 'F5A', 'F4A', 'C3A', 'F3A', 'F2A', 'F1A', 'C2A', 'C1A', 'O1A')
+        self.new_rev = tuple(reversed(['F9A', 'F8A', 'F7A', 'C4A', 'F6A', 'F5A', 'F4A', 'C3A', 'F3A', 'F2A', 'F1A', 'C2A', 'C1A', 'O1A']))
+
+    def testrun_rename_dbheadatoms(self):
+        newhead = rename_dbhead_atoms(self.new, self.old, self.head)
+        self.assertEquals(newhead[1].split()[5], self.new[8])
+        self.assertEquals(newhead[6].split()[3], self.new[0])
+        self.assertEquals(newhead[6].split()[0], 'SIMU_CF3')
+
+# next: SfacTable
 
 if __name__ == "__main__":
     unittest.main()
