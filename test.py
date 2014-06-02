@@ -5,9 +5,10 @@
 import sys, os
 import unittest
 from atomhandling import get_atomtypes, FindAtoms, check_source_target,\
-    rename_dbhead_atoms, SfacTable
+    rename_dbhead_atoms, SfacTable, Elem_2_Sfac, NumberScheme
 from resfile import ResList
 from msilib.schema import SelfReg
+from dbfile import global_DB
 
 
 
@@ -195,6 +196,52 @@ class SfacTableTest(unittest.TestCase):
         sfb = SfacTable(self.reslist, self.bad_atomtypes)
         sfac_bad = sfb.set_sfac_table()
         self.assertFalse(sfac_bad)
+
+
+class Elem_2_SfacTest(unittest.TestCase):
+    def setUp(self):
+        self.sfac_table = ['C', 'H', 'N', 'Na']
+        self.testlist = ['C', 'H', 'N', 'Na', 'NA', 'n']
+        self.upper_testlist = ['C', 'H', 'N', 'NA', 'NA', 'N']
+        self.returnlist = [1, 2, 3, 4, 4, 3]
+
+    def testrun_elem_2_sfac(self):
+        e2s = Elem_2_Sfac(self.sfac_table)
+        outcome = []
+        for i in self.testlist:
+            num = e2s.elem_2_sfac(i)
+            outcome.append(num)
+        self.assertListEqual(outcome, self.returnlist)
+        self.assertEqual(e2s.elem_2_sfac('Caa'), None)
+
+    def testrun_sfac_2_elem(self):
+        e2s = Elem_2_Sfac(self.sfac_table)
+        outcome = []
+        for i in self.returnlist:
+            element = e2s.sfac_2_elem(i)
+            outcome.append(element)
+        self.assertListEqual(outcome, self.upper_testlist)
+
+class NumberSchemeTest(unittest.TestCase):
+    def setUp(self):
+        self.numbers = ['O1A', 'C1A', 'C2A', 'F1A', 'F2A', 'F3A', 'C3A', 'F4A', 'F5A', 'F6A', 'C4A', 'F7A', 'F8A', 'F9A']
+        res_file = 'p21c.res'
+        invert = True
+        resi = False
+        rl = ResList(res_file)
+        reslist = rl.get_res_list()
+        gdb = global_DB(invert)
+        fragment = 'OC(cf3)3'
+        dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
+        dbtypes = get_atomtypes(dbatoms)
+        self.num = NumberScheme(reslist, dbatoms, resi)
+
+    def testrun_get_numberscheme(self):
+        numberscheme = self.num.get_fragment_number_scheme()
+        self.assertListEqual(numberscheme, self.numbers)
+
+#next file afix
+
 
 if __name__ == "__main__":
     unittest.main()

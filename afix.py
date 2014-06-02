@@ -83,7 +83,7 @@ class InsertAfix(object):
         self._dbatoms = dbatoms
         self._dbhead = dbhead
         self._fragment_atom_types = fragment_atom_types
-        self._sfac = sfac_table
+        self._sfac_table = sfac_table
         self.numberscheme = numberscheme
         self.part = dsr_line_dict['part']
         self.occ = dsr_line_dict['occupancy']
@@ -158,7 +158,7 @@ class InsertAfix(object):
         :param residue_class:        SHELXL residue class
         '''
         afix_list = []   # the final list with atoms, sfac and coordinates
-        e2s = Elem_2_Sfac(self._sfac)
+        e2s = Elem_2_Sfac(self._sfac_table)
         new_atomnames = list(reversed(self.numberscheme)) # i reverse it to pop() later
         # all non-atoms between start tag and FRAG card with new names:
         dbhead = self._dbhead
