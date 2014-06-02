@@ -5,8 +5,9 @@
 import sys, os
 import unittest
 from atomhandling import get_atomtypes, FindAtoms, check_source_target,\
-    rename_dbhead_atoms
+    rename_dbhead_atoms, SfacTable
 from resfile import ResList
+from msilib.schema import SelfReg
 
 
 
@@ -178,7 +179,22 @@ class rename_DBHeadatomsTest(unittest.TestCase):
         self.assertEquals(newhead[6].split()[3], self.new[0])
         self.assertEquals(newhead[6].split()[0], 'SIMU_CF3')
 
-# next: SfacTable
+class SfacTableTest(unittest.TestCase):
+    def setUp(self):
+        self.res_file = 'unit-tests/collect_resi.res'
+        self.res_list = ResList(self.res_file)
+        self.reslist =  self.res_list.get_res_list()
+        self.fragment_atom_types = ['C', 'H', 'N', 'Na']
+        self.reference = ['C', 'O', 'F', 'AL', 'FE', 'H', 'N', 'NA']
+        self.bad_atomtypes = ['C', 'H', 'Naa', 'XY']
+
+    def testrun_SFacTable(self):
+        sf = SfacTable(self.reslist, self.fragment_atom_types)
+        sfac_list = sf.set_sfac_table()
+        self.assertListEqual(self.reference, sfac_list)
+        sfb = SfacTable(self.reslist, self.bad_atomtypes)
+        sfac_bad = sfb.set_sfac_table()
+        self.assertFalse(sfac_bad)
 
 if __name__ == "__main__":
     unittest.main()

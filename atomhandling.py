@@ -15,6 +15,7 @@ import string
 from atoms import Element as el
 from misc import find_line, get_atoms
 from constants import atomregex, SHX_CARDS
+import atoms
 #import textwrap
 
 
@@ -406,7 +407,7 @@ class SfacTable():
     SFAC table for the new res file.
     '''
 
-    def __init__(self, reslist, fragment_atom_types, res_file_name):
+    def __init__(self, reslist, fragment_atom_types):
         '''
 
         :param reslist:  SHELXL .res file as list
@@ -415,7 +416,7 @@ class SfacTable():
         '''
         self._reslist = reslist
         self._db_atom_types = fragment_atom_types
-        self.__res_file_name = res_file_name
+        self.elements = [x.upper() for x in el.atoms]
 
 
     def set_sfac_table(self):
@@ -425,19 +426,24 @@ class SfacTable():
         sfacline = find_line(self._reslist, r'SFAC\s+[a-zA-Z]+')  # position of the SFAC card
         unitline = find_line(self._reslist, r'UNIT\s+[0-9]+')     # position of the UNIT card
         unit = []
-        sfac = self._reslist[sfacline]      # SFAC string in the reslist
-        sfac = sfac.split()
+        sfac = self._reslist[sfacline].split()      # SFAC string in the reslist
         del sfac[0]
         #dbtypes = list(set(self._db_atom_types))    # atomtypes in the dbentry
 
         for i in self._db_atom_types:                 # this is to compare the occurence of element type from resfile ant db
+            i = i.upper()
             if i not in sfac:             # all atom types from db not already in sfac
                 sfac.append(i)        # get appended to sfac
+            if i not in self.elements:
+                print('error, atom {} not valid'.format(i))
+                return False
+                sys.exit()
 
         for i in range(len(sfac)):
             i = str(1)        # only unity because we can change this later
             unit.append(i)
         # now the sfac and unit tables are written to the resfile
+        #print(sfac)
         self._reslist[sfacline] = 'SFAC  {}\n'.format('  '.join(sfac))
         self._reslist[unitline] = 'UNIT  {}\n'.format('  '.join(unit))  # builds the UNIT line
         #print self._reslist[sfacline]

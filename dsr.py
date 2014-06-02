@@ -388,7 +388,7 @@ class DSR():
         db_atom_types = get_atomtypes(dbatoms)                 # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
         resi = Resi(reslist, dsr_dict, dbhead, residue_class, find_atoms)
         dbhead = resi.make_resihead()
-        sf = SfacTable(reslist, db_atom_types, self.res_file)
+        sf = SfacTable(reslist, db_atom_types)
         sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
 
         ### corrects the atom type according to the previous defined global sfac table:
