@@ -261,7 +261,7 @@ if __name__ == '__main__':
     #resi = Resi(reslist, dsr_dict, dbhead, residue, find_atoms)
     #dbhead = resi.make_resihead()
 
-    sf = SfacTable(reslist, dbtypes, res_file)
+    sf = SfacTable(reslist, dbtypes)
     sfac_table = sf.set_sfac_table()
     num = NumberScheme(reslist, dbatoms, resi)
     numberscheme = num.get_fragment_number_scheme()
