@@ -332,7 +332,11 @@ class global_DB():
 
     def get_atoms_from_fragment(self, fragment):
         '''
-        returns the atoms from the dbentry
+        returns the atoms from the dbentry:
+        [['O1', '1', '0.01453', '-1.6659', '-0.10966'],
+        ['C1', '1', '0.00146', '-0.26814', '-0.06351'], ... ]
+        :param fragment: fragment name
+        :type fragment: string
         '''
         return self._dbentry_dict[fragment.lower()]['atoms']
 

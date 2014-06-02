@@ -224,16 +224,16 @@ class Elem_2_SfacTest(unittest.TestCase):
 
 class NumberSchemeTest(unittest.TestCase):
     def setUp(self):
-        self.numbers = ['O1A', 'C1A', 'C2A', 'F1A', 'F2A', 'F3A', 'C3A', 'F4A', 'F5A', 'F6A', 'C4A', 'F7A', 'F8A', 'F9A']
-        res_file = 'p21c.res'
+        self.numbers = ['O1A', 'C1A', 'C2A', 'F1A', 'F2A', 'F3A', 'C3A', \
+                        'F4A', 'F5A', 'F6A', 'C4A', 'F7A', 'F8A', 'F9A']
+        res_file = 'unit-tests/p21c.res'
         invert = True
         resi = False
         rl = ResList(res_file)
         reslist = rl.get_res_list()
         gdb = global_DB(invert)
         fragment = 'OC(cf3)3'
-        dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
-        dbtypes = get_atomtypes(dbatoms)
+        dbatoms = gdb.get_atoms_from_fragment(fragment)
         self.num = NumberScheme(reslist, dbatoms, resi)
 
     def testrun_get_numberscheme(self):
