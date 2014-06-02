@@ -454,17 +454,23 @@ class SfacTable():
 #############################################################################
 
 class Elem_2_Sfac():
-    def __init__(self, sfac):
-        self._sfac = sfac
+    def __init__(self, sfac_table):
+        '''
+        SFAC2Element and vice versa conversion
+        :param sfac_table: SFAC table of the res file.
+        :type sfac_table: list
+        '''
+        self._sfac_table = sfac_table
 
-    def elem_2_sfac(self, atom):
+    def elem_2_sfac(self, atom_type):
         '''
-        returns an sfac-number for the element given in "atom"
-        :param atom: string 'C1'
+        returns an sfac-number for the element given in "atom_type"
+        :param atom_type: string 'C'
+        :type atom_type: string
         '''
-        for num, element in enumerate(self._sfac):
+        for num, element in enumerate(self._sfac_table):
             num = num+1
-            if atom == element:
+            if atom_type.upper() == element.upper():
                 return num         # return sfac number
                 break
 
@@ -474,10 +480,10 @@ class Elem_2_Sfac():
         returns an element and needs an sfac-number
         :param sfacnum: string like '2'
         '''
-        for num, element in enumerate(self._sfac):
+        for num, element in enumerate(self._sfac_table):
             num = num+1
             if sfacnum == num:
-                return element           # return Element name
+                return element.upper()           # return Element name
                 break
 
 
@@ -512,14 +518,14 @@ class NumberScheme():
         self.__atomtype = sorted(self.__atyp[:])
 
 
-    def get_number_of_at_in_type(self, atomtype, check):
+    def _get_number_of_at_in_type(self, atomtype, check):
         '''returns the number of atoms which have the same type'''
         num = 0  # @UnusedVariable
         num = atomtype.count(check)
         return num
 
 
-    def generate_numbers(self, atype, num, suffix = ''):
+    def _generate_numbers(self, atype, num, suffix = ''):
         '''generates numberscheme'''
         atlist = []
         if num == 1:   # in case of only one atom of this type
@@ -530,7 +536,7 @@ class NumberScheme():
         return atlist
 
 
-    def contains(self, atomlist, rlist):
+    def _contains(self, atomlist, rlist):
         '''checks if one of the atoms in the list exist in resfile'''
         x = [e for e in atomlist if e in '\n'.join(rlist)]
         if x:
@@ -559,17 +565,17 @@ class NumberScheme():
                 continue
             atom = i
             # number of atoms with given atomtype:
-            num = self.get_number_of_at_in_type(self.__atomtype, atom) # unittest: atom instead of atomtype
+            num = self._get_number_of_at_in_type(self.__atomtype, atom) # unittest: atom instead of atomtype
             # list of atoms with given atomtype
-            atomlist = self.generate_numbers(atom, num)
+            atomlist = self._generate_numbers(atom, num)
             # important if we want to have all atoms with the same suffix:
             self.__rlist.extend(atomlist)
             # check if rlist contains an atom name of atomlist.
             # If so, add a suffix from aplhabet to it.
-            while self.contains(atomlist, self.__rlist) == False:
+            while self._contains(atomlist, self.__rlist) == False:
                 suffix = alph[0]
                 del alph[0]
-                atomlist = self.generate_numbers(atom, num, suffix)
+                atomlist = self._generate_numbers(atom, num, suffix)
             newatom.extend(atomlist)
 
         # retain the original order of the atomlist:
