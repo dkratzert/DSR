@@ -127,7 +127,7 @@ class InsertAfix(object):
     def remove_all_restraints(self, dbhead):
         '''
         Devides header in distance restraints (distance)
-        and all other lines (oldhead)
+        and all other lines (others)
         Restraints are instead inserted after fragment fit
 
         :param dbhead:  database header
