@@ -136,11 +136,11 @@ class collect_residuesTest(unittest.TestCase):
         self.assertEqual(check_source_target(source, target, dbatoms), True)
         with self.assertRaises(SystemExit):
             check_source_target(source, target_num, dbatoms)
-            
+
         with self.assertRaises(SystemExit):
             check_source_target(source_fail, target, dbatoms)
 
-        
+
 class remove_hydrogenTest(unittest.TestCase):
     #def setUp(self):
         #self.res_file = 'unit-tests/collect_resi.res'
@@ -246,7 +246,36 @@ class NumberSchemeTest(unittest.TestCase):
         numberscheme = self.num.get_fragment_number_scheme()
         self.assertListEqual(numberscheme, self.numbers)
 
-#next file afix
+class insertAfixTest(unittest.TestCase):
+    def setUp(self):
+        from dsrparse import DSR_Parser
+        from resfile import ResListEdit
+        res_file = 'p21c.res'
+        invert = True
+        rl = ResList(res_file)
+        reslist = rl.get_res_list()
+        dsrp = DSR_Parser(reslist, rl)
+        dsr_dict = dsrp.parse_dsr_line()
+        find_atoms = FindAtoms(reslist)
+        rle = ResListEdit(reslist, find_atoms)
+        gdb = global_DB(invert)
+        db = gdb.build_db_dict()
+        fragment = 'PFAnion'
+        fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
+        dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
+        dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
+        resi = True #gdb.get_resi_from_fragment(fragment)
+        dbtypes = get_atomtypes(dbatoms)
+        #resi = Resi(reslist, dsr_dict, dbhead, residue, find_atoms)
+        #dbhead = resi.make_resihead()
+
+        sf = SfacTable(reslist, dbtypes)
+        sfac_table = sf.set_sfac_table()
+        num = NumberScheme(reslist, dbatoms, resi)
+        numberscheme = num.get_fragment_number_scheme()
+
+
+        afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, sfac_table, find_atoms, numberscheme)
 
 
 if __name__ == "__main__":

@@ -359,13 +359,13 @@ def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
     if nsrc != ntrg:
         print('Number of source and target atoms/peaks is different!! '\
                 '({} and {} atoms/peaks)'.format(nsrc, ntrg))
-        #sys.exit(False)
+        sys.exit(False)
     # do the source atoms exist at all?:
     for i in db_source_atoms:
         i = i.upper()
         if i not in dbatoms:
             print('\nAtom {} not found in database entry! Exiting...\n'.format(i))
-            #sys.exit(False)
+            sys.exit(False)
     return True
     #return 'check_source_target() succeded!\n'
 
