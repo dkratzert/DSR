@@ -204,7 +204,11 @@ class InsertAfix(object):
         for n, i in enumerate(afix_list):
             if i[0].upper() in self.source_atoms:
                 ind = self.source_atoms.index(i[0].upper())
-                afix_list[n][2:5] =  coordinates[self.target_atoms[ind]]
+                try:
+                    afix_list[n][2:5] =  coordinates[self.target_atoms[ind]]
+                except(IndexError):
+                    print('More source than target atoms present! Exiting...')
+                    sys.exit(False)
         newlist = []
         for i in afix_list:
             i[0] = new_atomnames.pop()

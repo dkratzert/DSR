@@ -24,9 +24,11 @@ class get_atomtypesTest(unittest.TestCase):
     def testrun_pos(self):
         self.assertEqual(get_atomtypes(self.dbatoms), ['O', 'C'])
     def testrun_neg1(self):
-        self.assertFalse(get_atomtypes(self.bad_dbatoms1))
+        with self.assertRaises(SystemExit):
+            get_atomtypes(self.bad_dbatoms1)
     def testrun_neg2(self):
-        self.assertFalse(get_atomtypes(self.bad_dbatoms2))
+        with self.assertRaises(SystemExit):
+            get_atomtypes(self.bad_dbatoms2)
 
 class reslistTest(unittest.TestCase):
     def setUp(self):
@@ -132,9 +134,13 @@ class collect_residuesTest(unittest.TestCase):
         target_num = ['q1', 'C3', 'O1_2']
         dbatoms = ['C1', 'C2', 'C3', 'F1', 'F2', 'O1']
         self.assertEqual(check_source_target(source, target, dbatoms), True)
-        self.assertEqual(check_source_target(source, target_num, dbatoms), False)
-        self.assertEqual(check_source_target(source_fail, target, dbatoms), False)
+        with self.assertRaises(SystemExit):
+            check_source_target(source, target_num, dbatoms)
+            
+        with self.assertRaises(SystemExit):
+            check_source_target(source_fail, target, dbatoms)
 
+        
 class remove_hydrogenTest(unittest.TestCase):
     #def setUp(self):
         #self.res_file = 'unit-tests/collect_resi.res'
@@ -193,9 +199,9 @@ class SfacTableTest(unittest.TestCase):
         sf = SfacTable(self.reslist, self.fragment_atom_types)
         sfac_list = sf.set_sfac_table()
         self.assertListEqual(self.reference, sfac_list)
-        sfb = SfacTable(self.reslist, self.bad_atomtypes)
-        sfac_bad = sfb.set_sfac_table()
-        self.assertFalse(sfac_bad)
+        sfbad = SfacTable(self.reslist, self.bad_atomtypes)
+        with self.assertRaises(SystemExit):
+            sfbad.set_sfac_table()
 
 
 class Elem_2_SfacTest(unittest.TestCase):
