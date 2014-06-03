@@ -347,12 +347,13 @@ def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
     several checks if the atoms in the dsr command line are consistent
     :param db_source_atoms:   ['C1', 'O1', 'C2', ...]
     :param res_target_atoms:  ['C1', 'Q2', 'C3_2', ...]
-    :param dbatoms:           ['C1', 'C2', 'C3', ...]
+    :param dbatoms:           [['C1', 1, '-0.00146', '0.26814', '0.06351'],
+                               ['C2', 1, '-1.13341', '-0.23247', '-0.90730'], ...]]
     '''
-    #print(dbatoms)
+    temp = []
     for i in dbatoms:
-        i[0].upper()
-
+        i = i[0].upper()
+        temp.append(i)
     # check if source and target are of same length:
     nsrc = len(db_source_atoms)
     ntrg = len(res_target_atoms)
@@ -363,7 +364,7 @@ def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
     # do the source atoms exist at all?:
     for i in db_source_atoms:
         i = i.upper()
-        if i not in dbatoms:
+        if i not in temp:
             print('\nAtom {} not found in database entry! Exiting...\n'.format(i))
             sys.exit(False)
     return True

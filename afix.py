@@ -154,7 +154,7 @@ class InsertAfix(object):
 
         :param external_restraints:  True/False decision if restraints should be
                                      written to external file
-        :param dfx_file_name:             name of file for external restraints
+        :param dfx_file_name:        name of file for external restraints
         :param residue_class:        SHELXL residue class
         '''
         afix_list = []   # the final list with atoms, sfac and coordinates
@@ -256,10 +256,11 @@ if __name__ == '__main__':
     rle = ResListEdit(reslist, find_atoms)
     gdb = global_DB(invert)
     db = gdb.build_db_dict()
-    fragment = 'PFAnion'
+    fragment = 'OC(CF3)3'
     fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
     dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
     dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
+    print(dbhead)
     resi = True #gdb.get_resi_from_fragment(fragment)
     dbtypes = get_atomtypes(dbatoms)
     #resi = Resi(reslist, dsr_dict, dbhead, residue, find_atoms)
@@ -272,7 +273,7 @@ if __name__ == '__main__':
 
 
     afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, sfac_table, find_atoms, numberscheme)
-    print(afix.build_afix_entry(True, False, False))
+    print(afix.build_afix_entry(False, res_file, 'CF3'))
 
 
 

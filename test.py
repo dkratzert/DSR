@@ -2,13 +2,14 @@
 #-*- encoding: utf-8 -*-
 
 
-import sys, os
 import unittest
 from atomhandling import get_atomtypes, FindAtoms, check_source_target,\
     rename_dbhead_atoms, SfacTable, Elem_2_Sfac, NumberScheme
 from resfile import ResList
-from msilib.schema import SelfReg
 from dbfile import global_DB
+from afix import InsertAfix
+from dsrparse import DSR_Parser
+import misc
 
 
 
@@ -129,16 +130,24 @@ class collect_residuesTest(unittest.TestCase):
 
     def testrun_check_source_target(self):
         source = ['C1', 'C3', 'O1', 'F1']
+        source_short = ['C1', 'C3', 'O1']
         source_fail = ['C15', 'C3', 'O1', 'F1']
         target = ['q1', 'C3', 'O1_2', 'F1']
         target_num = ['q1', 'C3', 'O1_2']
-        dbatoms = ['C1', 'C2', 'C3', 'F1', 'F2', 'O1']
+        dbatoms = [['O1', 3, '-0.01453', '1.66590', '0.10966'], ['C1', 1, '-0.00146', '0.26814', '0.06351'], \
+                   ['C2', 1, '-1.13341', '-0.23247', '-0.90730'], ['F1', 4, '-2.34661', '-0.11273', '-0.34544'], \
+                   ['F2', 4, '-0.96254', '-1.50665', '-1.29080'], ['F3', 4, '-1.12263', '0.55028', '-2.01763'], \
+                   ['C3', 1, '1.40566', '-0.23179', '-0.43131'], ['F4', 4, '2.38529', '0.42340', '0.20561'], \
+                   ['F5', 4, '1.53256', '0.03843', '-1.75538'], ['F6', 4, '1.57833', '-1.55153', '-0.25035'],\
+                   ['C4', 1, '-0.27813', '-0.21605', '1.52795'], ['F7', 4, '0.80602', '-0.03759', '2.30431'], \
+                   ['F8', 4, '-0.58910', '-1.52859', '1.53460'], ['F9', 4, '-1.29323', '0.46963', '2.06735']]
         self.assertEqual(check_source_target(source, target, dbatoms), True)
         with self.assertRaises(SystemExit):
             check_source_target(source, target_num, dbatoms)
-
         with self.assertRaises(SystemExit):
             check_source_target(source_fail, target, dbatoms)
+        with self.assertRaises(SystemExit):
+            check_source_target(source_short, target, dbatoms)
 
 
 class remove_hydrogenTest(unittest.TestCase):
@@ -248,35 +257,45 @@ class NumberSchemeTest(unittest.TestCase):
 
 class insertAfixTest(unittest.TestCase):
     def setUp(self):
-        from dsrparse import DSR_Parser
-        from resfile import ResListEdit
-        res_file = 'p21c.res'
+        self.res_file = 'p21c.res'
         invert = True
-        rl = ResList(res_file)
-        reslist = rl.get_res_list()
-        dsrp = DSR_Parser(reslist, rl)
-        dsr_dict = dsrp.parse_dsr_line()
-        find_atoms = FindAtoms(reslist)
-        rle = ResListEdit(reslist, find_atoms)
-        gdb = global_DB(invert)
-        db = gdb.build_db_dict()
-        fragment = 'PFAnion'
-        fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
-        dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
-        dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
-        resi = True #gdb.get_resi_from_fragment(fragment)
-        dbtypes = get_atomtypes(dbatoms)
-        #resi = Resi(reslist, dsr_dict, dbhead, residue, find_atoms)
-        #dbhead = resi.make_resihead()
+        self.rl = ResList(self.res_file)
+        self.reslist = self.rl.get_res_list()
+        self.dsrp = DSR_Parser(self.reslist, self.rl)
+        self.dsr_dict = self.dsrp.parse_dsr_line()
+        self.find_atoms = FindAtoms(self.reslist)
+        #rle = ResListEdit(reslist, find_atoms)
+        self.gdb = global_DB(invert)
+        #db = gdb.build_db_dict()
+        fragment = 'OC(CF3)3'
+        #fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
+        self.dbatoms = self.gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
+        self.dbhead = self.gdb.get_head_from_fragment(fragment)        # this is only executed once
+        self.resi = True #gdb.get_resi_from_fragment(fragment)
+        self.dbtypes = get_atomtypes(self.dbatoms)
+        with open('unit-tests/intern.TXT') as txt:
+            self.intern = txt.read()
+        with open('unit-tests/extern.TXT') as txt2:
+            self.extern = txt2.read()
+        misc.remove_file('TEST_p21c.res')
+        self.sf = SfacTable(self.reslist, self.dbtypes)
+        self.sfac_table = self.sf.set_sfac_table()
+        self.num = NumberScheme(self.reslist, self.dbatoms, self.resi)
+        self.numberscheme = self.num.get_fragment_number_scheme()
+        db_testhead = ['SADI C1 C2 C1 C3 C1 C4 ', 'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ', \
+                       'SADI 0.04 C2 C3 C3 C4 C2 C4', 'SADI 0.04 O1 C2 O1 C3 O1 C4 ', \
+                       'SADI 0.04 F1 F2 F2 F3 F3 F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7 ', \
+                       'SADI 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1 ', \
+                       'SIMU O1 > F9 ', 'RIGU O1 > F9']
 
-        sf = SfacTable(reslist, dbtypes)
-        sfac_table = sf.set_sfac_table()
-        num = NumberScheme(reslist, dbatoms, resi)
-        numberscheme = num.get_fragment_number_scheme()
-
-
-        afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, sfac_table, find_atoms, numberscheme)
-
+    def testrun_afix(self):
+        afix = InsertAfix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead, \
+                          self.dsr_dict, self.sfac_table, self.find_atoms, self.numberscheme)
+        afix_extern_entry = afix.build_afix_entry(True, self.res_file, 'TEST')
+        afix_intern_entry = afix.build_afix_entry(False, self.res_file, 'TEST')
+        self.assertEqual(afix_intern_entry, self.intern)
+        self.assertEqual(afix_extern_entry, self.extern)
+        misc.remove_file('TEST_p21c.res')
 
 if __name__ == "__main__":
     unittest.main()
