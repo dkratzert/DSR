@@ -6,7 +6,7 @@ import unittest
 from atomhandling import get_atomtypes, FindAtoms, check_source_target,\
     rename_dbhead_atoms, SfacTable, Elem_2_Sfac, NumberScheme
 from resfile import ResList
-from dbfile import global_DB
+from dbfile import global_DB, invert_dbatoms_coordinates
 from afix import InsertAfix
 from dsrparse import DSR_Parser
 import misc
@@ -296,6 +296,24 @@ class insertAfixTest(unittest.TestCase):
         self.assertEqual(afix_intern_entry, self.intern)
         self.assertEqual(afix_extern_entry, self.extern)
         misc.remove_file('TEST_p21c.res')
+
+
+class invert_fragmentTest(unittest.TestCase):
+    def setUp(self):
+        self.dbatoms = [['O1', 3, '-0.01453', '1.66590', '0.10966'], ['C1', 1, '-0.00146', '0.26814', '0.06351'], \
+                        ['C2', 1, '-1.13341', '-0.23247', '-0.90730'], ['F1', 4, '-2.34661', '-0.11273', '-0.34544']]
+        self.dbatoms2 = [['O1', 3, '-0.01453', '1.66590', '0.10966'], ['C1', 1, '-0.00146', '0.26814', '0.06351'], \
+                        ['C2', 1, '-1.13341', '-0.23247', '-0.90730'], ['F1', 4, '-2.34661', '-0.11273', '-0.34544']]
+        self.inv_dbatoms = [['O1', 3, '0.01453', '-1.6659', '-0.10966'], ['C1', 1, '0.00146', '-0.26814', '-0.06351'], \
+                            ['C2', 1, '1.13341', '0.23247', '0.9073'], ['F1', 4, '2.34661', '0.11273', '0.34544']]
+
+    def testrun_invert_dbatoms_coordinates(self):
+        inverted = invert_dbatoms_coordinates(self.dbatoms)
+        self.assertListEqual(self.inv_dbatoms, inverted)
+        self.assertNotEqual(self.dbatoms2[0][2], inverted[0][2])
+
+
+
 
 if __name__ == "__main__":
     unittest.main()
