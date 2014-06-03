@@ -53,16 +53,13 @@ def get_atomtypes(dbatoms):
                 found.append(atom[0])  # then for all one-letter atoms
             else:
                 print('\n {} is not a valid atom!!\n'.format(atom))
-                return False
-                sys.exit(0)
+                sys.exit(False)
         except(IndexError):
             print('\n {} is not a valid atom!!\n'.format(atom))
-            return False
-            sys.exit(0)
+            sys.exit(False)
     if len(dbatoms) != len(found):    # do we really need this here??
         print("One of the Atoms in the database entry is not correct! Exiting...")
-        return False
-        sys.exit(0)
+        sys.exit(False)
     return found
 
 
@@ -360,17 +357,15 @@ def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
     nsrc = len(db_source_atoms)
     ntrg = len(res_target_atoms)
     if nsrc != ntrg:
-        print('Number of source and target atoms is different!! '\
-                '({} and {})'.format(nsrc, ntrg))
-        return False
-        sys.exit(0)
+        print('Number of source and target atoms/peaks is different!! '\
+                '({} and {} atoms/peaks)'.format(nsrc, ntrg))
+        #sys.exit(False)
     # do the source atoms exist at all?:
     for i in db_source_atoms:
         i = i.upper()
         if i not in dbatoms:
             print('\nAtom {} not found in database entry! Exiting...\n'.format(i))
-            return False
-            sys.exit(0)
+            #sys.exit(False)
     return True
     #return 'check_source_target() succeded!\n'
 
@@ -436,8 +431,7 @@ class SfacTable():
                 sfac.append(i)        # get appended to sfac
             if i not in self.elements:
                 print('error, atom {} not valid'.format(i))
-                return False
-                sys.exit()
+                sys.exit(False)
 
         for i in range(len(sfac)):
             i = str(1)        # only unity because we can change this later
