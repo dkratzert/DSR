@@ -6,12 +6,13 @@ import unittest
 from atomhandling import get_atomtypes, FindAtoms, check_source_target,\
     rename_dbhead_atoms, SfacTable, Elem_2_Sfac, NumberScheme
 from resfile import ResList
-from dbfile import global_DB, invert_dbatoms_coordinates
+from dbfile import global_DB, invert_dbatoms_coordinates, ReadDB
 from afix import InsertAfix
 from dsrparse import DSR_Parser
 import misc
 from resi import Resi
 from atoms import Element
+import os
 
 
 
@@ -136,12 +137,12 @@ class collect_residuesTest(unittest.TestCase):
         source_fail = ['C15', 'C3', 'O1', 'F1']
         target = ['q1', 'C3', 'O1_2', 'F1']
         target_num = ['q1', 'C3', 'O1_2']
-        dbatoms = [['O1', 3, '-0.01453', '1.66590', '0.10966'], ['C1', 1, '-0.00146', '0.26814', '0.06351'], \
-                   ['C2', 1, '-1.13341', '-0.23247', '-0.90730'], ['F1', 4, '-2.34661', '-0.11273', '-0.34544'], \
-                   ['F2', 4, '-0.96254', '-1.50665', '-1.29080'], ['F3', 4, '-1.12263', '0.55028', '-2.01763'], \
-                   ['C3', 1, '1.40566', '-0.23179', '-0.43131'], ['F4', 4, '2.38529', '0.42340', '0.20561'], \
-                   ['F5', 4, '1.53256', '0.03843', '-1.75538'], ['F6', 4, '1.57833', '-1.55153', '-0.25035'],\
-                   ['C4', 1, '-0.27813', '-0.21605', '1.52795'], ['F7', 4, '0.80602', '-0.03759', '2.30431'], \
+        dbatoms = [['O1', 3, '-0.01453', '1.66590', '0.10966'], ['C1', 1, '-0.00146', '0.26814', '0.06351'],
+                   ['C2', 1, '-1.13341', '-0.23247', '-0.90730'], ['F1', 4, '-2.34661', '-0.11273', '-0.34544'],
+                   ['F2', 4, '-0.96254', '-1.50665', '-1.29080'], ['F3', 4, '-1.12263', '0.55028', '-2.01763'],
+                   ['C3', 1, '1.40566', '-0.23179', '-0.43131'], ['F4', 4, '2.38529', '0.42340', '0.20561'],
+                   ['F5', 4, '1.53256', '0.03843', '-1.75538'], ['F6', 4, '1.57833', '-1.55153', '-0.25035'],
+                   ['C4', 1, '-0.27813', '-0.21605', '1.52795'], ['F7', 4, '0.80602', '-0.03759', '2.30431'],
                    ['F8', 4, '-0.58910', '-1.52859', '1.53460'], ['F9', 4, '-1.29323', '0.46963', '2.06735']]
         self.assertEqual(check_source_target(source, target, dbatoms), True)
         with self.assertRaises(SystemExit):
@@ -181,10 +182,10 @@ class remove_hydrogenTest(unittest.TestCase):
 
 class rename_DBHeadatomsTest(unittest.TestCase):
     def setUp(self):
-        self.head =['SADI_CF3 C1 C2 C1 C3 C1 C4', 'SADI_CF3 F1 C2 F2 C2 F3 C2 F4 C3'\
+        self.head =['SADI_CF3 C1 C2 C1 C3 C1 C4', 'SADI_CF3 F1 C2 F2 C2 F3 C2 F4 C3'
                ' F5 C3 F6 C3 F7 C4 F8 C4 F9 C4', 'SADI_CF3 0.04 C2 C3 C3 C4 C2 C4',
-               'SADI_CF3 0.04 O1 C2 O1 C3 O1 C4', 'SADI_CF3 0.04 F1 F2 F2 F3 F3'\
-               ' F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7', 'SADI_CF3 0.1 F1 C1 F2 '\
+               'SADI_CF3 0.04 O1 C2 O1 C3 O1 C4', 'SADI_CF3 0.04 F1 F2 F2 F3 F3'
+               ' F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7', 'SADI_CF3 0.1 F1 C1 F2 '
                'C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1', 'SIMU_CF3 O1 > F9',
                'RIGU_CF3 O1 > F9', 'RESI 4 CF3']
         self.old = ('O1', 'C1', 'C2', 'F1', 'F2', 'F3', 'C3', 'F4', 'F5', 'F6', 'C4', 'F7', 'F8', 'F9')
@@ -241,7 +242,7 @@ class Elem_2_SfacTest(unittest.TestCase):
 
 class NumberSchemeTest(unittest.TestCase):
     def setUp(self):
-        self.numbers = ['O1A', 'C1A', 'C2A', 'F1A', 'F2A', 'F3A', 'C3A', \
+        self.numbers = ['O1A', 'C1A', 'C2A', 'F1A', 'F2A', 'F3A', 'C3A',
                         'F4A', 'F5A', 'F6A', 'C4A', 'F7A', 'F8A', 'F9A']
         res_file = 'unit-tests/p21c.res'
         invert = True
@@ -281,10 +282,10 @@ class insertAfixTest(unittest.TestCase):
         self.sfac_table = self.sf.set_sfac_table()
         self.num = NumberScheme(self.reslist, self.dbatoms, self.resi)
         self.numberscheme = self.num.get_fragment_number_scheme()
-        self.db_testhead = ['SADI C1 C2 C1 C3 C1 C4 ', 'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ', \
-                       'SADI 0.04 C2 C3 C3 C4 C2 C4', 'SADI 0.04 O1 C2 O1 C3 O1 C4 ', \
-                       'SADI 0.04 F1 F2 F2 F3 F3 F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7 ', \
-                       'SADI 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1 ', \
+        self.db_testhead = ['SADI C1 C2 C1 C3 C1 C4 ', 'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ',
+                       'SADI 0.04 C2 C3 C3 C4 C2 C4', 'SADI 0.04 O1 C2 O1 C3 O1 C4 ',
+                       'SADI 0.04 F1 F2 F2 F3 F3 F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7 ',
+                       'SADI 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1 ',
                        'SIMU O1 > F9 ', 'RIGU O1 > F9']
 
 
@@ -320,7 +321,8 @@ class removeDublicatesAfixTest(unittest.TestCase):
         self.numberscheme = self.num.get_fragment_number_scheme()
         self.afix = InsertAfix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead, \
                           self.dsr_dict, self.sfac_table, self.find_atoms, self.numberscheme)
-        self.db_testhead = ['SADI_CCF3 C1 C2 C1 C3 C1 C4', 'SADI_CCF3 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ', 'REM test']
+        self.db_testhead = ['SADI_CCF3 C1 C2 C1 C3 C1 C4', 'SADI_CCF3 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ',
+                            'REM test']
         self.db_testhead2 = ['SADI_CF3 C1 C2 C1 C3 C1 C4 ', 'SADI_CF3 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ']
 
     def testrun_remove_dublicate_restraints(self):
@@ -330,17 +332,18 @@ class removeDublicatesAfixTest(unittest.TestCase):
         self.assertListEqual(self.db_testhead2, newhead2)
 
     def testrun_remove_all_restraints(self):
-        devided = [['SADI_CCF3 C1 C2 C1 C3 C1 C4\n', 'SADI_CCF3 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4\n'], ['REM test\n']]
+        devided = [['SADI_CCF3 C1 C2 C1 C3 C1 C4\n', 'SADI_CCF3 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4\n'],
+                   ['REM test\n']]
         newhead = self.afix.remove_all_restraints(self.db_testhead)
         self.assertListEqual(devided, newhead)
 
 class invert_fragmentTest(unittest.TestCase):
     def setUp(self):
-        self.dbatoms = [['O1', 3, '-0.01453', '1.66590', '0.10966'], ['C1', 1, '-0.00146', '0.26814', '0.06351'], \
+        self.dbatoms = [['O1', 3, '-0.01453', '1.66590', '0.10966'], ['C1', 1, '-0.00146', '0.26814', '0.06351'],
                         ['C2', 1, '-1.13341', '-0.23247', '-0.90730'], ['F1', 4, '-2.34661', '-0.11273', '-0.34544']]
-        self.dbatoms2 = [['O1', 3, '-0.01453', '1.66590', '0.10966'], ['C1', 1, '-0.00146', '0.26814', '0.06351'], \
+        self.dbatoms2 = [['O1', 3, '-0.01453', '1.66590', '0.10966'], ['C1', 1, '-0.00146', '0.26814', '0.06351'],
                         ['C2', 1, '-1.13341', '-0.23247', '-0.90730'], ['F1', 4, '-2.34661', '-0.11273', '-0.34544']]
-        self.inv_dbatoms = [['O1', 3, '0.01453', '-1.6659', '-0.10966'], ['C1', 1, '0.00146', '-0.26814', '-0.06351'], \
+        self.inv_dbatoms = [['O1', 3, '0.01453', '-1.6659', '-0.10966'], ['C1', 1, '0.00146', '-0.26814', '-0.06351'],
                             ['C2', 1, '1.13341', '0.23247', '0.9073'], ['F1', 4, '2.34661', '0.11273', '0.34544']]
 
     def testrun_invert_dbatoms_coordinates(self):
@@ -357,7 +360,39 @@ class atomsTest(unittest.TestCase):
         self.assertEqual(num_of_atoms, 92)
         self.assertNotEqual(num_of_atoms, 42)
 
-#next dbfile.py
+
+class dbfileTest(unittest.TestCase):
+    def setUp(self):
+        self._db_file_names = ("db1.txt", "db2.txt")
+        self.rdb = ReadDB(dbdir='c:/test/')
+        self.testnames = ['c:/test/db1.txt', 'c:/test/db2.txt']
+        self.klein = ('<DMX>\n', 'REM test\n', 'FRAG 17 1 1 1 90 90 90\n',
+                      'O1  1  -1.3542148   -0.4780990   -0.5279749\n', '</DMX>')
+
+    def testrun_dbpath(self):
+        names = []
+        for name in self._db_file_names:
+            names.append(self.rdb.getDBpath(name))
+        self.assertListEqual(names, self.testnames)
+
+    def testrun_dbdict(self):
+        db_file_names = ("db1_klein.TXT", "db2_klein.TXT")
+        rdb = ReadDB(dbdir='./unit-tests', dbnames = db_file_names)
+        #for name in db_file_names:
+        #    rdb.getDBpath(name)
+
+        self.assertTupleEqual(rdb.getDB_files_dict()['db2_klein'], self.klein)
+
+    def testrun_dbtags(self):
+        result = [['DME', '1', 'db1_klein'], ['DMX', '1', 'db2_klein']]
+        db_file_names = ("db1_klein.TXT", "db2_klein.TXT")
+        rdb = ReadDB(dbdir='./unit-tests', dbnames = db_file_names)
+        tags = rdb.find_db_tags()
+        self.assertListEqual(result, tags)
+
+    def testrun_notequal(self):
+
+
 
 if __name__ == "__main__":
     unittest.main()
