@@ -109,7 +109,7 @@ Type: files; Name: "{app}\*.pyc"
 Type: filesandordirs; Name: "{app}\python27"
 
 [Dirs]
-Name: "{app}\example"
+Name: "{app}\example"; Permissions: authusers-full
 Name: "{app}\manual"
 
 [Code]
