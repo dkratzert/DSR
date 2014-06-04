@@ -103,7 +103,7 @@ class ReadDB():
         for db in dbkeys:
             for num, line in enumerate(self._databases[db]):
                 if re.match(regex, line):
-                    frag = [str(line.strip('<> \n\r')), str(num+1), db] #stripping spaces is important here!
+                    frag = [str(line.strip('<> \n\r')).upper(), str(num+1), db] #stripping spaces is important here!
                     dbnames.append(frag)
         nameset = []
         for i in dbnames:
