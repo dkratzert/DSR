@@ -11,6 +11,7 @@ from afix import InsertAfix
 from dsrparse import DSR_Parser
 import misc
 from resi import Resi
+from atoms import Element
 
 
 
@@ -298,6 +299,7 @@ class insertAfixTest(unittest.TestCase):
 
 class removeDublicatesAfixTest(unittest.TestCase):
     def setUp(self):
+        #self.verbosity = 4
         self.res_file = 'unit-tests/collect_resi.res'
         self.res_list = ResList(self.res_file)
         self.reslist =  self.res_list.get_res_list()
@@ -318,16 +320,19 @@ class removeDublicatesAfixTest(unittest.TestCase):
         self.numberscheme = self.num.get_fragment_number_scheme()
         self.afix = InsertAfix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead, \
                           self.dsr_dict, self.sfac_table, self.find_atoms, self.numberscheme)
-        self.db_testhead = ['SADI_CCF3 C1 C2 C1 C3 C1 C4', 'SADI_CCF3 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ']
+        self.db_testhead = ['SADI_CCF3 C1 C2 C1 C3 C1 C4', 'SADI_CCF3 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ', 'REM test']
         self.db_testhead2 = ['SADI_CF3 C1 C2 C1 C3 C1 C4 ', 'SADI_CF3 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ']
 
     def testrun_remove_dublicate_restraints(self):
         newhead = self.afix.remove_duplicate_restraints(self.db_testhead)#, self.resi.get_resiclass)
         newhead2 = self.afix.remove_duplicate_restraints(self.db_testhead2)#, self.resi.get_resiclass)
-        self.assertListEqual(['', ''], newhead)
+        self.assertListEqual(['', '', 'REM test'], newhead)
         self.assertListEqual(self.db_testhead2, newhead2)
 
-
+    def testrun_remove_all_restraints(self):
+        devided = [['SADI_CCF3 C1 C2 C1 C3 C1 C4\n', 'SADI_CCF3 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4\n'], ['REM test\n']]
+        newhead = self.afix.remove_all_restraints(self.db_testhead)
+        self.assertListEqual(devided, newhead)
 
 class invert_fragmentTest(unittest.TestCase):
     def setUp(self):
@@ -343,8 +348,16 @@ class invert_fragmentTest(unittest.TestCase):
         self.assertListEqual(self.inv_dbatoms, inverted)
         self.assertNotEqual(self.dbatoms2[0][2], inverted[0][2])
 
+class atomsTest(unittest.TestCase):
+    def setUp(self):
+        self.atoms = Element.atoms
 
+    def testrun_num_of_atoms(self):
+        num_of_atoms = len(self.atoms)
+        self.assertEqual(num_of_atoms, 92)
+        self.assertNotEqual(num_of_atoms, 42)
 
+#next dbfile.py
 
 if __name__ == "__main__":
     unittest.main()
