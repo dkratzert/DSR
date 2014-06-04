@@ -261,8 +261,9 @@ class NumberSchemeTest(unittest.TestCase):
 class insertAfixTest(unittest.TestCase):
     def setUp(self):
         self.res_file = 'p21c.res'
+        testresfile = './unit-tests/p21c.res'
         invert = True
-        self.rl = ResList(self.res_file)
+        self.rl = ResList(testresfile)
         self.reslist = self.rl.get_res_list()
         self.dsrp = DSR_Parser(self.reslist, self.rl)
         self.dsr_dict = self.dsrp.parse_dsr_line()
@@ -375,15 +376,12 @@ class dbfileTest(unittest.TestCase):
             names.append(self.rdb.getDBpath(name))
         self.assertListEqual(names, self.testnames)
 
-    def testrun_dbdict(self):
+    def testrun_db_files_dict(self):
         db_file_names = ("db1_klein.TXT", "db2_klein.TXT")
         rdb = ReadDB(dbdir='./unit-tests', dbnames = db_file_names)
-        #for name in db_file_names:
-        #    rdb.getDBpath(name)
-
         self.assertTupleEqual(rdb.getDB_files_dict()['db2_klein'], self.klein)
 
-    def testrun_dbtags(self):
+    def testrun_find_db_tags(self):
         result = [['DME', '1', 'db1_klein'], ['DMX', '1', 'db2_klein']]
         db_file_names = ("db1_klein.TXT", "db2_klein.TXT")
         rdb = ReadDB(dbdir='./unit-tests', dbnames = db_file_names)
@@ -395,6 +393,27 @@ class dbfileTest(unittest.TestCase):
         rdb = ReadDB(dbdir='./unit-tests', dbnames = db_file_names)
         with self.assertRaises(SystemExit):
             rdb.find_db_tags()
+
+
+class globalDB(unittest.TestCase):
+    def setUp(self):
+        self.result = {'dmx': {'comment': ['test'], 'head': [''], 'resi': False, 'name': 'DMX', 'line': '1', 'db': 'db2_klein', 'fragline': ['FRAG', '17', '1', '1', '1', '90', '90', '90'], 'atoms': [['O1', '1', '-1.3542148', '-0.4780990', '-0.5279749']]}, 'dme': {'comment': ['test'], 'head': [''], 'resi': False, 'name': 'DME', 'line': '1', 'db': 'db1_klein', 'fragline': ['FRAG', '17', '1', '1', '1', '90', '90', '90'], 'atoms': [['O1', '1', '-1.3542148', '-0.4780990', '-0.5279749']]}}
+
+    def testrun_build_db_dict(self):
+        db_file_names = ("db1_klein.TXT", "db2_klein.TXT")
+        #self.rdb = ReadDB(dbdir='./unit-tests', dbnames = db_file_names)
+        #self.dbnames = self.rdb.find_db_tags()
+#        invert = True
+        gdb = global_DB(dbdir='./unit-tests', dbnames = db_file_names)
+        db = gdb.build_db_dict()
+        self.assertEqual(db, self.result)
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     unittest.main()

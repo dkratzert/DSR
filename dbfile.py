@@ -150,9 +150,10 @@ class global_DB():
     }
     '''
 
-    def __init__(self, invert=False):
+    def __init__(self, invert=False, dbdir = os.environ["DSR_DB_DIR"],
+                 dbnames = ["dsr_db.txt", "dsr_user_db.txt"]):
         self.invert = invert
-        self._getdb = ReadDB()
+        self._getdb = ReadDB(dbdir, dbnames)
         self._db_tags = self._getdb.find_db_tags()
         self._db_plain_dict = self._getdb.getDB_files_dict()
         self._dbentry_dict = self.build_db_dict()
