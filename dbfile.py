@@ -50,10 +50,10 @@ class ReadDB():
     a dictionary of them.
     '''
 
-    def __init__(self):
-        self._db_file_names = ("dsr_db.txt", "dsr_user_db.txt")
+    def __init__(self, dbdir = os.environ["DSR_DB_DIR"], dbnames = ("dsr_db.txt", "dsr_user_db.txt")):
+        self._db_file_names = dbnames
         try:
-            self._db_dir = os.environ["DSR_DB_DIR"]
+            self._db_dir = dbdir
         except(KeyError):
             print('\nThe environment variable DSR_DB_DIR was not found.\n'\
                 'Please set this variable to the path of the DSR database!\n')
@@ -61,9 +61,9 @@ class ReadDB():
         self._databases = self.getDB_files_dict()
 
 
-    def getDBpath(self, name):
+    def getDBpath(self, db_file_name):
         '''returns the full db path as tuple'''
-        fullpath = os.path.join(self._db_dir, name) # full path with filename
+        fullpath = os.path.join(self._db_dir, db_file_name) # full path with filename
         return fullpath
 
 
@@ -116,7 +116,7 @@ class ReadDB():
                 #print dbnames
                 print('\nDuplicate database entry "{}" found! Please remove/rename '\
                     'second entry\nand/or check all end tags.\n'.format(duplicates.pop()))
-            sys.exit(0)
+            sys.exit(False)
         ## sort lower-case:
         dbnames.sort(key=lambda x: x[0].lower())
         return dbnames
