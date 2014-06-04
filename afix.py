@@ -42,7 +42,7 @@ def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
         dfix_file = open(filename, 'w')  # open the ins file
     except(IOError):
         print('Unable to write res file!')
-        sys.exit(-1)
+        sys.exit(False)
     for i in dbhead:            #modified reslist
         dfix_file.write("%s" %i)    #write the new file
     dfix_file.close()
@@ -99,16 +99,15 @@ class InsertAfix(object):
         return 'rem the following was inserted by DSR:\n'
 
 
-    def remove_duplicate_restraints(self, dbhead, *residue_class):
+    def remove_duplicate_restraints(self, dbhead, residue_class=''):
         '''
         removes restraints from the header which are already
         in the res-file
 
         :param dbhead:         database header (list of strings)
         :param residue_class:  SHELXL residue class
+        :type residue_class:   string
         '''
-        if not residue_class:
-            residue_class = ''
         modified = False
         newhead = dbhead[:]
         for resline in self._reslist:
