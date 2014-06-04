@@ -314,6 +314,11 @@ class DSR():
         '''
         Target atoms are being replaced if this is executed
         '''
+        for i in res_target_atoms:
+            if '_' in i:
+                print('\nDo you really want to REPLACE atom {} inside a residue?'.format(i))
+                print('This will very likely not work.\n')
+                break
         fa = FindAtoms(reslist)
         print('Replace mode active.')
         target_lines = fa.get_atom_line_numbers(res_target_atoms)
