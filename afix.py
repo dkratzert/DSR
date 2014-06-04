@@ -99,7 +99,7 @@ class InsertAfix(object):
         return 'rem the following was inserted by DSR:\n'
 
 
-    def remove_duplicate_restraints(self, dbhead, residue_class):
+    def remove_duplicate_restraints(self, dbhead, *residue_class):
         '''
         removes restraints from the header which are already
         in the res-file
@@ -107,6 +107,8 @@ class InsertAfix(object):
         :param dbhead:         database header (list of strings)
         :param residue_class:  SHELXL residue class
         '''
+        if not residue_class:
+            residue_class = ''
         modified = False
         newhead = dbhead[:]
         for resline in self._reslist:
