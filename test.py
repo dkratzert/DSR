@@ -390,9 +390,11 @@ class dbfileTest(unittest.TestCase):
         tags = rdb.find_db_tags()
         self.assertListEqual(result, tags)
 
-    def testrun_notequal(self):
-
-
+    def testrun_notequal_tags(self):
+        db_file_names = ["db1_unequaltags.TXT"]
+        rdb = ReadDB(dbdir='./unit-tests', dbnames = db_file_names)
+        tags = rdb.find_db_tags()
+        #print(tags)
 
 if __name__ == "__main__":
     unittest.main()
