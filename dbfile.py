@@ -50,7 +50,7 @@ class ReadDB():
     a dictionary of them.
     '''
 
-    def __init__(self, dbdir = os.environ["DSR_DB_DIR"], dbnames = ("dsr_db.txt", "dsr_user_db.txt")):
+    def __init__(self, dbdir = os.environ["DSR_DB_DIR"], dbnames = ["dsr_db.txt", "dsr_user_db.txt"]):
         self._db_file_names = dbnames
         try:
             self._db_dir = dbdir
@@ -62,13 +62,16 @@ class ReadDB():
 
 
     def getDBpath(self, db_file_name):
-        '''returns the full db path as tuple'''
+        '''
+        returns the full db path as tuple
+        '''
         fullpath = os.path.join(self._db_dir, db_file_name) # full path with filename
         return fullpath
 
 
     def getDB_files_dict(self):
-        '''returns the database as dictionary. Each file has its own key.
+        '''
+        returns the database as dictionary. Each file has its own key.
         {'dsr-db': ('line1\n', 'line2\n', '...'), 'dsr-user-db': ('line1\n', 'line2\n', '...')}
         '''
         db_dict = {}
@@ -105,7 +108,6 @@ class ReadDB():
         nameset = []
         for i in dbnames:
             nameset.append(i[0])
-
         if len(set(nameset)) != len(nameset):
             c1 = Counter(nameset)
             c2 = Counter(set(nameset))
