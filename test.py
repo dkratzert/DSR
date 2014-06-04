@@ -10,6 +10,7 @@ from dbfile import global_DB, invert_dbatoms_coordinates
 from afix import InsertAfix
 from dsrparse import DSR_Parser
 import misc
+from resi import Resi
 
 
 
@@ -264,11 +265,8 @@ class insertAfixTest(unittest.TestCase):
         self.dsrp = DSR_Parser(self.reslist, self.rl)
         self.dsr_dict = self.dsrp.parse_dsr_line()
         self.find_atoms = FindAtoms(self.reslist)
-        #rle = ResListEdit(reslist, find_atoms)
         self.gdb = global_DB(invert)
-        #db = gdb.build_db_dict()
         fragment = 'OC(CF3)3'
-        #fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
         self.dbatoms = self.gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
         self.dbhead = self.gdb.get_head_from_fragment(fragment)        # this is only executed once
         self.resi = True #gdb.get_resi_from_fragment(fragment)
@@ -282,11 +280,12 @@ class insertAfixTest(unittest.TestCase):
         self.sfac_table = self.sf.set_sfac_table()
         self.num = NumberScheme(self.reslist, self.dbatoms, self.resi)
         self.numberscheme = self.num.get_fragment_number_scheme()
-        db_testhead = ['SADI C1 C2 C1 C3 C1 C4 ', 'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ', \
+        self.db_testhead = ['SADI C1 C2 C1 C3 C1 C4 ', 'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ', \
                        'SADI 0.04 C2 C3 C3 C4 C2 C4', 'SADI 0.04 O1 C2 O1 C3 O1 C4 ', \
                        'SADI 0.04 F1 F2 F2 F3 F3 F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7 ', \
                        'SADI 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1 ', \
                        'SIMU O1 > F9 ', 'RIGU O1 > F9']
+
 
     def testrun_afix(self):
         afix = InsertAfix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead, \
@@ -296,6 +295,38 @@ class insertAfixTest(unittest.TestCase):
         self.assertEqual(afix_intern_entry, self.intern)
         self.assertEqual(afix_extern_entry, self.extern)
         misc.remove_file('TEST_p21c.res')
+
+class removeDublicatesAfixTest(unittest.TestCase):
+    def setUp(self):
+        self.res_file = 'unit-tests/collect_resi.res'
+        self.res_list = ResList(self.res_file)
+        self.reslist =  self.res_list.get_res_list()
+        self.find_atoms = FindAtoms(self.reslist)
+        invert = False
+        self.dsrp = DSR_Parser(self.reslist, self.res_list)
+        self.dsr_dict = self.dsrp.parse_dsr_line()
+        fragment = 'OC(cf3)3'
+        self.gdb = global_DB(invert)
+        self.dbatoms = self.gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
+        self.dbhead = self.gdb.get_head_from_fragment(fragment)        # this is only executed once
+        self.dbtypes = get_atomtypes(self.dbatoms)
+        #self.sf = SfacTable(self.reslist, self.dbtypes)
+        #self.sfac_table = self.sf.set_sfac_table()
+        self.sfac_table = ['C', 'H', 'N', 'O', 'F']
+        self.resi = 'CCF3' #gdb.get_resi_from_fragment(fragment)
+        self.num = NumberScheme(self.reslist, self.dbatoms, self.resi)
+        self.numberscheme = self.num.get_fragment_number_scheme()
+        self.afix = InsertAfix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead, \
+                          self.dsr_dict, self.sfac_table, self.find_atoms, self.numberscheme)
+        self.db_testhead = ['SADI_CCF3 C1 C2 C1 C3 C1 C4', 'SADI_CCF3 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ']
+        self.db_testhead2 = ['SADI_CF3 C1 C2 C1 C3 C1 C4 ', 'SADI_CF3 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ']
+
+    def testrun_remove_dublicate_restraints(self):
+        newhead = self.afix.remove_duplicate_restraints(self.db_testhead)#, self.resi.get_resiclass)
+        newhead2 = self.afix.remove_duplicate_restraints(self.db_testhead2)#, self.resi.get_resiclass)
+        self.assertListEqual(['', ''], newhead)
+        self.assertListEqual(self.db_testhead2, newhead2)
+
 
 
 class invert_fragmentTest(unittest.TestCase):
