@@ -318,7 +318,7 @@ class Export():
                 # in case of success remove the postscript file
                 misc.remove_file(psfile, terminate=plat)
             else:
-                print('unable to write .png file. Is platon and ImageMagic installed?')
+                print('Unable to write .png file. Is platon and ImageMagic installed?')
                 plat.terminate()
         except(EnvironmentError) as e:
             print('unable to convert file', e)

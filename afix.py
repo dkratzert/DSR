@@ -41,7 +41,7 @@ def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
     try:
         dfix_file = open(filename, 'w')  # open the ins file
     except(IOError):
-        print('Unable to write res file!')
+        print('Unable to write res file! Check directory write permissions.')
         sys.exit(False)
     for i in dbhead:            #modified reslist
         dfix_file.write("%s" %i)    #write the new file

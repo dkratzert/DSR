@@ -76,7 +76,7 @@ class ResList():
         try:
             nfile = open(self.__basefile+ending, 'w')  # open the ins file
         except(IOError):
-            print('Unable to write .res file!')
+            print('Unable to write .res file! Check directory write permissions.')
             sys.exit(-1)
         for i in reslist:            #modified reslist
             nfile.write("%s" %i)    #write the new file

@@ -367,7 +367,7 @@ class dbfileTest(unittest.TestCase):
         self._db_file_names = ("db1.txt", "db2.txt")
         self.rdb = ReadDB(dbdir='c:/test/')
         self.testnames = ['c:/test/db1.txt', 'c:/test/db2.txt']
-        self.klein = ('<DMX>\n', 'REM test\n', 'FRAG 17 1 1 1 90 90 90\n',
+        self.klein = ('\n', '<DMX>\n', 'REM test\n', 'RESI TST1\n', 'SIMU C1\n','FRAG 17 1 1 1 90 90 90\n',
                       'O1  1  -1.3542148   -0.4780990   -0.5279749\n', '</DMX>')
 
     def testrun_dbpath(self):
@@ -382,7 +382,7 @@ class dbfileTest(unittest.TestCase):
         self.assertTupleEqual(rdb.getDB_files_dict()['db2_klein'], self.klein)
 
     def testrun_find_db_tags(self):
-        result = [['DME', '1', 'db1_klein'], ['DMX', '1', 'db2_klein']]
+        result = [['DME', 1, 'db1_klein'], ['DMX', 2, 'db2_klein']]
         db_file_names = ("db1_klein.TXT", "db2_klein.TXT")
         rdb = ReadDB(dbdir='./unit-tests', dbnames = db_file_names)
         tags = rdb.find_db_tags()
@@ -397,7 +397,23 @@ class dbfileTest(unittest.TestCase):
 
 class globalDB(unittest.TestCase):
     def setUp(self):
-        self.result = {'dmx': {'comment': ['test'], 'head': [''], 'resi': False, 'name': 'DMX', 'line': '1', 'db': 'db2_klein', 'fragline': ['FRAG', '17', '1', '1', '1', '90', '90', '90'], 'atoms': [['O1', '1', '-1.3542148', '-0.4780990', '-0.5279749']]}, 'dme': {'comment': ['test'], 'head': [''], 'resi': False, 'name': 'DME', 'line': '1', 'db': 'db1_klein', 'fragline': ['FRAG', '17', '1', '1', '1', '90', '90', '90'], 'atoms': [['O1', '1', '-1.3542148', '-0.4780990', '-0.5279749']]}}
+        self.maxDiff = None
+        self.result = {'dmx': {'comment': ['test'],
+                               'head': ['SIMU C1'],
+                               'resi': 'TST1',
+                               'name': 'DMX',
+                               'line': 2,
+                               'db': 'db2_klein',
+                               'fragline': ['FRAG', '17', '1', '1', '1', '90', '90', '90'],
+                               'atoms': [['O1', '1', '-1.3542148', '-0.4780990', '-0.5279749']]},
+                       'dme': {'comment': ['test'],
+                               'head': [''],  # why is this an empty string if resi is False?
+                               'resi': False,
+                               'name': 'DME',
+                               'line': 1,
+                               'db': 'db1_klein',
+                               'fragline': ['FRAG', '17', '1', '1', '1', '90', '90', '90'],
+                               'atoms': [['O1', '1', '-1.3542148', '-0.4780990', '-0.5279749']]}}
 
     def testrun_build_db_dict(self):
         db_file_names = ("db1_klein.TXT", "db2_klein.TXT")
@@ -406,9 +422,12 @@ class globalDB(unittest.TestCase):
 #        invert = True
         gdb = global_DB(dbdir='./unit-tests', dbnames = db_file_names)
         db = gdb.build_db_dict()
+        self.assertEqual(db['dmx']['line'], 2)
+        self.assertEqual(db['dmx']['name'], 'DMX')
+        self.assertEqual(db['dmx']['db'], 'db2_klein')
+        self.assertEqual(db['dmx']['head'], ['SIMU C1'])
+        self.assertEqual(db['dmx']['fragline'], ['FRAG', '17', '1', '1', '1', '90', '90', '90'])
         self.assertEqual(db, self.result)
-
-
 
 
 
