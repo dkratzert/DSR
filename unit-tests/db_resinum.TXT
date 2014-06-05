@@ -1,8 +1,6 @@
-
-<DMX>
+<ttt>
 REM test
-RESI 3 TST1
-SIMU C1
+resi 1
 FRAG 17 1 1 1 90 90 90
 O1  1  -1.3542148   -0.4780990   -0.5279749
-</DMX>
+</ttt>
