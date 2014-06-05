@@ -293,21 +293,24 @@ class global_DB():
 
 
     def check_db_header_consistency(self, head, fragment):
-        '''This method check the db header for consistency
-         - before frag only comments or cards. in case off error raise warning
-           with line number
         '''
-        multiline = False  # multiline is here to be able to skip the next line after a continuation line
+        This method check the db header for consistency
+         - before frag only comments or cards are alllowed. in case off error raise warning
+           with fragment name and line itself
+        :param head: list of strings
+        :type head: list
+        :param fragment: fragment name
+        :type fragment: string
+        '''
         for n, line in enumerate(head):
             line = line.upper().split()
             if not line:
                 continue
             if line[0] not in SHX_CARDS:  # only the first 4 characters, because SADI_TOL would be bad
-                print(line)
                 print('Bad line in header of database entry "{}" found!'.format(n, fragment))
                 print(' '.join(line))
-                sys.exit(-1)
-
+                sys.exit(False)
+        return True
 
 
 
