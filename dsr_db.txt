@@ -1272,7 +1272,7 @@ rem Src: Turbomole, B3-LYP/def2-TZVPP
 rem Name: Trichloromethane, Chloroform, CHCl3
 RESI CCL3
 DFIX 1.783 C1 Cl1 C1 Cl2 C1 Cl3
-DFIX 2.946 Cl1 Cl2 Cl2 Cl3 Cl3 Cl1
+DANG 2.946 Cl1 Cl2 Cl2 Cl3 Cl3 Cl1
 RIGU C1 > Cl3
 SIMU C1 > Cl3
 FRAG  17  1  1  1  90  90  90

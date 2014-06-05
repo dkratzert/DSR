@@ -130,7 +130,7 @@ def unwrap_head_lines(headlines):
         tmp = tmp+line
     line = tmp.split()
     for n, i in enumerate(line):
-        if i in constants.SHX_CARDS:
+        if i[:4] in constants.SHX_CARDS:
             line[n] = '\n'+line[n]
     new_head = ' '.join(line).strip().split('\n')
     return new_head
