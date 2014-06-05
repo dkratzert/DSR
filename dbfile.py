@@ -90,7 +90,7 @@ class ReadDB():
                     sys.exit(-1)
                 else:
                     continue
-            db_dict[base_filename] = tuple(dblist)
+            db_dict[base_filename] = dblist
         return db_dict
 
 
@@ -261,14 +261,17 @@ class global_DB():
                 if i == 'head':
                     print('- Restraints in the header of database entry "{}" missing!\n'\
                         ''.format(fragment))
+                    return False
                 else:
                     print('- Values for "{}" in database entry "{}" missing!'\
                         ''.format(str.upper(i), fragment))
+                    return False
         if len(fragment_dict['fragline']) != 8:
             print('- The line starting with "FRAG" in the database entry of {} is '\
                 'not correct.\n  Are the cell parameters really correct? '\
                 '"FRAG 17 a b c alpha beta gamma"\n'.format(fragment))
             sys.exit(False)
+        return True
 
 
     def check_db_atom_consistency(self, db, fragment):
@@ -296,18 +299,14 @@ class global_DB():
         '''
         multiline = False  # multiline is here to be able to skip the next line after a continuation line
         for n, line in enumerate(head):
-            line = line.split()
+            line = line.upper().split()
             if not line:
                 continue
-            if multiline:
-                multiline = False
-                continue
-            if line[-1] == '=': # continuation line
-                multiline = True
-            if line[0][:4].upper() not in SHX_CARDS:  # only the first 4 characters, because SADI_TOL would be bad
-                print('Bad line {} in header of database entry "{}" found!'.format(n, fragment))
+            if line[0] not in SHX_CARDS:  # only the first 4 characters, because SADI_TOL would be bad
+                print(line)
+                print('Bad line in header of database entry "{}" found!'.format(n, fragment))
+                print(' '.join(line))
                 sys.exit(-1)
-
 
 
 
@@ -338,6 +337,7 @@ class global_DB():
             nhead.append(line)
         # nhead is list of strings
         nhead = misc.unwrap_head_lines(nhead)
+        self.check_db_header_consistency(nhead, fragment)
         if not comment:
             comment = ['']
         try:
@@ -347,7 +347,7 @@ class global_DB():
             print('Error. No cell parameters found in the database entry '\
                     'of "{}".'.format(fragment))
             print('Please add these parameters!')
-            sys.exit(0)
+            sys.exit(False)
         return (nhead, fragline, comment)
 
 

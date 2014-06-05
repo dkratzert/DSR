@@ -370,8 +370,8 @@ class dbfileTest(unittest.TestCase):
         self._db_file_names = ("db1.txt", "db2.txt")
         self.rdb = ReadDB(dbdir='c:/test/')
         self.testnames = ['c:/test/db1.txt', 'c:/test/db2.txt']
-        self.klein = ('\n', '<DMX>\n', 'REM test\n', 'RESI 3 TST1\n', 'SIMU C1\n','FRAG 17 1 1 1 90 90 90\n',
-                      'O1  1  -1.3542148   -0.4780990   -0.5279749\n', '</DMX>')
+        self.klein = ['\n', '<DMX>\n', 'REM test\n', 'RESI 3 TST1\n', 'SIMU C1\n','FRAG 17 1 1 1 90 90 90\n',
+                      'O1  1  -1.3542148   -0.4780990   -0.5279749\n', '</DMX>']
 
     def testrun_dbpath(self):
         names = []
@@ -380,9 +380,9 @@ class dbfileTest(unittest.TestCase):
         self.assertListEqual(names, self.testnames)
 
     def testrun_db_files_dict(self):
-        db_file_names = ("db1_klein.TXT", "db2_klein.TXT")
+        db_file_names = ["db1_klein.TXT", "db2_klein.TXT"]
         rdb = ReadDB(dbdir='./unit-tests', dbnames = db_file_names)
-        self.assertTupleEqual(rdb.getDB_files_dict()['db2_klein'], self.klein)
+        self.assertListEqual(rdb.getDB_files_dict()['db2_klein'], self.klein)
 
     def testrun_find_db_tags(self):
         result = [['DME', 1, 'db1_klein'], ['DMX', 2, 'db2_klein']]
@@ -501,6 +501,17 @@ class globalDB(unittest.TestCase):
             gdb = global_DB(dbdir='./unit-tests', dbnames = db_file_names)
             db = gdb.build_db_dict()
             gdb.get_fragment_atoms('dme-free', 'db1_noend', 1)
+
+
+    def testrun_header_consistency(self):
+        self.maxDiff = None
+        db_file_names = ["db1_head_inconsistent.TXT"]
+        with self.assertRaises(SystemExit):    
+            gdb = global_DB(invert = True, dbdir='./unit-tests', dbnames = db_file_names)
+            db = gdb.build_db_dict()
+            fragment = 'dmel'
+            head = db[fragment]['head']
+            gdb.check_db_header_consistency(head, fragment)
 
 
 
