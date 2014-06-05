@@ -97,13 +97,13 @@ class ReadDB():
         '''
         This method lists all fragment names in the database
         '''
+        regex = r'^<[^/].*>'  # regular expression for db tag.
         dbnames = []
         dbkeys = list(self._databases.keys()) #names of the databases
-        regex = r'^<[^/].*>'
         for db in dbkeys:
             for num, line in enumerate(self._databases[db]):
                 if re.match(regex, line):
-                    frag = [str(line.strip('<> \n\r')).upper(), str(num+1), db] #stripping spaces is important here!
+                    frag = [str(line.strip('<> \n\r')).upper(), num+1, db] #stripping spaces is important here!
                     dbnames.append(frag)
         nameset = []
         for i in dbnames:
@@ -167,7 +167,7 @@ class global_DB():
         db_dict = {}
         for i in self._db_tags:
             fragment = i[0].lower()
-            line = str(i[1])
+            line = i[1]
             db = str(i[2])
             headboth = self.get_head_lines(fragment, db, line)
             header = headboth[0]
@@ -177,10 +177,10 @@ class global_DB():
             comment = self.get_head_lines(fragment, db, line)[2]
             comment = [' '.join(x) for x in comment]
             db_dict[fragment] = {
-                'head'    : (header),
+                'head'    : header,
                 'resi'    : residue,
                 'fragline': fragline.split(),
-                'atoms'   : (atoms),
+                'atoms'   : atoms,
                 'line'    : line,
                 'db'      : db,
                 'comment' : comment,
