@@ -21,6 +21,7 @@ from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS
 
 
 
+
 def invert_dbatoms_coordinates(atoms):
     '''
     Inverts SHELXL atom coordinates like
@@ -154,9 +155,11 @@ class global_DB():
                  dbnames = ["dsr_db.txt", "dsr_user_db.txt"]):
         self.invert = invert
         self._getdb = ReadDB(dbdir, dbnames)
+        # _db_tags: ['12-DICHLOROBENZ', 590, 'dsr_db']
         self._db_tags = self._getdb.find_db_tags()
         self._db_plain_dict = self._getdb.getDB_files_dict()
         self._dbentry_dict = self.build_db_dict()
+
 
 
 
@@ -172,7 +175,7 @@ class global_DB():
             headboth = self.get_head_lines(fragment, db, line)
             header = headboth[0]
             fragline = headboth[1]
-            residue = self.get_residue_from_head(header)
+            residue = self.get_residue_from_head(header, fragment)
             atoms = self.get_fragment_atoms(fragment, db, line)
             comment = self.get_head_lines(fragment, db, line)[2]
             comment = [' '.join(x) for x in comment]
@@ -189,27 +192,42 @@ class global_DB():
         return db_dict
 
 
-    def get_residue_from_head(self, head):
+    def get_residue_from_head(self, head, fragment=''):
         '''
         extracts the residue from the head
         and returns just the first string after RESI
+        :param head: ['line1\n', 'line2\n', '...']
+        :type head: list of strings
         '''
         for index, line in enumerate(head):
             if line.upper().startswith('RESI'):
                 resiline = line.split()
                 del head[index] #remove resi from head
-                return resiline[1].upper()
+                for n, i in enumerate(resiline):
+                    if not i[0].isalpha():
+                        del resiline[n]
+                try:
+                    return resiline[1].upper()
+                except(IndexError):
+                    print('Invalid residue definition in database entry {}.'.format(fragment))
+                    sys.exit(False)
         return False
 
 
-    def get_fragment_atoms(self, fragment, db, line):
+    def get_fragment_atoms(self, fragment, db_name, line):
         '''
         returns the atoms of a fragment as list
         [['C1', '1', '7.600', '-1.044', '4.188'], [...]]
+        :param fragment: db fragment name
+        :type fragment:  string
+        :param db_name:  database from the database dictionary
+        :type db_name:   string
+        :param line:     line number of db entry
+        :type line:      integer
         '''
         atoms = []
         end = False
-        for i in self._db_plain_dict[db][int(line):]:
+        for i in self._db_plain_dict[db_name][int(line):]:
             i = i.strip('\n\r')
             regex = re.escape(r'</{}>'.format(fragment.lower()))
             if re.match(regex, i.lower()):   # find the endtag of db entry
@@ -220,13 +238,13 @@ class global_DB():
                 if l[0].upper() not in SHX_CARDS:      # exclude all non-atom cards
                     atoms.append(l)
         if not atoms:
-            print('database entry of {} is corrupt. No atoms found!'.format(fragment))
+            print('database entry of "{}" in line {} of "{}.txt" is corrupt. No atoms found!'.format(fragment, line, db_name))
             print('Have you really followed the syntax?')
-            sys.exit()
+            sys.exit(False)
         if not end:
             print('Could not find end of dbentry for fragment '\
-                '"{}"  Exiting...'.format(fragment))
-            sys.exit(-1)
+                '"{}" in line {} of "{}.txt".  Exiting...'.format(fragment, line, db_name))
+            sys.exit(False)
         if self.invert:
             atoms = invert_dbatoms_coordinates(atoms)
         return atoms
@@ -250,7 +268,7 @@ class global_DB():
             print('- The line starting with "FRAG" in the database entry of {} is '\
                 'not correct.\n  Are the cell parameters really correct? '\
                 '"FRAG 17 a b c alpha beta gamma"\n'.format(fragment))
-            sys.exit(-1)
+            sys.exit(False)
 
 
     def check_db_atom_consistency(self, db, fragment):

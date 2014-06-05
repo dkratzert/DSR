@@ -260,6 +260,7 @@ class NumberSchemeTest(unittest.TestCase):
 
 class insertAfixTest(unittest.TestCase):
     def setUp(self):
+        self.maxDiff = None
         self.res_file = 'p21c.res'
         testresfile = './unit-tests/p21c.res'
         invert = True
@@ -291,6 +292,7 @@ class insertAfixTest(unittest.TestCase):
 
 
     def testrun_afix(self):
+        self.maxDiff = None
         afix = InsertAfix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead, \
                           self.dsr_dict, self.sfac_table, self.find_atoms, self.numberscheme)
         afix_extern_entry = afix.build_afix_entry(True, self.res_file, 'TEST')
@@ -364,10 +366,11 @@ class atomsTest(unittest.TestCase):
 
 class dbfileTest(unittest.TestCase):
     def setUp(self):
+        self.maxDiff = None
         self._db_file_names = ("db1.txt", "db2.txt")
         self.rdb = ReadDB(dbdir='c:/test/')
         self.testnames = ['c:/test/db1.txt', 'c:/test/db2.txt']
-        self.klein = ('\n', '<DMX>\n', 'REM test\n', 'RESI TST1\n', 'SIMU C1\n','FRAG 17 1 1 1 90 90 90\n',
+        self.klein = ('\n', '<DMX>\n', 'REM test\n', 'RESI 3 TST1\n', 'SIMU C1\n','FRAG 17 1 1 1 90 90 90\n',
                       'O1  1  -1.3542148   -0.4780990   -0.5279749\n', '</DMX>')
 
     def testrun_dbpath(self):
@@ -398,6 +401,10 @@ class dbfileTest(unittest.TestCase):
 class globalDB(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
+        self.klein = ['RESI ClBE ', 'SADI C1 Cl1 C2 Cl2 ',
+                      'SADI 0.04 C6 Cl1 C2 Cl1 C1 Cl2 C3 Cl2 ',
+                      'SAME C2 > C6 C1 ', 'FLAT C1 > Cl2 ',
+                      'SIMU C1 > Cl2 ', 'RIGU C1 > Cl2']
         self.result = {'dmx': {'comment': ['test'],
                                'head': ['SIMU C1'],
                                'resi': 'TST1',
@@ -427,10 +434,73 @@ class globalDB(unittest.TestCase):
         self.assertEqual(db['dmx']['db'], 'db2_klein')
         self.assertEqual(db['dmx']['head'], ['SIMU C1'])
         self.assertEqual(db['dmx']['fragline'], ['FRAG', '17', '1', '1', '1', '90', '90', '90'])
+        self.assertEqual(db['dmx']['resi'], 'TST1')
         self.assertEqual(db, self.result)
 
+    def testrun_get_residue_from_head(self):
+        db_file_names = ("db1_klein.TXT", "db2_klein.TXT")
+        gdb = global_DB(dbdir='./unit-tests', dbnames = db_file_names)
+        db = gdb.build_db_dict()
+        self.assertEqual(gdb.get_residue_from_head(self.klein), 'CLBE' )
+
+    def testrun_get_residue_from_head2(self):
+        db_file_names = ("db1_klein.TXT", "db2_klein.TXT", 'db_resinum.TXT')
+        with self.assertRaises(SystemExit):
+            gdb = global_DB(dbdir='./unit-tests', dbnames = db_file_names)
+            db = gdb.build_db_dict()
+
+    def testrun_get_fragment_atoms(self):
+        x = '-1.154'
+        z = '0.526'
+        o1 = ['O1', '1', '-1.154', '-0.748', '0.526']
+        db_file_names = ("db1.TXT", "db2.TXT")
+        gdb = global_DB(dbdir='./unit-tests', dbnames = db_file_names)
+        db = gdb.build_db_dict()
+        atom = gdb.get_fragment_atoms('dme', 'db2', 1)[0]
+        self.assertListEqual(o1, atom)
+        self.assertEqual(x, atom[2])
+        self.assertEqual(z, atom[4])
+        self.assertEqual('1', atom[1])
+        self.assertEqual('O1', atom[0])
+
+    def testrun_get_fragment_atoms_shortline(self):
+        db_file_names = ["db1_shortline.TXT"]
+        gdb = global_DB(dbdir='./unit-tests', dbnames = db_file_names)
+        #db = gdb.build_db_dict()
+        atom = gdb.get_fragment_atoms('dme-free', 'db1_shortline', 1)
+        self.assertEqual(len(atom), 5)
+        self.assertEqual(atom[0][0], 'O2')
 
 
+    def testrun_get_fragment_atoms_inv(self):
+        x = '1.154'
+        z = '-0.526'
+        o1 = ['O1', '1', '1.154', '0.748', '-0.526']
+        db_file_names = ("db1.TXT", "db2.TXT")
+        gdb = global_DB(invert = True, dbdir='./unit-tests', dbnames = db_file_names)
+        db = gdb.build_db_dict()
+        atom = gdb.get_fragment_atoms('dme', 'db2', 1)[0]
+        self.assertListEqual(o1, atom)
+        self.assertEqual(x, atom[2])
+        self.assertEqual(z, atom[4])
+        self.assertEqual('1', atom[1])
+        self.assertEqual('O1', atom[0])
+
+
+    def testrun_get_fragment_atoms_noatoms(self):
+        db_file_names = ("db1_noatoms.TXT", "db2.TXT")
+        with self.assertRaises(SystemExit):
+            gdb = global_DB(dbdir='./unit-tests', dbnames = db_file_names)
+            db = gdb.build_db_dict()
+            gdb.get_fragment_atoms('dme-free', 'db1_noatoms', 1)
+
+
+    def testrun_get_fragment_atoms_noend(self):
+        db_file_names = ("db1_noend.TXT", "db2.TXT")
+        with self.assertRaises(SystemExit):
+            gdb = global_DB(dbdir='./unit-tests', dbnames = db_file_names)
+            db = gdb.build_db_dict()
+            gdb.get_fragment_atoms('dme-free', 'db1_noend', 1)
 
 
 
