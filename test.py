@@ -506,14 +506,22 @@ class globalDB(unittest.TestCase):
     def testrun_header_consistency(self):
         self.maxDiff = None
         db_file_names = ["db1_head_inconsistent.TXT"]
-        with self.assertRaises(SystemExit):    
+        with self.assertRaises(SystemExit):
             gdb = global_DB(invert = True, dbdir='./unit-tests', dbnames = db_file_names)
             db = gdb.build_db_dict()
             fragment = 'dmel'
             head = db[fragment]['head']
             gdb.check_db_header_consistency(head, fragment)
 
-
+    def testrun_header_consistency2(self):
+        self.maxDiff = None
+        db_file_names = ["db1_head_inconsistent2.TXT"]
+        with self.assertRaises(SystemExit):
+            gdb = global_DB(invert = True, dbdir='./unit-tests', dbnames = db_file_names)
+            db = gdb.build_db_dict()
+            fragment = 'dmem'
+            head = db[fragment]['head']
+            gdb.check_db_header_consistency(head, fragment)
 
 if __name__ == "__main__":
     unittest.main()
