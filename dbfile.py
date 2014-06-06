@@ -1,5 +1,5 @@
-#-*- encoding: utf-8 -*-
-#möp
+# -*- encoding: utf-8 -*-
+# möp
 #
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
@@ -10,13 +10,14 @@
 # ----------------------------------------------------------------------------
 #
 from __future__ import print_function
+
+from collections import Counter
 import os, sys
 import re
-#import fileinput
-import misc
 import tarfile
-from collections import Counter
+
 from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS
+import misc
 
 
 
@@ -51,7 +52,7 @@ class ReadDB():
     a dictionary of them.
     '''
 
-    def __init__(self, dbdir = '', dbnames = ''):
+    def __init__(self, dbdir='', dbnames=''):
         self._db_file_names = dbnames
         try:
             self._db_dir = dbdir
@@ -66,7 +67,7 @@ class ReadDB():
         '''
         returns the full db path as tuple
         '''
-        fullpath = os.path.join(self._db_dir, db_file_name) # full path with filename
+        fullpath = os.path.join(self._db_dir, db_file_name)  # full path with filename
         return fullpath
 
 
@@ -100,11 +101,11 @@ class ReadDB():
         '''
         regex = r'^<[^/].*>'  # regular expression for db tag.
         dbnames = []
-        dbkeys = list(self._databases.keys()) #names of the databases
+        dbkeys = list(self._databases.keys())  # names of the databases
         for db in dbkeys:
             for num, line in enumerate(self._databases[db]):
                 if re.match(regex, line):
-                    frag = [str(line.strip('<> \n\r')).upper(), num+1, db] #stripping spaces is important here!
+                    frag = [str(line.strip('<> \n\r')).upper(), num + 1, db]  # stripping spaces is important here!
                     dbnames.append(frag)
         nameset = []
         for i in dbnames:
@@ -112,15 +113,15 @@ class ReadDB():
         if len(set(nameset)) != len(nameset):
             c1 = Counter(nameset)
             c2 = Counter(set(nameset))
-            diff = c1-c2
+            diff = c1 - c2
             duplicates = list(diff.elements())
             for i in duplicates:
-                #print list(set([ i for y in dbnames if y for y in i]))[0]
-                #print dbnames
+                # print list(set([ i for y in dbnames if y for y in i]))[0]
+                # print dbnames
                 print('\nDuplicate database entry "{}" found! Please remove/rename '\
                     'second entry\nand/or check all end tags.\n'.format(duplicates.pop()))
             sys.exit(False)
-        ## sort lower-case:
+        # # sort lower-case:
         dbnames.sort(key=lambda x: x[0].lower())
         return dbnames
 
@@ -151,8 +152,8 @@ class global_DB():
     }
     '''
 
-    def __init__(self, invert=False, dbdir = os.environ["DSR_DB_DIR"],
-                 dbnames = ["dsr_db.txt", "dsr_user_db.txt"]):
+    def __init__(self, invert=False, dbdir=os.environ["DSR_DB_DIR"],
+                 dbnames=["dsr_db.txt", "dsr_user_db.txt"]):
         '''
         self._db_tags: ['12-DICHLOROBENZ', 590, 'dsr_db']
         self._db_plain_dict: dictionary with plain text of the individual databases
@@ -236,7 +237,7 @@ class global_DB():
         for index, line in enumerate(head):
             if line.upper().startswith('RESI'):
                 resiline = line.split()
-                del head[index] #remove resi from head
+                del head[index]  # remove resi from head
                 for n, i in enumerate(resiline):
                     if not i[0].isalpha():
                         del resiline[n]
@@ -264,12 +265,12 @@ class global_DB():
         for i in self._db_plain_dict[db_name][int(line):]:
             i = i.strip('\n\r')
             regex = re.escape(r'</{}>'.format(fragment.lower()))
-            if re.match(regex, i.lower()):   # find the endtag of db entry
+            if re.match(regex, i.lower()):  # find the endtag of db entry
                 end = True
                 break
-            if re.search(atomregex, str(i)):        # search atoms
-                l = i.split()[:5]              # convert to list and use only first 5 columns
-                if l[0].upper() not in SHX_CARDS:      # exclude all non-atom cards
+            if re.search(atomregex, str(i)):  # search atoms
+                l = i.split()[:5]  # convert to list and use only first 5 columns
+                if l[0].upper() not in SHX_CARDS:  # exclude all non-atom cards
                     atoms.append(l)
         if not atoms:
             print('database entry of "{}" in line {} of "{}.txt" is corrupt. No atoms found!'.format(fragment, line, db_name))
@@ -360,7 +361,7 @@ class global_DB():
         nhead = []
         comment = []
         for i in self._db_plain_dict[db][int(line):]:
-            if i.upper().startswith('FRAG'):  #collect the fragline
+            if i.upper().startswith('FRAG'):  # collect the fragline
                 fragline = i.rstrip(' \n\r')
                 break
             head.append(i)
@@ -494,7 +495,7 @@ class ImportGRADE():
         else:
             print('File {} is not a valid file to import from!'.format(grade_base_filename[1]))
             sys.exit(0)
-        #names = []
+        # names = []
         pdbfile = False
         dfixfile = False
         propfile = False
@@ -555,7 +556,7 @@ class ImportGRADE():
             for line in self._dfixfile:
                 if line.startswith(m):
                     comments.append(line.split())
-        name = 'REM Name: '+self._resi_name
+        name = 'REM Name: ' + self._resi_name
         comments.append(name.split())
         return comments
 
@@ -583,8 +584,8 @@ class ImportGRADE():
                     restraints.append(line)
         if self._firstlast:
             atoms = ' > '.join(self._firstlast)
-            restraints.append(['SIMU '+atoms])
-            restraints.append(['RIGU '+atoms])
+            restraints.append(['SIMU ' + atoms])
+            restraints.append(['RIGU ' + atoms])
         return restraints
 
 
@@ -617,12 +618,12 @@ class ImportGRADE():
         '''
         db_import_dict = {}
         num = 1
-        resi_name = self._resi_name[:3]+str(num)
+        resi_name = self._resi_name[:3] + str(num)
         for i in self._db_tags:
             while resi_name.upper() == i[0].upper():
                 num = num + 1
-                resi_name = resi_name[:3]+str(num)
-        #print 'using {} as resiname'.format(resi_name)
+                resi_name = resi_name[:3] + str(num)
+        # print 'using {} as resiname'.format(resi_name)
         fragline = 'FRAG 17 1  1  1  90  90  90'
         db_import_dict[resi_name] = {
                 'head'    : self._restraints,
@@ -684,7 +685,7 @@ class ImportGRADE():
                 for i in fragments:
                     name = i
                     if self._db[i]['db'] == 'dsr_user_db':
-                        #userdb = list(self._db[i].keys())
+                        # userdb = list(self._db[i].keys())
                         atomlist = self._db[i]['atoms']
                         head = '\n'.join([''.join(x) for x in self._db[i]['head']])
                         atoms = '\n'.join(['{:<6}{:<2}{:>8.3f}{:>8.3f}{:>8.3f}'\
@@ -702,7 +703,7 @@ class ImportGRADE():
         print('User database successfully updated.')
 
 
-    #def read_mol2_file(self, filename):
+    # def read_mol2_file(self, filename):
     #    '''
     #    This methos is deprecated, because we now collect the atoms from
     #    the pdb file!
@@ -754,31 +755,31 @@ if __name__ == '__main__':
 
     gdb = ReadDB()
     dbnames = gdb.find_db_tags()
-    #print 'dbcontent:'
-    #for i in dbnames:
+    # print 'dbcontent:'
+    # for i in dbnames:
     #    print ' {:<18}| {:<6}| {:<15}'.format(i[0], i[1], i[2])
     # no valid
     invert = True
     gl = global_DB(invert)
     db = gl.build_db_dict()
-    #print db.values()[3]
+    # print db.values()[3]
 
-    #fragment = 'pfanion'
+    # fragment = 'pfanion'
     fragment = 'toluene'
     # fragline = gl.get_fragline_from_fragment(fragment)  # full string of FRAG line
     # dbatoms = gl.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
-    dbhead = gl.get_head_from_fragment(fragment)        # this is only executed once
+    dbhead = gl.get_head_from_fragment(fragment)  # this is only executed once
     dbhead = misc.unwrap_head_lines(dbhead)
 
-    #print dbatoms
+    # print dbatoms
     # print('residue:', db['toluene']['resi'])
     # print('line of db:', db['toluene']['line'])
     # print('database:', db['toluene']['db'])
-    #print(fragline)
+    # print(fragline)
 
-    #for i in dbatoms:
+    # for i in dbatoms:
     #    print i
-    #head = db['toluene']['head']
+    # head = db['toluene']['head']
     print('### DB head:\n')
     for i in dbhead:
         print(i)
@@ -788,44 +789,44 @@ if __name__ == '__main__':
     for i in dbhead:
         print(i.strip('\n'))
     sys.exit()
-    #mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz')
-    #mog = ImportGRADE('./test-data/LIG.gradeserver_all.tgz')
+    # mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz')
+    # mog = ImportGRADE('./test-data/LIG.gradeserver_all.tgz')
 
-    #import tempfile
-    #import tarfile
+    # import tempfile
+    # import tarfile
     gf = './test-data/LIG.gradeserver_all.tgz'
     gradefile = tarfile.open(gf)
-    #create a temporary file and download platon to it.
+    # create a temporary file and download platon to it.
 
 #    print
-    #list content of tgz file
-    #print gradefile.getmembers()
+    # list content of tgz file
+    # print gradefile.getmembers()
 
     for i in gradefile.getnames():
         if i.endswith(('.pdb', '.dfx', '.mol2')):
             if re.match('.*obabel.*', i):
                 continue
-            #localFile = tempfile.TemporaryFile()
+            # localFile = tempfile.TemporaryFile()
             print(i)
             gfile = gradefile.extractfile(i)
-            #localFile.write(gfile)
+            # localFile.write(gfile)
 #            print gfile.readlines()
-            #print i
+            # print i
 
 
 
-    #print localFile.readlines()
+    # print localFile.readlines()
     print()
-    #print misc.ll_to_string(mog.get_molatoms())
-    #for i in mog.get_molatoms('./test-data/TOL.mol2'):
+    # print misc.ll_to_string(mog.get_molatoms())
+    # for i in mog.get_molatoms('./test-data/TOL.mol2'):
     #    #print '{:<6}{:>1}{:>10}{:>10}{:>10}'.format(i[0], i[1], i[2], i[3], i[4])
     #    print '{:<6}{:>1}{:>10}{:>10}{:>10}'.format(*i)
     #    #print i[3], i[0], i[1], i[2]
-    #print mog.get_atomnumbers()
+    # print mog.get_atomnumbers()
 
     # for i in mog.get_restraints('./test-data/TOL.dfx'):
     #    print i
 
-    #mog.bild_grade_db_entry()
-    #print mog.bild_grade_db_entry('{}.mol2', '{}.dfx').format(dsr_dict[import_grade], dsr_dict[import_grade])
-    #mog.write_user_database()
+    # mog.bild_grade_db_entry()
+    # print mog.bild_grade_db_entry('{}.mol2', '{}.dfx').format(dsr_dict[import_grade], dsr_dict[import_grade])
+    # mog.write_user_database()
