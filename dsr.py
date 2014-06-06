@@ -196,7 +196,7 @@ class DSR():
         frags = sorted(db.keys())
         names_list = []
         for i in frags:
-            fragname = ', '.join(gdb.get_comment_from_fragment(i))
+            fragname = gdb.get_comment_from_fragment(i)
             names_list.append([i, fragname])
             line = ' {:<17}| {:<5}| {:<11}| {}'.format(
                     i, gdb.get_line_number_from_fragment(i),

@@ -1,0 +1,20 @@
+name             modified_pdb_for_obabel.pdb 1
+formula          C16AlF36O4
+mol_weight       967.093
+exact_mass       966.904
+canonical_SMILES FC(F)(F)C(O[Al](OC(C(F)(F)F)(C(F)(F)F)C(F)(F)F)(OC(C(F)(F)F)(C(F)(F)F)C(F)(F)F)OC(C(F)(F)F)(C(F)(F)F)C(F)(F)F)(C(F)(F)F)C(F)(F)F	
+
+==============================
+*** Open Babel Warning  in InChI code
+  #0 :Accepted unusual valence(s): Al(4); Metal was disconnected
+InChI            InChI=1S/4C4F9O.Al/c4*5-2(6,7)1(14,3(8,9)10)4(11,12)13;/q4*-1;+4
+
+num_atoms        57
+num_bonds        56
+num_residues     1
+sequence         PFA
+num_rings        0
+logP             11.572
+PSA              36.92
+MR               87.924
+$$$$
