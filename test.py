@@ -3,17 +3,15 @@
 
 
 import unittest
-from atomhandling import get_atomtypes, FindAtoms, check_source_target,\
-    rename_dbhead_atoms, SfacTable, Elem_2_Sfac, NumberScheme
-from resfile import ResList
-from dbfile import global_DB, invert_dbatoms_coordinates, ReadDB, ImportGRADE
+
 from afix import InsertAfix
+from atomhandling import get_atomtypes, FindAtoms, check_source_target, \
+    rename_dbhead_atoms, SfacTable, Elem_2_Sfac, NumberScheme
+from atoms import Element
+from dbfile import global_DB, invert_dbatoms_coordinates, ReadDB, ImportGRADE
 from dsrparse import DSR_Parser
 import misc
-from resi import Resi
-from atoms import Element
-import os
-
+from resfile import ResList
 
 
 class get_atomtypesTest(unittest.TestCase):
@@ -535,7 +533,6 @@ class globalDB(unittest.TestCase):
                  'Src: Turbomole, B3-LYP/def2-TZVPP, blub, This DME is not coordinated',
                  'A really fancy name.']
         for i in range(1,5):
-            from _ast import Str
             com = gdb.get_comment_from_fragment(fragment+str(i))
             #print(com)
             self.assertEqual(com, names[i-1])
@@ -569,8 +566,9 @@ class ImportGRADE_Test(unittest.TestCase):
         endings = []
         for num, i in enumerate(filenames):
             with open(i) as file:
+                #file = file.decode('ascii')
                 endings.append(file.readlines())
-            self.assertListEqual(endings[num], files[num])
+        self.assertListEqual(endings[num], files[num])
 
     def testrun_get_name_from_obprop(self):
         self.maxDiff = None
