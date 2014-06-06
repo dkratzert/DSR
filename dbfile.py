@@ -527,6 +527,8 @@ class ImportGRADE():
     def get_name_from_obprop(self, obprop):
         '''
         get the fragment name from the obprop.txt file
+        :param obprop: file with some information about the molecule
+        :type obprop: list of strings
         '''
         regex = re.compile(r'sequence')
         for line in obprop:
@@ -536,6 +538,10 @@ class ImportGRADE():
                 break
             else:
                 line = ['found', 'NONE']
+        try:
+            line[1]
+        except(IndexError):
+            line = ['found', 'NONE']
         return line[1]
 
 

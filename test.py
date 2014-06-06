@@ -116,7 +116,7 @@ class collect_residuesTest(unittest.TestCase):
 
         self.assertEqual(self.fa.get_atomcoordinates(atoms_fe), fe)
         self.assertNotEqual(self.fa.get_atomcoordinates(atoms_fe), fe_float)
-        self.assertEqual(self.fa.get_atomcoordinates(atoms_fe).keys()[0], fe_upper)
+        self.assertEqual(list(self.fa.get_atomcoordinates(atoms_fe).keys())[0], fe_upper)
         self.assertEqual(self.fa.get_atomcoordinates(atoms_fe_0)['FE1_0'], coords)
         self.assertEqual(self.fa.get_atomcoordinates(atoms), atoms_coords)
         with self.assertRaises(KeyError):
@@ -172,7 +172,7 @@ class remove_hydrogenTest(unittest.TestCase):
         def showline(line):
             for num, i in enumerate(self.reslist):
                 if num == line:
-                    print(i.strip('\n'))
+                    print((i.strip('\n')))
         self.fa.remove_adjacent_hydrogens(['O1_1', 'C1_1'], sfac_table)
         #self.fa = FindAtoms(self.reslist)
         showline(39)
@@ -194,9 +194,9 @@ class rename_DBHeadatomsTest(unittest.TestCase):
 
     def testrun_rename_dbheadatoms(self):
         newhead = rename_dbhead_atoms(self.new, self.old, self.head)
-        self.assertEquals(newhead[1].split()[5], self.new[8])
-        self.assertEquals(newhead[6].split()[3], self.new[0])
-        self.assertEquals(newhead[6].split()[0], 'SIMU_CF3')
+        self.assertEqual(newhead[1].split()[5], self.new[8])
+        self.assertEqual(newhead[6].split()[3], self.new[0])
+        self.assertEqual(newhead[6].split()[0], 'SIMU_CF3')
 
 class SfacTableTest(unittest.TestCase):
     def setUp(self):
@@ -572,6 +572,37 @@ class ImportGRADE_Test(unittest.TestCase):
                 endings.append(file.readlines())
             self.assertListEqual(endings[num], files[num])
 
+    def testrun_get_name_from_obprop(self):
+        self.maxDiff = None
+        files = self.ig.get_gradefiles()
+        filename = 'unit-tests/obprop.txt'
+        with open(filename) as file:
+            ob = file.readlines()
+        name = self.ig.get_name_from_obprop(ob)
+        self.assertEqual(name, 'PFA')
+        filename2 = 'unit-tests/obprop_2.txt'
+        with open(filename2) as file:
+            ob = file.readlines()
+        name = self.ig.get_name_from_obprop(ob)
+        self.assertEqual(name, 'NONE')
+        filename3 = 'unit-tests/obprop_3.txt'
+        with open(filename3) as file:
+            ob = file.readlines()
+        name = self.ig.get_name_from_obprop(ob)
+        self.assertEqual(name, 'NONE')
+
+    def testrun_get_comments(self):
+        self.maxDiff = None
+        files = self.ig.get_gradefiles()
+        filename = 'unit-tests/grade-comments.dfix'
+        ob = []
+        with open(filename) as file:
+            for line in file:
+                ob.append(line.split())
+        comments = self.ig.get_comments()
+        name = 'REM Name: ' + 'PFA'
+        ob.append(name.split())
+        self.assertEqual(comments, ob)
 
 
 if __name__ == "__main__":
