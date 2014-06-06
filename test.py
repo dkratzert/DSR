@@ -554,6 +554,7 @@ class ImportGRADE_Test(unittest.TestCase):
         self.ig = ImportGRADE('./test-data/PFA.gradeserver_all.tgz')
         self.igi = ImportGRADE('./test-data/PFA.gradeserver_all.tgz', invert=True)
 
+
     def testrun_get_gradefiles(self):
         '''
         files[0] = pdb
@@ -565,9 +566,9 @@ class ImportGRADE_Test(unittest.TestCase):
         filenames = ['unit-tests/grade-PFA.pdb', 'unit-tests/grade-PFA.dfix', 'unit-tests/obprop.txt']
         endings = []
         for num, i in enumerate(filenames):
-            with open(i) as file:
+            with open(i) as test_file:
                 #file = file.decode('ascii')
-                endings.append(file.readlines())
+                endings.append(test_file.readlines())
         self.assertListEqual(endings[num], files[num])
 
     def testrun_get_name_from_obprop(self):
@@ -601,6 +602,31 @@ class ImportGRADE_Test(unittest.TestCase):
         name = 'REM Name: ' + 'PFA'
         ob.append(name.split())
         self.assertEqual(comments, ob)
+
+    def testrun_get_firstlast(self):
+        files = self.ig.get_gradefiles()
+        atoms = self.ig.get_pdbatoms(files[0])
+        fl = self.ig.get_first_last_atom(atoms)
+        self.assertTupleEqual(fl, (u'AL1', u'F36'))
+
+    def testrun_deleted_pdb_file(self):
+        with self.assertRaises(SystemExit):
+            ImportGRADE('./unit-tests/PFA.gradeserver_all_2.tgz')
+
+    def testrun_get_restaraints(self):
+        self.maxDiff = None
+        restr = self.ig.get_restraints()
+        # to generate the test file:
+        #with open('test.txt', 'wb+') as file:
+        #    for line in restr:
+        #        file.write(' '.join(line)+'\n')
+        filename = './unit-tests/grade_restraints.txt'
+        tst = []
+        with open(filename) as test_file:
+            for line in test_file:
+                tst.append(line.split())
+        self.assertListEqual(restr, tst)
+
 
 
 if __name__ == "__main__":

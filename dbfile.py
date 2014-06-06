@@ -477,7 +477,7 @@ class ImportGRADE():
         self._dfixfile = gradefiles[1]
         self._obpropfile = gradefiles[2]
         self._atoms = self.get_pdbatoms(self._pdbfile)
-        self._firstlast = self.get_first_last_atom()
+        self._firstlast = self.get_first_last_atom(self._atoms)
         self._restraints = self.get_restraints()
         self._resi_name = self.get_name_from_obprop(self._obpropfile)
         self._comments = self.get_comments()
@@ -489,7 +489,7 @@ class ImportGRADE():
         '''
         grade_base_filename = os.path.splitext(self._gradefile)
         if grade_base_filename[1] == '.tgz':
-            gradefile = tarfile.open(self._gradefile, encoding="ascii")
+            gradefile = tarfile.open(self._gradefile)#, encoding="ascii")
         else:
             print('File {} is not a valid file to import from!'.format(grade_base_filename[1]))
             sys.exit(0)
@@ -565,12 +565,15 @@ class ImportGRADE():
         return comments
 
 
-    def get_first_last_atom(self):
+    def get_first_last_atom(self, atoms):
         '''
         returns the first and the last atom from the imported atom list
         '''
-        first = self._atoms[0][0]
-        last = self._atoms[-1][0]
+        try:
+            first = atoms[0][0]
+            last = atoms[-1][0]
+        except:
+            return False
         return (first, last)
 
 
@@ -580,7 +583,7 @@ class ImportGRADE():
         '''
         restraints = []
         for line in self._dfixfile:
-            line = line.decode('ascii')
+            #line = line.decode('ascii')
             line = line.strip('\n\r').split()
             if line:
                 line[0] = line[0][:4].upper()
@@ -588,8 +591,12 @@ class ImportGRADE():
                     restraints.append(line)
         if self._firstlast:
             atoms = ' > '.join(self._firstlast)
-            restraints.append(['SIMU ' + atoms])
-            restraints.append(['RIGU ' + atoms])
+            atoms_s = 'SIMU ' + atoms
+            atoms_s = atoms_s.split()
+            atoms_r = 'RIGU ' + atoms
+            atoms_r = atoms_r.split()
+            restraints.append(atoms_s)
+            restraints.append(atoms_r)
         return restraints
 
 
@@ -648,7 +655,7 @@ class ImportGRADE():
         '''
         print('Unable to import GRADE file {}'.format(filename))
         print('GRADE import relies on GRADE v1.100 and up.')
-        sys.exit()
+        sys.exit(False)
 
 
     def write_user_database(self):
