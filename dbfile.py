@@ -21,8 +21,6 @@ import misc
 
 
 
-
-
 def invert_dbatoms_coordinates(atoms):
     '''
     Inverts SHELXL atom coordinates like
@@ -491,7 +489,7 @@ class ImportGRADE():
         '''
         grade_base_filename = os.path.splitext(self._gradefile)
         if grade_base_filename[1] == '.tgz':
-            gradefile = tarfile.open(self._gradefile)
+            gradefile = tarfile.open(self._gradefile, encoding="ascii")
         else:
             print('File {} is not a valid file to import from!'.format(grade_base_filename[1]))
             sys.exit(0)
@@ -530,9 +528,8 @@ class ImportGRADE():
         :param obprop: file with some information about the molecule
         :type obprop: list of strings
         '''
-        regex = re.compile(r'sequence')
+        regex = re.compile(b'sequence')
         for line in obprop:
-            line = line.decode('ascii')
             if regex.match(line):
                 line = line.split()
                 break
@@ -560,9 +557,10 @@ class ImportGRADE():
         comments = []
         for m in matches:
             for line in self._dfixfile:
+                line = line.decode('ascii')
                 if line.startswith(m):
                     comments.append(line.split())
-        name = 'REM Name: ' + self._resi_name
+        name = 'REM Name: ' + self._resi_name.decode('ascii')
         comments.append(name.split())
         return comments
 
