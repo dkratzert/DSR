@@ -51,7 +51,7 @@ class ReadDB():
     a dictionary of them.
     '''
 
-    def __init__(self, dbdir = os.environ["DSR_DB_DIR"], dbnames = ["dsr_db.txt", "dsr_user_db.txt"]):
+    def __init__(self, dbdir = '', dbnames = ''):
         self._db_file_names = dbnames
         try:
             self._db_dir = dbdir
@@ -153,14 +153,48 @@ class global_DB():
 
     def __init__(self, invert=False, dbdir = os.environ["DSR_DB_DIR"],
                  dbnames = ["dsr_db.txt", "dsr_user_db.txt"]):
+        '''
+        self._db_tags: ['12-DICHLOROBENZ', 590, 'dsr_db']
+        self._db_plain_dict: dictionary with plain text of the individual databases
+                  {'dsr_db': ['# Fragment database of DSR.py\n', '#\n',
+                              '# Some Fragments are from geometry optimizations with Gaussian 03:\n',
+                              '#  Gaussian 03, Revision B.04,\n', '#  M. J. Frisch, et. al. Gaussian, ...}
+        self._dbentry_dict: dictionary with the individial fragments
+                  {'benzene':
+                    {'comment': ['Source: GRADE import', 'Name: Benzene, C6H6'],
+                     'head': ['DFIX 1.379 0.015 C1 C2 ', 'DFIX 1.379 0.015 C1 C6 ',
+                             'DFIX 1.379 0.015 C2 C3 ', 'DFIX 1.379 0.015 C3 C4 ',
+                             'DFIX 1.379 0.015 C4 C5 ', 'DFIX 1.379 0.015 C5 C6 ',
+                             'DANG 2.386 0.022 C2 C6 ', 'DANG 2.386 0.022 C1 C3 ',
+                             'DANG 2.386 0.022 C2 C4 ', 'DANG 2.386 0.022 C3 C5 ',
+                             'DANG 2.386 0.022 C4 C6 ', 'DANG 2.386 0.022 C1 C5 ',
+                             'FLAT C1 C2 C3 C4 ', 'FLAT C2 C3 C4 C5 ', 'FLAT C3 C4 C5 C6 ',
+                             'FLAT C4 C5 C6 C1 ', 'FLAT C5 C6 C1 C2 ', 'FLAT C6 C1 C2 C3'],
+                     'resi': 'BEN1',
+                     'name': 'BENZENE',
+                     'line': 762,
+                     'db': 'dsr_db',
+                     'fragline': ['FRAG', '17', '1', '1', '1', '90', '90', '90'],
+                     'atoms': [['C1', '1', '-0.012', '-0.0', '-0.007'],
+                               ['C2', '1', '-0.012', '-0.0', '-1.388'],
+                               ['C3', '1', '-1.208', '-0.0', '-2.078'],
+                               ['C4', '1', '-2.404', '-0.0', '-1.388'],
+                               ['C5', '1', '-2.404', '-0.0', '-0.007'],
+                               ['C6', '1', '-1.208', '-0.0', '0.683']]},
+                    'bipyridine':
+                     {'comment': ...
+        :param invert: inverts the coordinates of a fragment
+        :type invert:  boolean
+        :param dbdir:  directory where the database is located. Default is environment variable DSR_DB_DIR
+        :type dbdir:   string
+        :param dbnames: file names of the databases
+        :type dbnames:  string
+        '''
         self.invert = invert
         self._getdb = ReadDB(dbdir, dbnames)
-        # _db_tags: ['12-DICHLOROBENZ', 590, 'dsr_db']
         self._db_tags = self._getdb.find_db_tags()
         self._db_plain_dict = self._getdb.getDB_files_dict()
         self._dbentry_dict = self.build_db_dict()
-
-
 
 
     def build_db_dict(self):
@@ -400,14 +434,18 @@ class global_DB():
 
     def get_comment_from_fragment(self, fragment):
         '''
-        returns the first comment line of the dbentry of fragment x
+        returns the first comment line of the dbentry of a fragment
+        if a line with "rem Name:" is present, this line is used as comment.
+        :param fragment: actual fragment name
+        :type fragment: string
         '''
         comment = self._dbentry_dict[fragment.lower()]['comment']
         for i in comment:
-            if re.match('.*[n|N]ame:.*', i):
+            if re.match(r'.*[n|N]ame:.*', i):
                 i = i.split(' ', 1)[1:]
                 comment = i
                 break
+        comment = ', '.join(comment)
         return comment
 
 
@@ -419,10 +457,15 @@ class global_DB():
 
 
 class ImportGRADE():
-    '''
-    class to import fragments from GRADE of Global Phasing Ltd.
-    '''
+
     def __init__(self, gradefile, invert=False):
+        '''
+        class to import fragments from GRADE of Global Phasing Ltd.
+        :param gradefile:
+        :type gradefile:
+        :param invert:
+        :type invert:
+        '''
         self.invert = invert
         self._getdb = ReadDB()
         self._db_dir = os.environ["DSR_DB_DIR"]
@@ -441,6 +484,43 @@ class ImportGRADE():
         self._comments = self.get_comments()
 
 
+    def get_gradefiles(self):
+        '''
+        returns the .mol2 and .dfx file location
+        '''
+        grade_base_filename = os.path.splitext(self._gradefile)
+        if grade_base_filename[1] == '.tgz':
+            gradefile = tarfile.open(self._gradefile)
+        else:
+            print('File {} is not a valid file to import from!'.format(grade_base_filename[1]))
+            sys.exit(0)
+        #names = []
+        pdbfile = False
+        dfixfile = False
+        propfile = False
+        for i in gradefile.getnames():
+            if i.endswith('.pdb'):
+                if re.match(r'.*obabel.*', i):
+                    continue
+                pdbfile = gradefile.extractfile(i)
+            if i.endswith('.dfix'):
+                dfixfile = gradefile.extractfile(i)
+            if i.endswith('obprop.txt'):
+                propfile = gradefile.extractfile(i)
+        if not pdbfile:
+            print(' .pdb file not found!')
+            self.import_error(self._gradefile)
+        elif not dfixfile:
+            print(' .dfix file not found!')
+            self.import_error(self._gradefile)
+        elif not propfile:
+            print(' obprop.txt file not found!')
+            self.import_error(self._gradefile)
+        output = []
+        output.append(pdbfile.readlines())
+        output.append(dfixfile.readlines())
+        output.append(propfile.readlines())
+        return output
 
 
     def get_name_from_obprop(self, obprop):
@@ -555,45 +635,6 @@ class ImportGRADE():
                 'name'    : resi_name
                 }
         return db_import_dict
-
-
-    def get_gradefiles(self):
-        '''
-        returns the .mol2 and .dfx file location
-        '''
-        grade_base_filename = os.path.splitext(self._gradefile)
-        if grade_base_filename[1] == '.tgz':
-            gradefile = tarfile.open(self._gradefile)
-        else:
-            print('File {} is not a valid file to import from!'.format(grade_base_filename[1]))
-            sys.exit(0)
-        #names = []
-        pdbfile = False
-        dfixfile = False
-        propfile = False
-        for i in gradefile.getnames():
-            if i.endswith('.pdb'):
-                if re.match(r'.*obabel.*', i):
-                    continue
-                pdbfile = gradefile.extractfile(i)
-            if i.endswith('.dfix'):
-                dfixfile = gradefile.extractfile(i)
-            if i.endswith('obprop.txt'):
-                propfile = gradefile.extractfile(i)
-        if not pdbfile:
-            print(' .pdb file not found!')
-            self.import_error(self._gradefile)
-        elif not dfixfile:
-            print(' .dfix file not found!')
-            self.import_error(self._gradefile)
-        elif not propfile:
-            print(' obprop.txt file not found!')
-            self.import_error(self._gradefile)
-        output = []
-        output.append(pdbfile.readlines())
-        output.append(dfixfile.readlines())
-        output.append(propfile.readlines())
-        return output
 
 
     def import_error(self, filename):

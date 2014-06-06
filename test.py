@@ -6,7 +6,7 @@ import unittest
 from atomhandling import get_atomtypes, FindAtoms, check_source_target,\
     rename_dbhead_atoms, SfacTable, Elem_2_Sfac, NumberScheme
 from resfile import ResList
-from dbfile import global_DB, invert_dbatoms_coordinates, ReadDB
+from dbfile import global_DB, invert_dbatoms_coordinates, ReadDB, ImportGRADE
 from afix import InsertAfix
 from dsrparse import DSR_Parser
 import misc
@@ -522,6 +522,57 @@ class globalDB(unittest.TestCase):
             fragment = 'dmem'
             head = db[fragment]['head']
             gdb.check_db_header_consistency(head, fragment)
+
+
+    def testrun_get_comment_from_fragment1(self):
+        self.maxDiff = None
+        db_file_names = ["comment.TXT"]
+        gdb = global_DB(invert = True, dbdir='./unit-tests', dbnames = db_file_names)
+        db = gdb.build_db_dict()
+        fragment = 'com'
+        names = ['name!', 'Name 1,2-Dimethoxyethane, not coordinated, C4H10O2, '
+                 'DME, Src: Turbomole, B3-LYP/def2-TZVPP, This DME is not coordinated',
+                 'Src: Turbomole, B3-LYP/def2-TZVPP, blub, This DME is not coordinated',
+                 'A really fancy name.']
+        for i in range(1,5):
+            from _ast import Str
+            com = gdb.get_comment_from_fragment(fragment+str(i))
+            #print(com)
+            self.assertEqual(com, names[i-1])
+
+    def testrun_get_resi_from_fragment(self):
+        self.maxDiff = None
+        db_file_names = ["comment.TXT"]
+        gdb = global_DB(invert = True, dbdir='./unit-tests', dbnames = db_file_names)
+        db = gdb.build_db_dict()
+        fragment = 'com1'
+        resi = gdb.get_resi_from_fragment(fragment)
+        line = gdb.get_line_number_from_fragment(fragment)
+        self.assertEqual(resi, 'DME')
+        self.assertEqual(line, 2)
+
+
+class ImportGRADE_Test(unittest.TestCase):
+    def setUp(self):
+        self.ig = ImportGRADE('./test-data/PFA.gradeserver_all.tgz')
+        self.igi = ImportGRADE('./test-data/PFA.gradeserver_all.tgz', invert=True)
+
+    def testrun_get_gradefiles(self):
+        '''
+        files[0] = pdb
+        files[1] = dfix
+        files[2] = obprop
+        '''
+        self.maxDiff = None
+        files = self.ig.get_gradefiles()
+        filenames = ['unit-tests/grade-PFA.pdb', 'unit-tests/grade-PFA.dfix', 'unit-tests/obprop.txt']
+        endings = []
+        for num, i in enumerate(filenames):
+            with open(i) as file:
+                endings.append(file.readlines())
+            self.assertListEqual(endings[num], files[num])
+
+
 
 if __name__ == "__main__":
     unittest.main()
