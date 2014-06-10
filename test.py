@@ -759,6 +759,18 @@ class ImportGRADE_Test(unittest.TestCase):
                                      [u'F36', u'12.878', u'-5.519', u'4.856']]}}
         self.assertDictEqual(dbentry, dbtest)
 
+class DSRParseTest(unittest.TestCase):
+    def setUp(self):
+        self.maxDiff = None
+        self.res_file = 'dsrparse.res'
+        testresfile = './unit-tests/dsrparse.res'
+        invert = True
+        self.rl = ResList(testresfile)
+        self.reslist = self.rl.get_res_list()
+        self.dsrp = DSR_Parser(self.reslist, self.rl)
+        self.dsr_dict = self.dsrp.parse_dsr_line()
+
+    #def testrun_
 
 
 if __name__ == "__main__":
