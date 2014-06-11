@@ -228,7 +228,7 @@ class DSR():
         frags = sorted(db.keys())
         names_list = []
         for i in frags:
-            fragname = ', '.join(gdb.get_comment_from_fragment(i))
+            fragname = gdb.get_comment_from_fragment(i)
             names_list.append([i, fragname])
         search_results = {}
         for i in names_list:

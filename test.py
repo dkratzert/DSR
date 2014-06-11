@@ -13,6 +13,32 @@ from dsrparse import DSR_Parser
 import misc
 from resfile import ResList
 
+db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
+               'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
+               'SADI 0.04 C2 C3 C3 C4 C2 C4', 'SADI 0.04 O1 C2 O1 C3 O1 C4',
+               'SADI 0.04 F1 F2 F2 F3 F3 F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7',
+               'SADI 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1',
+               'SIMU O1 > F9', 'RIGU O1 > F9']
+
+wraphead = ['SADI C1 C2 C1 C3 C1 C4\n',
+         'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 =\n   F7 C4 F8 C4 F9 C4\n',
+         'SADI 0.04 C2 C3 C3 C4 C2 C4\n', 'SADI 0.04 O1 C2 O1 C3 O1 C4\n',
+         'SADI 0.04 F1 F2 F2 F3 F3 F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7\n',
+         'SADI 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1\n',
+         'SIMU O1 > F9\n', 'RIGU O1 > F9\n']
+
+atomnames = ['O1', 'C1', 'C2', 'F1', 'F2', 'F3', 'C3', 'F4', 'F5', 'F6', 'C4', 'F7', 'F8', 'F9']
+formated_atoms = ['O1_4B', 'C1_4B', 'C2_4B', 'F1_4B', 'F2_4B', 'F3_4B', 'C3_4B', 'F4_4B', 'F5_4B', 'F6_4B', 'C4_4B', 'F7_4B', 'F8_4B', 'F9_4B']
+part_atoms = ['O1_B', 'C1_B', 'C2_B', 'F1_B', 'F2_B', 'F3_B', 'C3_B', 'F4_B', 'F5_B', 'F6_B', 'C4_B', 'F7_B', 'F8_B', 'F9_B']
+resi_atoms = ['O1_91', 'C1_91', 'C2_91', 'F1_91', 'F2_91', 'F3_91', 'C3_91', 'F4_91', 'F5_91', 'F6_91', 'C4_91', 'F7_91', 'F8_91', 'F9_91']
+resi_atoms2 = ['O1_4', 'C1_4', 'C2_4', 'F1_4', 'F2_4', 'F3_4', 'C3_4', 'F4_4', 'F5_4', 'F6_4', 'C4_4', 'F7_4', 'F8_4', 'F9_4']
+
+coord1 = (0.100759, 0.449528, 0.438703) #F4
+coord1a = ('0.100759', '0.449528', '0.438703') #F4
+coord2 = (-0.362398, 0.278516, 0.447770) #F10 6.052A
+cell = [10.5086, 20.9035, 20.5072, 90, 94.13, 90]
+cells = ['10.5086', '20.9035', '20.5072', '90', '94.13', '90']
+
 
 class get_atomtypesTest(unittest.TestCase):
     def setUp(self):
@@ -528,14 +554,17 @@ class globalDB(unittest.TestCase):
         gdb = global_DB(invert = True, dbdir='./unit-tests', dbnames = db_file_names)
         gdb.build_db_dict()
         fragment = 'com'
+        comment = gdb.get_comment_from_fragment('com4')
+        self.assertEqual(comment, 'A really fancy name.')
         names = ['name!', 'Name 1,2-Dimethoxyethane, not coordinated, C4H10O2, '
                  'DME, Src: Turbomole, B3-LYP/def2-TZVPP, This DME is not coordinated',
                  'Src: Turbomole, B3-LYP/def2-TZVPP, blub, This DME is not coordinated',
                  'A really fancy name.']
         for i in range(1,5):
             com = gdb.get_comment_from_fragment(fragment+str(i))
-            #print(com)
             self.assertEqual(com, names[i-1])
+
+
 
     def testrun_get_resi_from_fragment(self):
         self.maxDiff = None
@@ -764,7 +793,6 @@ class DSRParseTest(unittest.TestCase):
         self.maxDiff = None
         self.res_file = 'dsrparse.res'
         testresfile = './unit-tests/dsrparse.res'
-        invert = True
         self.rl = ResList(testresfile)
         self.reslist = self.rl.get_res_list()
         self.dsrp = DSR_Parser(self.reslist, self.rl)
@@ -780,7 +808,6 @@ class DSRParse2Test(unittest.TestCase):
         self.maxDiff = None
         self.res_file = 'dsrparse.res'
         testresfile = './unit-tests/dsrparse.res'
-        invert = True
         self.rl = ResList(testresfile)
         self.reslist = self.rl.get_res_list()
         self.dsrp = DSR_Parser(self.reslist, self.rl)
@@ -804,6 +831,9 @@ class MiscTest(unittest.TestCase):
                          'C1 1 -0.00146 0.26814 0.06351 11.00 0.05',
                          'C2 1 -1.13341 -0.23247 -0.90730 11.00 0.05',
                          'Sn1 4 -2.34661 -0.11273 -0.34544 -21.00 0.05']
+        self.string = 'O1   3   -0.01453   1.66590   0.10966\nC1   1   -0.00146   0.26814   0.06351\nC2   1   -1.13341   -0.23247   -0.90730\nSn1   4   -2.34661   -0.11273   -0.34544'
+        self.multi = 'rem dsr put oc(cf3)3 with o1 c1 c2 c3 c4 on O1_3 c1_3 q6 Q4 q7 resi cf3 =\
+                        PART 2 occ -31'
 
     def testrun_get_atoms(self):
         noatoms = misc.get_atoms([])
@@ -812,8 +842,159 @@ class MiscTest(unittest.TestCase):
         self.assertListEqual(atoms, self.dbatoms)
         stratoms = misc.get_atoms(self.strdbatoms)
         self.assertListEqual(stratoms, self.dbatoms)
+        tst = misc.get_atoms(['O1 3 -0.01453 1.66590 0.10966'])
+        tst2 = misc.get_atoms(['O1 3 -0.01453 1.66590'])
+        tst3 = misc.get_atoms('O1 3 -0.01453 1.66590  0.10966')
+        self.assertEqual(tst, [['O1', '3', '-0.01453', '1.66590', '0.10966']])
+        self.assertEqual(tst2, [])
+        self.assertEqual(tst3, [])
 
 
+    def testrun_ll_to_string(self):
+        llstr = misc.ll_to_string(self.dbatoms)
+        self.assertEqual(llstr, self.string)
+
+
+    def testrun_multiline(self):
+        mult = misc.multiline_test(self.multi)
+        mult2 = misc.multiline_test('O1 3 -0.01453 1.66590 0.10966 11.00 0.05')
+        with self.assertRaises(AttributeError):
+            misc.multiline_test([['O1', '3', '-0.01453', '1.66590', '0.10966']])
+        self.assertEqual(mult, True)
+        self.assertEqual(mult2, False)
+
+    def testrun_find_multi_lines(self):
+        found = misc.find_multi_lines(self.strdbatoms, '[A-z][0-9]')
+        self.assertEqual(found, [0, 1, 2])
+        found2 = misc.find_multi_lines(self.strdbatoms, '[A-z][0-9] khgf')
+        self.assertEqual(found2, [])
+        with self.assertRaises(TypeError):
+            misc.find_multi_lines(self.dbatoms, '[A-z][0-9]')
+
+    def testrun_wrap_headlines(self):
+        self.maxDiff = None
+        unwraped = ['SADI C1 C2 C1 C3 C1 C4',
+                    'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
+                    'SADI 0.04 C2 C3 C3 C4 C2 C4', 'SADI 0.04 O1 C2 O1 C3 O1 C4',
+                    'SADI 0.04 F1 F2 F2 F3 F3 F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7',
+                    'SADI 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1',
+                    'SIMU O1 > F9', 'RIGU O1 > F9']
+        head = misc.wrap_headlines(db_testhead)
+        self.assertListEqual(head, wraphead)
+        unwrap = misc.unwrap_head_lines(wraphead)
+        self.assertListEqual(unwraped, unwrap)
+
+    def testrun_makelist(self):
+        lst = misc.makelist('Hallo Daniel!')
+        self.assertListEqual(lst, ['HALLO', 'DANIEL!'])
+        self.assertNotEqual(lst, ['HALLO', 'DANIEL'])
+
+
+    def testrun_which(self):
+        which = misc.which('regedit')
+        self.assertListEqual(which, ['C:\\Windows\\system32\\regedit.exe',
+                                     'C:\\Windows\\system32\\regedit.EXE',
+                                     'C:\\Windows\\regedit.exe',
+                                     'C:\\Windows\\regedit.EXE',
+                                     'C:\\Windows\\system32\\regedit.exe',
+                                     'C:\\Windows\\system32\\regedit.EXE',
+                                     'C:\\Windows\\regedit.exe',
+                                     'C:\\Windows\\regedit.EXE'])
+
+
+    def testrun_zero(self):
+        zero = misc.zero(3, 3)
+        zer0 = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        self.assertListEqual(zero, zer0)
+
+
+    def testrun_matrixmult(self):
+        m1 = [[2, 0, 0], [0, 2, 0], [0, 0, 2]]
+        m2 = [[2.01, 0, 0], [0, 2, 0], [0, 0, 2]]
+        m3 = [[1.000001, 1.0, 1.0], [1.0, 2, 1.0], [1.01, 1.00, 2]]
+        m4 = [[4.02, 0, 0], [0, 4, 0], [0.0, 0, 4]]
+        m5 = [[2.000002, 2.0, 2.0], [2.0, 4.0, 2.0], [2.02, 2.0, 4.0]]
+        mult1 = misc.matrix_mult(m1, m2)
+        self.assertListEqual(mult1, m4)
+        mult2 = misc.matrix_mult(m1, m3)
+        self.assertListEqual(mult2, m5)
+
+
+    def testrun_format_atom_names(self):
+        names = misc.format_atom_names(atomnames, part=2, resinum=4)
+        names2 = misc.format_atom_names(atomnames, part='2', resinum='4')
+        names3 = misc.format_atom_names(atomnames, part='2')
+        names4 = misc.format_atom_names(atomnames, resinum=91)
+        names5 = misc.format_atom_names(atomnames, part='2a')
+        self.assertListEqual(formated_atoms, names)
+        self.assertListEqual(formated_atoms, names2)
+        self.assertListEqual(part_atoms, names3)
+        self.assertListEqual(resi_atoms, names4)
+        self.assertListEqual(atomnames, names5)
+
+
+    def testrun_remove_partsymbol(self):
+        def removep(at):
+            atoms = []
+            for i in at:
+                atoms.append(misc.remove_partsymbol(i))
+            return atoms
+
+        remove1 = removep(formated_atoms)
+        remove2 = removep(part_atoms)
+        remove3 = removep(resi_atoms)
+        self.assertListEqual(resi_atoms2, remove1)
+        self.assertListEqual(atomnames, remove2)
+        self.assertListEqual(resi_atoms, remove3)
+
+    def testrun_atomic_distance(self):
+        cellf = [ float(i) for i in cell ]
+        dst = misc.atomic_distance(coord1, coord2, cellf)
+        self.assertAlmostEquals(6.05249787959, dst, 5)
+
+
+    def testrun_frac_to_cart(self):
+        coord1 = (-0.186843,   0.282708,   0.526803)
+        cellf = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
+        cart = (-2.741505423999065, 5.909586678000002, 10.775200700893734)
+        N1 = misc.frac_to_cart(coord1, cellf)
+        self.assertAlmostEqual(cart, N1, 8)
+
+    def testrun_determinante(self):
+        m1 = [[2, 0, 0], [0, 2, 0], [0, 0, 2]]
+        det = misc.determinante(m1)
+        self.assertEqual(det, 8)
+
+    def testrun_subtract(self):
+        m1 = [2, 0, 0]
+        m2 = [1, 1.5, 0.104]
+        sub = misc.subtract_vect(m1, m2)
+        self.assertEqual(sub, (1, -1.5, -0.104))
+
+
+    def testrun_vol_tetrahedron(self):
+        #cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
+        a = (0.838817,   0.484526,   0.190081) # a ist um 0.01 ausgelenkt
+        b = (0.875251,   0.478410,   0.256955)
+        c = (0.789290,   0.456520,   0.301616)
+        d = (0.674054,   0.430194,   0.280727)
+        vol = misc.vol_tetrahedron(a, b, c, d, cell)
+        self.assertAlmostEqual(0.063352, vol, 5)
+
+
+    def testrun_dice_coefficient(self):
+        string = 'Die Katze lauft im Schnee! CF3, Benzene'
+        srch1 = 'Katz'
+        srch2 = 'Benze'
+        srch3 = 'Hallo du'
+        srch4 = '124'
+        dice1 = misc.dice_coefficient(string, srch1)
+        dice2 = misc.dice_coefficient(string, srch2)
+        dice3 = misc.dice_coefficient(string, srch3)
+        dice4 = misc.dice_coefficient(string, srch4)
+        self.assertEqual(dice1, 0.837838)
+        self.assertEqual(dice2, 0.789474)
+        self.assertEqual(dice3, 1.0)
 
 
 

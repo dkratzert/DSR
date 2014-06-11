@@ -58,6 +58,8 @@ def ll_to_string(inputlist):
 def multiline_test(line):
     '''
     test if the current line is a multiline with "=" at the end
+    :param line: 'O1 3 -0.01453 1.66590 0.10966 11.00 0.05 ='
+    :type line: string
     '''
     line = line.rpartition('=')  # partition the line in before, sep, after
     line = ''.join(line[0:2])    # use all including separator
@@ -130,19 +132,22 @@ def wrap_headlines(dbhead):
 
 def unwrap_head_lines(headlines):
     '''
-    if a line is wrapped like "SADI C1 C2 =\n  C3 C4" or "SADI C1 C2=\n  C3 C4"
+    if a line is wrapped like "SADI C1 C2 =\n", "  C3 C4" or "SADI C1 C2=\n", "  C3 C4"
     this function returns "SADI C1 C2 C3 C4"
     '''
     import constants
     tmp = ''
     for line in headlines:
-        line = line.strip(' \n=')+' '
-        tmp = tmp+line
+        line = line.strip(' \n=')
+        line = line.replace('=', ' ')
+        tmp = tmp+' '+line
     line = tmp.split()
     for n, i in enumerate(line):
         if i[:4] in constants.SHX_CARDS:
             line[n] = '\n'+line[n]
     new_head = ' '.join(line).strip().split('\n')
+    #new_head = [i.rstrip(' ')+'\n' for i in new_head]
+    new_head = [i.rstrip(' ') for i in new_head]
     return new_head
 
 
@@ -206,11 +211,13 @@ def matrix_mult(matrix1,matrix2):
     return new_matrix
 
 
-def format_atom_names(atoms, part, resinum):
+def format_atom_names(atoms, part='', resinum=''):
     '''
     needs a list of atoms ['C1', 'C2', 'O1', ..] with part number and a residue number.
     returns a list with atoms like ['C1_4b', 'C2_4b', 'O1_4b', ..]
     '''
+    part = str(part)
+    resinum = str(resinum)
     if not resinum:
         resinum = ''
     try:
@@ -218,6 +225,7 @@ def format_atom_names(atoms, part, resinum):
         if int(part) > 0:
             partsymbol = alphabet[int(part)-1] # turns part number into a letter
         else:
+            print('Warning! Part symbol with non-numeric character detected.')
             partsymbol = ''
     except(ValueError):
         partsymbol = ''
@@ -238,7 +246,8 @@ def format_atom_names(atoms, part, resinum):
 def remove_partsymbol(atom):
     '''
     strips the part symbol like C1_4b from an atom name
-    :param atom: string
+    :param atom: 'C1_4b'
+    :type atom: string
     '''
     if '_' in atom:
         prefix = atom.split('_')[0]
@@ -307,7 +316,7 @@ def determinante(a):
            +a[2][0] * (a[0][1] * a[1][2] - a[1][1] * a[0][2]))
 
 
-def subtract(a, b):
+def subtract_vect(a, b):
     '''
     subtract vector b from vector a
     :param a: [float, float, float]
@@ -348,9 +357,9 @@ def vol_tetrahedron(a, b, c, d, cell):
     C = frac_to_cart(c, cell)
     D = frac_to_cart(d, cell)
 
-    AB = subtract(A, B)
-    AC = subtract(A, C)
-    AD = subtract(A, D)
+    AB = subtract_vect(A, B)
+    AC = subtract_vect(A, C)
+    AD = subtract_vect(A, D)
     D = determinante([AB, AC, AD])
     volume = abs((D/6))
     return volume
@@ -382,9 +391,9 @@ def dice_coefficient(a, b):
     overlap = len(a_bigrams & b_bigrams)
     dice_coeff = overlap * 2.0/(len(a_bigrams) + len(b_bigrams))
     dice_coeff = 1-dice_coeff # invert the result
-    if dice_coeff < 0.7:  # make a cutoff for the best matches
+    if dice_coeff < 0.5:  # make a cutoff for the best matches
         return 0.0
-    return round(dice_coeff, 5)
+    return round(dice_coeff, 6)
 
 
 def dice_coefficient2(a,b):
@@ -513,8 +522,9 @@ if __name__ == '__main__':
     #dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
     dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
     resi = True #gdb.get_resi_from_fragment(fragment)
-    uhead = unwrap_head_lines(dbhead)
-    print(uhead)
+    print(dbhead)
+    #uhead = unwrap_head_lines(dbhead)
+    #print(uhead)
     # sys.exit()
 
 
