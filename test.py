@@ -308,11 +308,11 @@ class insertAfixTest(unittest.TestCase):
         self.sfac_table = self.sf.set_sfac_table()
         self.num = NumberScheme(self.reslist, self.dbatoms, self.resi)
         self.numberscheme = self.num.get_fragment_number_scheme()
-        self.db_testhead = ['SADI C1 C2 C1 C3 C1 C4 ', 'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ',
+        self.db_testhead = ['SADI 0.02 C1 C2 C1 C3 C1 C4', 'SADI 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
                        'SADI 0.04 C2 C3 C3 C4 C2 C4', 'SADI 0.04 O1 C2 O1 C3 O1 C4 ',
                        'SADI 0.04 F1 F2 F2 F3 F3 F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7 ',
                        'SADI 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1 ',
-                       'SIMU O1 > F9 ', 'RIGU O1 > F9']
+                       'SIMU O1 > F9', 'RIGU O1 > F9']
 
 
     def testrun_afix(self):
@@ -421,6 +421,15 @@ class dbfileTest(unittest.TestCase):
         with self.assertRaises(SystemExit):
             rdb.find_db_tags()
 
+    def testrun_ReadDB(self):
+        db_file_names = ("db1_klein.TXT", "db2_klein.TXT")
+        result = [['DME', 1, 'db1_klein'], ['DMX', 2, 'db2_klein']]
+        rdb = ReadDB()
+        rdb2 = ReadDB(dbdir='./unit-tests', dbnames = db_file_names)
+        names = rdb.find_db_tags()
+        names2 = rdb2.find_db_tags()
+        self.assertEqual(names, [])
+        self.assertEqual(result, names2)
 
 class globalDB(unittest.TestCase):
     def setUp(self):
@@ -583,6 +592,7 @@ class ImportGRADE_Test(unittest.TestCase):
         self.ig = ImportGRADE('./test-data/PFA.gradeserver_all.tgz')
         self.igi = ImportGRADE('./test-data/PFA.gradeserver_all.tgz', invert=True)
 
+    # test for PFA1 is already in db and we want to import again
 
     def testrun_get_gradefiles(self):
         '''
@@ -995,6 +1005,7 @@ class MiscTest(unittest.TestCase):
         self.assertEqual(dice1, 0.837838)
         self.assertEqual(dice2, 0.789474)
         self.assertEqual(dice3, 1.0)
+        self.assertEqual(dice4, 1.0)
 
 
 
