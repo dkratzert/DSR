@@ -317,7 +317,7 @@ class global_DB():
             line = ' '.join(i)
             at = line.split()[0]
             if at in atoms:
-                print('dublicate atom {0} in database entry "{1}" '\
+                print('duplicate atom {0} in database entry "{1}" '\
                     'found!'.format(at, fragment))
                 sys.exit(-1)
             else:
@@ -466,7 +466,8 @@ class ImportGRADE():
         :type invert:
         '''
         self.invert = invert
-        self._getdb = ReadDB()
+        self._getdb = ReadDB(dbdir=os.environ["DSR_DB_DIR"],
+                 dbnames=["dsr_db.txt", "dsr_user_db.txt"])
         self._db_dir = os.environ["DSR_DB_DIR"]
         self._db_tags = self._getdb.find_db_tags()
         self._gdb = global_DB(invert=False)
@@ -631,7 +632,6 @@ class ImportGRADE():
         num = 1
         resi_name = self._resi_name[:3].upper() + str(num)
         for i in self._db_tags:
-            i = i.upper()
             while resi_name.upper() == i[0]:
                 num = num + 1
                 resi_name = resi_name[:3] + str(num)
