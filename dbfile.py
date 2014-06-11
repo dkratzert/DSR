@@ -631,6 +631,9 @@ class ImportGRADE():
         db_import_dict = {}
         num = 1
         resi_name = self._resi_name[:3].upper() + str(num)
+        if not self._db_tags:
+            print('Unable to import fragment. Database is empty.')
+            sys.exit(False)
         for i in self._db_tags:
             while resi_name.upper() == i[0]:
                 num = num + 1
