@@ -251,7 +251,7 @@ class DSR():
         print(' Fragment          |  Full name, Comments')
         print(' ---------------------------------------------------------------------------')
         for line in results:
-            print(' {:15s}    {:20s}'.format(line[0], line[1]))
+            print(' {:15s}   | {:20s}'.format(line[0], line[1]))
         sys.exit()
 
 
