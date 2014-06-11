@@ -66,7 +66,7 @@ class DSR_Parser():
                     'Check line {}'.format(line_number))
             sys.exit()
         if len(indexnum) > 1:
-            print('Only one dsr command at once is allowed! Exiting...')
+            print('Only one DSR command at once is allowed! Exiting...')
             sys.exit(-1)
 
         if line:  # returns the string

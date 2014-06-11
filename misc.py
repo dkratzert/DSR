@@ -21,11 +21,21 @@ __metaclass__ = type  # use new-style classes
 
 def get_atoms(atlist):
     '''
-    returns all atoms found in the input as list
+    returns all atoms found in the input as list of lists
     input:
     ['F8    4    0.349210   0.073474   0.519443 -21.00000   0.03106', '...']
+    output:
+    [['O1', '3', '-0.01453', '1.66590', '0.10966'], ['C1', '1', '-0.00146', '0.26814', '0.06351'], ...
     '''
     atoms = []
+    try:
+        atlist[0]
+    except:
+        return []
+    if isinstance(atlist[0], list):
+        for i in atlist:
+            atoms.append(i[:5])
+        return atoms
     for i in atlist:
         if re.match(atomregex, str(i)):        # search atoms
             l = i.split()[:5]              # convert to list and use only first 5 columns
