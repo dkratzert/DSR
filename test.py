@@ -770,7 +770,52 @@ class DSRParseTest(unittest.TestCase):
         self.dsrp = DSR_Parser(self.reslist, self.rl)
         self.dsr_dict = self.dsrp.parse_dsr_line()
 
-    #def testrun_
+    def testrun_find_dsr_command(self):
+        self.maxDiff = None
+        num = self.dsrp.find_dsr_command(line=False)
+        self.assertEqual(num, 264)
+
+class DSRParse2Test(unittest.TestCase):
+    def setUp(self):
+        self.maxDiff = None
+        self.res_file = 'dsrparse.res'
+        testresfile = './unit-tests/dsrparse.res'
+        invert = True
+        self.rl = ResList(testresfile)
+        self.reslist = self.rl.get_res_list()
+        self.dsrp = DSR_Parser(self.reslist, self.rl)
+        self.dsr_dict = self.dsrp.parse_dsr_line()
+
+    def testrun_find_dsr_command(self):
+        self.maxDiff = None
+        line = self.dsrp.find_dsr_command(line=True)
+        #self.assertEqual(num, 264)
+        string = 'rem dsr put oc(cf3)3 with o1 c1 c2 c3 c4 on O1_3 c1_3 q6 Q4 q7 resi cf3  PART 2 occ -31 dfix\n'
+        self.assertEqual(string, line)
+
+
+class MiscTest(unittest.TestCase):
+    def setUp(self):
+        self.dbatoms = [['O1', '3', '-0.01453', '1.66590', '0.10966'],
+                        ['C1', '1', '-0.00146', '0.26814', '0.06351'],
+                        ['C2', '1', '-1.13341', '-0.23247', '-0.90730'],
+                        ['Sn1', '4', '-2.34661', '-0.11273', '-0.34544']]
+        self.strdbatoms = ['O1 3 -0.01453 1.66590 0.10966 11.00 0.05',
+                         'C1 1 -0.00146 0.26814 0.06351 11.00 0.05',
+                         'C2 1 -1.13341 -0.23247 -0.90730 11.00 0.05',
+                         'Sn1 4 -2.34661 -0.11273 -0.34544 -21.00 0.05']
+
+    def testrun_get_atoms(self):
+        noatoms = misc.get_atoms([])
+        self.assertEqual(noatoms, [])
+        atoms = misc.get_atoms(self.dbatoms)
+        self.assertListEqual(atoms, self.dbatoms)
+        stratoms = misc.get_atoms(self.strdbatoms)
+        self.assertListEqual(stratoms, self.dbatoms)
+
+
+
+
 
 
 if __name__ == "__main__":
