@@ -211,33 +211,37 @@ class ShelxlRefine():
         wr2 = False
         r1 = False
         gof = False
-        for i in output:
-            #if re.match(r'.*Command line parameters', i):
-            if i.startswith(' +  Copyright(C)'):
-                print(' SHELXL '+' '.join(i.split()[6:8]))
+        for out in output:
+            #if re.match(r'.*Command line parameters', out):
+            if out.startswith(' +  Copyright(C)'):
+                print(' SHELXL '+' '.join(out.split()[6:8]))
             # wR2
             # These values are always bad after a simple LS fit without any atom movement:
-            if i.startswith(' wR2') and not wr2:
+            if out.startswith(' wR2') and not wr2:
                 wr2 = True
-                line = i[:].split()
+                line = out[:].split()
                 print(' {}  {} {:>6}'.format(line[0], line[1], line[2][:6]))
             # R1
-            if i.startswith(' R1') and not r1:
+            if out.startswith(' R1') and not r1:
                 r1 = True
-                line = i[:].split()
+                line = out[:].split()
                 print(' {}   {} {:>6}'.format(line[0], line[1], line[2][:6]))
             # GooF
-            if re.match(r'.*GooF.*', i) and not gof:
+            if re.match(r'.*GooF.*', out) and not gof:
                 gof = True
-                line = i.split()
+                line = out.split()
                 print(' {} {} {:>5}0'.format(line[0], line[1], line[4][:5]))
-            if re.match(r'.*CANNOT\s+OPEN\s+FILE.*hkl.*', i):
+            if re.match(r'.*CANNOT\s+OPEN\s+FILE.*hkl.*', out):
                 print(' No hkl file found!')
                 print('You need a proper hkl file to use DSR!')
                 sys.exit()
-            if re.match(r'.*\*\*.*', i):
+            if re.match(r'.*\*\* MERG code changed to 0', out):
+                continue
+            if re.match(r'.*\*\* Bond\(s\) to .* ignored', out):
+                continue
+            if re.match(r'.*\*\*.*', out):
                 print(' SHELXL says:')
-                print(' {}'.format(i.strip('\n\r')))
+                print(' {}'.format(out.strip('\n\r')))
 
 
     def run_shelxl(self):
