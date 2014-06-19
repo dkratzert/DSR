@@ -27,6 +27,7 @@ from restraints import ListFile, Lst_Deviations, format_atom_names
 from restraints import Restraints, Adjacency_Matrix
 
 # TODO and ideas:
+# -make backup in .dsrsaves before every fragment fit. name: dsr-date-time-seconds.res
 # -write restraints during exports
 # -FLAT: see for every ring atom if there is also an attached atom in the same plane
 # -To the manual: Avogradro/res-file -> rename -> mercury -> mol2-file -> GRADE
