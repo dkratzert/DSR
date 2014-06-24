@@ -196,7 +196,7 @@ class DSR():
                 '-----------------------------------')
         frags = sorted(db.keys())
         names_list = []
-        for i in frags:
+        for num, i in enumerate(frags):
             fragname = gdb.get_comment_from_fragment(i)
             names_list.append([i, fragname])
             line = ' {:<17}| {:<5}| {:<11}| {}'.format(
@@ -208,7 +208,8 @@ class DSR():
                 dbdir = os.environ["DSR_DB_DIR"]
         except(KeyError):
             dbdir = '.'
-        print('\n Feel free to add more fragments to "{}dsr_user_db.txt"' \
+        print('\n {} Fragments in the Database(s).'.format(num), 
+              '\n Feel free to add more fragments to "{}dsr_user_db.txt"' \
               '\n or mail them to dkratzert@gmx.de.'.format(dbdir + os.path.sep))
 
         for fragment in list(db.keys()):
