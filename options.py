@@ -99,7 +99,7 @@ class OptionsParser():
         sep_line = '\n------------------------------------------------'\
                     '--------------------------------\n'
         self.parser = ArgumentParser(prog='dsr', formatter_class=RawTextHelpFormatter,
-        description='Disordered solvent refinement (DSR)\n'
+        description='Disordered Structure Refinement (DSR)\n'
         +'\n'+self.progname
         +'\nExample DSR res-file command line:\n'
         +'\nREM DSR PUT/REPLACE "Fragment" WITH C1 C2 C3 ON Q1 Q2 Q3 PART 1 OCC 21.0 ='

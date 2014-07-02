@@ -1,4 +1,5 @@
 Recent changes
+-1.5.6  Program renamed to "Disordered Structure Refinement (DSR)" Small fixes. Warning about inacurate restraints.
 -1.5.5  Unit tests. Small fixes.
 -1.5.4  Code cleanup and deletion from adjacent hydrogen atoms improved.
 -1.5.3  Recognition of dsr command improved.
