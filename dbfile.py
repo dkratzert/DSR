@@ -448,7 +448,7 @@ class global_DB():
         return comment
 
 
-    def get_db_from_fragment(self, fragment):
+    def get_db_name_from_fragment(self, fragment):
         '''
         returns the fragment database name of fragment x
         '''
