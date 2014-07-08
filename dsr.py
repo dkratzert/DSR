@@ -201,7 +201,7 @@ class DSR():
             names_list.append([i, fragname])
             line = ' {:<17}| {:<5}| {:<11}| {}'.format(
                     i, gdb.get_line_number_from_fragment(i),
-                    gdb.get_db_from_fragment(i), fragname)
+                    gdb.get_db_name_from_fragment(i), fragname)
             print(line[:width - 1])
         try:
             if os.environ["DSR_DB_DIR"]:

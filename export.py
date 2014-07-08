@@ -49,14 +49,15 @@ class Export():
         :param invert:        bool, should the coordinates be inverted?
         '''
         self.invert = invert
-        self._fragment_name = fragment_name
+        self._fragment_name = fragment_name.lower()
         self._gdb = global_DB(self.invert)
         try:
-            self._db = self._gdb.build_db_dict()[self._fragment_name.lower()]
+            self._db = self._gdb.build_db_dict()[self._fragment_name]
         except(KeyError):
             print('Fragment "{}" was not found in the database!!'.format(self._fragment_name))
             sys.exit()
         self._gdb.check_consistency(self._db, self._fragment_name)
+        self._head = self._gdb.get_head_from_fragment(self._fragment_name)
         self._comment = self._db['comment']
         self._dbatoms = self._db['atoms']
         self._clipatoms = copy.deepcopy(self._dbatoms)
@@ -138,6 +139,9 @@ class Export():
         res_export.append('UNIT '+' '.join(unit)+'\n')
         res_export.append('WGHT  0.1'+'\n')
         res_export.append('FVAR  1'+'\n')
+        res_export.append('rem Restraints from DSR database:\n')
+        res_export.append('\n'.join(self._head))
+        res_export.append('\n\n')
         res_export.append(final_atomlist)                         # the atoms
         res_export.append('\nHKLF 4\nEND\n')         # the end
         return res_export
