@@ -960,7 +960,7 @@ class MiscTest(unittest.TestCase):
     def testrun_atomic_distance(self):
         cellf = [ float(i) for i in cell ]
         dst = misc.atomic_distance(coord1, coord2, cellf)
-        self.assertAlmostEquals(6.05249787959, dst, 5)
+        self.assertAlmostEqual(6.05249787959, dst, 5)
 
 
     def testrun_frac_to_cart(self):
