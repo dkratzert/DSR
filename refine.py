@@ -184,7 +184,7 @@ class ShelxlRefine():
         name: self.resfile_name-date-time-seconds.res
         '''
         import datetime
-        bakup_dir = '.dsrsaves'
+        bakup_dir = 'dsrsaves'
         now = datetime.datetime.now()
         timestamp = (str(now.year)+'_'+str(now.month)+'_'+str(now.day)+'_'+
                      str(now.hour)+'-'+str(now.minute)+'-'+str(now.second))
