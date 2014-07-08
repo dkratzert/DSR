@@ -1,4 +1,6 @@
 Recent changes
+-1.5.7  DSR now creates a backup file before fragment fit in a separate directory. 
+        Exported fragment res files now include database restraints.
 -1.5.6  Program renamed to "Disordered Structure Refinement (DSR)" Small fixes. Warning about inacurate restraints.
 -1.5.5  Unit tests. Small fixes.
 -1.5.4  Code cleanup and deletion from adjacent hydrogen atoms improved.
