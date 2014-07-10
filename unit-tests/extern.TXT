@@ -2,7 +2,7 @@ rem the following was inserted by DSR:
 SIMU O1 > F9
 RIGU O1 > F9
 REM The restraints for residue_class TEST are in this file:
-+TEST_p21c.res
++dsr_TEST_p21c.res
 PART 2 -31
 AFIX 179
 O1   3     0.081800     0.235411     0.399962   11.000   0.04

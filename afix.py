@@ -29,9 +29,9 @@ def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
     :param resi_number:  SHELXL residue number
     '''
     if resi_number:
-        filename = resi_class+'_'+resi_number+'_'+filename
+        filename = 'dsr'+_resi_class+'_'+resi_number+'_'+filename
     else:
-        filename = resi_class+'_'+filename
+        filename = 'dsr_'+resi_class+'_'+filename
     if os.path.isfile(filename):
         print('Previous restraint file found.'\
             ' Using restraints from "{}"'.format(filename))
