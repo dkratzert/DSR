@@ -5,3 +5,4 @@ REM GEN: using quantum mechanics PM3
 REM grade-cif2shelx output 
 REM grade-cif2shelx extracts restraints from a grade CIF file
 REM Version: 0.0.5 <Dec 20 2013>
+REM Total charge set to -1

@@ -637,7 +637,7 @@ class ImportGRADE_Test(unittest.TestCase):
                 ob.append(line.split())
         comments = self.ig.get_comments()
         name = 'REM Name: ' + 'PFA'
-        ob.append(name.split())
+        ob.insert(0, name.split()) # Name is always at first place
         self.assertEqual(comments, ob)
 
     def testrun_get_firstlast(self):
@@ -673,13 +673,14 @@ class ImportGRADE_Test(unittest.TestCase):
 
     def testrun_bild_grade_db_entry(self):
         dbentry = self.ig.bild_grade_db_entry()
-        dbtest = {'PFA1': {'comment': [[u'REM', u'Produced', u'by', u'Grade', u'Web', u'Server', u'http://grade.globalphasing.org'],
+        self.maxDiff = None
+        dbtest = {'PFA1': {'comment': [[u'REM', u'Name:', u'PFA'], [u'REM', u'Produced', u'by', u'Grade', u'Web', u'Server', u'http://grade.globalphasing.org'],
                                        [u'REM', u'GEN:', u'Generated', u'by', u'GRADE', u'1.2.7', u'(February', u'19', u'2014)'],
                                        [u'REM', u'GEN:', u'from', u'mol2', u'file'],
                                        [u'REM', u'GEN:', u'using', u'quantum', u'mechanics', u'PM3'],
                                        [u'REM', u'grade-cif2shelx', u'output'],
                                        [u'REM', u'grade-cif2shelx', u'extracts', u'restraints', u'from', u'a', u'grade', u'CIF', u'file'],
-                                       [u'REM', u'Version:', u'0.0.5', u'<Dec', u'20', u'2013>'], [u'REM', u'Name:', u'PFA']],
+                                       [u'REM', u'Version:', u'0.0.5', u'<Dec', u'20', u'2013>'], [u'REM', u'Total', u'charge', u'set', u'to', u'-1']],
                            'head': [['DFIX', '1.785', '0.030', 'AL1', 'O1'], ['DFIX', '1.784', '0.030', 'AL1', 'O2'],
                                     ['DFIX', '1.788', '0.030', 'AL1', 'O3'], ['DFIX', '1.785', '0.030', 'AL1', 'O4'],
                                     ['DFIX', '1.325', '0.030', 'C1', 'O1'], ['DFIX', '1.620', '0.030', 'C1', 'C2'],
