@@ -906,10 +906,10 @@ class MiscTest(unittest.TestCase):
         self.assertListEqual(which, ['C:\\Windows\\system32\\regedit.exe',
                                      'C:\\Windows\\system32\\regedit.EXE',
                                      'C:\\Windows\\regedit.exe',
-                                     'C:\\Windows\\regedit.EXE',
-                                     'C:\\Windows\\system32\\regedit.exe',
-                                     'C:\\Windows\\system32\\regedit.EXE',
-                                     'C:\\Windows\\regedit.exe',
+                         #            'C:\\Windows\\regedit.EXE',
+                          #           'C:\\Windows\\system32\\regedit.exe',
+                          #           'C:\\Windows\\system32\\regedit.EXE',
+                          #           'C:\\Windows\\regedit.exe',
                                      'C:\\Windows\\regedit.EXE'])
 
 
