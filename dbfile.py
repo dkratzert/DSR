@@ -486,7 +486,7 @@ class ImportGRADE():
 
     def get_gradefiles(self):
         '''
-        returns the .mol2 and .dfx file location
+        returns the .mol2 and .dfix file location
         '''
         grade_base_filename = os.path.splitext(self._gradefile)
         if grade_base_filename[1] == '.tgz':
@@ -580,7 +580,7 @@ class ImportGRADE():
 
     def get_restraints(self):
         '''
-        reads the restraints from a dfx-file
+        reads the restraints from a dfix-file
         '''
         restraints = []
         for line in self._dfixfile:
@@ -626,7 +626,7 @@ class ImportGRADE():
     def bild_grade_db_entry(self):
         '''
         builds a dbentry from the information supplied by GRADEs
-        .mol2 and .dfx file
+        .mol2 and .dfix file
         '''
         db_import_dict = {}
         num = 1
@@ -818,7 +818,7 @@ if __name__ == '__main__':
     # print gradefile.getmembers()
 
     for i in gradefile.getnames():
-        if i.endswith(('.pdb', '.dfx', '.mol2')):
+        if i.endswith(('.pdb', '.dfix', '.mol2')):
             if re.match('.*obabel.*', i):
                 continue
             # localFile = tempfile.TemporaryFile()
@@ -839,9 +839,9 @@ if __name__ == '__main__':
     #    #print i[3], i[0], i[1], i[2]
     # print mog.get_atomnumbers()
 
-    # for i in mog.get_restraints('./test-data/TOL.dfx'):
+    # for i in mog.get_restraints('./test-data/TOL.dfix'):
     #    print i
 
     # mog.bild_grade_db_entry()
-    # print mog.bild_grade_db_entry('{}.mol2', '{}.dfx').format(dsr_dict[import_grade], dsr_dict[import_grade])
+    # print mog.bild_grade_db_entry('{}.mol2', '{}.dfix').format(dsr_dict[import_grade], dsr_dict[import_grade])
     # mog.write_user_database()

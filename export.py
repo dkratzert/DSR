@@ -75,17 +75,17 @@ class Export():
     def format_calced_coords(self):
         '''
         In calculated structure the cell is 1 1 1 90 90 90. Shelxle has problems
-        with that when growing. So the cell is expanded to 100 100 100
+        with that when growing. So the cell is expanded to 50 50 50
         '''
         summe = int(sum(float(i) for i in self._cell[0:3])) # this is to detect calculated structures
         if summe == 3:  # 1+1+1=3!
             for coord in range(2,5):  # x, y, z of coordinates
                 for line in self._dbatoms:   # for every atom line
-                    num = float(line[coord])/100
+                    num = float(line[coord])/50
                     line[coord] = "{:10.6f}".format(num)
-            # now the new 100,100,100 cell:
+            # now the new 50,50,50 cell:
             for n in range(0,3):
-                self._cell[n] = '100'
+                self._cell[n] = '50'
 
 
     def export_resfile(self):
