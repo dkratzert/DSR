@@ -34,6 +34,7 @@ from restraints import Restraints, Adjacency_Matrix
 # -select atoms in shelxle > export to db
 # -If second part of a disordered atom is very close to the first, make EADP?
 # -detect empty residues and parts after atom deletion
+# -import also from pdb, dfix, obprop alone.
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 
 
@@ -418,7 +419,7 @@ class DSR():
         fragment_numberscheme = num.get_fragment_number_scheme()
         afix = InsertAfix(reslist, dbatoms, db_atom_types, dbhead, dsr_dict,
                           sfac_table, find_atoms, fragment_numberscheme)
-        afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfx',
+        afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfix',
                                            resi.get_resiclass)
         # line where the dsr command is found in the resfile:
         dsr_line_number = dsrp.find_dsr_command(line=False)
@@ -466,7 +467,7 @@ class DSR():
                                             dsrp.part)
             if resinumber:
                 if self.external:
-                    external_file_name = write_dbhead_to_file(basefilename+'.dfx', dfix_restraints,
+                    external_file_name = write_dbhead_to_file(basefilename+'.dfix', dfix_restraints,
                                          resi.get_resiclass, resinumber)
                 for n, line in enumerate(reslist):
                     if line.upper().startswith('RESI'):

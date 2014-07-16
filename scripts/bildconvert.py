@@ -1,23 +1,20 @@
 #-*- encoding: utf-8 -*-
 
 '''
-Anschließend:
-montage.exe *.png  -geometry 600x600+1+1 -tile 3x6 test.pdf
-
-montage.exe *.png -trim +repage -geometry 600x600+10+10 -tile 4x6 test.pdf
-
-montage.exe *.png -geometry 600x600-30-40 -tile 4x6 test.pdf
+f:/programme/Java/bin/java -Djmol.logger.info=false -Djmol.logger.warn=false -Xmx512m -jar F:\Programme\jmol\Jmol.jar pfanion.res -ions bildererstellung.txt -g 600x600 -w PNG:pfanion.png -x
 '''
 
 import os, sys
 from subprocess import call
 import fnmatch
 
-try:
-    outdir = sys.argv[1]
-except(IndexError):
-    print('Please give the output dir as argument.')
-    sys.exit()
+
+
+#try:
+#    noconvert = sys.argv[1]
+#except(IndexError):
+#    pass
+#
 
 def write_options_file(fragment, options):
     ## write to file:
@@ -32,7 +29,7 @@ def write_options_file(fragment, options):
     f.close()
 
 
-prog = "f:/programme/Java/bin/java"
+
 
 files = os.listdir('.')
 
@@ -48,16 +45,28 @@ for f in files:
 def set_options(fragment):
     options = ' -Djmol.logger.info=false -Djmol.logger.warn=false -Xmx512m -jar \
         F:\Programme\jmol\Jmol.jar {}.res -ions bildererstellung.txt -g 600x600 \
-        -w PNG:{}\{}.png -x'.format(fragment, outdir, fragment)
+        -w PNG:{}.png -x'.format(fragment, fragment)
     #options = ' -Xmx512m  -jar "F:\Programme\jmol\jmol.jar"'
     #options = ""
     return options
 
+
+
 for num, fragment in enumerate(list_of_fragments):
-    fileName, fileExtension = os.path.splitext(fragment)
-    options = set_options(fileName)
+    Name, fileExtension = os.path.splitext(fragment)
+    java_prog = "f:/programme/Java/bin/java"
+    java_options = set_options(Name)
+    options_png = " {}.png -geometry 600x600-30-40-30-30 -font Arial -pointsize 40 label:{} -gravity South -composite {}.png".format(Name, Name, Name)
+    prog_png = "f:\ImageMagick-6.8.9-4\convert.exe"
     num = str(num+1)
-    print('\n'+fileName+'  '+num+'\n')
-    os.system(prog+options)
+    print('\n'+Name+'  '+num+'\n')
+    os.system(java_prog+java_options)
+    os.system(prog_png+options_png)
 
 
+
+
+optionsm = " *.png -geometry 600x600 -tile 3x5 output\\alle_bilder.png"
+progm = "f:\ImageMagick-6.8.9-4\montage.exe"
+
+os.system(progm+optionsm)

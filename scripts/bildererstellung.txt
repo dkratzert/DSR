@@ -1,12 +1,15 @@
 #load toluene.res
 #set fontSize 35
-font label 55 sanserif bold
-centerAt average 50 50 50
+#font label 25 boldsanserif
+font label 55 sanserif
+#centerAt average 25 25 25
 set label ON
 label %a
 color labels black
-color bonds grey
-translate 50 50 50
+color bonds lightgrey
+#spacefill on
+#spacefill 0.2
+translate 25 25 25
 zoom 0
 set axes OFF
 set showUnitcell FALSE
