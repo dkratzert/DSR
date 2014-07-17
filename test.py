@@ -902,15 +902,11 @@ class MiscTest(unittest.TestCase):
 
 
     def testrun_which(self):
-        which = misc.which('regedit')
-        self.assertListEqual(which, ['C:\\Windows\\system32\\regedit.exe',
-                                     'C:\\Windows\\system32\\regedit.EXE',
-                                     'C:\\Windows\\regedit.exe',
-                         #            'C:\\Windows\\regedit.EXE',
-                          #           'C:\\Windows\\system32\\regedit.exe',
-                          #           'C:\\Windows\\system32\\regedit.EXE',
-                          #           'C:\\Windows\\regedit.exe',
-                                     'C:\\Windows\\regedit.EXE'])
+        which = misc.which('notepad.exe')
+        self.assertListEqual(which, ['C:\\Windows\\system32\\notepad.exe',
+                                     'C:\\Windows\\notepad.exe',
+                                     'C:\\Windows\\system32\\notepad.exe',
+                                     'C:\\Windows\\notepad.exe'])
 
 
     def testrun_zero(self):

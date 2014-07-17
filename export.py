@@ -13,7 +13,7 @@
 from __future__ import print_function
 import sys, os
 import atomhandling as at
-from misc import ll_to_string
+from misc import ll_to_string, wrap_headlines
 from dbfile import global_DB
 import copy
 import pyperclip
@@ -131,6 +131,7 @@ class Export():
         except(NameError):
             pass
         comment = '\nREM '.join(self._comment)
+        restraints = wrap_headlines(self._head)
         res_export.append('REM '+comment+'\n')
         res_export.append('CELL 0.71073 '+self._cell+'\n')   # the cell with wavelength
         res_export.append('ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n')
@@ -140,7 +141,7 @@ class Export():
         res_export.append('WGHT  0.1'+'\n')
         res_export.append('FVAR  1'+'\n')
         res_export.append('rem Restraints from DSR database:\n')
-        res_export.append('\n'.join(self._head))
+        res_export.append(''.join(restraints))
         res_export.append('\n\n')
         res_export.append(final_atomlist)                         # the atoms
         res_export.append('\nHKLF 4\nEND\n')         # the end
