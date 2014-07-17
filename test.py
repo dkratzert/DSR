@@ -303,7 +303,7 @@ class insertAfixTest(unittest.TestCase):
             self.intern = txt.read()
         with open('unit-tests/extern.TXT') as txt2:
             self.extern = txt2.read()
-        misc.remove_file('TEST_p21c.res')
+        misc.remove_file('dsr_TEST_p21c.res')
         self.sf = SfacTable(self.reslist, self.dbtypes)
         self.sfac_table = self.sf.set_sfac_table()
         self.num = NumberScheme(self.reslist, self.dbatoms, self.resi)
@@ -323,7 +323,7 @@ class insertAfixTest(unittest.TestCase):
         afix_intern_entry = afix.build_afix_entry(False, self.res_file, 'TEST')
         self.assertEqual(afix_intern_entry, self.intern)
         self.assertEqual(afix_extern_entry, self.extern)
-        misc.remove_file('TEST_p21c.res')
+        misc.remove_file('dsr_TEST_p21c.res')
 
 class removeDublicatesAfixTest(unittest.TestCase):
     def setUp(self):
@@ -835,6 +835,17 @@ class ExportTest(unittest.TestCase):
     def setUp(self):
         self.invert = False
         self.gdb = global_DB(self.invert)
+        self.export_clip = 'benzene'
+
+    def testrun_export_to_clip(self):
+        '''
+        Exports the current fragment to the clipboard.
+        '''
+        from export import Export
+        gdb = global_DB(self.invert)
+        export = Export(self.export_clip, gdb)
+#        with self.assertRaises(SystemExit):
+        self.assertTrue(export.export_to_clip())
 
     def testrun_do_export_fragment(self):
         self.maxDiff = None

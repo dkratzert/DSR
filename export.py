@@ -187,15 +187,19 @@ class Export():
         clip_text.append('\nFEND')
         text = ' '.join(clip_text)
         pyperclip.setcb(text)
+        return True
 
 
     def export_to_clip(self):
         try:
-            self.copy_to_clipboard()
+            tst = self.copy_to_clipboard()
         except(AttributeError) as e:
             print(e)
-        print('Exported "{0}" to the clipboard.'.format(self._fragment_name))
-        sys.exit()
+        if tst:
+            print('Exported "{0}" to the clipboard.'.format(self._fragment_name))
+            return True
+        else:
+            return False
 
 
     def file_is_opened(self, base, ending):
