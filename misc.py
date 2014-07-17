@@ -43,6 +43,19 @@ def get_atoms(atlist):
                 atoms.append(l)
     return atoms
 
+def find_line_of_residue(reslist, resinumber):
+    '''
+    Returns the line number where residue n appears in the reslist.
+    :param reslist: res file as list
+    :type reslist: list of lists
+    :param resinumber: residue number
+    :type resinumber: string
+    '''
+    for n, line in enumerate(reslist):
+        if line.upper().startswith('RESI'):
+            if line.split()[1] == str(resinumber):
+                return [n, line]
+
 
 def ll_to_string(inputlist):
     '''converts list of list to string with four whitespaces between each list element'''
