@@ -831,6 +831,42 @@ class DSRParse2Test(unittest.TestCase):
         string = 'rem dsr put oc(cf3)3 with o1 c1 c2 c3 c4 on O1_3 c1_3 q6 Q4 q7 resi cf3  PART 2 occ -31 dfix\n'
         self.assertEqual(string, line)
 
+class ExportTest(unittest.TestCase):
+    def setUp(self):
+        self.invert = False
+        self.gdb = global_DB(self.invert)
+
+    def testrun_do_export_fragment(self):
+        self.maxDiff = None
+        fragment = 'toluene'
+        from export import Export
+        export = Export(fragment, self.gdb, self.invert)
+        resfile = export.export_resfile()
+        resgood = ['TITL toluene\n', 'REM This file was exported by DSR version 1.5.7\n',
+                   'REM Name: Toluene, C7H8\nREM Source: GRADE import\nREM Gradeserver from http://grade.globalphasing.org\n',
+                   'CELL 0.71073    50.000   50.000   50.000   90.000   90.000   90.000\n',
+                   'ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n', 'LATT  -1\n', 'SFAC C\n',
+                   'UNIT 1 \n', 'WGHT  0.1\n', 'FVAR  1\n', 'rem Restraints from DSR database:\n',
+                   'DFIX 1.509 0.011 C1 C2\nDFIX 1.385 0.012 C2 C3\nDFIX 1.385 0.012 C2 C7\nDFIX 1.384 0.010 C3 C4\nDFIX 1.379 0.015 C4 C5\nDFIX 1.379 0.015 C5 C6\nDFIX 1.384 0.010 C6 C7\nDANG 2.520 0.017 C1 C3\nDANG 2.520 0.017 C1 C7\nDANG 2.374 0.018 C3 C7\nDANG 2.410 0.019 C2 C4\nDANG 2.396 0.019 C3 C5\nDANG 2.386 0.022 C4 C6\nDANG 2.396 0.019 C5 C7\nDANG 2.410 0.019 C2 C6\nFLAT C2 C1 C3 C7\nFLAT C2 C3 C4 C5\nFLAT C3 C4 C5 C6\nFLAT C4 C5 C6 C7\nFLAT C5 C6 C7 C2\nFLAT C6 C7 C2 C3\nFLAT C7 C2 C3 C4\n',
+                   '\n\n', 'C1    1     0.024000    -0.000460     0.072300   11.00   0.04\nC2    1     0.024060    -0.000240     0.042120   11.00   0.04\nC3    1     0.000300    -0.000220     0.027800   11.00   0.04\nC4    1     0.000300    -0.000020     0.000100   11.00   0.04\nC5    1     0.024160     0.000160    -0.013760   11.00   0.04\nC6    1     0.047960     0.000120     0.000180   11.00   0.04\nC7    1     0.047880    -0.000080     0.027880   11.00   0.04',
+                   '\nHKLF 4\nEND\n']
+        self.assertListEqual(resfile, resgood)
+
+    def testrun_do_export_fragment_all(self):
+        self.maxDiff = None
+        fragment = 'toluene'
+        from export import Export
+        export = Export(fragment, self.gdb, self.invert, export_all=True)
+        resfile = export.export_resfile()
+        resgood = ['TITL toluene\n', 'REM This file was exported by DSR version 1.5.7\n',
+                   'REM Name: Toluene, C7H8\nREM Source: GRADE import\nREM Gradeserver from http://grade.globalphasing.org\n',
+                   'CELL 0.71073    50.000   50.000   50.000   90.000   90.000   90.000\n',
+                   'ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n', 'LATT  -1\n', 'SFAC C\n',
+                   'UNIT 1 \n', 'WGHT  0.1\n', 'FVAR  1\n',
+                   '\n\n', 'C1    1     0.024000    -0.000460     0.072300   11.00   0.04\nC2    1     0.024060    -0.000240     0.042120   11.00   0.04\nC3    1     0.000300    -0.000220     0.027800   11.00   0.04\nC4    1     0.000300    -0.000020     0.000100   11.00   0.04\nC5    1     0.024160     0.000160    -0.013760   11.00   0.04\nC6    1     0.047960     0.000120     0.000180   11.00   0.04\nC7    1     0.047880    -0.000080     0.027880   11.00   0.04',
+                   '\nHKLF 4\nEND\n']
+        self.assertListEqual(resfile, resgood)
+
 
 class MiscTest(unittest.TestCase):
     def setUp(self):
