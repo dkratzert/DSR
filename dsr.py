@@ -39,6 +39,7 @@ from restraints import Restraints, Adjacency_Matrix
 
 
 VERSION = '1.5.7'
+# dont forget to change version in Innoscript file, spec file and deb file.
 progname = '\n-----------------------------'\
            ' D S R - v{}' \
            ' ----------------------------------'.format(VERSION)

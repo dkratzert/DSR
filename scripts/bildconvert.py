@@ -32,7 +32,7 @@ def write_options_file(fragment, options):
 
 
 files = os.listdir('.')
-
+files.sort()
 list_of_fragments = []
 
 
@@ -56,17 +56,21 @@ for num, fragment in enumerate(list_of_fragments):
     Name, fileExtension = os.path.splitext(fragment)
     java_prog = "f:/programme/Java/bin/java"
     java_options = set_options(Name)
-    options_png = " {}.png -geometry 600x600-30-40-30-30 -font Arial -pointsize 40 label:{} -gravity South -composite {}.png".format(Name, Name, Name)
+    options_png = " {}.png -geometry 600x600-30-40-30-30 -font Arial -pointsize 40 label:{} \
+                        -gravity South -composite {}.png".format(Name, Name, Name)
     prog_png = "f:\ImageMagick-6.8.9-4\convert.exe"
     num = str(num+1)
     print('\n'+Name+'  '+num+'\n')
+    # remove next lines if only montage is required
+    # create png images from res file:
     os.system(java_prog+java_options)
+    # label image:
     os.system(prog_png+options_png)
 
 
 
-
-optionsm = " *.png -geometry 600x600 -tile 3x5 output\\alle_bilder.png"
+# make tiles
+optionsm = " *.png -geometry 600x600 -tile 3x4 output\\alle_bilder.png"
 progm = "f:\ImageMagick-6.8.9-4\montage.exe"
 
 os.system(progm+optionsm)
