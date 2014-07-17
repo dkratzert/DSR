@@ -189,9 +189,10 @@ class DSR():
         Exports the current fragment to the clipboard.
         '''
         from export import Export
-        export = Export(self.export_clip)
+        gdb = global_DB(self.invert)
+        export = Export(self.export_clip, gdb)
         export.export_to_clip()
-        sys.exit(1)
+        sys.exit(True)
 
     def list_dbentrys(self):
         '''
