@@ -2,6 +2,9 @@
 #-*- encoding: utf-8 -*-
 
 
+# test Afix: write_dbhead_to_file()
+
+
 import unittest
 
 from afix import InsertAfix
@@ -948,7 +951,7 @@ class MiscTest(unittest.TestCase):
         self.assertNotEqual(lst, ['HALLO', 'DANIEL'])
 
 
-    def testrun_which(self):
+    def ttestrun_which(self):
         which = misc.which('notepad.exe')
         self.assertListEqual(which, ['C:\\Windows\\system32\\notepad.exe',
                                      'C:\\Windows\\notepad.exe',

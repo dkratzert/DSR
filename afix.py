@@ -29,7 +29,7 @@ def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
     :param resi_number:  SHELXL residue number
     '''
     if resi_number:
-        filename = 'dsr'+_resi_class+'_'+resi_number+'_'+filename
+        filename = 'dsr_'+resi_class+'_'+resi_number+'_'+filename
     else:
         filename = 'dsr_'+resi_class+'_'+filename
     if os.path.isfile(filename):
