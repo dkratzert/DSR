@@ -370,10 +370,11 @@ class DSR():
 
 
 
-    def external_or_not(self, resi, basefilename, resinumber, dfix_restraints, line):
+    def external_or_not(self, resi, basefilename, resinumber, dfix_restraints, current_residue_line):
         '''
-        Decides if external or internal restraints are used. Returns line number where
-        restraints should be placed.
+        Decides if external or internal restraints are used.
+        Returns residue like "RESI 4 CCF3 with restraints afterwards"
+        If restraints are external, the hint about the external file is written.
         :param resi: residue object
         :type resi: object
         :param basefilename: base of res file name
@@ -382,17 +383,17 @@ class DSR():
         :type resinumber: string
         :param dfix_restraints: list of restraints
         :type dfix_restraints: list
-        :param line
-        :type line
+        :param current_residue_line: line like RESI 4 CCF3
+        :type current_residue_line: string
         '''
         if self.external:
             external_file_name = write_dbhead_to_file(basefilename + '.dfix', dfix_restraints,
                                                       resi.get_resiclass, resinumber)
-            line = '{}\nREM The restraints for residue {} '
-            'are in this file:\n+{}\n'.format(line, resinumber, external_file_name)
+            current_residue_line = '{}\nREM The restraints for residue {} '\
+            'are in this file:\n+{}\n'.format(current_residue_line, resinumber, external_file_name)
         else:
-            line = '{} \n{}\n'.format(line, dfix_restraints)
-        return line
+            current_residue_line = '{} \n{}\n'.format(current_residue_line, dfix_restraints)
+        return current_residue_line
 
 
     def use_generated_dfix_restraints(self, reslist, dsrp, resi, basefilename,
@@ -420,10 +421,12 @@ class DSR():
         dfix_restraints = self.generate_dfix_restraints(lf, reslist, fragment_numberscheme,
                                                         resinumber, cell, dsrp.part)
         if resinumber:
+            # in this case the place for dfix restraints is found be the residue number
             resiline_number, line = find_line_of_residue(reslist, resinumber)
             line = self.external_or_not(resi, basefilename, resinumber, dfix_restraints, line)
             reslist[resiline_number] = line
         else:
+            # in this case restraints are placed by the dsrline position
             line = '{}'.format(dfix_restraints) # insert restraints after dsr_line_number
             reslist[dsr_line_number - 2] = reslist[dsr_line_number - 2] + line
 
