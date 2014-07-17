@@ -166,8 +166,22 @@ class DSR():
         Exports the current fragment.
         '''
         from export import Export
-        export = Export(self.export_fragment, self.invert)
+        gdb = global_DB(self.invert)
+        export = Export(self.export_fragment, gdb, self.invert)
         export.write_res_file()
+        sys.exit(1)
+
+    def export_all_fragments(self):
+        '''
+        export all database entries at once
+        '''
+        from export import Export
+        gdb = global_DB(self.invert)
+        db = gdb.build_db_dict()
+        dbnames = list(db.keys())
+        for name in dbnames:
+            export = Export(name, gdb, self.invert, self.export_all)
+            export.write_res_file()
         sys.exit(1)
 
     def export_to_clip(self):
@@ -277,19 +291,6 @@ class DSR():
             print('Unable to set refinement cycles')
         shx.remove_afix()   # removes the afix 9
 
-
-    def export_all_fragments(self):
-        '''
-        export all database entries at once
-        '''
-        from export import Export
-        gdb = global_DB(self.invert)
-        db = gdb.build_db_dict()
-        dbnames = list(db.keys())
-        for name in dbnames:
-            export = Export(name)
-            export.write_res_file()
-        sys.exit(1)
 
 
     def set_final_db_sfac_types(self, db_atom_types, dbatoms, sfac_table):

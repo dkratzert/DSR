@@ -42,7 +42,7 @@ class Export():
     END
     '''
 
-    def __init__(self, fragment_name, invert=False):
+    def __init__(self, fragment_name, gdb, invert=False, export_all=False):
         '''
 
         :param fragment_name: string, name of the database fragment
@@ -50,7 +50,9 @@ class Export():
         '''
         self.invert = invert
         self._fragment_name = fragment_name.lower()
-        self._gdb = global_DB(self.invert)
+        #self._gdb = global_DB(self.invert)
+        self._gdb = gdb
+        self._export_all = export_all
         try:
             self._db = self._gdb.build_db_dict()[self._fragment_name]
         except(KeyError):
@@ -131,7 +133,7 @@ class Export():
         except(NameError):
             pass
         comment = '\nREM '.join(self._comment)
-        restraints = wrap_headlines(self._head)
+
         res_export.append('REM '+comment+'\n')
         res_export.append('CELL 0.71073 '+self._cell+'\n')   # the cell with wavelength
         res_export.append('ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n')
@@ -140,8 +142,10 @@ class Export():
         res_export.append('UNIT '+' '.join(unit)+'\n')
         res_export.append('WGHT  0.1'+'\n')
         res_export.append('FVAR  1'+'\n')
-        res_export.append('rem Restraints from DSR database:\n')
-        res_export.append(''.join(restraints))
+        if not self._export_all:
+            res_export.append('rem Restraints from DSR database:\n')
+            restraints = wrap_headlines(self._head)
+            res_export.append(''.join(restraints))
         res_export.append('\n\n')
         res_export.append(final_atomlist)                         # the atoms
         res_export.append('\nHKLF 4\nEND\n')         # the end
