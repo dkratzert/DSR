@@ -892,9 +892,21 @@ class MiscTest(unittest.TestCase):
                          'C1 1 -0.00146 0.26814 0.06351 11.00 0.05',
                          'C2 1 -1.13341 -0.23247 -0.90730 11.00 0.05',
                          'Sn1 4 -2.34661 -0.11273 -0.34544 -21.00 0.05']
+        self.residue_atoms = ['O1 3 -0.01453 1.66590 0.10966 11.00 0.05',
+                              'C1 1 -0.00146 0.26814 0.06351 11.00 0.05',
+                              'RESI 4 BENZ',
+                              'C2 1 -1.13341 -0.23247 -0.90730 11.00 0.05',
+                              'Sn1 4 -2.34661 -0.11273 -0.34544 -21.00 0.05']
         self.string = 'O1   3   -0.01453   1.66590   0.10966\nC1   1   -0.00146   0.26814   0.06351\nC2   1   -1.13341   -0.23247   -0.90730\nSn1   4   -2.34661   -0.11273   -0.34544'
         self.multi = 'rem dsr put oc(cf3)3 with o1 c1 c2 c3 c4 on O1_3 c1_3 q6 Q4 q7 resi cf3 =\
                         PART 2 occ -31'
+
+    def testrun_find_line_of_residue(self):
+        number, string = line = misc.find_line_of_residue(self.residue_atoms, '4')
+        self.assertNotEqual(number, 3)
+        self.assertEqual(number, 2)
+        self.assertEqual(string, 'RESI 4 BENZ')
+
 
     def testrun_get_atoms(self):
         noatoms = misc.get_atoms([])
@@ -951,12 +963,12 @@ class MiscTest(unittest.TestCase):
         self.assertNotEqual(lst, ['HALLO', 'DANIEL'])
 
 
-    def ttestrun_which(self):
-        which = misc.which('notepad.exe')
-        self.assertListEqual(which, ['C:\\Windows\\system32\\notepad.exe',
-                                     'C:\\Windows\\notepad.exe',
-                                     'C:\\Windows\\system32\\notepad.exe',
-                                     'C:\\Windows\\notepad.exe'])
+    def testrun_which(self):
+        which = misc.which('twunk_32')
+        self.assertListEqual(which, ['C:\\Windows\\twunk_32.exe',
+                                     'C:\\Windows\\twunk_32.EXE',
+                                     'C:\\Windows\\twunk_32.exe',
+                                     'C:\\Windows\\twunk_32.EXE'])
 
 
     def testrun_zero(self):
