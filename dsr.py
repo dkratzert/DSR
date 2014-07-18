@@ -39,7 +39,7 @@ from misc import find_line_of_residue
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 
 
-VERSION = '1.5.7'
+VERSION = '1.5.8'
 # dont forget to change version in Innoscript file, spec file and deb file.
 progname = '\n-----------------------------'\
            ' D S R - v{}' \
