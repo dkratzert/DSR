@@ -3,10 +3,10 @@
 
 
 # test Afix: write_dbhead_to_file()
-
+# test resi module
 
 import unittest
-
+from dsr import VERSION
 from afix import InsertAfix
 from atomhandling import get_atomtypes, FindAtoms, check_source_target, \
     rename_dbhead_atoms, SfacTable, Elem_2_Sfac, NumberScheme
@@ -14,7 +14,8 @@ from atoms import Element
 from dbfile import global_DB, invert_dbatoms_coordinates, ReadDB, ImportGRADE
 from dsrparse import DSR_Parser
 import misc
-from resfile import ResList
+from resfile import ResList, ResListEdit
+from resi import Resi
 
 db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
                'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
@@ -856,7 +857,7 @@ class ExportTest(unittest.TestCase):
         from export import Export
         export = Export(fragment, self.gdb, self.invert)
         resfile = export.export_resfile()
-        resgood = ['TITL toluene\n', 'REM This file was exported by DSR version 1.5.7\n',
+        resgood = ['TITL toluene\n', 'REM This file was exported by DSR version {}\n'.format(VERSION),
                    'REM Name: Toluene, C7H8\nREM Source: GRADE import\nREM Gradeserver from http://grade.globalphasing.org\n',
                    'CELL 0.71073    50.000   50.000   50.000   90.000   90.000   90.000\n',
                    'ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n', 'LATT  -1\n', 'SFAC C\n',
@@ -872,7 +873,7 @@ class ExportTest(unittest.TestCase):
         from export import Export
         export = Export(fragment, self.gdb, self.invert, export_all=True)
         resfile = export.export_resfile()
-        resgood = ['TITL toluene\n', 'REM This file was exported by DSR version 1.5.7\n',
+        resgood = ['TITL toluene\n', 'REM This file was exported by DSR version {}\n'.format(VERSION),
                    'REM Name: Toluene, C7H8\nREM Source: GRADE import\nREM Gradeserver from http://grade.globalphasing.org\n',
                    'CELL 0.71073    50.000   50.000   50.000   90.000   90.000   90.000\n',
                    'ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n', 'LATT  -1\n', 'SFAC C\n',
@@ -881,6 +882,32 @@ class ExportTest(unittest.TestCase):
                    '\nHKLF 4\nEND\n']
         self.assertListEqual(resfile, resgood)
 
+
+class ResidueTest(unittest.TestCase):
+    def setUp(self):
+        self.res_file = './unit-tests/p21c.res'
+        self.rl = ResList(self.res_file)
+        self.res_list = self.rl.get_res_list()
+        self.find_atoms = FindAtoms(self.res_list)
+        self.rle = ResListEdit(self.res_list, self.find_atoms)
+        self.dsrp = DSR_Parser(self.res_list, self.rle)
+        self.dsr_dict = self.dsrp.parse_dsr_line()
+        fragment = self.dsr_dict['fragment']
+        #fragment = 'toluene'
+        invert = False
+        self.gdb = global_DB(invert)
+        self.residue_class = self.gdb.get_resi_from_fragment(fragment)
+        self.db = self.gdb.build_db_dict()
+        self.fragline = self.gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
+        self.dbatoms = self.gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
+        self.dbhead = self.gdb.get_head_from_fragment(fragment)
+
+    def testrun_get_resinumber(self):
+        self.resi = Resi(self.res_list, self.dsr_dict, self.dbhead, self.residue_class, self.find_atoms)
+        self.assertEqual(self.resi.get_resinumber, '4')
+        self.assertNotEqual(self.resi.get_resinumber, 'False')
+        self.assertEqual(self.resi.get_residue_class, 'CF3')
+        self.assertNotEqual(self.resi.get_residue_class, 'CCF3')
 
 class MiscTest(unittest.TestCase):
     def setUp(self):
@@ -905,6 +932,7 @@ class MiscTest(unittest.TestCase):
         number, string = line = misc.find_line_of_residue(self.residue_atoms, '4')
         self.assertNotEqual(number, 3)
         self.assertEqual(number, 2)
+        self.assertEqual(len(line), 2)
         self.assertEqual(string, 'RESI 4 BENZ')
 
 
