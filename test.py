@@ -885,6 +885,7 @@ class ExportTest(unittest.TestCase):
 
 class ResidueTest(unittest.TestCase):
     def setUp(self):
+        self.maxDiff = None
         self.res_file = './unit-tests/p21c.res'
         self.rl = ResList(self.res_file)
         self.res_list = self.rl.get_res_list()
@@ -892,8 +893,8 @@ class ResidueTest(unittest.TestCase):
         self.rle = ResListEdit(self.res_list, self.find_atoms)
         self.dsrp = DSR_Parser(self.res_list, self.rle)
         self.dsr_dict = self.dsrp.parse_dsr_line()
-        fragment = self.dsr_dict['fragment']
-        #fragment = 'toluene'
+        #fragment = self.dsr_dict['fragment']
+        fragment = 'ch2cl2'
         invert = False
         self.gdb = global_DB(invert)
         self.residue_class = self.gdb.get_resi_from_fragment(fragment)
@@ -901,13 +902,23 @@ class ResidueTest(unittest.TestCase):
         self.fragline = self.gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
         self.dbatoms = self.gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
         self.dbhead = self.gdb.get_head_from_fragment(fragment)
+        self.resi = Resi(self.res_list, self.dsr_dict, self.dbhead, self.residue_class, self.find_atoms)
 
     def testrun_get_resinumber(self):
-        self.resi = Resi(self.res_list, self.dsr_dict, self.dbhead, self.residue_class, self.find_atoms)
         self.assertEqual(self.resi.get_resinumber, '4')
         self.assertNotEqual(self.resi.get_resinumber, 'False')
         self.assertEqual(self.resi.get_residue_class, 'CF3')
         self.assertNotEqual(self.resi.get_residue_class, 'CCF3')
+
+
+    def testrun_remove_resi(self):
+        head = self.resi.remove_resi(self.dbhead)
+        head2 = ['SIMU C1 > CL2',
+                 'RIGU C1 > CL2',
+                 'DFIX 1.7602 0.002 CL1 C1 CL2 C1',
+                 'DFIX 2.9338 0.004 CL1 CL2']
+        self.assertEqual(head, head2)
+
 
 class MiscTest(unittest.TestCase):
     def setUp(self):
@@ -929,6 +940,7 @@ class MiscTest(unittest.TestCase):
                         PART 2 occ -31'
 
     def testrun_find_line_of_residue(self):
+        self.maxDiff = None
         number, string = line = misc.find_line_of_residue(self.residue_atoms, '4')
         self.assertNotEqual(number, 3)
         self.assertEqual(number, 2)
@@ -937,6 +949,7 @@ class MiscTest(unittest.TestCase):
 
 
     def testrun_get_atoms(self):
+        self.maxDiff = None
         noatoms = misc.get_atoms([])
         self.assertEqual(noatoms, [])
         atoms = misc.get_atoms(self.dbatoms)
@@ -957,6 +970,7 @@ class MiscTest(unittest.TestCase):
 
 
     def testrun_multiline(self):
+        self.maxDiff = None
         mult = misc.multiline_test(self.multi)
         mult2 = misc.multiline_test('O1 3 -0.01453 1.66590 0.10966 11.00 0.05')
         with self.assertRaises(AttributeError):
@@ -965,6 +979,7 @@ class MiscTest(unittest.TestCase):
         self.assertEqual(mult2, False)
 
     def testrun_find_multi_lines(self):
+        self.maxDiff = None
         found = misc.find_multi_lines(self.strdbatoms, '[A-z][0-9]')
         self.assertEqual(found, [0, 1, 2])
         found2 = misc.find_multi_lines(self.strdbatoms, '[A-z][0-9] khgf')
