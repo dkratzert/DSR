@@ -231,6 +231,7 @@ class global_DB():
         and returns just the first string after RESI
         :param head: ['line1\n', 'line2\n', '...']
         :type head: list of strings
+        :return residue class
         '''
         for index, line in enumerate(head):
             if line.upper().startswith('RESI'):
@@ -427,6 +428,8 @@ class global_DB():
     def get_resi_from_fragment(self, fragment):
         '''
         returns the residue name of the dbentry of fragment
+        can be either class or class + number.
+        convention is only class.
         '''
         return self._dbentry_dict[fragment.lower()]['resi']
 
