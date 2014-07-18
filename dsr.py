@@ -370,7 +370,8 @@ class DSR():
 
 
 
-    def external_or_not(self, resi, basefilename, resinumber, dfix_restraints, current_residue_line):
+    def external_or_not(self, residue_class, basefilename, residue_number,
+                        dfix_restraints, current_residue_line):
         '''
         Decides if external or internal restraints are used.
         Returns residue like "RESI 4 CCF3 with restraints afterwards"
@@ -388,47 +389,37 @@ class DSR():
         '''
         if self.external:
             external_file_name = write_dbhead_to_file(basefilename + '.dfix', dfix_restraints,
-                                                      resi.get_resiclass, resinumber)
+                                                      residue_class, residue_number)
             current_residue_line = '{}\nREM The restraints for residue {} '\
-            'are in this file:\n+{}\n'.format(current_residue_line, resinumber, external_file_name)
+            'are in this file:\n+{}\n'.format(current_residue_line, residue_number, external_file_name)
         else:
             current_residue_line = '{} \n{}\n'.format(current_residue_line, dfix_restraints)
         return current_residue_line
 
 
-    def use_generated_dfix_restraints(self, reslist, dsrp, resi, basefilename,
-                                      fragment_numberscheme, dsr_line_number, lf, cell):
+    def use_generated_dfix_restraints(self, reslist, residue_class, basefilename,
+                                      dsr_line_number, residue_number, dfix_restraints):
         '''
         Generates DFIX restraints instead of the restraints in the database header
-        :param reslist: resfile
+        :param reslist: resfile content
         :type reslist: list of lists
-        :param dsrp: dsrparser object
-        :type dsrp: object
-        :param resi: residue opject
-        :type resi: object
+        :param residue_class: residue class
+        :type residue_class: string
         :param basefilename: base of res file name
         :type basefilename: string
-        :param fragment_numberscheme: numbering of fragment
-        :type fragment_numberscheme: list
         :param dsr_line_number: line number of dsr commend in reslist
         :type dsr_line_number: string
-        :param lf: list file object
-        :type lf: object
-        :param cell: cell parameters
-        :type cell: list
         '''
-        resinumber = resi.get_resinumber
-        dfix_restraints = self.generate_dfix_restraints(lf, reslist, fragment_numberscheme,
-                                                        resinumber, cell, dsrp.part)
-        if resinumber:
+        if residue_number:
             # in this case the place for dfix restraints is found be the residue number
-            resiline_number, line = find_line_of_residue(reslist, resinumber)
-            line = self.external_or_not(resi, basefilename, resinumber, dfix_restraints, line)
-            reslist[resiline_number] = line
+            resiline_index, current_residue_line = find_line_of_residue(reslist, residue_number)
+            reslist[resiline_index] = self.external_or_not(residue_class, basefilename,
+                                                            residue_number, dfix_restraints,
+                                                            current_residue_line)
         else:
             # in this case restraints are placed by the dsrline position
-            line = '{}'.format(dfix_restraints) # insert restraints after dsr_line_number
-            reslist[dsr_line_number - 2] = reslist[dsr_line_number - 2] + line
+            current_residue_line = '{}'.format(dfix_restraints) # insert restraints after dsr_line_number
+            reslist[dsr_line_number - 2] = reslist[dsr_line_number - 2] + current_residue_line
 
 
 
@@ -485,7 +476,7 @@ class DSR():
         afix = InsertAfix(reslist, dbatoms, db_atom_types, dbhead, dsr_dict,
                           sfac_table, find_atoms, fragment_numberscheme)
         afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfix',
-                                           resi.get_resiclass)
+                                           resi.get_residue_class)
         # line where the dsr command is found in the resfile:
         dsr_line_number = dsrp.find_dsr_command(line=False)
         reslist[dsr_line_number] = reslist[dsr_line_number]+'\n'
@@ -511,7 +502,8 @@ class DSR():
         lf = ListFile(basefilename)
         lst_file = lf.read_lst_file()
         lfd = Lst_Deviations(lst_file)
-        lfd.print_LS_fit_deviations()
+        if not self.no_refine:
+            lfd.print_LS_fit_deviations()
         cell = lf.get_lst_cell_parameters
 
         # open res file again to restore 10 refinement cycles:
@@ -523,12 +515,15 @@ class DSR():
             self.set_post_refine_cycles(shx, '8')
 
         if dsrp.dfix_active:
-            self.use_generated_dfix_restraints(reslist, dsrp, resi, basefilename,
-                                               fragment_numberscheme, dsr_line_number, lf, cell)
+            dfix_restraints = self.generate_dfix_restraints(lf, reslist, fragment_numberscheme,
+                                                        resi.get_resinumber, cell, dsrp.part)
+            self.use_generated_dfix_restraints(reslist, resi.get_residue_class, basefilename,
+                                               dsr_line_number, resi.get_resinumber, dfix_restraints)
 
         if not self.no_refine:
             rl.write_resfile(reslist, '.res')
-
+        else:
+            print('\nPerforming no fragment fit. Just prepared the .ins file for you.')
 
 
 if __name__ == '__main__':

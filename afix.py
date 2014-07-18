@@ -27,6 +27,7 @@ def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
     :param dbhead:       database header
     :param resi_class:   SHELXL residue class
     :param resi_number:  SHELXL residue number
+    :return filename:    full file name where restraints will be written
     '''
     if resi_number:
         filename = 'dsr_'+resi_class+'_'+resi_number+'_'+filename

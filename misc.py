@@ -43,6 +43,7 @@ def get_atoms(atlist):
                 atoms.append(l)
     return atoms
 
+
 def find_line_of_residue(reslist, resinumber):
     '''
     Returns the line number where residue n appears in the reslist.
@@ -53,9 +54,8 @@ def find_line_of_residue(reslist, resinumber):
     :type reslist: list of lists
     :param resinumber: residue number
     :type resinumber: string
-    return parameters:
-    :type n: integer
-    :type line: string
+    :return n: integer
+    :return line: string
     '''
     for n, line in enumerate(reslist):
         if line.upper().startswith('RESI'):

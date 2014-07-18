@@ -68,8 +68,8 @@ class ResList():
 
     def write_resfile(self, reslist, ending):
         '''
-        makes a copy of the resfile and writes basefile+ending.
-        ending should be '.ins' or '.res'
+        Writes the content of reslist to basefile+ending.
+        Ending should be '.ins' or '.res'
         :param reslist: SHELXL .res file as list
         :param ending:  string, file ending like '.res'
         '''

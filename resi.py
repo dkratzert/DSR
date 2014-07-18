@@ -60,11 +60,15 @@ class Resi(object):
 
     @property
     def get_resinumber(self):
+        '''
+        Returns the residue number of the currently fitted fragment
+        :type self.__combined_resi: string
+        '''
         return self.__combined_resi['number']
 
 
     @property
-    def get_resiclass(self):
+    def get_residue_class(self):
         return self.__combined_resi['class']
 
 
