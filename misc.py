@@ -46,10 +46,16 @@ def get_atoms(atlist):
 def find_line_of_residue(reslist, resinumber):
     '''
     Returns the line number where residue n appears in the reslist.
-    :param reslist: res file as list
+    :param reslist: res file as list like:
+                    ['C1 1 -0.00146 0.26814 0.06351 11.00 0.05',
+                    'RESI 4 BENZ',
+                    'C2 1 -1.13341 -0.23247 -0.90730 11.00 0.05',]
     :type reslist: list of lists
     :param resinumber: residue number
     :type resinumber: string
+    return parameters:
+    :type n: integer
+    :type line: string
     '''
     for n, line in enumerate(reslist):
         if line.upper().startswith('RESI'):
