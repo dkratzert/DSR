@@ -896,6 +896,10 @@ class ResidueTest(unittest.TestCase):
         #fragment = self.dsr_dict['fragment']
         fragment = 'ch2cl2'
         invert = False
+        self.head2 = ['SIMU C1 > CL2',
+                 'RIGU C1 > CL2',
+                 'DFIX 1.7602 0.002 CL1 C1 CL2 C1',
+                 'DFIX 2.9338 0.004 CL1 CL2']
         self.gdb = global_DB(invert)
         self.residue_class = self.gdb.get_resi_from_fragment(fragment)
         self.db = self.gdb.build_db_dict()
@@ -903,6 +907,7 @@ class ResidueTest(unittest.TestCase):
         self.dbatoms = self.gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
         self.dbhead = self.gdb.get_head_from_fragment(fragment)
         self.resi = Resi(self.res_list, self.dsr_dict, self.dbhead, self.residue_class, self.find_atoms)
+
 
     def testrun_get_resinumber(self):
         self.assertEqual(self.resi.get_resinumber, '4')
@@ -913,11 +918,42 @@ class ResidueTest(unittest.TestCase):
 
     def testrun_remove_resi(self):
         head = self.resi.remove_resi(self.dbhead)
-        head2 = ['SIMU C1 > CL2',
-                 'RIGU C1 > CL2',
-                 'DFIX 1.7602 0.002 CL1 C1 CL2 C1',
-                 'DFIX 2.9338 0.004 CL1 CL2']
-        self.assertEqual(head, head2)
+        self.assertEqual(head, self.head2)
+
+
+    def testrun_format_restraints(self):
+        resihead1 = self.resi.format_restraints(self.head2)
+        resihead2 = ['SIMU_CF3 C1 > CL2', 'RIGU_CF3 C1 > CL2',
+                    'DFIX_CF3 1.7602 0.002 CL1 C1 CL2 C1',
+                    'DFIX_CF3 2.9338 0.004 CL1 CL2']
+        self.assertEqual(resihead1, resihead2)
+
+    def testrun_get_unique_resinumber(self):
+        num = self.resi.get_unique_resinumber('2')
+        self.assertEqual(num, '4')
+        self.assertNotEqual(num, '2')
+
+
+    def testrun_get_resi_syntax(self):
+        empty_dict = {'alias': None, 'class': None, 'number': None}
+        only_number = {'alias': None, 'class': None, 'number': '2'}
+        class_number = {'alias': None, 'class': 'CF3', 'number': '2'}
+        only_class = {'alias': None, 'class': 'CF3', 'number': None}
+        class_number_alias = {'alias': '3', 'class': 'CF3', 'number': '2'}
+        self.assertDictEqual(empty_dict, self.resi.get_resi_syntax('RESI'))
+        with self.assertRaises(SystemExit):
+            self.assertDictEqual(empty_dict, self.resi.get_resi_syntax([]))
+        with self.assertRaises(SystemExit):
+            self.resi.get_resi_syntax(['dsfg', 'rgasr'])
+        with self.assertRaises(SystemExit):
+            self.resi.get_resi_syntax(['dgh3', '3', '23435'])
+        with self.assertRaises(SystemExit):
+            self.resi.get_resi_syntax(['dgh3', '23435'])                            
+        self.assertDictEqual(self.resi.get_resi_syntax('2'.split()), only_number)
+        self.assertEqual(self.resi.get_resi_syntax(['2', 'CF3']), class_number)
+        self.assertEqual(self.resi.get_resi_syntax(['CF3','2', '3']), class_number_alias)
+        self.assertEqual(self.resi.get_resi_syntax(['CF3']), only_class)
+
 
 
 class MiscTest(unittest.TestCase):
@@ -938,6 +974,7 @@ class MiscTest(unittest.TestCase):
         self.string = 'O1   3   -0.01453   1.66590   0.10966\nC1   1   -0.00146   0.26814   0.06351\nC2   1   -1.13341   -0.23247   -0.90730\nSn1   4   -2.34661   -0.11273   -0.34544'
         self.multi = 'rem dsr put oc(cf3)3 with o1 c1 c2 c3 c4 on O1_3 c1_3 q6 Q4 q7 resi cf3 =\
                         PART 2 occ -31'
+
 
     def testrun_find_line_of_residue(self):
         self.maxDiff = None
@@ -978,6 +1015,7 @@ class MiscTest(unittest.TestCase):
         self.assertEqual(mult, True)
         self.assertEqual(mult2, False)
 
+
     def testrun_find_multi_lines(self):
         self.maxDiff = None
         found = misc.find_multi_lines(self.strdbatoms, '[A-z][0-9]')
@@ -986,6 +1024,7 @@ class MiscTest(unittest.TestCase):
         self.assertEqual(found2, [])
         with self.assertRaises(TypeError):
             misc.find_multi_lines(self.dbatoms, '[A-z][0-9]')
+
 
     def testrun_wrap_headlines(self):
         self.maxDiff = None
@@ -999,6 +1038,7 @@ class MiscTest(unittest.TestCase):
         self.assertListEqual(head, wraphead)
         unwrap = misc.unwrap_head_lines(wraphead)
         self.assertListEqual(unwraped, unwrap)
+
 
     def testrun_makelist(self):
         lst = misc.makelist('Hallo Daniel!')

@@ -49,9 +49,10 @@ class Resi(object):
             self.__resi_dict_com = 'Empty'
         self.__dbhead = dbhead
         try:
+            # residue can be class or class + number
             self.__db_resi_list = residue.split() # use residue from db if not given in command line
         except(AttributeError):
-            print('No valid residue "RESI classname" found in the database entry '\
+            print('No valid residue "RESI classname" in the database entry '\
                     'of {} found.'.format(self.__dsr_dict['fragment']))
             sys.exit()
         self.__resi_dict_db = self.get_resi_syntax(self.__db_resi_list)
@@ -123,7 +124,6 @@ class Resi(object):
             return head
 
 
-
     def format_restraints(self, head):
         '''
         in case of RESI, format the restraints like "SAME_class"
@@ -146,6 +146,9 @@ class Resi(object):
         '''
         Finds a unique resi number. If the number is already unique
         the given is used.
+        :param resinum: residue number of the fragment
+        :type resinum: string
+        :return resinum: unique residue number
         '''
         new_num = '1'
         if not resinum:
@@ -165,7 +168,7 @@ class Resi(object):
 
     def build_up_residue(self):
         '''
-        Decides which class and resideue number should be used for the fragment.
+        Decides which class and residue number should be used for the fragment.
         Returns a final dict with the residue settings.
         '''
         final_residue = {'class': None, 'number': None, 'alias': None}
@@ -200,6 +203,7 @@ class Resi(object):
     def get_resi_from_db(self):
         '''
         gets the RESI num class from the db
+        this is unused ATM.
         '''
         resi_list = False
         for line in self.__dbhead:
@@ -228,20 +232,23 @@ class Resi(object):
         The return value of this method is {'class', 'number', 'alias'}
         as a dictionary. Alias is empty if not given.
 
-        Is it important which one is the number and which one the alias?
-
         The return value of just "RESI" in the command line is an empty dict
+        :param resi: residue definition like ['3', 'CF3']
+        :type resi: list
         '''
         resi_dict = {
             'class' : None,
             'number': None,
             'alias' : None}
 
-        if resi == None:
+        if not resi:
             print('No valid RESI instruction found in the database entry!')
             sys.exit()
         else:
-            resi.sort()
+            try:
+                resi.sort()
+            except(AttributeError):
+                return resi_dict
             if str.isalpha(resi[-1][0]):
                 resi_dict['class'] = resi.pop()
             if len(resi) > 0:
@@ -276,31 +283,14 @@ class Resi(object):
         '''
         find out if the atom names of the current residue class fit
         to the atom names in already existing classes.
+
+        currently not used
         '''
         for num in self._atoms_in_reslist.keys():
             print(num, len(self._atoms_in_reslist[num]), self._atoms_in_reslist[num][:][0][3], \
                     [i[0] for i in self._atoms_in_reslist[num][:]])
 
 
-    def get_unique_residue_name(self):
-        '''if not given, finds a unique RESIdue name
-
-        this method does not work!!
-
-        '''
-        num = 1
-        resi_name = self._resi_name[:3]+str(num)
-        for i in self._db_tags:
-            while resi_name.upper() == i[0].upper():
-                num = num + 1
-                resi_name = resi_name[:3]+str(num)
-
-
-    def multi_residues_single_fragment(self):
-        '''if exist RESI 1 Fragment:
-                add RESI 2 Fragment
-        '''
-        pass
 
 
 

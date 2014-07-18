@@ -446,9 +446,9 @@ class DSR():
         fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
         dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
         dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
-        residue_class = gdb.get_resi_from_fragment(fragment)
+        db_residue_string = gdb.get_resi_from_fragment(fragment)
         db_atom_types = get_atomtypes(dbatoms)                 # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
-        resi = Resi(reslist, dsr_dict, dbhead, residue_class, find_atoms)
+        resi = Resi(reslist, dsr_dict, dbhead, db_residue_string, find_atoms)
         dbhead = resi.make_resihead()
         sf = SfacTable(reslist, db_atom_types)
         sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
