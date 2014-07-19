@@ -13,7 +13,7 @@ from __future__ import print_function
 import re, sys
 import string
 from atoms import Element as el
-from misc import find_line, get_atoms
+from misc import find_line, get_atoms, find_multi_lines
 from constants import atomregex, SHX_CARDS
 import atoms
 #import textwrap
@@ -419,23 +419,44 @@ class SfacTable():
         '''
         sets the new global sfac table in the res file
         '''
-        sfacline = find_line(self._reslist, r'SFAC\s+[a-zA-Z]+')  # position of the SFAC card
+        sfacline = find_multi_lines(self._reslist, r'SFAC\s+[a-zA-Z]+')  # position of the SFAC card
         unitline = find_line(self._reslist, r'UNIT\s+[0-9]+')     # position of the UNIT card
         unit = []
-        sfac = self._reslist[sfacline].split()      # SFAC string in the reslist
-        del sfac[0]
-        #dbtypes = list(set(self._db_atom_types))    # atomtypes in the dbentry
-
-        for i in self._db_atom_types:                 # this is to compare the occurence of element type from resfile ant db
+        regular_sfac = False
+        if len(sfacline) == 1:
+            sfac = self._reslist[sfacline[0]].split()[1:]      # SFAC string in the reslist
+            sfacline = sfacline[0]
+        try:
+            if len(sfacline) > 1:
+                print('Scattering factors in the form of an exponential series are not supported by DSR!')
+                sfac = []
+                for i in sfacline:
+                    if not ''.join(self._reslist[i].split()).isalpha(): # SFAC with scattering factor
+                        # in this case the SFAC command defines also a scattering factor:
+                        sfac.append(self._reslist[i].split()[1]) # first SFAC paramter is element
+                    else:
+                        sfac.extend(self._reslist[i].split()[1:]) # regular SFAC list
+                        regular_sfac = i
+                if not regular_sfac:
+                    print('Scattering factors in the form of an exponential series are not supported by DSR!')
+                    sys.exit()
+        except(TypeError):
+            pass
+        if regular_sfac:
+            sfacline = regular_sfac
+        if not sfacline:
+            print(' No SFAC card found! Can not proceed.')
+            sys.exit()
+        for i in self._db_atom_types:  # this is to compare the occurence of element type from resfile and db
             i = i.upper()
-            if i not in sfac:             # all atom types from db not already in sfac
+            if i not in sfac:         # all atom types from db not already in sfac
                 sfac.append(i)        # get appended to sfac
             if i not in self.elements:
                 print('error, atom {} not valid'.format(i))
                 sys.exit(False)
 
-        for i in range(len(sfac)):
-            i = str(1)        # only unity because we can change this later
+        for i in range(1, len(sfac)+1):
+            i = str(i)
             unit.append(i)
         # now the sfac and unit tables are written to the resfile
         #print(sfac)

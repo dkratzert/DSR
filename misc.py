@@ -92,6 +92,11 @@ def multiline_test(line):
 def find_line(inputlist, regex):
     '''
     returns the index number of the line where regex is found in the inputlist
+    if stop is true, stop searching with first line found
+    :param inputlist: list of strings
+    :type inputlist: list
+    :param regex: regular expression to search
+    :type regex: string
     '''
     for i, string in enumerate(inputlist):
         if re.match(regex, string, re.IGNORECASE):
