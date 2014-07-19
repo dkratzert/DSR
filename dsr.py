@@ -41,7 +41,7 @@ from misc import find_line_of_residue
 
 VERSION = '1.5.8'
 # dont forget to change version in Innoscript file, spec file and deb file.
-progname = '\n-----------------------------'\
+program_name = '\n-----------------------------'\
            ' D S R - v{}' \
            ' ----------------------------------'.format(VERSION)
 
@@ -78,7 +78,7 @@ class DSR():
         :type invert:          boolean
         '''
         # options from the commandline options parser:
-        self.options = OptionsParser(progname)
+        self.options = OptionsParser(program_name)
         self.external = False
 
         if not res_file_name and not external_restr:
@@ -247,7 +247,8 @@ class DSR():
         names_list = []
         for i in frags:
             fragname = gdb.get_comment_from_fragment(i)
-            names_list.append([i, fragname])
+            line_number = gdb.get_line_number_from_fragment(i)
+            names_list.append([i, fragname, line_number])
         search_results = {}
         for i in names_list:
             db_entry = i[1]
@@ -266,10 +267,10 @@ class DSR():
         results are
         '''
         print('\n\n Found following database entrys:\n')
-        print(' Fragment          |  Full name, Comments')
+        print(' Fragment          | Full name, Comments                      | Line number')
         print(' ---------------------------------------------------------------------------')
         for line in results:
-            print(' {:15s}   | {:20s}'.format(line[0], line[1]))
+            print(' {:15s}   | {:40s} | {}'.format(line[0], line[1], line[2]))
         sys.exit()
 
 
@@ -427,7 +428,7 @@ class DSR():
         '''
         main object to run DSR as command line program
         '''
-        print(progname)
+        print(program_name)
         # The database content:
         gdb = global_DB(self.invert)
         rl = ResList(self.res_file)
