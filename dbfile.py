@@ -413,7 +413,7 @@ class global_DB():
 
     def get_line_number_from_fragment(self, fragment):
         '''
-        returns the line lumber from the dbentry
+        returns the line number from the dbentry
         '''
         return self._dbentry_dict[fragment.lower()]['line']
 

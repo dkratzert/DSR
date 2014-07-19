@@ -28,8 +28,8 @@ class OptionsParser():
     '''
     This class uses the ArgumentParser module to parse the command line options.
     '''
-    def __init__(self, progname=''):
-        self.progname = progname
+    def __init__(self, program_name=''):
+        self.progname = program_name
         self._options = self.parse_commandline()
         return
 
@@ -136,8 +136,8 @@ class OptionsParser():
 
 
 if __name__ == '__main__':
-    from dsr import progname
-    optparse = OptionsParser(progname)
+    from dsr import program_name
+    optparse = OptionsParser(program_name)
     print(optparse.res_file)
     print(optparse.parse_commandline())
     optparse.parser.print_help()
