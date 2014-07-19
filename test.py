@@ -948,7 +948,7 @@ class ResidueTest(unittest.TestCase):
         with self.assertRaises(SystemExit):
             self.resi.get_resi_syntax(['dgh3', '3', '23435'])
         with self.assertRaises(SystemExit):
-            self.resi.get_resi_syntax(['dgh3', '23435'])                            
+            self.resi.get_resi_syntax(['dgh3', '23435'])
         self.assertDictEqual(self.resi.get_resi_syntax('2'.split()), only_number)
         self.assertEqual(self.resi.get_resi_syntax(['2', 'CF3']), class_number)
         self.assertEqual(self.resi.get_resi_syntax(['CF3','2', '3']), class_number_alias)
@@ -1047,11 +1047,8 @@ class MiscTest(unittest.TestCase):
 
 
     def testrun_which(self):
-        which = misc.which('twunk_32')
-        self.assertListEqual(which, ['C:\\Windows\\twunk_32.exe',
-                                     'C:\\Windows\\twunk_32.EXE',
-                                     'C:\\Windows\\twunk_32.exe',
-                                     'C:\\Windows\\twunk_32.EXE'])
+        which = misc.which('twunk_32')[0]
+        self.assertEqual(which, 'C:\\Windows\\twunk_32.exe')
 
 
     def testrun_zero(self):
