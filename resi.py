@@ -26,10 +26,10 @@ class Resi(object):
     dsr_line: the resi command from the dsr_line. e.g. RESI TOL or RESI 2 TOL
     dbhead: db header from dbfile module
 
-    self.__com_resi_list : list of RESI commands from command line.
-                          self.__com_resi_list is == 'dbentry' if only RESI is given in res file.
-    self.__resi_dict_com : dictionary of commands after get_resi_syntax()
-                If self.__com_resi_list is == 'dbentry' then self.__resi_dict_com == False
+    self._com_resi_list : list of RESI commands from command line.
+                          self._com_resi_list is == 'dbentry' if only RESI is given in res file.
+    self._resi_dict_com : dictionary of commands after get_resi_syntax()
+                If self._com_resi_list is == 'dbentry' then self._resi_dict_com == False
     '''
 
     def __init__(self, reslist, dsr_line_dict, dbhead, residue, find_atoms):
@@ -37,40 +37,39 @@ class Resi(object):
         self._find_atoms = find_atoms
         self._atoms_in_reslist = self._find_atoms.collect_residues()
         self._residues_in_res = sorted(self._atoms_in_reslist.keys())
-        self.__dsr_dict = dsr_line_dict.copy()
-        self.__command = self.__dsr_dict['command']
-        self.__com_resi_list = self.__dsr_dict['resi'][:] # makes a copy because we need it also later
-        if self.__com_resi_list:
-            if self.__com_resi_list != 'dbentry':
-                self.__resi_dict_com = self.get_resi_syntax(self.__com_resi_list)
+        self._dsr_dict = dsr_line_dict.copy()
+        self._com_resi_list = self._dsr_dict['resi'][:] # makes a copy because we need it also later
+        if self._com_resi_list:
+            if self._com_resi_list != 'dbentry':
+                self._resi_dict_com = self.get_resi_syntax(self._com_resi_list)
         else:
-            self.__resi_dict_com = False
-        if self.__com_resi_list == 'dbentry':
-            self.__resi_dict_com = 'Empty'
-        self.__dbhead = dbhead
+            self._resi_dict_com = False
+        if self._com_resi_list == 'dbentry':
+            self._resi_dict_com = 'Empty'
+        self._dbhead = dbhead
         try:
             # residue can be class or class + number
             self.__db_resi_list = residue.split() # use residue from db if not given in command line
         except(AttributeError):
             print('No valid residue "RESI classname" in the database entry '\
-                    'of {} found.'.format(self.__dsr_dict['fragment']))
+                    'of {} found.'.format(self._dsr_dict['fragment']))
             sys.exit()
-        self.__resi_dict_db = self.get_resi_syntax(self.__db_resi_list)
-        self.__combined_resi = self.build_up_residue()
+        self._resi_dict_db = self.get_resi_syntax(self.__db_resi_list)
+        self._combined_resi = self.build_up_residue()
 
 
     @property
     def get_resinumber(self):
         '''
         Returns the residue number of the currently fitted fragment
-        :type self.__combined_resi: string
+        :type self._combined_resi: string
         '''
-        return self.__combined_resi['number']
+        return self._combined_resi['number']
 
 
     @property
     def get_residue_class(self):
-        return self.__combined_resi['class']
+        return self._combined_resi['class']
 
 
     def remove_resi(self, head):
@@ -104,13 +103,13 @@ class Resi(object):
         resi_to_insert = []
         resi = False
         #we need at least a class
-        if self.__dsr_dict['resi'] or self.__combined_resi['class']:
+        if self._dsr_dict['resi'] or self._combined_resi['class']:
             resi = True
         if resi:
-            head = self.remove_resi(self.__dbhead)
-            residef = (['RESI', self.__combined_resi['number'],
-                        self.__combined_resi['class'],
-                        self.__combined_resi['alias']])
+            head = self.remove_resi(self._dbhead)
+            residef = (['RESI', self._combined_resi['number'],
+                        self._combined_resi['class'],
+                        self._combined_resi['alias']])
             for i in residef:
                 if i:
                     resi_to_insert.append(i)
@@ -120,7 +119,7 @@ class Resi(object):
             return head
         else:
             # residues deactivated, removing resi from head
-            head = self.remove_resi(self.__dbhead)
+            head = self.remove_resi(self._dbhead)
             return head
 
 
@@ -133,7 +132,7 @@ class Resi(object):
             line = line.upper()
             line = line.split()
             if line[0]in RESTRAINT_CARDS:
-                line[0] = line[0]+'_'+self.__combined_resi['class']
+                line[0] = line[0]+'_'+self._combined_resi['class']
                 line = ' '.join(line)
             else:
                 line = ' '.join(line)
@@ -177,22 +176,22 @@ class Resi(object):
         resialias = None
 
         #### for the db entry
-        if self.__resi_dict_db['alias']:
-            resialias = self.__resi_dict_db['alias']
-        if self.__resi_dict_db['class']:
-            resiclass = self.__resi_dict_db['class']
-        if self.__resi_dict_db['number']:
-            resinum = self.__resi_dict_db['number']
+        if self._resi_dict_db['alias']:
+            resialias = self._resi_dict_db['alias']
+        if self._resi_dict_db['class']:
+            resiclass = self._resi_dict_db['class']
+        if self._resi_dict_db['number']:
+            resinum = self._resi_dict_db['number']
         #### for the comlist entry
-        if not self.__resi_dict_com:
+        if not self._resi_dict_com:
             return final_residue
-        if self.__resi_dict_com != 'Empty':
-            if self.__resi_dict_com['alias']:
-                resialias = self.__resi_dict_com['alias']
-            if self.__resi_dict_com['class']:
-                resiclass = self.__resi_dict_com['class']
-            if self.__resi_dict_com['number']:
-                resinum = self.__resi_dict_com['number']
+        if self._resi_dict_com != 'Empty':
+            if self._resi_dict_com['alias']:
+                resialias = self._resi_dict_com['alias']
+            if self._resi_dict_com['class']:
+                resiclass = self._resi_dict_com['class']
+            if self._resi_dict_com['number']:
+                resinum = self._resi_dict_com['number']
         final_residue = {'class': resiclass, 'number': resinum, 'alias': resialias}
         final_residue['number'] = self.get_unique_resinumber(resinum)
         if final_residue['class']:# and final_residue['number']:
@@ -206,7 +205,7 @@ class Resi(object):
         this is unused ATM.
         '''
         resi_list = False
-        for line in self.__dbhead:
+        for line in self._dbhead:
             line = line.upper()
             if line.startswith('RESI'):
                 resi_list = line.split()
@@ -273,7 +272,7 @@ class Resi(object):
                     print('Only four digits allowed in residue number!')
                     sys.exit()
             else:
-                if self.__com_resi_list == 'dbentry': # in this case no residue number is given at all.
+                if self._com_resi_list == 'dbentry': # in this case no residue number is given at all.
                     number = self.get_unique_resinumber(resinum=False)
                     print('No residue number was given. Using residue number {}.'.format(number))
             return resi_dict
