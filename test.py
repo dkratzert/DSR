@@ -955,6 +955,15 @@ class ResidueTest(unittest.TestCase):
         self.assertEqual(self.resi.get_resi_syntax(['CF3']), only_class)
 
 
+    def testrun_build_up_residue(self):
+        dsr_dict = {'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'], 'fragment': 'OC(CF3)3',
+         'occupancy': '-31', 'source': ['O1', 'C1', 'C2', 'C3', 'C4'],
+         'resi': ['CFF3'], 'command': 'PUT', 'dfix': False, 'part': '2'}
+        resi = Resi(self.res_list, dsr_dict, self.dbhead, self.residue_class, self.find_atoms)
+        print(resi.build_up_residue())
+
+
+
 
 class MiscTest(unittest.TestCase):
     def setUp(self):
