@@ -201,8 +201,9 @@ class Resi(object):
 
     def get_resi_from_db(self):
         '''
+        Unused!
+
         gets the RESI num class from the db
-        this is unused ATM.
         '''
         resi_list = False
         for line in self._dbhead:
@@ -219,7 +220,7 @@ class Resi(object):
 
 
     def _wrong_syntax(self):
-        print('This is not a valid RESIDUE syntax!')
+        print('This is not a valid RESIdue syntax!')
 
 
     def get_resi_syntax(self, resi):
@@ -280,10 +281,10 @@ class Resi(object):
 
     def resi_class_atoms_consistent(self):
         '''
+        currently not used
+
         find out if the atom names of the current residue class fit
         to the atom names in already existing classes.
-
-        currently not used
         '''
         for num in self._atoms_in_reslist.keys():
             print(num, len(self._atoms_in_reslist[num]), self._atoms_in_reslist[num][:][0][3], \

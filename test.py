@@ -956,13 +956,46 @@ class ResidueTest(unittest.TestCase):
 
 
     def testrun_build_up_residue(self):
-        dsr_dict = {'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'], 'fragment': 'OC(CF3)3',
-         'occupancy': '-31', 'source': ['O1', 'C1', 'C2', 'C3', 'C4'],
-         'resi': ['CFF3'], 'command': 'PUT', 'dfix': False, 'part': '2'}
-        resi = Resi(self.res_list, dsr_dict, self.dbhead, self.residue_class, self.find_atoms)
-        print(resi.build_up_residue())
+        dsr_dict1 = {'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'], 'fragment': 'OC(CF3)3',
+                     'occupancy': '-31', 'source': ['O1', 'C1', 'C2', 'C3', 'C4'],
+                     'resi': ['CF13', '2'], 'command': 'PUT', 'dfix': False, 'part': '2'}
+        dsr_dict2 = {'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'], 'fragment': 'OC(CF3)3',
+                     'occupancy': '-31', 'source': ['O1', 'C1', 'C2', 'C3', 'C4'],
+                     'resi': ['CF23', '5'], 'command': 'PUT', 'dfix': False, 'part': '2'}
+        resi1 = Resi(self.res_list, dsr_dict1, self.dbhead, self.residue_class, self.find_atoms)
+        resi2 = Resi(self.res_list, dsr_dict2, self.dbhead, self.residue_class, self.find_atoms)
+        residue1 = {'alias': None, 'class': 'CF13', 'number': '4'}
+        residue2 = {'alias': None, 'class': 'CF23', 'number': '5'}
+        self.assertDictEqual(resi1.build_up_residue(), residue1)
+        self.assertDictEqual(resi2.build_up_residue(), residue2)
 
 
+    def testrun_make_resihead(self):
+        testhead = ['SADI 0.02 C1 C2 C1 C3 C1 C4', 'SADI 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
+                   'SADI 0.04 C2 C3 C3 C4 C2 C4', 'SIMU O1 > F9', 'RIGU O1 > F9']
+        dsr_dict1 = {'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'], 'fragment': 'OC(CF3)3',
+                     'occupancy': '-31', 'source': ['O1', 'C1', 'C2', 'C3', 'C4'],
+                     'resi': ['CF13'], 'command': 'PUT', 'dfix': False, 'part': '2'}
+        dsr_dict2 = {'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'], 'fragment': 'OC(CF3)3',
+                     'occupancy': '-31', 'source': ['O1', 'C1', 'C2', 'C3', 'C4'],
+                     'resi': '', 'command': 'PUT', 'dfix': False, 'part': '2'}
+        dsr_dict3 = {'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'], 'fragment': 'OC(CF3)3',
+                     'occupancy': '-31', 'source': ['O1', 'C1', 'C2', 'C3', 'C4'],
+                     'resi': 'dbentry', 'command': 'PUT', 'dfix': False, 'part': '2'}
+        resi1 = Resi(self.res_list, dsr_dict1, testhead, 'CF13', self.find_atoms)
+        resi2 = Resi(self.res_list, dsr_dict2, testhead, 'TEST', self.find_atoms)
+        resi3 = Resi(self.res_list, dsr_dict3, testhead, 'TEST', self.find_atoms)
+        head1 = ['SADI_CF13 0.02 C1 C2 C1 C3 C1 C4', 'SADI_CF13 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4', 'SADI_CF13 0.04 C2 C3 C3 C4 C2 C4', 
+                'SIMU_CF13 O1 > F9', 'RIGU_CF13 O1 > F9', 'RESI 4 CF13']
+        head2 = ['SADI 0.02 C1 C2 C1 C3 C1 C4', 'SADI 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4', 'SADI 0.04 C2 C3 C3 C4 C2 C4', 'SIMU O1 > F9', 'RIGU O1 > F9']
+        head3 = ['SADI_TEST 0.02 C1 C2 C1 C3 C1 C4', 'SADI_TEST 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4', 'SADI_TEST 0.04 C2 C3 C3 C4 C2 C4', 
+                'SIMU_TEST O1 > F9', 'RIGU_TEST O1 > F9', 'RESI 4 TEST']
+        # regular head with residue
+        self.assertListEqual(resi1.make_resihead(), head1)
+        # head without residue
+        self.assertListEqual(resi2.make_resihead(), head2)
+        # residue from database
+        self.assertListEqual(resi3.make_resihead(), head3)
 
 
 class MiscTest(unittest.TestCase):
