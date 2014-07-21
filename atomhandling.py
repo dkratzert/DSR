@@ -16,6 +16,7 @@ from atoms import Element as el
 from misc import find_line, get_atoms, find_multi_lines
 from constants import atomregex, SHX_CARDS
 import atoms
+#from collections import OrderedDict
 #import textwrap
 
 
@@ -415,56 +416,58 @@ class SfacTable():
         self.elements = [x.upper() for x in el.atoms]
 
 
+
+
     def set_sfac_table(self):
         '''
         sets the new global sfac table in the res file
         '''
         sfacline = find_multi_lines(self._reslist, r'SFAC\s+[a-zA-Z]+')  # position of the SFAC card
         unitline = find_line(self._reslist, r'UNIT\s+[0-9]+')     # position of the UNIT card
+        try:
+            if sfacline[-1] > unitline:
+                print(' SFAC in line {} must be defined before UNIT!'.format(sfacline[-1]+1))
+                sys.exit()
+        except():
+            pass
         unit = []
-        regular_sfac = False
+        explicit_scat = []
+        regular_sfac_line_num = False
         if len(sfacline) == 1:
+            # regular SFAC table
             sfac = self._reslist[sfacline[0]].split()[1:]      # SFAC string in the reslist
             sfacline = sfacline[0]
-        try:
-            if len(sfacline) > 1:
-                print('Scattering factors in the form of an exponential series are not supported by DSR!')
-                sfac = []
-                for i in sfacline:
-                    if not ''.join(self._reslist[i].split()).isalpha(): # SFAC with scattering factor
-                        # in this case the SFAC command defines also a scattering factor:
-                        sfac.append(self._reslist[i].split()[1]) # first SFAC paramter is element
-                    else:
-                        sfac.extend(self._reslist[i].split()[1:]) # regular SFAC list
-                        regular_sfac = i
-                if not regular_sfac:
-                    print('Scattering factors in the form of an exponential series are not supported by DSR!')
-                    sys.exit()
-        except(TypeError):
-            pass
-        if regular_sfac:
-            sfacline = regular_sfac
+        elif len(sfacline) > 1:
+            # first and second type of sfac:
+            sfac = []
+            for i in sfacline:
+                if not ''.join(self._reslist[i].split()).isalpha(): # SFAC with scattering factor
+                    # in this case the SFAC command defines also a scattering factor:
+                    element = self._reslist[i].split()[1]
+                    explicit_scat.append(element) # first SFAC paramter is element
+                else:
+                    # regular SFAC list
+                    sfac.extend(self._reslist[i].split()[1:])
+                    regular_sfac_line_num = i
+        if regular_sfac_line_num:
+            sfacline = regular_sfac_line_num
         if not sfacline:
             print(' No SFAC card found! Can not proceed.')
             sys.exit()
         for i in self._db_atom_types:  # this is to compare the occurence of element type from resfile and db
             i = i.upper()
-            if i not in sfac:         # all atom types from db not already in sfac
+            if i not in sfac+explicit_scat:         # all atom types from db not already in sfac
                 sfac.append(i)        # get appended to sfac
             if i not in self.elements:
                 print('error, atom {} not valid'.format(i))
                 sys.exit(False)
-
-        for i in range(1, len(sfac)+1):
+        for i in range(1, len(sfac+explicit_scat)+1):
             i = str(i)
             unit.append(i)
         # now the sfac and unit tables are written to the resfile
-        #print(sfac)
         self._reslist[sfacline] = 'SFAC  {}\n'.format('  '.join(sfac))
         self._reslist[unitline] = 'UNIT  {}\n'.format('  '.join(unit))  # builds the UNIT line
-        #print self._reslist[sfacline]
-        #print self._reslist[unitline]
-        return sfac
+        return sfac+explicit_scat
 
 
 #############################################################################
@@ -676,7 +679,7 @@ if __name__ == '__main__':
     #sys.exit()
 
     #  print('Residue dict:', fa.get_resinum('RESI 1 TOL'.split()))
-    print( fa.get_atomcoordinates(['Fe1_1', 'C29', 'Q12']) )
+    #print( fa.get_atomcoordinates(['Fe1_1', 'C29', 'Q12']) )
     #  print('line number:', fa.get_atom_line_numbers(['C12', 'C333', 'Q12']))
     #
     fa.remove_adjacent_hydrogens(['C2', 'c4', 'c5'], SFAC)
@@ -704,9 +707,11 @@ if __name__ == '__main__':
     num = NumberScheme(reslist, dbatoms, dsr_dict['resi'])
     num.get_fragment_number_scheme()
     dbtypes = get_atomtypes(dbatoms)
-    print('#############', dbtypes, '########dbtypes###################')
-    # sfac = SfacTable(reslist, dbtypes)
-    # print(sfac.set_sfac_table())
+ #   print('#############', dbtypes, '########dbtypes###################')
+    sfac = SfacTable(reslist, dbtypes)
+    print('sfac table:')
+    print(sfac.set_sfac_table())
+    print('######')
     bad_dbatoms = [['lO1', 3, '-0.01453', '1.66590', '1.66590'], ['C1', 1, '-0.00146', '0.26814', '0.06351']]
     print('test')
     get_atomtypes(bad_dbatoms)
