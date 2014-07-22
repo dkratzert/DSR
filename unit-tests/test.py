@@ -16,6 +16,7 @@ from dsrparse import DSR_Parser
 import misc
 from resfile import ResList, ResListEdit
 from resi import Resi
+from export import Export
 
 db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
                'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
@@ -840,6 +841,12 @@ class ExportTest(unittest.TestCase):
         self.invert = False
         self.gdb = global_DB(self.invert)
         self.export_clip = 'benzene'
+
+    def testrun_format_calced_coords(self):
+        export = Export(self.export_clip, self.gdb)
+        bigcell = export.format_calced_coords(['1', '1', '1', '90', '90', '90'])
+        cell = ['50', '50', '50', '90', '90', '90']
+        self.assertListEqual(bigcell, cell)
 
     def testrun_export_to_clip(self):
         '''
