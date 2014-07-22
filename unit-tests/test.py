@@ -112,7 +112,7 @@ class reslistTest(unittest.TestCase):
 
 class collect_residuesTest(unittest.TestCase):
     def setUp(self):
-        self.res_file = 'unit-tests/collect_resi.res'
+        self.res_file = './collect_resi.res'
         self.res_list = ResList(self.res_file)
         self.reslist =  self.res_list.get_res_list()
         self.fa = FindAtoms(self.reslist)
@@ -228,7 +228,7 @@ class rename_DBHeadatomsTest(unittest.TestCase):
 
 class SfacTableTest(unittest.TestCase):
     def setUp(self):
-        self.res_file = 'unit-tests/collect_resi.res'
+        self.res_file = './collect_resi.res'
         self.res_list = ResList(self.res_file)
         self.reslist =  self.res_list.get_res_list()
         self.fragment_atom_types = ['C', 'H', 'N', 'Na']
@@ -272,7 +272,7 @@ class NumberSchemeTest(unittest.TestCase):
     def setUp(self):
         self.numbers = ['O1A', 'C1A', 'C2A', 'F1A', 'F2A', 'F3A', 'C3A',
                         'F4A', 'F5A', 'F6A', 'C4A', 'F7A', 'F8A', 'F9A']
-        res_file = 'unit-tests/p21c.res'
+        res_file = './p21c.res'
         invert = True
         resi = False
         rl = ResList(res_file)
@@ -290,7 +290,7 @@ class insertAfixTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
         self.res_file = 'p21c.res'
-        testresfile = './unit-tests/p21c.res'
+        testresfile = './p21c.res'
         invert = True
         self.rl = ResList(testresfile)
         self.reslist = self.rl.get_res_list()
@@ -303,9 +303,9 @@ class insertAfixTest(unittest.TestCase):
         self.dbhead = self.gdb.get_head_from_fragment(fragment)        # this is only executed once
         self.resi = True #gdb.get_resi_from_fragment(fragment)
         self.dbtypes = get_atomtypes(self.dbatoms)
-        with open('unit-tests/intern.TXT') as txt:
+        with open('./intern.TXT') as txt:
             self.intern = txt.read()
-        with open('unit-tests/extern.TXT') as txt2:
+        with open('./extern.TXT') as txt2:
             self.extern = txt2.read()
         misc.remove_file('dsr_TEST_p21c.res')
         self.sf = SfacTable(self.reslist, self.dbtypes)
@@ -332,7 +332,7 @@ class insertAfixTest(unittest.TestCase):
 class removeDublicatesAfixTest(unittest.TestCase):
     def setUp(self):
         #self.verbosity = 4
-        self.res_file = 'unit-tests/collect_resi.res'
+        self.res_file = './collect_resi.res'
         self.res_list = ResList(self.res_file)
         self.reslist =  self.res_list.get_res_list()
         self.find_atoms = FindAtoms(self.reslist)
@@ -409,19 +409,19 @@ class dbfileTest(unittest.TestCase):
 
     def testrun_db_files_dict(self):
         db_file_names = ["db1_klein.TXT", "db2_klein.TXT"]
-        rdb = ReadDB(dbdir='./unit-tests', dbnames = db_file_names)
+        rdb = ReadDB(dbdir='./', dbnames = db_file_names)
         self.assertListEqual(rdb.getDB_files_dict()['db2_klein'], self.klein)
 
     def testrun_find_db_tags(self):
         result = [['DME', 1, 'db1_klein'], ['DMX', 2, 'db2_klein']]
         db_file_names = ("db1_klein.TXT", "db2_klein.TXT")
-        rdb = ReadDB(dbdir='./unit-tests', dbnames = db_file_names)
+        rdb = ReadDB(dbdir='./', dbnames = db_file_names)
         tags = rdb.find_db_tags()
         self.assertListEqual(result, tags)
 
     def testrun_dublicate_tags(self):
         db_file_names = ["db1_dublicate.TXT"]
-        rdb = ReadDB(dbdir='./unit-tests', dbnames = db_file_names)
+        rdb = ReadDB(dbdir='./', dbnames = db_file_names)
         with self.assertRaises(SystemExit):
             rdb.find_db_tags()
 
@@ -429,7 +429,7 @@ class dbfileTest(unittest.TestCase):
         db_file_names = ("db1_klein.TXT", "db2_klein.TXT")
         result = [['DME', 1, 'db1_klein'], ['DMX', 2, 'db2_klein']]
         rdb = ReadDB()
-        rdb2 = ReadDB(dbdir='./unit-tests', dbnames = db_file_names)
+        rdb2 = ReadDB(dbdir='./', dbnames = db_file_names)
         names = rdb.find_db_tags()
         names2 = rdb2.find_db_tags()
         self.assertEqual(names, [])
@@ -461,10 +461,10 @@ class globalDB(unittest.TestCase):
 
     def testrun_build_db_dict(self):
         db_file_names = ("db1_klein.TXT", "db2_klein.TXT")
-        #self.rdb = ReadDB(dbdir='./unit-tests', dbnames = db_file_names)
+        #self.rdb = ReadDB(dbdir='./', dbnames = db_file_names)
         #self.dbnames = self.rdb.find_db_tags()
 #        invert = True
-        gdb = global_DB(dbdir='./unit-tests', dbnames = db_file_names)
+        gdb = global_DB(dbdir='./', dbnames = db_file_names)
         db = gdb.build_db_dict()
         self.assertEqual(db['dmx']['line'], 2)
         self.assertEqual(db['dmx']['name'], 'DMX')
@@ -476,14 +476,14 @@ class globalDB(unittest.TestCase):
 
     def testrun_get_residue_from_head(self):
         db_file_names = ("db1_klein.TXT", "db2_klein.TXT")
-        gdb = global_DB(dbdir='./unit-tests', dbnames = db_file_names)
+        gdb = global_DB(dbdir='./', dbnames = db_file_names)
         gdb.build_db_dict()
         self.assertEqual(gdb.get_residue_from_head(self.klein), 'CLBE' )
 
     def testrun_get_residue_from_head2(self):
         db_file_names = ("db1_klein.TXT", "db2_klein.TXT", 'db_resinum.TXT')
         with self.assertRaises(SystemExit):
-            gdb = global_DB(dbdir='./unit-tests', dbnames = db_file_names)
+            gdb = global_DB(dbdir='./', dbnames = db_file_names)
             gdb.build_db_dict()
 
     def testrun_get_fragment_atoms(self):
@@ -491,7 +491,7 @@ class globalDB(unittest.TestCase):
         z = '0.526'
         o1 = ['O1', '1', '-1.154', '-0.748', '0.526']
         db_file_names = ("db1.TXT", "db2.TXT")
-        gdb = global_DB(dbdir='./unit-tests', dbnames = db_file_names)
+        gdb = global_DB(dbdir='./', dbnames = db_file_names)
         gdb.build_db_dict()
         atom = gdb.get_fragment_atoms('dme', 'db2', 1)[0]
         self.assertListEqual(o1, atom)
@@ -502,7 +502,7 @@ class globalDB(unittest.TestCase):
 
     def testrun_get_fragment_atoms_shortline(self):
         db_file_names = ["db1_shortline.TXT"]
-        gdb = global_DB(dbdir='./unit-tests', dbnames = db_file_names)
+        gdb = global_DB(dbdir='./', dbnames = db_file_names)
         #db = gdb.build_db_dict()
         atom = gdb.get_fragment_atoms('dme-free', 'db1_shortline', 1)
         self.assertEqual(len(atom), 5)
@@ -514,7 +514,7 @@ class globalDB(unittest.TestCase):
         z = '-0.526'
         o1 = ['O1', '1', '1.154', '0.748', '-0.526']
         db_file_names = ("db1.TXT", "db2.TXT")
-        gdb = global_DB(invert = True, dbdir='./unit-tests', dbnames = db_file_names)
+        gdb = global_DB(invert = True, dbdir='./', dbnames = db_file_names)
         gdb.build_db_dict()
         atom = gdb.get_fragment_atoms('dme', 'db2', 1)[0]
         self.assertListEqual(o1, atom)
@@ -527,7 +527,7 @@ class globalDB(unittest.TestCase):
     def testrun_get_fragment_atoms_noatoms(self):
         db_file_names = ("db1_noatoms.TXT", "db2.TXT")
         with self.assertRaises(SystemExit):
-            gdb = global_DB(dbdir='./unit-tests', dbnames = db_file_names)
+            gdb = global_DB(dbdir='./', dbnames = db_file_names)
             gdb.build_db_dict()
             gdb.get_fragment_atoms('dme-free', 'db1_noatoms', 1)
 
@@ -535,7 +535,7 @@ class globalDB(unittest.TestCase):
     def testrun_get_fragment_atoms_noend(self):
         db_file_names = ("db1_noend.TXT", "db2.TXT")
         with self.assertRaises(SystemExit):
-            gdb = global_DB(dbdir='./unit-tests', dbnames = db_file_names)
+            gdb = global_DB(dbdir='./', dbnames = db_file_names)
             gdb.build_db_dict()
             gdb.get_fragment_atoms('dme-free', 'db1_noend', 1)
 
@@ -544,7 +544,7 @@ class globalDB(unittest.TestCase):
         self.maxDiff = None
         db_file_names = ["db1_head_inconsistent.TXT"]
         with self.assertRaises(SystemExit):
-            gdb = global_DB(invert = True, dbdir='./unit-tests', dbnames = db_file_names)
+            gdb = global_DB(invert = True, dbdir='./', dbnames = db_file_names)
             db = gdb.build_db_dict()
             fragment = 'dmel'
             head = db[fragment]['head']
@@ -554,7 +554,7 @@ class globalDB(unittest.TestCase):
         self.maxDiff = None
         db_file_names = ["db1_head_inconsistent2.TXT"]
         with self.assertRaises(SystemExit):
-            gdb = global_DB(invert = True, dbdir='./unit-tests', dbnames = db_file_names)
+            gdb = global_DB(invert = True, dbdir='./', dbnames = db_file_names)
             db = gdb.build_db_dict()
             fragment = 'dmem'
             head = db[fragment]['head']
@@ -564,7 +564,7 @@ class globalDB(unittest.TestCase):
     def testrun_get_comment_from_fragment1(self):
         self.maxDiff = None
         db_file_names = ["comment.TXT"]
-        gdb = global_DB(invert = True, dbdir='./unit-tests', dbnames = db_file_names)
+        gdb = global_DB(invert = True, dbdir='./', dbnames = db_file_names)
         gdb.build_db_dict()
         fragment = 'com'
         comment = gdb.get_comment_from_fragment('com4')
@@ -582,7 +582,7 @@ class globalDB(unittest.TestCase):
     def testrun_get_resi_from_fragment(self):
         self.maxDiff = None
         db_file_names = ["comment.TXT"]
-        gdb = global_DB(invert = True, dbdir='./unit-tests', dbnames = db_file_names)
+        gdb = global_DB(invert = True, dbdir='./', dbnames = db_file_names)
         gdb.build_db_dict()
         fragment = 'com1'
         resi = gdb.get_resi_from_fragment(fragment)
@@ -606,7 +606,7 @@ class ImportGRADE_Test(unittest.TestCase):
         '''
         self.maxDiff = None
         files = self.ig.get_gradefiles()
-        filenames = ['unit-tests/grade-PFA.pdb', 'unit-tests/grade-PFA.dfix', 'unit-tests/obprop.txt']
+        filenames = ['./grade-PFA.pdb', './grade-PFA.dfix', './obprop.txt']
         endings = []
         for num, i in enumerate(filenames):
             with open(i) as test_file:
@@ -616,17 +616,17 @@ class ImportGRADE_Test(unittest.TestCase):
 
     def testrun_get_name_from_obprop(self):
         self.maxDiff = None
-        filename = 'unit-tests/obprop.txt'
+        filename = './obprop.txt'
         with open(filename) as filen:
             ob = filen.readlines()
         name = self.ig.get_name_from_obprop(ob)
         self.assertEqual(name, 'PFA')
-        filename2 = 'unit-tests/obprop_2.txt'
+        filename2 = './obprop_2.txt'
         with open(filename2) as filen:
             ob = filen.readlines()
         name = self.ig.get_name_from_obprop(ob)
         self.assertEqual(name, 'NONE')
-        filename3 = 'unit-tests/obprop_3.txt'
+        filename3 = './obprop_3.txt'
         with open(filename3) as filen:
             ob = filen.readlines()
         name = self.ig.get_name_from_obprop(ob)
@@ -634,7 +634,7 @@ class ImportGRADE_Test(unittest.TestCase):
 
     def testrun_get_comments(self):
         self.maxDiff = None
-        filename = 'unit-tests/grade-comments.dfix'
+        filename = './grade-comments.dfix'
         ob = []
         with open(filename) as filen:
             for line in filen:
@@ -652,7 +652,7 @@ class ImportGRADE_Test(unittest.TestCase):
 
     def testrun_deleted_pdb_file(self):
         with self.assertRaises(SystemExit):
-            ImportGRADE('./unit-tests/PFA.gradeserver_all_2.tgz')
+            ImportGRADE('./PFA.gradeserver_all_2.tgz')
 
     def testrun_get_restaraints(self):
         self.maxDiff = None
@@ -661,7 +661,7 @@ class ImportGRADE_Test(unittest.TestCase):
         #with open('test.txt', 'wb+') as file:
         #    for line in restr:
         #        file.write(' '.join(line)+'\n')
-        filename = './unit-tests/grade_restraints.txt'
+        filename = './grade_restraints.txt'
         tst = []
         with open(filename) as test_file:
             for line in test_file:
@@ -670,7 +670,7 @@ class ImportGRADE_Test(unittest.TestCase):
 
     def testrun_get_pdbatoms(self):
         #pdblines = []
-        with open('unit-tests/grade-PFA.pdb') as pdb_file:
+        with open('./grade-PFA.pdb') as pdb_file:
             pdblines = pdb_file.readlines()
             pdbatoms = self.ig.get_pdbatoms(pdblines)
             self.assertListEqual([u'AL1', u'9.463', u'-3.351', u'3.397'], pdbatoms[0])
@@ -807,7 +807,7 @@ class DSRParseTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
         self.res_file = 'dsrparse.res'
-        testresfile = './unit-tests/dsrparse.res'
+        testresfile = './dsrparse.res'
         self.rl = ResList(testresfile)
         self.reslist = self.rl.get_res_list()
         self.dsrp = DSR_Parser(self.reslist, self.rl)
@@ -822,7 +822,7 @@ class DSRParse2Test(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
         self.res_file = 'dsrparse.res'
-        testresfile = './unit-tests/dsrparse.res'
+        testresfile = './dsrparse.res'
         self.rl = ResList(testresfile)
         self.reslist = self.rl.get_res_list()
         self.dsrp = DSR_Parser(self.reslist, self.rl)
@@ -886,7 +886,7 @@ class ExportTest(unittest.TestCase):
 class ResidueTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
-        self.res_file = './unit-tests/p21c.res'
+        self.res_file = './p21c.res'
         self.rl = ResList(self.res_file)
         self.res_list = self.rl.get_res_list()
         self.find_atoms = FindAtoms(self.res_list)
@@ -985,10 +985,10 @@ class ResidueTest(unittest.TestCase):
         resi1 = Resi(self.res_list, dsr_dict1, testhead, 'CF13', self.find_atoms)
         resi2 = Resi(self.res_list, dsr_dict2, testhead, 'TEST', self.find_atoms)
         resi3 = Resi(self.res_list, dsr_dict3, testhead, 'TEST', self.find_atoms)
-        head1 = ['SADI_CF13 0.02 C1 C2 C1 C3 C1 C4', 'SADI_CF13 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4', 'SADI_CF13 0.04 C2 C3 C3 C4 C2 C4', 
+        head1 = ['SADI_CF13 0.02 C1 C2 C1 C3 C1 C4', 'SADI_CF13 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4', 'SADI_CF13 0.04 C2 C3 C3 C4 C2 C4',
                 'SIMU_CF13 O1 > F9', 'RIGU_CF13 O1 > F9', 'RESI 4 CF13']
         head2 = ['SADI 0.02 C1 C2 C1 C3 C1 C4', 'SADI 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4', 'SADI 0.04 C2 C3 C3 C4 C2 C4', 'SIMU O1 > F9', 'RIGU O1 > F9']
-        head3 = ['SADI_TEST 0.02 C1 C2 C1 C3 C1 C4', 'SADI_TEST 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4', 'SADI_TEST 0.04 C2 C3 C3 C4 C2 C4', 
+        head3 = ['SADI_TEST 0.02 C1 C2 C1 C3 C1 C4', 'SADI_TEST 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4', 'SADI_TEST 0.04 C2 C3 C3 C4 C2 C4',
                 'SIMU_TEST O1 > F9', 'RIGU_TEST O1 > F9', 'RESI 4 TEST']
         # regular head with residue
         self.assertListEqual(resi1.make_resihead(), head1)
