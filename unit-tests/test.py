@@ -845,8 +845,12 @@ class ExportTest(unittest.TestCase):
     def testrun_format_calced_coords(self):
         export = Export(self.export_clip, self.gdb)
         bigcell = export.format_calced_coords(['1', '1', '1', '90', '90', '90'])
-        cell = ['50', '50', '50', '90', '90', '90']
-        self.assertListEqual(bigcell, cell)
+        smallcell = export.format_calced_coords(['2', '1', '1', '90', '90', '90'])
+        cell1 = ['50', '50', '50', '90', '90', '90']
+        cell2 = ['2', '1', '1', '90', '90', '90']
+        self.assertListEqual(bigcell, cell1)
+        self.assertListEqual(smallcell, cell2)
+
 
     def testrun_export_to_clip(self):
         '''
