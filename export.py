@@ -66,20 +66,20 @@ class Export():
         self._gdb.check_db_atom_consistency(self._dbatoms, self._fragment_name)
         self._atomtypes = at.get_atomtypes(self._dbatoms)
         self._fragline = self._db['fragline']
-        self._cell = self._fragline[2:]
+        cell = self._fragline[2:]
         self._clipcell = self._fragline[2:]  # cell parameters for clipboard export
-        self.format_calced_coords()  # expands the cell of calculated structures
-        self._cell = ' {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f}'.format(*[float(i) for i in self._cell])
+        self._cell = self.format_calced_coords(cell)  # expands the cell of calculated structures
+        self._cellstring = ' {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f}'.format(*[float(i) for i in self._cell])
         self._comment_regex = '^REM .*$'.upper()
 
 
 
-    def format_calced_coords(self):
+    def format_calced_coords(self, cell):
         '''
         In calculated structure the cell is 1 1 1 90 90 90. Shelxle has problems
         with that when growing. So the cell is expanded to 50 50 50
         '''
-        summe = int(sum(float(i) for i in self._cell[0:3])) # this is to detect calculated structures
+        summe = int(sum(float(i) for i in cell[0:3])) # this is to detect calculated structures
         if summe == 3:  # 1+1+1=3!
             for coord in range(2,5):  # x, y, z of coordinates
                 for line in self._dbatoms:   # for every atom line
@@ -87,7 +87,8 @@ class Export():
                     line[coord] = "{:10.6f}".format(num)
             # now the new 50,50,50 cell:
             for n in range(0,3):
-                self._cell[n] = '50'
+                cell[n] = '50'
+        return cell
 
 
     def export_resfile(self):
@@ -135,7 +136,7 @@ class Export():
         comment = '\nREM '.join(self._comment)
 
         res_export.append('REM '+comment+'\n')
-        res_export.append('CELL 0.71073 '+self._cell+'\n')   # the cell with wavelength
+        res_export.append('CELL 0.71073 '+self._cellstring+'\n')   # the cell with wavelength
         res_export.append('ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n')
         res_export.append('LATT  -1\n')
         res_export.append('SFAC '+'  '.join(sfac)+'\n')
