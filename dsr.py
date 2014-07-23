@@ -128,7 +128,7 @@ class DSR():
         else:
             self.search_string = search_string
 
-        #  List of Database Fragments:
+        #  List of database Fragments:
         if self.list_db:
             self.list_dbentrys()
         if self.search_string:
@@ -224,7 +224,7 @@ class DSR():
                 dbdir = os.environ["DSR_DB_DIR"]
         except(KeyError):
             dbdir = '.'
-        print('\n {} Fragments in the Database(s).'.format(num),
+        print('\n {} Fragments in the database(s).'.format(num),
               '\n Feel free to add more fragments to "{}dsr_user_db.txt"' \
               '\n or mail them to dkratzert@gmx.de.'.format(dbdir + os.path.sep))
 
