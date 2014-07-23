@@ -7,6 +7,7 @@ TMP="/tmp"
 GIT="/home/daniel/Downloads/DSR"
 VERSION=$(cat $GIT/dsr.py|grep -e "VERSION ="|cut -d ' ' -f3|tr -d "\'")
 BUILDDIR="/usr/src/packages/BUILD/DSR-$VERSION"
+
 echo $VERSION
 OUTFILE=DSR-$VERSION.tar
 
@@ -71,7 +72,20 @@ gzip -f $GIT/setup/Output/$OUTFILE
 
 rm -r $BUILDDIR
 cp -r $TMPDIR/* $BUILDDIR
-cp -r $TMPDIR/* /usr/src/packages/BUILD/dsr
+# for debian:
+DEBDIR="/usr/src/packages/BUILD/dsr"
+mkdir $DEBDIR/etc
+mkdir $DEBDIR/etc/profile.d
+mkdir $DEBDIR/opt
+mkdir $DEBDIR/opt/DSR
+cp $TMPDIR/* $DEBDIR/opt/DSR
+cp -r $TMPDIR/example $DEBDIR/opt/DSR
+cp -r $TMPDIR/manuals $DEBDIR/opt/DSR
+cp -r $TMPDIR/networkx $DEBDIR/opt/DSR
+cp -r $TMPDIR/setup $DEBDIR/opt/DSR
+cp $TMPDIR/setup $DEBDIR/etc/profile.d
+
+
 
 if [ -e $GIT/setup/Output/$OUTFILE.gz ]
 then
