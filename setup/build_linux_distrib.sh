@@ -82,8 +82,7 @@ cp $TMPDIR/* $DEBDIR/opt/DSR
 cp -r $TMPDIR/example $DEBDIR/opt/DSR
 cp -r $TMPDIR/manuals $DEBDIR/opt/DSR
 cp -r $TMPDIR/networkx $DEBDIR/opt/DSR
-cp -r $TMPDIR/setup $DEBDIR/opt/DSR
-cp $TMPDIR/setup $DEBDIR/etc/profile.d
+cp $TMPDIR/setup/* $DEBDIR/etc/profile.d
 
 
 
