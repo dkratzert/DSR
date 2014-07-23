@@ -74,6 +74,8 @@ rm -r $BUILDDIR
 cp -r $TMPDIR/* $BUILDDIR
 # for debian:
 DEBDIR="/usr/src/packages/BUILD/dsr"
+rm -r $DEBDIR
+mkdir $DEBDIR
 mkdir $DEBDIR/etc
 mkdir $DEBDIR/etc/profile.d
 mkdir $DEBDIR/opt
