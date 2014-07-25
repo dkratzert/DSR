@@ -151,13 +151,15 @@ class ShelxlRefine():
         removes the AFIX 17X after refinement.
         note: find_line matches case insensitive
         '''
+        afix_line = False  # @UnusedVariable
         regex = r'^AFIX\s+9'
         afix_line = misc.find_line(self._reslist, regex)
         if self.afix_is_closed(afix_line): # only delete afix if last afix was closed
             if afix_line:
                 del self._reslist[afix_line]
         else:
-            self._reslist[afix_line] = 'AFIX 0\n'
+            if afix_line:
+                self._reslist[afix_line] = 'AFIX 0\n'
 
 
 
