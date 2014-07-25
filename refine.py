@@ -137,6 +137,8 @@ class ShelxlRefine():
                 if re.match(r'AFIX', i, re.IGNORECASE):
                     afixes.append(i.split()[1])
         try:
+            #if len(afixes) == 1: # in this case only one afix is present in the file
+            #    return False
             if str(afixes[-2]) != '0':
                 return False
             else:
