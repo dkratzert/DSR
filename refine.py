@@ -15,6 +15,8 @@ import sys, os, re
 import shutil
 from resfile import ResList
 import misc
+from misc import find_line
+
 
 
 __metaclass__ = type  # use new-style classes
@@ -24,7 +26,7 @@ class ShelxlRefine():
     A class to do a shelxl refinement. It is only for shelxl 2013 and above!
     The resfilename should be without ending.
     '''
-    def __init__(self, reslist, resfile_name, find_atoms):
+    def __init__(self, reslist, resfile_name, find_atoms, list_file=False):
         '''
         :param reslist: SHELXL .res file as list
         :param resfile_name: SHELXL res file name
@@ -42,6 +44,7 @@ class ShelxlRefine():
         self._shelx_command = self.find_shelxl_exe()
         self.b_array = self.approx_natoms()
         self.backup_file = str(self.resfile_name+'.dsr-bak')
+
         if not self._shelx_command:
             print('\nSHELXL executable not found! No fragment fitting possible.\n')
             print('You can download SHELXL at http://shelx.uni-ac.gwdg.de/SHELX/index.php\n')
@@ -316,15 +319,58 @@ class ShelxlRefine():
                 print('Unable to delete backup file {}.'.format(self.backup_file))
 
 
+    def check_refinement_results(self, list_file):
+        '''
+        Does some checks if the refinement makes sense e.g. if the data to parameter
+        ratio is in an acceptable range.
+        :param list_file: SHELXL listing file
+        :type list_file: list
+        '''
+        regex_final = r' Final Structure Factor Calculation.*\n'
+        final_results = find_line(list_file, regex_final)
+        # find data and parameters:
+        try:
+            dataobj = re.search(r'[0-9]+\s+data', list_file[final_results+4])
+            data = float(dataobj.group(0).split()[0])
+            parameterobj = re.search(r'[0-9]+\s+parameters', list_file[final_results+4])
+            parameters = float(parameterobj.group(0).split()[0])
+        except(AttributeError):
+            return False
+        try:
+            data_to_parameter_ratio = data/parameters
+        except(ZeroDivisionError):
+            return False
+        lattline = find_line(list_file, r'^ LATT.*')
+        centro = None
+        if lattline:
+            try:
+                latt = int(list_file[lattline].split()[1])
+            except(ValueError):
+                latt = False
+            if latt > 0:
+                centro = True
+            else:
+                centro = False
+        if centro == True and data_to_parameter_ratio < 15:
+            print('Warning! The data / parameter ratio is getting low (ratio = {:.1f})! \
+                    '.format(data_to_parameter_ratio))
+        if centro == False and data_to_parameter_ratio < 8:
+            print('Warning! The data / parameter ratio is getting low (ratio = {:.1f})! \
+                    '.format(data_to_parameter_ratio))
+
 
 
 if __name__ == '__main__':
     res_file = 'p21c.res'
     rl = ResList(res_file)
     res_list = rl.get_res_list()
+    find_atoms = FindAtoms(res_list)
+    lf = ListFile('p21c')
+    lst_file = lf.read_lst_file()
+    shx = ShelxlRefine(res_list, 'testfile', find_atoms, lst_file)
 
-    shx = ShelxlRefine(res_list, 'testfile')
-    print(shx.afix_is_closed(110))
-    print(shx.remove_afix())
+
+    #print(shx.afix_is_closed(110))
+    #print(shx.remove_afix())
     #shx.set_refinement_cycles()
     #shx.run_shelxl()
