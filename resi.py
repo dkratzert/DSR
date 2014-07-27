@@ -21,19 +21,19 @@ from constants import RESTRAINT_CARDS
 
 
 class Resi(object):
-    def __init__(self, reslist, dsr_line_dict, dbhead, residue, find_atoms):
+    def __init__(self, reslist, dsr_line_dict, dbhead, db_residue_string, find_atoms):
         '''
         Handles the RESI instructions and restraints
-        self._com_resi_list : list of RESI commands from command line.
-        self._resi_dict_com : dictionary of commands after get_resi_syntax()
+        self._dsr_command_resi_list : list of RESI commands from command line.
+        self._resi_dict_dsr_command : dictionary of commands after get_resi_syntax()
         :param reslist: res file as list
         :type reslist: list
         :param dsr_line_dict: dsr command line as dictionary
         :type dsr_line_dict: dictionary
         :param dbhead: database header with restraints and residue
         :type dbhead: list
-        :param residue: db residue string
-        :type residue: string
+        :param db_residue_string: db residue string
+        :type db_residue_string: string
         :param find_atoms: find_atoms object
         :type find_atoms: object
         '''
@@ -43,18 +43,19 @@ class Resi(object):
         self._atoms_in_reslist = self._find_atoms.collect_residues()
         self._residues_in_res = sorted(self._atoms_in_reslist.keys())
         self._dsr_dict = dsr_line_dict.copy()
-        self._com_resi_list = self._dsr_dict['resi']
-        if self._com_resi_list:
+        self._dsr_command_resi_list = self._dsr_dict['resi']
+        if self._dsr_command_resi_list:
             # at least one residue parameter defined in .res file
-            self._resi_dict_com = self.get_resi_syntax(self._com_resi_list)
-        if self._com_resi_list == '':
+            self._resi_dict_dsr_command = self.get_resi_syntax(self._dsr_command_resi_list)
+        if self._dsr_command_resi_list == '':
             # use residue from database
-            self._resi_dict_com = {'class': None, 'number': None, 'alias': None}
-        if self._com_resi_list == False:
+            self._resi_dict_dsr_command = {'class': None, 'number': None, 'alias': None}
+        if self._dsr_command_resi_list == False:
             # residues tuned off
-            self._resi_dict_com = False
+            self._resi_dict_dsr_command = False
         try:
-            self._db_resi_list = residue.split() # use residue from db if not given in command line
+            # use residue class from db if not given in dsr command:
+            self._db_resi_list = db_residue_string.split()
         except(AttributeError):
             print('No valid residue "RESI classname" in the database entry '\
                     'of {} found.'.format(self._dsr_dict['fragment']))
@@ -62,9 +63,6 @@ class Resi(object):
         self._resi_dict_db = self.get_resi_syntax(self._db_resi_list)
         self._combined_resi = self.build_up_residue()
 
-        print('db:', self._resi_dict_db)
-        print('com:', self._resi_dict_com)
-        print('combi:', self._combined_resi)
 
 
     @property
@@ -178,7 +176,7 @@ class Resi(object):
         '''
         Decides which class and residue number should be used for the fragment.
         Returns a final dict with the residue settings.
-        self._resi_dict_com is False if resi is enabled but no values given.
+        self._resi_dict_dsr_command is False if resi is enabled but no values given.
         '''
         final_residue = {'class': None, 'number': None, 'alias': None}
         resiclass = None
@@ -189,22 +187,27 @@ class Resi(object):
         if self._resi_dict_db['alias']:
             resialias = self._resi_dict_db['alias']
         if self._resi_dict_db['class']:
-            resiclass = self._resi_dict_db['class']
+            resiclass = self._resi_dict_db['class'].upper()
         if self._resi_dict_db['number']:
             resinum = self._resi_dict_db['number']
         #### for the comlist entry
-        if self._resi_dict_com == False:
+        if self._resi_dict_dsr_command == False:
             return final_residue
         else:
-            if self._resi_dict_com['alias']:
-                resialias = self._resi_dict_com['alias']
-            if self._resi_dict_com['class']:
-                resiclass = self._resi_dict_com['class']
-            if self._resi_dict_com['number']:
-                resinum = self._resi_dict_com['number']
+            if self._resi_dict_dsr_command['alias']:
+                resialias = self._resi_dict_dsr_command['alias']
+            if self._resi_dict_dsr_command['class']:
+                resiclass = self._resi_dict_dsr_command['class'].upper()
+            if self._resi_dict_dsr_command['number']:
+                resinum = self._resi_dict_dsr_command['number']
         final_residue = {'class': resiclass, 'number': resinum, 'alias': resialias}
-        final_residue['number'] = self.get_unique_resinumber(resinum)
-        if final_residue['class']:# and final_residue['number']:
+        if not resinum:
+            final_residue['number'] = self.get_unique_resinumber(resinum)
+            print('No residue number was given. Using residue number {}.'.format(final_residue['number']))
+        else:
+            final_residue['number'] = self.get_unique_resinumber(resinum)
+            print('Using residue number {}.'.format(final_residue['number']))
+        if final_residue['class']:
             return final_residue
 
 
@@ -260,14 +263,15 @@ class Resi(object):
         except(AttributeError):
             return resi_dict
 
-        if str.isalpha(resi[-1][0]):
+        if str.isalpha(resi[-1][0]): # first character of class must be a letter
             resi_dict['class'] = resi.pop()
         if len(resi) > 0:
-            if str.isdigit(resi[0]):
+            if str.isdigit(resi[0][0]): # first character of number must be an digit
                 resi_dict['number'] = resi[0]
                 del resi[0]
             else:
                 self._wrong_syntax()
+                # not totally correct, but less difficult:
                 print('Only digits are allowed for the residue number.')
                 sys.exit()
         if len(resi) > 0:
@@ -283,10 +287,6 @@ class Resi(object):
                 self._wrong_syntax()
                 print('Only four digits allowed in residue number!')
                 sys.exit()
-        else:
-            if self._com_resi_list == 'None': # in this case no residue number is given at all.
-                number = self.get_unique_resinumber(resinum=False)
-                print('No residue number was given. Using residue number {}.'.format(number))
         return resi_dict
 
 

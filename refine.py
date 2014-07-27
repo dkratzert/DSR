@@ -361,6 +361,8 @@ class ShelxlRefine():
 
 
 if __name__ == '__main__':
+    from atomhandling import FindAtoms
+    from restraints import ListFile
     res_file = 'p21c.res'
     rl = ResList(res_file)
     res_list = rl.get_res_list()

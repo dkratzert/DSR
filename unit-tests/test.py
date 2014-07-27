@@ -982,31 +982,85 @@ class ResidueTest(unittest.TestCase):
 
 
     def testrun_make_resihead(self):
-        testhead = ['SADI 0.02 C1 C2 C1 C3 C1 C4', 'SADI 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
+        testhead = ['RESI TST', 'SADI 0.02 C1 C2 C1 C3 C1 C4', 'SADI 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
                    'SADI 0.04 C2 C3 C3 C4 C2 C4', 'SIMU O1 > F9', 'RIGU O1 > F9']
-        dsr_dict1 = {'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'], 'fragment': 'OC(CF3)3',
-                     'occupancy': '-31', 'source': ['O1', 'C1', 'C2', 'C3', 'C4'],
-                     'resi': ['CF13'], 'command': 'PUT', 'dfix': False, 'part': '2'}
-        dsr_dict2 = {'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'], 'fragment': 'OC(CF3)3',
-                     'occupancy': '-31', 'source': ['O1', 'C1', 'C2', 'C3', 'C4'],
-                     'resi': '', 'command': 'PUT', 'dfix': False, 'part': '2'}
-        dsr_dict3 = {'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'], 'fragment': 'OC(CF3)3',
-                     'occupancy': '-31', 'source': ['O1', 'C1', 'C2', 'C3', 'C4'],
-                     'resi': 'dbentry', 'command': 'PUT', 'dfix': False, 'part': '2'}
+        dsr_dict1 = {'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'],
+                     'fragment': 'OC(CF3)3',
+                     'occupancy': '-31',
+                     'source': ['O1', 'C1', 'C2', 'C3', 'C4'],
+                     'resi': ['CF13'], # only class given
+                     'command': 'PUT',
+                     'dfix': False,
+                     'part': '2'}
+        dsr_dict2 = {'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'],
+                     'fragment': 'OC(CF3)3',
+                     'occupancy': '-31',
+                     'source': ['O1', 'C1', 'C2', 'C3', 'C4'],
+                     'resi': False, # no resi given
+                     'command': 'PUT',
+                     'dfix': False,
+                     'part': '2'}
+        dsr_dict3 = {'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'],
+                     'fragment': 'OC(CF3)3',
+                     'occupancy': '-31',
+                     'source': ['O1', 'C1', 'C2', 'C3', 'C4'],
+                     'resi': '', # only resi active, class from db
+                     'command': 'PUT',
+                     'dfix': False,
+                     'part': '2'}
+        dsr_dict4 = {'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'],
+                     'fragment': 'OC(CF3)3',
+                     'occupancy': '-31',
+                     'source': ['O1', 'C1', 'C2', 'C3', 'C4'],
+                     'resi': ['tes1', '8'], # class and number given
+                     'command': 'PUT',
+                     'dfix': False,
+                     'part': '2'}
+        dsr_dict5 = {'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'],
+                     'fragment': 'OC(CF3)3',
+                     'occupancy': '-31',
+                     'source': ['O1', 'C1', 'C2', 'C3', 'C4'],
+                     'resi': ['89'], # class and number given
+                     'command': 'PUT',
+                     'dfix': False,
+                     'part': '2'}
+        dsr_dict6 = {'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'],
+                     'fragment': 'OC(CF3)3',
+                     'occupancy': '-31',
+                     'source': ['O1', 'C1', 'C2', 'C3', 'C4'],
+                     'resi': ['tes1', '8', '10'], # class, number and alias given
+                     'command': 'PUT',
+                     'dfix': False,
+                     'part': '2'}
         resi1 = Resi(self.res_list, dsr_dict1, testhead, 'CF13', self.find_atoms)
         resi2 = Resi(self.res_list, dsr_dict2, testhead, 'TEST', self.find_atoms)
         resi3 = Resi(self.res_list, dsr_dict3, testhead, 'TEST', self.find_atoms)
+        resi4 = Resi(self.res_list, dsr_dict4, testhead, 'TES1', self.find_atoms)
+        resi5 = Resi(self.res_list, dsr_dict5, testhead, 'TES1', self.find_atoms)
+        resi6 = Resi(self.res_list, dsr_dict6, testhead, 'TES1', self.find_atoms)
         head1 = ['SADI_CF13 0.02 C1 C2 C1 C3 C1 C4', 'SADI_CF13 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4', 'SADI_CF13 0.04 C2 C3 C3 C4 C2 C4',
                 'SIMU_CF13 O1 > F9', 'RIGU_CF13 O1 > F9', 'RESI 4 CF13']
         head2 = ['SADI 0.02 C1 C2 C1 C3 C1 C4', 'SADI 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4', 'SADI 0.04 C2 C3 C3 C4 C2 C4', 'SIMU O1 > F9', 'RIGU O1 > F9']
         head3 = ['SADI_TEST 0.02 C1 C2 C1 C3 C1 C4', 'SADI_TEST 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4', 'SADI_TEST 0.04 C2 C3 C3 C4 C2 C4',
                 'SIMU_TEST O1 > F9', 'RIGU_TEST O1 > F9', 'RESI 4 TEST']
-        # regular head with residue
+        head4 = ['SADI_TES1 0.02 C1 C2 C1 C3 C1 C4', 'SADI_TES1 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4', 'SADI_TES1 0.04 C2 C3 C3 C4 C2 C4',
+                'SIMU_TES1 O1 > F9', 'RIGU_TES1 O1 > F9', 'RESI 8 TES1']
+        head5 = ['SADI_TES1 0.02 C1 C2 C1 C3 C1 C4', 'SADI_TES1 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4', 'SADI_TES1 0.04 C2 C3 C3 C4 C2 C4',
+                'SIMU_TES1 O1 > F9', 'RIGU_TES1 O1 > F9', 'RESI 89 TES1']
+        head6 = ['SADI_TES1 0.02 C1 C2 C1 C3 C1 C4', 'SADI_TES1 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4', 'SADI_TES1 0.04 C2 C3 C3 C4 C2 C4',
+                'SIMU_TES1 O1 > F9', 'RIGU_TES1 O1 > F9', 'RESI 10 TES1 8']
+        # dsr command with residue
         self.assertListEqual(resi1.make_resihead(), head1)
-        # head without residue
+        # dsr command without residue
         self.assertListEqual(resi2.make_resihead(), head2)
         # residue from database
         self.assertListEqual(resi3.make_resihead(), head3)
+        # class and number given
+        self.assertListEqual(resi4.make_resihead(), head4)
+        # only number given
+        self.assertListEqual(resi5.make_resihead(), head5)
+        # class, number alias given
+        self.assertListEqual(resi6.make_resihead(), head6)
 
 
 class MiscTest(unittest.TestCase):
