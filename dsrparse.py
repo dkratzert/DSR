@@ -181,12 +181,11 @@ class DSR_Parser():
         target = self.find_atoms('ON', 'PART', 'OCC', 'RESI', 'DFIX', '')
         if 'RESI' in self._dsr_list:
             residue = self.find_atoms('RESI', 'PART', 'OCC', 'RESI', 'DFIX', '')
-            # RESI is True but no residue returns -> only RESI in command line
-            # hence, return that we at least want residues from the db
+            # RESI is in dsr_list but no residue returns -> only RESI in command line:
             if not residue:
-                residue = 'dbentry'
+                residue = ''
         else:
-            residue = ''
+            residue = False
         dfix = False
         if 'DFIX' in self._dsr_list:
             dfix = True

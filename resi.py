@@ -35,27 +35,33 @@ class Resi(object):
     def __init__(self, reslist, dsr_line_dict, dbhead, residue, find_atoms):
         self._reslist = reslist
         self._find_atoms = find_atoms
+        self._dbhead = dbhead
         self._atoms_in_reslist = self._find_atoms.collect_residues()
         self._residues_in_res = sorted(self._atoms_in_reslist.keys())
         self._dsr_dict = dsr_line_dict.copy()
-        self._com_resi_list = self._dsr_dict['resi'][:] # makes a copy because we need it also later
+        self._com_resi_list = self._dsr_dict['resi']
+        print('"{}"'.format(self._com_resi_list), 'self._com_resi_list')
         if self._com_resi_list:
-            if self._com_resi_list != 'dbentry':
-                self._resi_dict_com = self.get_resi_syntax(self._com_resi_list)
+            # at least one residue parameter defined in .res file
+            self._resi_dict_com = self.get_resi_syntax(self._com_resi_list)
+            print(self._resi_dict_com, 'self._resi_dict_com 1')
+        if self._com_resi_list == '':
+            # use residue from database
+            self._resi_dict_com = {'class': None, 'number': None, 'alias': None}
+            print(self._resi_dict_com, 'self._resi_dict_com 2')
         else:
+            # residues tuned off
             self._resi_dict_com = False
-        if self._com_resi_list == 'dbentry':
-            self._resi_dict_com = 'Empty'
-        self._dbhead = dbhead
+            print(self._resi_dict_com, 'self._resi_dict_com 2')
         try:
-            # residue can be class or class + number
-            self.__db_resi_list = residue.split() # use residue from db if not given in command line
+            self._db_resi_list = residue.split() # use residue from db if not given in command line
         except(AttributeError):
             print('No valid residue "RESI classname" in the database entry '\
                     'of {} found.'.format(self._dsr_dict['fragment']))
             sys.exit()
-        self._resi_dict_db = self.get_resi_syntax(self.__db_resi_list)
+        self._resi_dict_db = self.get_resi_syntax(self._db_resi_list)
         self._combined_resi = self.build_up_residue()
+        print('combi:', self._combined_resi)
 
 
     @property
@@ -183,9 +189,9 @@ class Resi(object):
         if self._resi_dict_db['number']:
             resinum = self._resi_dict_db['number']
         #### for the comlist entry
-        if not self._resi_dict_com:
+        if self._resi_dict_com == False:
             return final_residue
-        if self._resi_dict_com != 'Empty':
+        else:
             if self._resi_dict_com['alias']:
                 resialias = self._resi_dict_com['alias']
             if self._resi_dict_com['class']:
