@@ -351,10 +351,10 @@ class ShelxlRefine():
                 centro = True
             else:
                 centro = False
-        if centro == True and data_to_parameter_ratio < 15:
+        if centro == True and data_to_parameter_ratio < 10:
             print('Warning! The data / parameter ratio is getting low (ratio = {:.1f})! \
                     '.format(data_to_parameter_ratio))
-        if centro == False and data_to_parameter_ratio < 8:
+        if centro == False and data_to_parameter_ratio < 7.5:
             print('Warning! The data / parameter ratio is getting low (ratio = {:.1f})! \
                     '.format(data_to_parameter_ratio))
 
