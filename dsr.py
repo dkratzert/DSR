@@ -27,6 +27,12 @@ from restraints import ListFile, Lst_Deviations, format_atom_names
 from restraints import Restraints, Adjacency_Matrix
 from misc import find_line_of_residue
 
+VERSION = '1.5.8'
+# dont forget to change version in Innoscript file, spec file and deb file.
+program_name = '\n-----------------------------'\
+           ' D S R - v{}' \
+           ' ----------------------------------'.format(VERSION)
+
 # TODO and ideas:
 # -FLAT: see for every ring atom if there is also an attached atom in the same plane
 # -To the manual: Avogradro/res-file -> rename -> mercury -> mol2-file -> GRADE
@@ -39,11 +45,6 @@ from misc import find_line_of_residue
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 
 
-VERSION = '1.5.8'
-# dont forget to change version in Innoscript file, spec file and deb file.
-program_name = '\n-----------------------------'\
-           ' D S R - v{}' \
-           ' ----------------------------------'.format(VERSION)
 
 
 class DSR():
@@ -507,10 +508,12 @@ class DSR():
             lfd.print_LS_fit_deviations()
         cell = lf.get_lst_cell_parameters
 
-        # open res file again to restore 10 refinement cycles:
+        # open res file again to restore 8 refinement cycles:
         rl = ResList(self.res_file)
         reslist = rl.get_res_list()
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
+        if lst_file:
+            shx.check_refinement_results(lst_file)
 
         if not self.no_refine:
             self.set_post_refine_cycles(shx, '8')
