@@ -26,6 +26,13 @@ class Resi(object):
         Handles the RESI instructions and restraints
         self._dsr_command_resi_list : list of RESI commands from command line.
         self._resi_dict_dsr_command : dictionary of commands after get_resi_syntax()
+
+        self._dsr_dict['resi'] = False : no residue given
+        self._dsr_dict['resi'] = '' : only resi command given
+        self._dsr_dict['resi'] = ['number, e.g. 3'] : only resi number given
+        self._dsr_dict['resi'] = ['class'] : only resi class given
+        self._dsr_dict['resi'] = ['class', 'number'] : resi class and number given
+        self._dsr_dict['resi'] = ['class', 'number', 'alias'] : resi class, number and alias given
         :param reslist: res file as list
         :type reslist: list
         :param dsr_line_dict: dsr command line as dictionary
@@ -166,7 +173,7 @@ class Resi(object):
                     'in use!'.format(resinum))
             while new_num in self._residues_in_res:
                 new_num = str(int(new_num)+1)
-            print('         I am using number "{}" instead.\n'.format(new_num))
+           # print('         I am using number "{}" instead.\n'.format(new_num))
             return new_num
         else:
             return resinum
