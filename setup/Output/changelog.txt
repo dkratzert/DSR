@@ -1,4 +1,5 @@
 Recent changes
+-1.5.9  DSR now warns if data to paramter ratio is getting bad. small fixes.
 -1.5.8  Support for both types of SFAC. Search result of -s also with line number. More tests.
 -1.5.7  DSR now creates a backup file before fragment fit in a separate directory. 
         Exported fragment res files now include database restraints.
