@@ -127,7 +127,7 @@ class ShelxlRefine():
 
     def afix_is_closed(self, line):
         '''
-        check if last afix was closed with afix 0
+        check if last afix before dsr command was closed with afix 0
 
         - returns False if last AFIX was not closed
         - returns True if last AFIX was closed
@@ -140,26 +140,26 @@ class ShelxlRefine():
                 if re.match(r'AFIX', i, re.IGNORECASE):
                     afixes.append(i.split()[1])
         try:
-            #if len(afixes) == 1: # in this case only one afix is present in the file
-            #    return False
             if str(afixes[-2]) != '0':
-                return False
+                return False # last afix not closed
             else:
-                return True
+                return True # last afix is closed
         except(IndexError):
+            # in this case, no afix is present and deletion af afix 9 is save
             return True
 
 
 
     def remove_afix(self):
         '''
-        removes the AFIX 17X after refinement.
+        removes the AFIX 9 after refinement.
         note: find_line matches case insensitive
         '''
         afix_line = False  # @UnusedVariable
         regex = r'^AFIX\s+9'
         afix_line = misc.find_line(self._reslist, regex)
-        if self.afix_is_closed(afix_line): # only delete afix if last afix was closed
+        # only delete afix if last afix before the dsr command was closed
+        if self.afix_is_closed(afix_line):
             if afix_line:
                 del self._reslist[afix_line]
         else:

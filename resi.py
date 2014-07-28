@@ -76,18 +76,26 @@ class Resi(object):
     def get_resinumber(self):
         '''
         Returns the residue number of the currently fitted fragment
-        :type self._combined_resi: string
+        :type self._combined_resi['number']: string
         '''
         return self._combined_resi['number']
 
 
     @property
     def get_residue_class(self):
+        '''
+        Returns the residue class of the currently fitted fragment
+        :type self._combined_resi['class']: string
+        '''
         return self._combined_resi['class']
 
 
     def remove_resi(self, head):
-        '''removes all resi commands and classes from head'''
+        '''
+        removes all resi commands and classes from head
+        :param head: database header of the current fragment
+        :type head: list
+        '''
         rhead = [] #head without resi
         delhead = []
         for dummy, line in enumerate(head):
@@ -99,7 +107,6 @@ class Resi(object):
                 continue
             line = ' '.join(line)
             delhead.append(line)
-
         for line in delhead:
             line = line.strip(' \n\r').upper()
             if line.startswith('RESI'):
@@ -112,7 +119,6 @@ class Resi(object):
     def make_resihead(self):
         '''
         Finally builds up the afix header with residue informations.
-
         '''
         resi_to_insert = []
         resi = False
@@ -173,7 +179,6 @@ class Resi(object):
                     'in use!'.format(resinum))
             while new_num in self._residues_in_res:
                 new_num = str(int(new_num)+1)
-           # print('         I am using number "{}" instead.\n'.format(new_num))
             return new_num
         else:
             return resinum
