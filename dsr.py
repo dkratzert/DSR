@@ -293,7 +293,7 @@ class DSR():
             shx.set_refinement_cycles(cycles)
         except(IndexError):
             print('Unable to set refinement cycles')
-        shx.remove_afix()   # removes the afix 9
+
 
 
 
@@ -329,14 +329,9 @@ class DSR():
         fa = FindAtoms(reslist)
         print('Replace mode active.')
         target_lines = fa.get_atom_line_numbers(res_target_atoms)
-        #rp = False
         for i in target_lines:
             i = int(i)
             rle.remove_line(i, rem=False, remove=False, frontspace=True)
-            #if reslist[i-1][:4] in ['RESI', 'PART']:
-            #    rp = True
-            #if reslist[i+1][:4] in ['RESI', 'PART'] and rp:
-            #    print('empty resi/part?')
         fa.remove_adjacent_hydrogens(res_target_atoms, sfac_table)
 
 
@@ -517,6 +512,7 @@ class DSR():
 
         if not self.no_refine:
             self.set_post_refine_cycles(shx, '8')
+            shx.remove_afix()   # removes the afix 9
 
         if dsrp.dfix_active:
             dfix_restraints = self.generate_dfix_restraints(lf, reslist, fragment_numberscheme,
