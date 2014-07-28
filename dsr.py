@@ -22,12 +22,11 @@ from atomhandling import FindAtoms, NumberScheme, Elem_2_Sfac
 from afix import InsertAfix, write_dbhead_to_file
 from refine import ShelxlRefine
 from resi import Resi
-#from misc import find_line
 from restraints import ListFile, Lst_Deviations, format_atom_names
 from restraints import Restraints, Adjacency_Matrix
 from misc import find_line_of_residue
 
-VERSION = '1.5.8'
+VERSION = '1.5.9'
 # dont forget to change version in Innoscript file, spec file and deb file.
 program_name = '\n-----------------------------'\
            ' D S R - v{}' \
@@ -455,7 +454,7 @@ class DSR():
 
         ## Insert FRAG ... FEND entry:
         rle.insert_frag_fend_entry(dbatoms, fragline, fvarlines)
-        if not dsr_dict['resi'] and self.external:
+        if not resi.get_resinumber and self.external:
             print('External restraint files are only possible in combination with residues!')
             sys.exit()
 

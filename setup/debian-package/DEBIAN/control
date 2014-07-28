@@ -16,4 +16,4 @@ Description: This program consists of a text database with fragments of molecule
  position of the target atoms specified by the user. Bond restraints are applied
  from the database to the molecule.
  Development is on GitHub: https://github.com/dkratzert/dsr
-Version: 1.5.8
+Version: 1.5.9
