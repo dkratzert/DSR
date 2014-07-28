@@ -145,7 +145,7 @@ class ShelxlRefine():
             else:
                 return True # last afix is closed
         except(IndexError):
-            # in this case, no afix is present and deletion af afix 9 is save
+            # in this case, no other afix is present and deletion of afix 9 is save
             return True
 
 
@@ -157,7 +157,16 @@ class ShelxlRefine():
         '''
         afix_line = False  # @UnusedVariable
         regex = r'^AFIX\s+9'
-        afix_line = misc.find_line(self._reslist, regex)
+        afix_line = misc.find_multi_lines(self._reslist, regex)
+        try:
+            afix_line[0]
+        except(IndexError):
+            return # safely return, because no lines found
+        if len(afix_line) > 1:
+            print('Multiple "AFIX 9" commands were found. Please remove "AFIX 9" for fitted fragment yourselves.')
+            return
+        else:
+            afix_line = int(afix_line[0])
         # only delete afix if last afix before the dsr command was closed
         if self.afix_is_closed(afix_line):
             if afix_line:
