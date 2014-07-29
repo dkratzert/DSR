@@ -44,6 +44,19 @@ def get_atoms(atlist):
     return atoms
 
 
+def sortedlistdir(directory, cmpfunc=cmp):
+    '''
+    returns a sorted list of files in directory directory.
+    :param directory: directory
+    :type directory: string
+    :param cmpfunc: compare funtion to sort
+    :type cmpfunc: string
+    '''
+    dirlist = os.listdir(directory)
+    dirlist.sort(cmpfunc)
+    return dirlist
+
+
 def find_line_of_residue(reslist, resinumber):
     '''
     Returns the line number where residue n appears in the reslist.

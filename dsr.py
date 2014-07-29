@@ -33,10 +33,6 @@ program_name = '\n-----------------------------'\
            ' ----------------------------------'.format(VERSION)
 
 # TODO and ideas:
-# -external restraints without residues: Determine which files of name
-#  'dsr_'+number+'_'+filename+'.dfix' already exist. Without residues these restraints should
-#  always be unique. Then find a unique number and write restraints to
-#  'dsr_'+number+'_'+filename+'.dfix'
 # -FLAT: see for every ring atom if there is also an attached atom in the same plane
 # -To the manual: Avogradro/res-file -> rename -> mercury -> mol2-file -> GRADE
 # -To manual: what to do if something does not work.
@@ -357,9 +353,6 @@ class DSR():
 
         dbatoms: formated atoms (with new number scheme) of the fragment
         '''
-        #from misc import format_atom_names
-        #fa = FindAtoms(reslist)
-        #lst_file = lf.read_lst_file()
         lst_file_coordinates = lf.get_all_coordinates
         lst_file_connectivity_table = lf.read_conntable()
         fragment_atoms = format_atom_names(dbatoms, part, residue_number)
@@ -458,9 +451,6 @@ class DSR():
 
         ## Insert FRAG ... FEND entry:
         rle.insert_frag_fend_entry(dbatoms, fragline, fvarlines)
-        if not resi.get_resinumber and self.external:
-            print('External restraint files are only possible in combination with residues!')
-            sys.exit()
 
         print('Inserting {} into res File.'.format(fragment))
         if self.invert:
