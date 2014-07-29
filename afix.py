@@ -16,6 +16,8 @@ import misc
 import os
 import sys
 import constants
+import re
+import fnmatch
 
 __metaclass__ = type  # use new-style classes
 
@@ -29,9 +31,22 @@ def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
     :param resi_number:  SHELXL residue number
     :return filename:    full file name where restraints will be written
     '''
-    if resi_number:
+    number = '1'
+    files = []
+    for file in misc.sortedlistdir('.'):
+        if fnmatch.fnmatch(file, 'dsr_*_'+filename):
+            filenum = file.split('_')
+            if str.isdigit(filenum[1]):
+                files.append(filenum[1])
+    try:
+        number = str(int(files[-1])+1)
+    except(IndexError):
+        pass
+    if not resi_number and not resi_class:   # no residues
+        filename = 'dsr_'+number+'_'+filename
+    if resi_number:                          # only residue number known
         filename = 'dsr_'+resi_class+'_'+resi_number+'_'+filename
-    else:
+    if not resi_number and resi_class:       # only residue class known
         filename = 'dsr_'+resi_class+'_'+filename
     if os.path.isfile(filename):
         print('Previous restraint file found.'\
