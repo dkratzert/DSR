@@ -98,7 +98,7 @@ class ListFile():
                 for line in l:
                     listfile.append(line)
         except(IOError):
-            print('Unable to read {} file.'.format(self._listfile))
+            print('Unable to read file {}.'.format(self._listfile))
             sys.exit()
         return listfile
 
@@ -106,7 +106,7 @@ class ListFile():
     def read_conntable(self):
         '''
         reads the connectivity table from self._listfile_list
-        returns a list of all bonded atompairs. Symmetry equivalent atoms
+        returns a list of all bonded atom pairs. Symmetry equivalent atoms
         are filtered out.
         '''
         symmeq = False
@@ -161,7 +161,7 @@ class ListFile():
             try:
                 xyz = [float(i) for i in xyz]
             except(ValueError):
-                print('No atoms found in list file!')
+                print('No atoms found in .lst file!')
                 sys.exit(0)
             atom = {str(line[0]).upper(): xyz}
             atom_coordinates.update(atom)
@@ -184,7 +184,7 @@ class ListFile():
                     sys.exit()
                 break
         if not cell:
-            print('Unable to find unit cell parameters in th list file.')
+            print('Unable to find unit cell parameters in the .lst file.')
             sys.exit()
         return cell
 
