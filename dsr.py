@@ -33,6 +33,10 @@ program_name = '\n-----------------------------'\
            ' ----------------------------------'.format(VERSION)
 
 # TODO and ideas:
+# -external restraints without residues: Determine which files of name
+#  'dsr_'+number+'_'+filename+'.dfix' already exist. Without residues these restraints should
+#  always be unique. Then find a unique number and write restraints to
+#  'dsr_'+number+'_'+filename+'.dfix'
 # -FLAT: see for every ring atom if there is also an attached atom in the same plane
 # -To the manual: Avogradro/res-file -> rename -> mercury -> mol2-file -> GRADE
 # -To manual: what to do if something does not work.
