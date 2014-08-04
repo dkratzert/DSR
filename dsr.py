@@ -34,7 +34,6 @@ program_name = '\n-----------------------------'\
 
 # TODO and ideas:
 # -FLAT: see for every ring atom if there is also an attached atom in the same plane
-# -To the manual: Avogradro/res-file -> rename -> mercury -> mol2-file -> GRADE
 # -To manual: what to do if something does not work.
 # -try to iterate all target atoms if fit is really bad
 # -select atoms in shelxle > export to db
@@ -42,7 +41,6 @@ program_name = '\n-----------------------------'\
 # -detect empty residues and parts after atom deletion
 # -import also from pdb, dfix, obprop alone.
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
-
 
 
 
