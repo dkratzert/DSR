@@ -443,7 +443,6 @@ class Restraints():
 
 
 
-
 class Lst_Deviations():
     '''
     reads the deviations of the fitted group from the lst-file
@@ -515,17 +514,24 @@ if __name__ == '__main__':
     print(fragment_atoms, cell)
     am = Adjacency_Matrix(fragment_atoms, conntable, coords, cell)
     G = am.get_adjmatrix
-    print('nodes:', G.nodes())
+    #print('nodes:', G.nodes())
     # print('dihkstra (kürzester pfad):')
     # print(nx.dijkstra_path(G, 'C1_4C', 'C4_4C'))
     # print('\ncycle_basis')
-    l = nx.cycle_basis(G)
+    #l = nx.cycle_basis(G)
     # print('liste der cycles im Graph:')
-    print(sorted(l))
-    print('end\n')
+    #print(sorted(l))
+    #print('end\n')
     restr = Restraints(coords, am.get_adjmatrix, fragment_atoms, cell)
     #dfixes = re.get_formated_12_dfixes
     #dfixes_13 = re.get_formated_13_dfixes
-    flats = restr.get_formated_flats
-    print(''.join(flats), 'flats')
+    #flats = restr.get_formated_flats
+    #print(''.join(flats), 'flats')
     #print(''.join(dfixes_13))
+
+    def make_eadp(self):
+        '''
+        find atoms nearby and make them eadp
+        '''
+        for at in self.all_atoms:
+            pass
