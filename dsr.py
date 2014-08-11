@@ -521,7 +521,18 @@ if __name__ == '__main__':
     '''main function'''
     #dsr = DSR(list_db=True)
     #dsr = DSR(res_file='p21c.res')
-    dsr = DSR()
+    import logging
+    logging.basicConfig(filename='report-bug.log')
+    logger = logging.getLogger('dsr')
+    ch = logging.StreamHandler()
+    logger.addHandler(ch)
+#    logger.exception('-----------------------')
+    try:
+        dsr = DSR()
+    except Exception, e:
+        print('\n')
+        print('Congratulations! You found a bug in DSR. Please send the file "report-bug.log" to dkratzert@gmx.de\n')
+        logger.exception(e)
 
 
 
