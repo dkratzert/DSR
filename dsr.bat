@@ -9,18 +9,28 @@ SET args=%*
 
 rem cls
 
-IF DEFINED args (GOTO main) ELSE (GOTO help)
+IF NOT DEFINED DSRDIR (GOTO setdsrdir) ELSE (GOTO arguments)
 
 
-GOTO main
+:setdsrdir
+    echo -----------------------------------------------------------------
+    echo You should define the DSRDIR environment variable for your system
+    echo pointing to the DSR install directory.
+    echo -----------------------------------------------------------------
+    SET DSRDIR="."
+    goto arguments
+
+:arguments
+    IF DEFINED args (GOTO main) ELSE (GOTO help)    
+    goto main
 
 :main
     "%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py %args%
-GOTO end
+    GOTO end
 
 :help
     "%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py -h
-GOTO end
+    GOTO end
 
 
 :end

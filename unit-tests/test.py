@@ -465,7 +465,7 @@ class globalDB(unittest.TestCase):
         #self.rdb = ReadDB(dbdir='./', dbnames = db_file_names)
         #self.dbnames = self.rdb.find_db_tags()
 #        invert = True
-        gdb = global_DB(dbdir='./', dbnames = db_file_names)
+        gdb = global_DB(dbdir='.', dbnames = db_file_names)
         db = gdb.build_db_dict()
         self.assertEqual(db['dmx']['line'], 2)
         self.assertEqual(db['dmx']['name'], 'DMX')
@@ -482,6 +482,7 @@ class globalDB(unittest.TestCase):
         self.assertEqual(gdb.get_residue_from_head(self.klein), 'CLBE' )
 
     def testrun_get_residue_from_head2(self):
+        # raises System exit, because residue in db_resinum.TXT is badly defined.
         db_file_names = ("db1_klein.TXT", "db2_klein.TXT", 'db_resinum.TXT')
         with self.assertRaises(SystemExit):
             gdb = global_DB(dbdir='./', dbnames = db_file_names)

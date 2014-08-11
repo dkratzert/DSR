@@ -285,7 +285,10 @@ class Export():
                 time.sleep(0.01)
                 if timeticks > 1500:
                     print('Platon run took too long to execute. Killing Platon...')
-                    plat.terminate()
+                    try:
+                        plat.terminate()
+                    except:
+                        sys.exit()
                     break
             size1 = os.stat(psfile).st_size
             size2 = 99999999
@@ -295,12 +298,18 @@ class Export():
                 size2 = os.stat(psfile).st_size
                 time.sleep(0.1)
                 if timeticks > 30:
-                    plat.terminate()
+                    try:
+                        plat.terminate()
+                    except:
+                        pass
                     break
-        except(WindowsError) as e:
+        except() as e:
             print('unable to run platon!', e)
             extensions = ('.bin', '.def', '.hkp', '.ins', '.pjn', '.lis', '.res', '.sar', '.sum', '.eld', '.out')
-            plat.terminate()
+            try:
+                plat.terminate()
+            except:
+                pass
             for i in extensions:
                 misc.remove_file(self._fragment_name+i)
             sys.exit()

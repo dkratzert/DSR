@@ -50,7 +50,7 @@ class ReadDB():
     a dictionary of them.
     '''
 
-    def __init__(self, dbdir='', dbnames=''):
+    def __init__(self, dbdir='./', dbnames=''):
         self._db_file_names = dbnames
         try:
             self._db_dir = dbdir
@@ -150,7 +150,7 @@ class global_DB():
     }
     '''
 
-    def __init__(self, invert=False, dbdir=os.environ["DSR_DB_DIR"],
+    def __init__(self, invert=False, dbdir=False,
                  dbnames=["dsr_db.txt", "dsr_user_db.txt"]):
         '''
         self._db_tags: ['12-DICHLOROBENZ', 590, 'dsr_db']
@@ -190,6 +190,11 @@ class global_DB():
         :type dbnames:  string
         '''
         self.invert = invert
+        try:
+            if not dbdir:
+                dbdir = os.environ["DSR_DB_DIR"]
+        except(KeyError):
+            dbdir='./'
         self._getdb = ReadDB(dbdir, dbnames)
         self._db_tags = self._getdb.find_db_tags()
         self._db_plain_dict = self._getdb.getDB_files_dict()
