@@ -87,7 +87,7 @@ Source: "..\setup\OlexDSR.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\setup\custom.xld"; DestDir: "{app}"; Flags: ignoreversion
 ;Source: "C:\Users\ntrapp\Documents\Python27\*"; DestDir: "{app}\Python27"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "C:\Python27-dsr\*"; DestDir: "{app}\Python27"; Flags: ignoreversion createallsubdirs recursesubdirs
-Source: "..\setup\vcredist_x86.exe"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "..\setup\vcredist_x86.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\example\*"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: ".\Output\changelog.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\dsr_user_db.txt"; DestDir: "{app}"; Flags: ignoreversion confirmoverwrite uninsneveruninstall onlyifdoesntexist; Permissions: users-modify
