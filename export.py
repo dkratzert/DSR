@@ -261,7 +261,6 @@ class Export():
             info.wShowWindow = 0
         except(AttributeError):
             pass
-
         misc.remove_file(insfile) #platon runs faster if no ins file is present!
         misc.remove_file(self._fragment_name+'.png', exit_dsr=True)
         if misc.which('platon'):
