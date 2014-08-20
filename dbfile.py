@@ -208,7 +208,7 @@ class global_DB():
         db_dict = {}
         for i in self._db_tags:
             fragment = i[0].lower()
-            line = i[1]
+            line = i[1]   # line number where dbentry is in dbfile
             db = str(i[2])
             headboth = self.get_head_lines(fragment, db, line)
             header = headboth[0]
@@ -239,7 +239,8 @@ class global_DB():
         :return residue class
         '''
         for index, line in enumerate(head):
-            if line.upper().startswith('RESI'):
+            line = line.upper()
+            if line.startswith('RESI'):
                 resiline = line.split()
                 del head[index]  # remove resi from head
                 for n, i in enumerate(resiline):
@@ -342,7 +343,8 @@ class global_DB():
         :type fragment: string
         '''
         for n, line in enumerate(head):
-            line = line.upper().split()
+            line = line.upper()
+            line = line.split()
             if not line:
                 continue
             if line[0] not in SHX_CARDS:  # only the first 4 characters, because SADI_TOL would be bad
@@ -360,6 +362,15 @@ class global_DB():
         ['RESI CBZ', 'SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1',
         'SADI Cl1 C2 Cl1 C6',
         'FLAT Cl1 > C6', 'SIMU Cl1 > C6', 'RIGU Cl1 > C6']
+        :param fragment: fragment name
+        :type fragment:  string
+        :param db:  database name e.g. dsr_db or dsr_user_db
+        :type db: string
+        :param line: line number where dbentry is located in the db file
+        :type line: string
+        :return nhead, # new head with unwrapped lines
+             fragline, # line with frag command e.g. 'FRAG 17 1 1 1 90 90 90'
+              comment: # comment lines from the head
         '''
         head = []
         nhead = []
@@ -376,6 +387,7 @@ class global_DB():
                 comment.append(line.split()[1:])
                 line = ''
                 continue
+            line = line.upper()
             nhead.append(line)
         # nhead is list of strings
         nhead = misc.unwrap_head_lines(nhead)
