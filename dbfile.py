@@ -549,8 +549,9 @@ class ImportGRADE():
         :param obprop: file with some information about the molecule
         :type obprop: list of strings
         '''
-        regex = re.compile(b'sequence')
+        regex = re.compile(r'sequence')
         for line in obprop:
+            line = str(line)
             if regex.match(line):
                 line = line.split()
                 break
@@ -576,7 +577,7 @@ class ImportGRADE():
         '''
         matches = ['REM Produced by Grade', 'REM GEN:', 'REM grade-cif2shelx', 'REM Version:', 'REM Total charge']
         comments = []
-        name = 'REM Name: ' + self._resi_name.decode('ascii')
+        name = 'REM Name: ' + self._resi_name
         comments.append(name.split())
         for m in matches:
             for line in self._dfixfile:
@@ -604,7 +605,8 @@ class ImportGRADE():
         '''
         restraints = []
         for line in self._dfixfile:
-            #line = line.decode('ascii')
+            line = line.decode('ascii')
+            #line = str(line, encoding='ascii')
             line = line.strip('\n\r').split()
             if line:
                 line[0] = line[0][:4].upper()
@@ -627,7 +629,6 @@ class ImportGRADE():
         '''
         atomlines = []
         for line in pdb:
-            line = line.decode('ascii')
             line = line.split()
             if line[0] == 'HETATM':
                 if line[-1] == 'H':
@@ -637,7 +638,7 @@ class ImportGRADE():
                 tmp.extend(line[6:9])
                 atomlines.append(tmp)
         if not atomlines:
-            self.import_error()
+            self.import_error(pdb)
         if self.invert:
             atomlines = invert_dbatoms_coordinates(atomlines)
         return atomlines
@@ -650,7 +651,9 @@ class ImportGRADE():
         '''
         db_import_dict = {}
         num = 1
-        resi_name = self._resi_name[:3].upper() + str(num)
+        #, encoding='utf8')
+        name = self._resi_name[:3].upper()
+        resi_name =  name + str(num)
         if not self._db_tags:
             print('Unable to import fragment. Database is empty.')
             sys.exit(False)

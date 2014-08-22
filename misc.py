@@ -44,7 +44,7 @@ def get_atoms(atlist):
     return atoms
 
 
-def sortedlistdir(directory, cmpfunc=cmp):
+def sortedlistdir(directory):
     '''
     returns a sorted list of files in directory directory.
     :param directory: directory
@@ -53,7 +53,7 @@ def sortedlistdir(directory, cmpfunc=cmp):
     :type cmpfunc: string
     '''
     dirlist = os.listdir(directory)
-    dirlist.sort(cmpfunc)
+    dirlist.sort()
     return dirlist
 
 
