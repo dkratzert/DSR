@@ -501,6 +501,8 @@ class ImportGRADE():
         self._firstlast = self.get_first_last_atom(self._atoms)
         self._restraints = self.get_restraints()
         self._resi_name = self.get_name_from_obprop(self._obpropfile)
+        if not isinstance(self._resi_name, str):
+                self._resi_name = self._resi_name.decode()
         self._comments = self.get_comments()
 
 
@@ -537,10 +539,22 @@ class ImportGRADE():
             print(' obprop.txt file not found!')
             self.import_error(self._gradefile)
         output = []
-        output.append(pdbfile.readlines())
-        output.append(dfixfile.readlines())
-        output.append(propfile.readlines())
+#       output.append(pdbfile.readlines())
+#       output.append(dfixfile.readlines())
+#       output.append(propfile.readlines())
+        output.append(self._read_ascii(pdbfile))
+        output.append(self._read_ascii(dfixfile))
+        output.append(self._read_ascii(propfile))
         return output
+
+
+    def _read_ascii(self, filehandle):
+        tmp = []
+        for line in filehandle:
+            if not isinstance(line, str):
+                line = line.decode('ascii')
+            tmp.append(line)
+        return tmp
 
 
     def get_name_from_obprop(self, obprop):
@@ -551,7 +565,8 @@ class ImportGRADE():
         '''
         regex = re.compile(r'sequence')
         for line in obprop:
-            line = str(line)
+            if not isinstance(line, str):
+                line = line.decode('ascii')
             if regex.match(line):
                 line = line.split()
                 break
@@ -577,11 +592,12 @@ class ImportGRADE():
         '''
         matches = ['REM Produced by Grade', 'REM GEN:', 'REM grade-cif2shelx', 'REM Version:', 'REM Total charge']
         comments = []
-        name = 'REM Name: ' + self._resi_name
+        name = 'REM Name: '+self._resi_name
         comments.append(name.split())
         for m in matches:
             for line in self._dfixfile:
-                line = line.decode('ascii')
+                if not isinstance(line, str):
+                    line = line.decode()
                 if line.startswith(m):
                     comments.append(line.split())
         return comments
@@ -605,8 +621,8 @@ class ImportGRADE():
         '''
         restraints = []
         for line in self._dfixfile:
-            line = line.decode('ascii')
-            #line = str(line, encoding='ascii')
+            if not isinstance(line, str):
+                line = line.decode()
             line = line.strip('\n\r').split()
             if line:
                 line[0] = line[0][:4].upper()
@@ -629,6 +645,8 @@ class ImportGRADE():
         '''
         atomlines = []
         for line in pdb:
+            if not isinstance(line, str):
+                line = line.decode()
             line = line.split()
             if line[0] == 'HETATM':
                 if line[-1] == 'H':
@@ -651,8 +669,9 @@ class ImportGRADE():
         '''
         db_import_dict = {}
         num = 1
-        #, encoding='utf8')
         name = self._resi_name[:3].upper()
+        if not isinstance(name, str):
+            name = name.decode()
         resi_name =  name + str(num)
         if not self._db_tags:
             print('Unable to import fragment. Database is empty.')
