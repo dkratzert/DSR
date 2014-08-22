@@ -632,7 +632,6 @@ class ImportGRADE_Test(unittest.TestCase):
         endings = []
         for num, i in enumerate(filenames):
             with open(i) as test_file:
-                #file = file.decode('ascii')
                 endings.append(test_file.readlines())
         self.assertListEqual(endings[num], files[num])
 
@@ -660,9 +659,10 @@ class ImportGRADE_Test(unittest.TestCase):
         ob = []
         with open(filename) as filen:
             for line in filen:
+                #line = str(line, encoding='ascii')
                 ob.append(line.split())
         comments = self.ig.get_comments()
-        name = 'REM Name: ' + 'PFA'
+        name = u'REM Name: ' + u'PFA'
         ob.insert(0, name.split()) # Name is always at first place
         self.assertEqual(comments, ob)
 
