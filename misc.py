@@ -420,8 +420,8 @@ def dice_coefficient(a, b):
     a = a.lower()
     b = b.lower()
     if not len(a) or not len(b): return 0.0
-    if len(a) == 1:  a=a+u'.'
-    if len(b) == 1:  b=b+u'.'
+    if len(a) == 1:  a=a+'.'
+    if len(b) == 1:  b=b+'.'
 
     a_bigram_list=[]
     for i in range(len(a)-1):
@@ -504,7 +504,7 @@ def levenshtein(s1, s2):
         return levenshtein(s2, s1)
     if len(s2) == 0:
         return len(s1)
-    previous_row = range(len(s2) + 1)
+    previous_row = list(range(len(s2) + 1))
     for i, c1 in enumerate(s1):
         current_row = [i + 1]
         for j, c2 in enumerate(s2):

@@ -309,7 +309,7 @@ class Resi(object):
         find out if the atom names of the current residue class fit
         to the atom names in already existing classes.
         '''
-        for num in self._atoms_in_reslist.keys():
+        for num in list(self._atoms_in_reslist.keys()):
             print(num, len(self._atoms_in_reslist[num]), self._atoms_in_reslist[num][:][0][3], \
                     [i[0] for i in self._atoms_in_reslist[num][:]])
 

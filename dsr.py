@@ -410,7 +410,7 @@ class DSR():
         else:
             # in this case restraints are placed by the dsrline position
             current_residue_line = '{}'.format(dfix_restraints) # insert restraints after dsr_line_number
-            reslist[dsr_line_number - 2] = reslist[dsr_line_number - 2] + current_residue_line
+            reslist[dsr_line_number - 2] = reslist[dsr_line_number - 2] + current_residue_line
 
 
 
@@ -523,7 +523,7 @@ if __name__ == '__main__':
     #dsr = DSR(res_file='p21c.res')
     try:
         dsr = DSR()
-    except Exception, e:
+    except Exception as e:
         import logging
         logging.basicConfig(filename='dsr_bug_report.log')
         logger = logging.getLogger('dsr')
