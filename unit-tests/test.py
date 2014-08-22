@@ -632,7 +632,13 @@ class ImportGRADE_Test(unittest.TestCase):
         endings = []
         for num, i in enumerate(filenames):
             with open(i) as test_file:
-                endings.append(test_file.readlines())
+                #   endings.append(test_file.readlines())
+                tmp = []
+                for line in test_file:
+                    if not isinstance(line, str):
+                        line = line.decode()
+                    tmp.append(line)
+                endings.append(tmp)
         self.assertListEqual(endings[num], files[num])
 
     def testrun_get_name_from_obprop(self):
