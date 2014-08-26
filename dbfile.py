@@ -477,7 +477,7 @@ class global_DB():
 
 class ImportGRADE():
 
-    def __init__(self, gradefile, invert=False):
+    def __init__(self, grade_tar_file, invert=False):
         '''
         class to import fragments from GRADE of Global Phasing Ltd.
         :param gradefile:
@@ -492,8 +492,7 @@ class ImportGRADE():
         self._db_tags = self._getdb.find_db_tags()
         self._gdb = global_DB(invert=False)
         self._db = self._gdb.build_db_dict()
-        self._gradefile = gradefile
-        gradefiles = self.get_gradefiles()
+        gradefiles = self.get_gradefiles(grade_tar_file)
         self._pdbfile = gradefiles[0]
         self._dfixfile = gradefiles[1]
         self._obpropfile = gradefiles[2]
@@ -506,17 +505,16 @@ class ImportGRADE():
         self._comments = self.get_comments()
 
 
-    def get_gradefiles(self):
+    def get_gradefiles(self, grade_tar_file):
         '''
         returns the .mol2 and .dfix file location
         '''
-        grade_base_filename = os.path.splitext(self._gradefile)
+        grade_base_filename = os.path.splitext(grade_tar_file)
         if grade_base_filename[1] == '.tgz':
-            gradefile = tarfile.open(self._gradefile)#, encoding="ascii")
+            gradefile = tarfile.open(grade_tar_file)#, encoding="ascii")
         else:
             print('File {} is not a valid file to import from!'.format(grade_base_filename[1]))
             sys.exit(0)
-        # names = []
         pdbfile = False
         dfixfile = False
         propfile = False
@@ -531,24 +529,21 @@ class ImportGRADE():
                 propfile = gradefile.extractfile(i)
         if not pdbfile:
             print(' .pdb file not found!')
-            self.import_error(self._gradefile)
+            self.import_error(grade_tar_file)
         elif not dfixfile:
             print(' .dfix file not found!')
-            self.import_error(self._gradefile)
+            self.import_error(grade_tar_file)
         elif not propfile:
             print(' obprop.txt file not found!')
-            self.import_error(self._gradefile)
+            self.import_error(grade_tar_file)
         output = []
-#       output.append(pdbfile.readlines())
-#       output.append(dfixfile.readlines())
-#       output.append(propfile.readlines())
-        output.append(self._read_ascii(pdbfile))
-        output.append(self._read_ascii(dfixfile))
-        output.append(self._read_ascii(propfile))
+        output.append(self._read_tarfile_as_ascii(pdbfile))
+        output.append(self._read_tarfile_as_ascii(dfixfile))
+        output.append(self._read_tarfile_as_ascii(propfile))
         return output
 
 
-    def _read_ascii(self, filehandle):
+    def _read_tarfile_as_ascii(self, filehandle):
         tmp = []
         for line in filehandle:
             if not isinstance(line, str):

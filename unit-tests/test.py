@@ -627,7 +627,7 @@ class ImportGRADE_Test(unittest.TestCase):
         files[2] = obprop
         '''
         self.maxDiff = None
-        files = self.ig.get_gradefiles()
+        files = self.ig.get_gradefiles('./test-data/PFA.gradeserver_all.tgz')
         filenames = ['./grade-PFA.pdb', './grade-PFA.dfix', './obprop.txt']
         endings = []
         for num, i in enumerate(filenames):
@@ -673,7 +673,7 @@ class ImportGRADE_Test(unittest.TestCase):
         self.assertEqual(comments, ob)
 
     def testrun_get_firstlast(self):
-        files = self.ig.get_gradefiles()
+        files = self.ig.get_gradefiles('./test-data/PFA.gradeserver_all.tgz')
         atoms = self.ig.get_pdbatoms(files[0])
         fl = self.ig.get_first_last_atom(atoms)
         self.assertTupleEqual(fl, ('AL1', 'F36'))
