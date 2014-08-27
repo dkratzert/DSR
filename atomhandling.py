@@ -625,29 +625,29 @@ if __name__ == '__main__':
     db = gdb.build_db_dict()
 
     #resiopt = dsr_dict['resi']
-    resiopt = False
+    #resiopt = False
 
     fragment = 'oc(cf3)3'
-    fragline = gdb.get_fragline_from_fragment(fragment)
+    #fragline = gdb.get_fragline_from_fragment(fragment)
     dbatoms = gdb.get_atoms_from_fragment(fragment)
-    dbhead = gdb.get_head_from_fragment(fragment)
+    #dbhead = gdb.get_head_from_fragment(fragment)
 
     dsrp = DSR_Parser(reslist, rle)
     dsr_dict = dsrp.parse_dsr_line()
-    num = NumberScheme(reslist, dbatoms, resiopt)
+   # num = NumberScheme(reslist, dbatoms, resiopt)
     # das printet auch auf bilschirm:
-    numbers = num.get_fragment_number_scheme()
+  #  numbers = num.get_fragment_number_scheme()
     #print('#######################')
-    print(numbers)
+  #  print(numbers)
     #print('#######################')
-    dbtypes = get_atomtypes(dbatoms)
+  #  dbtypes = get_atomtypes(dbatoms)
 
 
     print('\n')
 
-    misc.wrap_headlines(dbhead)
+ #   misc.wrap_headlines(dbhead)
 
-    newnames = rename_dbhead_atoms(numbers, dbatoms, dbhead)
+  #  newnames = rename_dbhead_atoms(numbers, dbatoms, dbhead)
 
     #print(newnames)
     #for i in dbhead:
@@ -672,7 +672,7 @@ if __name__ == '__main__':
     fa = FindAtoms(reslist)
 
     # this might be used to find nearest atoms in same class to make eadp
-    print(fa.get_atoms_resiclass('C1_2'))
+ #   print(fa.get_atoms_resiclass('C1_2'))
 
     SFAC = ['C', 'H', 'N']
 
@@ -682,13 +682,19 @@ if __name__ == '__main__':
     #print( fa.get_atomcoordinates(['Fe1_1', 'C29', 'Q12']) )
     #  print('line number:', fa.get_atom_line_numbers(['C12', 'C333', 'Q12']))
     #
-    fa.remove_adjacent_hydrogens(['C2', 'c4', 'c5'], SFAC)
+    res_target_atoms = ['c34', 'c5']
+    target_lines = fa.get_atom_line_numbers(res_target_atoms)
+    for i in target_lines:
+        i = int(i)
+        rle.remove_line(i, rem=False, remove=False, frontspace=True)
+    fa.remove_adjacent_hydrogens(res_target_atoms, SFAC)
     #
-    # # for num, i in enumerate(reslist):
-    # #     if num > 65:
-    # #         print(i.strip('\r\n'))
-    # #     if num > 85:
-    # #         break
+
+    for num, i in enumerate(reslist):
+        if num > 65:
+            print(i.strip('\r\n'))
+        if num > 85:
+            break
     #
     #  print('get_atomtypes', get_atomtypes(dbatoms))
     #  print()
