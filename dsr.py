@@ -509,11 +509,12 @@ class DSR():
             self.set_post_refine_cycles(shx, '8')
             shx.remove_afix()   # removes the afix 9
 
-        if dsrp.dfix_active:
-            dfix_restraints = self.generate_dfix_restraints(lf, reslist, fragment_numberscheme,
-                                                        resi.get_resinumber, cell, dsrp.part)
-            self.use_generated_dfix_restraints(reslist, resi.get_residue_class, basefilename,
-                                               dsr_line_number, resi.get_resinumber, dfix_restraints)
+        if not self.no_refine:
+            if dsrp.dfix_active:
+                dfix_restraints = self.generate_dfix_restraints(lf, reslist, fragment_numberscheme,
+                                                            resi.get_resinumber, cell, dsrp.part)
+                self.use_generated_dfix_restraints(reslist, resi.get_residue_class, basefilename,
+                                                   dsr_line_number, resi.get_resinumber, dfix_restraints)
 
         if not self.no_refine:
             rl.write_resfile(reslist, '.res')
