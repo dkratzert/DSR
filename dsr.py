@@ -26,7 +26,7 @@ from restraints import ListFile, Lst_Deviations, format_atom_names
 from restraints import Restraints, Adjacency_Matrix
 from misc import find_line_of_residue
 
-VERSION = '1.5.10'
+VERSION = '1.5.11'
 # dont forget to change version in Innoscript file, spec file and deb file.
 program_name = '\n-----------------------------'\
            ' D S R - v{}' \
@@ -467,6 +467,10 @@ class DSR():
                                            resi.get_residue_class)
         # line where the dsr command is found in the resfile:
         dsr_line_number = dsrp.find_dsr_command(line=False)
+        if dsr_line_number < fvarlines[-1]:
+            print('\nWarning! The DSR command line MUST not appear before FVAR or the first atom in the .res file!')
+            print('Can not proceed...\n')
+            sys.exit()
         reslist[dsr_line_number] = reslist[dsr_line_number]+'\n'
         reslist.insert(dsr_line_number+1, afix_entry)
 

@@ -90,7 +90,7 @@ class FindAtoms():
         self._residues = self.collect_residues()
 
 
-    def get_atom(self, atomline):
+    def is_atom(self, atomline):
         '''
         returns all atoms found in the input as list
 
@@ -102,7 +102,7 @@ class FindAtoms():
             if atom[0].upper() not in SHX_CARDS:      # exclude all non-atom cards
                 return atom
             else:
-                return
+                return False
 
 
     def get_resinum(self, resi):
@@ -167,11 +167,11 @@ class FindAtoms():
                 residues.update({resinum: []})
                 continue
             if resi:
-                atom = self.get_atom(i)
+                atom = self.is_atom(i)
                 if atom:
                     residues[resinum].append([atom[0], atom[2:5], num, resiclass])
             else:
-                atom = self.get_atom(i)
+                atom = self.is_atom(i)
                 resinum = '0'   # all other atoms are residue 0
                 if atom:
                     residues[resinum].append([atom[0], atom[2:5], num, resiclass])
