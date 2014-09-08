@@ -79,8 +79,8 @@ class reslistTest(unittest.TestCase):
         self.resi_list_num = ['RESI', '3']
 
     def testrun_pos(self):
-        self.assertEqual(self.fa.get_atom(self.atom1), ['F10', '4', '-0.362398', '0.278516', '0.447770'])
-        self.assertIsNone(self.fa.get_atom(self.atom2))
+        self.assertEqual(self.fa.is_atom(self.atom1), ['F10', '4', '-0.362398', '0.278516', '0.447770'])
+        self.assertIsNone(self.fa.is_atom(self.atom2))
 
     def testrun_resinum(self):
         #print(self.fa.get_resinum(self.resi_str))
@@ -800,6 +800,20 @@ class ExportTest(unittest.TestCase):
                    '\nHKLF 4\nEND\n']
         self.assertListEqual(resfile, resgood)
 
+
+class ResListEditTest(unittest.TestCase):
+    def setUp(self):
+        self.res_file = './p21c.res'
+        self.rl = ResList(self.res_file)
+        self.res_list = self.rl.get_res_list()
+        self.fa = FindAtoms(self.res_list)
+        self.rle = ResListEdit(self.res_list, self.fa)
+
+    def testrun_find_fvarlines(self):
+        lines = self.rle.find_fvarlines()
+        self.assertListEqual([17], lines)
+        self.assertNotEqual(None, lines)
+        self.assertNotEqual(False, lines)
 
 class ResidueTest(unittest.TestCase):
     def setUp(self):

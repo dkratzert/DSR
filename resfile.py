@@ -166,13 +166,17 @@ class ResListEdit():
     def find_fvarlines(self):
         '''
         Finds the FVAR line or the first line with an atom.
+        returns a list of FVAR occurences
+        sys.exit() if no atom or FVAR found
         '''
         fvarlines = misc.find_multi_lines(self._reslist, r'^FVAR.+[0-9]+')
         if not fvarlines:   # There is no FVAR in the res file after SHELXS!
             for num, i in enumerate(self._reslist):
-                if self._find_atoms.get_atom(i):
+                if self._find_atoms.is_atom(i):
                     first_atom = num
                     break
+            if not first_atom:
+                print('\nNo atom or Q-peak found! Can not proceed...\n')
             fvarlines = []
             fvarlines.append(first_atom-1)
             self._reslist.insert(first_atom-1, ' \n')
