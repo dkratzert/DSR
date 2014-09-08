@@ -408,6 +408,8 @@ class DSR():
                                                             residue_number, dfix_restraints,
                                                             current_residue_line)
         else:
+            if self.external:
+                print('Sorry, no external automatic DFIX restraints without residue possible at the moment.')
             # in this case restraints are placed by the dsrline position
             current_residue_line = '{}'.format(dfix_restraints) # insert restraints after dsr_line_number
             reslist[dsr_line_number - 2] = reslist[dsr_line_number - 2] + current_residue_line
