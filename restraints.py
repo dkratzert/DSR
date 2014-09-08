@@ -62,6 +62,8 @@ def format_atom_names(atoms, part, resinum):
         numpart = '_'+resinum+partsymbol
     elif resinum and not partsymbol:
         numpart = '_'+resinum
+    elif not resinum and partsymbol:
+        numpart = '_'+partsymbol
     else:
         numpart = ''
     # add the _'num''partsymbol' to each atom to be able to find them in the
