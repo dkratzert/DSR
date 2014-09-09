@@ -286,6 +286,7 @@ class FindAtoms():
         :param atoms:   list   list of non-Hydrogen atoms
         :param sfac_table: list of atom types ['C', 'H', 'N', ...]
         '''
+        delcount = []
         lines = self.get_atom_line_numbers(atoms)
         try:
             hydrogen_sfac = sfac_table.index('H')+1
@@ -311,6 +312,7 @@ class FindAtoms():
                     # stop if next line is an atom and we are not inside an "AFIX MN"
                     if str(line.split()[1]) == str(hydrogen_sfac):
                         print('Deleted hydrogen atom {}'.format(atom))
+                        delcount.append(atom)
                         self._reslist[i+n] = ''
                         continue
                     else:
@@ -338,8 +340,10 @@ class FindAtoms():
                         # delete the hydrogen atom
                         self._reslist[i+n] = ''
                         print('Deleted Hydrogen atom {}'.format(atom))
+                        delcount.append(atom)
                     except(IndexError):
                         continue
+        return delcount
 
 
 
