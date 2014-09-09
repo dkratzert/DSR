@@ -33,6 +33,7 @@ def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
     '''
     number = '1'
     files = []
+    # find a unique number for the restraint file:
     for file in misc.sortedlistdir('.'):
         if fnmatch.fnmatch(file, 'dsr_*_'+filename):
             filenum = file.split('_')
@@ -248,8 +249,12 @@ class InsertAfix(object):
         else:
             resi = ''
         if external_restraints and not self._dfix:
-            dbhead.append('REM The restraints for residue_class {} are in this'\
+            if residue_class:
+                dbhead.append('REM The restraints for residue {} are in this'\
                           ' file:\n+{}\n'.format(residue_class, dfx_file_name))
+            else:
+                dbhead.append('REM The restraints for this moiety are in this'\
+                          ' file:\n+{}\n'.format(dfx_file_name))
         dbhead = ''.join(dbhead)
         warn = self.insert_dsr_warning()
         afix = warn+dbhead+str(part)+'AFIX '+str(self.afixnumber)+'\n'+atoms+(

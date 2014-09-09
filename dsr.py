@@ -329,7 +329,8 @@ class DSR():
         for i in target_lines:
             i = int(i)
             rle.remove_line(i, rem=False, remove=False, frontspace=True)
-        fa.remove_adjacent_hydrogens(res_target_atoms, sfac_table)
+        h_delcount = fa.remove_adjacent_hydrogens(res_target_atoms, sfac_table)
+        return target_lines+h_delcount
 
 
     def go_refine(self, shx):
@@ -381,15 +382,19 @@ class DSR():
         if self.external:
             external_file_name = write_dbhead_to_file(basefilename + '.dfix', dfix_restraints,
                                                       residue_class, residue_number)
-            current_residue_line = '{}\nREM The restraints for residue {} '\
-            'are in this file:\n+{}\n'.format(current_residue_line, residue_number, external_file_name)
+            if residue_number:
+                external_hint = '{}\nREM The restraints for residue {} '\
+                'are in this file:\n+{}\n'.format(current_residue_line, residue_number, external_file_name)
+            else:
+                external_hint = '{}\nREM The restraints for this moiety '\
+                'are in this file:\n+{}\n'.format(current_residue_line, external_file_name)
         else:
-            current_residue_line = '{} \n{}\n'.format(current_residue_line, dfix_restraints)
-        return current_residue_line
+            external_hint = '{} \n{}\n'.format(current_residue_line, dfix_restraints)
+        return external_hint
 
 
     def use_generated_dfix_restraints(self, reslist, residue_class, basefilename,
-                                      dsr_line_number, residue_number, dfix_restraints):
+                                      dsr_line_number, residue_number, dfix_restraints, delcount):
         '''
         Generates DFIX restraints instead of the restraints in the database header
         :param reslist: resfile content
@@ -400,7 +405,12 @@ class DSR():
         :type basefilename: string
         :param dsr_line_number: line number of dsr commend in reslist
         :type dsr_line_number: string
+        :param delcount: list of atom lines which were deleted
+        :type delcount: list of integers e.g. [23, 66, 111]
         '''
+        delcount = len(delcount)
+        current_residue_line = ' '
+        position = dsr_line_number - delcount - 2
         if residue_number:
             # in this case the place for dfix restraints is found be the residue number
             resiline_index, current_residue_line = find_line_of_residue(reslist, residue_number)
@@ -408,11 +418,19 @@ class DSR():
                                                             residue_number, dfix_restraints,
                                                             current_residue_line)
         else:
-            if self.external:
-                print('Sorry, no external automatic DFIX restraints without residue possible at the moment.')
             # in this case restraints are placed by the dsrline position
-            current_residue_line = '{}'.format(dfix_restraints) # insert restraints after dsr_line_number
-            reslist[dsr_line_number - 2] = reslist[dsr_line_number - 2] + current_residue_line
+            if self.external:
+                # in this case restraints are written to external file
+                restraints = self.external_or_not(residue_class, basefilename,
+                                                        residue_number, dfix_restraints,
+                                                        current_residue_line)
+                # position in res file is shifted up with the number of deleted atoms + the two lines
+                # from the comment and the +filename instruction
+                reslist[position] = reslist[position] + restraints
+            else:
+                restraints = '{}'.format(dfix_restraints) # insert restraints after dsr_line_number
+                # position in res file is shifted up by the comment and the +filename instruction
+                reslist[position] = reslist[position] + restraints
 
 
 
@@ -477,8 +495,9 @@ class DSR():
         reslist.insert(dsr_line_number+1, afix_entry)
 
         ##### comment out all target atom lines in replace mode:
+        delcount = []
         if dsrp.command == 'REPLACE':
-            self.replacemode(dsrp.target, rle, reslist, sfac_table)
+            delcount = self.replacemode(dsrp.target, rle, reslist, sfac_table)
 
         # write to file:
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
@@ -516,8 +535,10 @@ class DSR():
                 dfix_restraints = self.generate_dfix_restraints(lf, reslist, fragment_numberscheme,
                                                             resi.get_resinumber, cell, dsrp.part)
                 self.use_generated_dfix_restraints(reslist, resi.get_residue_class, basefilename,
-                                                   dsr_line_number, resi.get_resinumber, dfix_restraints)
-
+                                                   dsr_line_number, resi.get_resinumber, dfix_restraints,
+                                                   delcount)
+        else:
+            pass # no dfix possible in this case, because we use SHELXL to generate connectivity list here.
         if not self.no_refine:
             rl.write_resfile(reslist, '.res')
         else:
