@@ -362,7 +362,7 @@ class DSR():
 
 
 
-    def external_or_not(self, residue_class, basefilename, residue_number,
+    def restraints_with_resi_or_not(self, residue_class, basefilename, residue_number,
                         dfix_restraints, current_residue_line):
         '''
         Decides if external or internal restraints are used.
@@ -411,17 +411,19 @@ class DSR():
         delcount = len(delcount)
         current_residue_line = ' '
         position = dsr_line_number - delcount - 2
-        if residue_number:
+        if residue_number: #residue defined
             # in this case the place for dfix restraints is found be the residue number
             resiline_index, current_residue_line = find_line_of_residue(reslist, residue_number)
-            reslist[resiline_index] = self.external_or_not(residue_class, basefilename,
+            restraints = self.restraints_with_resi_or_not(residue_class, basefilename,
                                                             residue_number, dfix_restraints,
                                                             current_residue_line)
-        else:
+            # position the restraints below the residue definition:
+            reslist[resiline_index] = restraints
+        else: # no residue defined
             # in this case restraints are placed by the dsrline position
             if self.external:
                 # in this case restraints are written to external file
-                restraints = self.external_or_not(residue_class, basefilename,
+                restraints = self.restraints_with_resi_or_not(residue_class, basefilename,
                                                         residue_number, dfix_restraints,
                                                         current_residue_line)
                 # position in res file is shifted up with the number of deleted atoms + the two lines
@@ -432,6 +434,13 @@ class DSR():
                 # position in res file is shifted up by the comment and the +filename instruction
                 reslist[position] = reslist[position] + restraints
 
+
+
+    def prepare_no_refine(self, shx, rl, reslist):
+        shx.remove_acta_card()
+        shx.set_refinement_cycles('0')
+        rl.write_resfile(reslist, '.ins')
+        print('\nPerforming no fragment fit. Just prepared the .ins file for you.')
 
 
     def main(self):
@@ -501,48 +510,42 @@ class DSR():
 
         # write to file:
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
-        if not self.no_refine:
-            shx.set_refinement_cycles('0')
-        shx.remove_acta_card()
 
+        if self.no_refine:
+            self.prepare_no_refine(shx, rl, reslist)
+            sys.exit()
+        shx.set_refinement_cycles('0')
+        shx.remove_acta_card()
         rl.write_resfile(reslist, '.ins')
 
         #  Refine with L.S. 0 to insert the fragment
-        if not self.no_refine:
-            self.go_refine(shx)
-
+        self.go_refine(shx)
         # Display the results from the list file:
         lf = ListFile(basefilename)
         lst_file = lf.read_lst_file()
         lfd = Lst_Deviations(lst_file)
-        if not self.no_refine:
-            lfd.print_LS_fit_deviations()
+        lfd.print_LS_fit_deviations()
         cell = lf.get_lst_cell_parameters
 
         # open res file again to restore 8 refinement cycles:
         rl = ResList(self.res_file)
         reslist = rl.get_res_list()
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
-        if lst_file:
-            shx.check_refinement_results(lst_file)
+#        shx.restore_acta_card()
+        shx.check_refinement_results(lst_file)
 
-        if not self.no_refine:
-            self.set_post_refine_cycles(shx, '8')
-            shx.remove_afix()   # removes the afix 9
+        self.set_post_refine_cycles(shx, '8')
+        shx.remove_afix()   # removes the afix 9
 
-        if not self.no_refine:
-            if dsrp.dfix_active:
-                dfix_restraints = self.generate_dfix_restraints(lf, reslist, fragment_numberscheme,
-                                                            resi.get_resinumber, cell, dsrp.part)
-                self.use_generated_dfix_restraints(reslist, resi.get_residue_class, basefilename,
-                                                   dsr_line_number, resi.get_resinumber, dfix_restraints,
-                                                   delcount)
-        else:
-            pass # no dfix possible in this case, because we use SHELXL to generate connectivity list here.
-        if not self.no_refine:
-            rl.write_resfile(reslist, '.res')
-        else:
-            print('\nPerforming no fragment fit. Just prepared the .ins file for you.')
+        if dsrp.dfix_active:
+            dfix_restraints = self.generate_dfix_restraints(lf, reslist, fragment_numberscheme,
+                                                        resi.get_resinumber, cell, dsrp.part)
+            self.use_generated_dfix_restraints(reslist, resi.get_residue_class, basefilename,
+                                               dsr_line_number, resi.get_resinumber, dfix_restraints,
+                                               delcount)
+        # final resfile write:
+        rl.write_resfile(reslist, '.res')
+
 
 
 if __name__ == '__main__':

@@ -119,10 +119,25 @@ class ShelxlRefine():
         removes the ACTA card, bacause we refine with L.S. 0, wich is incompatible!
         '''
         regex = r'^ACTA'
-        acta_line = misc.find_multi_lines(self._reslist, regex)
-        if acta_line:
-            for i in acta_line:
+        acta_lines = misc.find_multi_lines(self._reslist, regex)
+        if acta_lines:
+            for i in acta_lines:
                 self._reslist[i] = 'rem ACTA\n'
+        return acta_lines
+
+
+    def restore_acta_card(self):
+        '''
+        restores original acta cards.
+
+        :param lines: list of lines with previous acta cards
+        '''
+        regex = r'^rem ACTA'
+        acta_lines = misc.find_multi_lines(self._reslist, regex)
+        if acta_lines:
+            for i in acta_lines:
+                self._reslist[i] = 'ACTA\n'
+
 
 
     def afix_is_closed(self, line):
