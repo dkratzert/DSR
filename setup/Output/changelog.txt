@@ -1,4 +1,5 @@
 Recent changes
+-1.5.12 Fixed bug in replace mode.
 -1.5.11 Ignore lines starting with # in the DB. Python3 compatible again. Lower case resi fixed. Exceptions get logged.
         Several improvements for external restraints.
 -1.5.10 External restraints without residues are now supported. Small fixes.
