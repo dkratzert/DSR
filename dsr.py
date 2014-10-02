@@ -26,7 +26,7 @@ from restraints import ListFile, Lst_Deviations, format_atom_names
 from restraints import Restraints, Adjacency_Matrix
 from misc import find_line_of_residue, remove_file
 
-VERSION = '1.5.11'
+VERSION = '1.5.12'
 # dont forget to change version in Innoscript file, spec file and deb file.
 program_name = '\n-----------------------------'\
            ' D S R - v{}' \
