@@ -24,7 +24,7 @@ from refine import ShelxlRefine
 from resi import Resi
 from restraints import ListFile, Lst_Deviations, format_atom_names
 from restraints import Restraints, Adjacency_Matrix
-from misc import find_line_of_residue
+from misc import find_line_of_residue, remove_file
 
 VERSION = '1.5.11'
 # dont forget to change version in Innoscript file, spec file and deb file.
@@ -330,7 +330,10 @@ class DSR():
             i = int(i)
             rle.remove_line(i, rem=False, remove=False, frontspace=True)
         h_delcount = fa.remove_adjacent_hydrogens(res_target_atoms, sfac_table)
-        return target_lines+h_delcount
+        if h_delcount:
+            return target_lines+h_delcount
+        else:
+            return target_lines
 
 
     def go_refine(self, shx):
@@ -556,13 +559,22 @@ if __name__ == '__main__':
         dsr = DSR()
     except Exception as e:
         import logging
-        logging.basicConfig(filename='dsr_bug_report.log')
+        import platform
+        remove_file('dsr_bug_report.log')
+        logging.basicConfig(filename='dsr_bug_report.log', level=logging.INFO)
+        logging.info('DSR version: {}'.format(VERSION))
+        logging.info('Python version: {}'.format(sys.version))
+        try:
+            logging.info('Platform: {} {}, {}'.format(platform.system(), platform.release(), ' '.join(platform.uname())))
+        except:
+            pass
         logger = logging.getLogger('dsr')
         ch = logging.StreamHandler()
         logger.addHandler(ch)
-        print('\n')
+        print('\n\n')
         print('Congratulations! You found a bug in DSR. Please send the file "report-bug.log" to dkratzert@gmx.de\n')
         logger.exception(e)
+
 
 
 
