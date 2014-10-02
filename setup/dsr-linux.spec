@@ -2,7 +2,7 @@ Summary: DSR - A program for modelling of disordered solvents with SHELXL
 Name: DSR
 Provides: DSR
 Packager: dkratzert@gmx.de
-Version: 1.5.10
+Version: 1.5.12
 Release: 0
 Requires: python, xclip
 BuildRoot: %{_tmppath}/%{name}-%{version}-build/opt/DSR
@@ -12,10 +12,10 @@ License: Beerware
 Source: DSR-%{version}.tar.gz
 Group: Productivity/Scientific/Chemistry
 %description
-This program consists of a text database with fragments of molecules and 
-the DSR program. It acts as a preprocessor for SHELXL .res files. The user 
-inserts a special command in the SHELXL .res file and the DSR program reads 
-this information to put a molecule or fragment with the desired atoms on the 
+This program consists of a text database with fragments of molecules and
+the DSR program. It acts as a preprocessor for SHELXL .res files. The user
+inserts a special command in the SHELXL .res file and the DSR program reads
+this information to put a molecule or fragment with the desired atoms on the
 position of the target atoms specified by the user. Bond restraints are applied
 from the database to the molecule.
 Development is on GitHub: https://github.com/dkratzert/dsr
