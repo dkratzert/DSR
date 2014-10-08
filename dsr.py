@@ -33,6 +33,7 @@ program_name = '\n-----------------------------'\
            ' ----------------------------------'.format(VERSION)
 
 # TODO and ideas:
+# -back-port atoms.py from db-export branch
 # -FLAT: see for every ring atom if there is also an attached atom in the same plane
 # -To manual: what to do if something does not work.
 # -try to iterate all target atoms if fit is really bad
