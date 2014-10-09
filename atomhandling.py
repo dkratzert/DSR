@@ -15,7 +15,7 @@ import string
 from atoms import Element as el
 from misc import find_line, get_atoms, find_multi_lines
 from constants import atomregex, SHX_CARDS
-import atoms
+from atoms import atoms
 #from collections import OrderedDict
 #import textwrap
 
@@ -37,7 +37,7 @@ def get_atomtypes(dbatoms):
     found = []
     # find lines with atoms and see if they are in the atom list
     # print get_atoms(dbatoms)
-    elements = [x.upper() for x in el.atoms]
+    elements = [x.upper() for x in atoms]
     for i in dbatoms:
         i = i[0].upper()    # i is the full atom name with number suffix like C1
         atom=''
@@ -417,7 +417,7 @@ class SfacTable():
         '''
         self._reslist = reslist
         self._db_atom_types = fragment_atom_types
-        self.elements = [x.upper() for x in el.atoms]
+        self.elements = [x.upper() for x in atoms]
 
 
 

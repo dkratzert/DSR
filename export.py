@@ -41,7 +41,6 @@ class Export():
     HKLF 4
     END
     '''
-
     def __init__(self, fragment_name, gdb, invert=False, export_all=False):
         '''
 
@@ -156,7 +155,6 @@ class Export():
     def copy_to_clipboard(self):
         '''
         copys the exported atoms to the clipboard including FRAG  FEND commands
-        fractional coordinates are converted to cartesian
 
         Export example:
 
@@ -170,8 +168,22 @@ class Export():
         C7   1     2.3940  -0.0040   1.3940
         FEND
         '''
-        from misc import frac_to_cart
         clip_text = []
+        atoms = self.format_atoms_for_export()
+        atoms = '\n'.join(atoms)
+        clip_text.append('FRAG')
+        clip_text.append('\n'+atoms)
+        clip_text.append('\nFEND')
+        text = ' '.join(clip_text)
+        pyperclip.setcb(text)
+        return True
+
+
+    def format_atoms_for_export(self):
+        '''
+        fractional coordinates are converted to cartesian
+        '''
+        from misc import frac_to_cart
         cell = self._clipcell[:]
         cell = [float(x) for x in cell]
         atoms = self._clipatoms
@@ -182,13 +194,7 @@ class Export():
         newlist = []
         for i in atoms:
             newlist.append('{:4.4s} {:4.2s} {:>7.4f}  {:>7.4f}  {:>7.4f}'.format(*i))
-        newlist = '\n'.join(newlist)
-        clip_text.append('FRAG')
-        clip_text.append('\n'+newlist)
-        clip_text.append('\nFEND')
-        text = ' '.join(clip_text)
-        pyperclip.setcb(text)
-        return True
+        return newlist
 
 
     def export_to_clip(self):

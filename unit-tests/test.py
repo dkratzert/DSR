@@ -10,7 +10,7 @@ from dsr import VERSION
 from afix import InsertAfix
 from atomhandling import get_atomtypes, FindAtoms, check_source_target, \
     rename_dbhead_atoms, SfacTable, Elem_2_Sfac, NumberScheme
-from atoms import Element
+from atoms import Element, atoms
 from dbfile import global_DB, invert_dbatoms_coordinates, ReadDB, ImportGRADE
 from dsrparse import DSR_Parser
 import misc
@@ -44,6 +44,17 @@ coord1a = ('0.100759', '0.449528', '0.438703') #F4
 coord2 = (-0.362398, 0.278516, 0.447770) #F10 6.052A
 cell = [10.5086, 20.9035, 20.5072, 90, 94.13, 90]
 cells = ['10.5086', '20.9035', '20.5072', '90', '94.13', '90']
+
+
+class ElementsTest(unittest.TestCase):
+    def setUp(self):
+        self.el = Element()
+
+    def testrun_get_atomic_number(self):
+        num = self.el.get_atomic_number('Fe')
+        ele = self.el.get_element(26)
+        self.assertEqual(num, 26)
+        self.assertEqual(ele, 'Fe')
 
 
 class get_atomtypesTest(unittest.TestCase):
@@ -383,7 +394,7 @@ class invert_fragmentTest(unittest.TestCase):
 
 class atomsTest(unittest.TestCase):
     def setUp(self):
-        self.atoms = Element.atoms
+        self.atoms = atoms
 
     def testrun_num_of_atoms(self):
         num_of_atoms = len(self.atoms)
