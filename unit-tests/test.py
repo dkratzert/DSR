@@ -4,6 +4,8 @@
 
 # test Afix: write_dbhead_to_file()
 # test resi module
+# test PART and OCC without parameter value supplied
+# test file without H atoms in replacemode
 
 import unittest
 from dsr import VERSION

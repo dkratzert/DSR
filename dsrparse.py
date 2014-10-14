@@ -30,7 +30,6 @@ class DSR_Parser():
     '''
     def __init__(self, reslist, rle):
         '''
-
         :param reslist: list of strings of .res file
         :param rle:  ResList() object
         '''
@@ -40,6 +39,7 @@ class DSR_Parser():
         self._dsr_regex = '^rem\s{1,5}DSR\s{1,5}.*'
         self._dsr_string = self.find_dsr_command(line=True).lower()
         self._dsr_list = misc.makelist(self._dsr_string)
+        self.dsr_dict = self.parse_dsr_line()
 
 
     def find_dsr_command(self, line=False):
@@ -189,14 +189,36 @@ class DSR_Parser():
         dfix = False
         if 'DFIX' in self._dsr_list:
             dfix = True
+        part = self.find_commands('PART')
+        try:
+            float(part)
+        except(ValueError):
+            print('Part without numerical value supplied.',
+                  'Please give a part number after PART in the DSR command.')
+            sys.exit(False)
+        if float(part) > 999:
+            print('only 99 parts allowed in SHELXL!')
+            sys.exit(False)
+        elif len(part) >= 2:
+            print('Illegal part number supplied. Please give just one digit in the DSR command.')
+            sys.exit(False)
+        occupancy = self.find_commands('OCC')
+        try:
+            if float(occupancy) > 999:
+                print('only 99 free variables allowed in SHELXL!')
+                sys.exit()
+        except(ValueError):
+            print('Occupancy without numerical value supplied. Please give an occupancy after OCC.')
+            sys.exit(False)
+
         dsr_dict = {
             'command': str(command),
             'fragment': str(fragment),
             'source': source,
             'target': target,
-            'part': self.find_commands('PART'),
+            'part': part,
             'dfix': dfix,
-            'occupancy': self.find_commands('OCC'),
+            'occupancy': occupancy,
             'resi': residue
             };
         return dsr_dict
@@ -207,52 +229,44 @@ class DSR_Parser():
         '''
         database fragment name
         '''
-        return self.parse_dsr_line()['fragment']
+        return self.dsr_dict['fragment']
 
     @property
     def occupancy(self):
         '''
         occupancy of the fragment
         '''
-        occupancy = self.parse_dsr_line()['occupancy']
-        if float(occupancy) > 999:
-            print('only 99 free variables allowed in SHELXL!')
-            sys.exit()
-        return occupancy
+        return self.dsr_dict['occupancy']
 
     @property
     def command(self):
-        return self.parse_dsr_line()['command']
+        return self.dsr_dict['command']
 
     @property
     def part(self):
-        part = self.parse_dsr_line()['part']
-        if float(part) > 999:
-            print('only 99 parts allowed in SHELXL!')
-            sys.exit()
-        return part
+        return self.dsr_dict['part']
 
     @property
     def source(self):
-        return self.parse_dsr_line()['source']
+        return self.dsr_dict['source']
 
     @property
     def target(self):
-        return self.parse_dsr_line()['target']
+        return self.dsr_dict['target']
 
     @property
     def resi(self):
         '''
         resi: empty string, dbfile, class, number or class and number
         '''
-        return self.parse_dsr_line()['resi']
+        return self.dsr_dict['resi']
 
     @property
     def dfix_active(self):
         '''
         dfix: bool True/False
         '''
-        dfix = self.parse_dsr_line()['dfix']
+        dfix = self.dsr_dict['dfix']
         if dfix and not self.part:
             print('You have to use the "PART" command if you use DFIX in DSR!')
             print('DSR is unable to find suitable atom connections without "PART".')
@@ -277,8 +291,8 @@ if __name__ == '__main__':
     rle = ResListEdit(reslist, res_file)
     #dsr_line = dsrp.parse_dsr_line()
     dsrp = DSR_Parser(reslist, rle)
-    #dsr_line = dsrp.parse_dsr_line()
-    #print dsr_line
+    dsr_line = dsrp.parse_dsr_line()
+    print(dsr_line)
     #   dsr_str = dsrp.find_dsr_command(line=False)
 
     #   dsr_num = dsrp.find_dsr_command(line=False)
