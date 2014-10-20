@@ -359,11 +359,15 @@ class global_DB():
 
     def get_head_lines(self, fragment, db, line):
         '''
-        return the head of the dbentry of the fragment as
-        list of strings
-        ['RESI CBZ', 'SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1',
+        return the head of the dbentry , the FRAG line and th ecomment of the 
+        fragment as list of strings
+        [['RESI CBZ', 'SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1',
         'SADI Cl1 C2 Cl1 C6',
-        'FLAT Cl1 > C6', 'SIMU Cl1 > C6', 'RIGU Cl1 > C6']
+        'FLAT Cl1 > C6', 'SIMU Cl1 > C6', 'RIGU Cl1 > C6'], [FRAG 17 1 1 1 90 90 90], 
+        [['Src:', 'pbe1pbe/6-311++G(3df,3pd),', 'Ilia', 'A.', 'Guzei'], 
+        ['Name:', '1,2-Dichlorobenzene,', 'C6H4Cl2']] ]
+        #####
+        [list, list, dict]
         :param fragment: fragment name
         :type fragment:  string
         :param db:  database name e.g. dsr_db or dsr_user_db
