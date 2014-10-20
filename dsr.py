@@ -348,7 +348,7 @@ class DSR():
             sys.exit()
 
 
-    def generate_dfix_restraints(self, lf, reslist, dbatoms, residue_number, cell, part=''):
+    def generate_dfix_restraints(self, lf, dbatoms, residue_number, cell, part=''):
         '''
         returns a string of DFIX restraints for all 1,2- and 1,3-Bond distances
         in the current fragment.
@@ -542,7 +542,7 @@ class DSR():
         shx.remove_afix()   # removes the afix 9
 
         if dsrp.dfix_active:
-            dfix_restraints = self.generate_dfix_restraints(lf, reslist, fragment_numberscheme,
+            dfix_restraints = self.generate_dfix_restraints(lf, fragment_numberscheme,
                                                         resi.get_resinumber, cell, dsrp.part)
             self.use_generated_dfix_restraints(reslist, resi.get_residue_class, basefilename,
                                                dsr_line_number, resi.get_resinumber, dfix_restraints,
