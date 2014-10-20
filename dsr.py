@@ -556,7 +556,9 @@ if __name__ == '__main__':
     '''main function'''
     #dsr = DSR(list_db=True)
     #dsr = DSR(res_file='p21c.res')
+    #import cProfile
     try:
+        #cProfile.run('dsr = DSR(res_file_name="p21c.res")', 'foo.profile')
         dsr = DSR()
     except Exception as e:
         import logging
