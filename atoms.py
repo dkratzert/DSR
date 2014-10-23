@@ -10,7 +10,7 @@ atoms = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg',
 
 element_base = {
     # number: name symbol ions
-    0: ['Neutron',     'n',  ()],
+    #0: ['Neutron',     'n',  ()],
     1: ['Hydrogen',    'H',  (1,)],
     2: ['Helium',      'He', ()],
     3: ['Lithium',     'Li', (1,)],
