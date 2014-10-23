@@ -559,7 +559,7 @@ if __name__ == '__main__':
     #import cProfile
     try:
         #cProfile.run('dsr = DSR(res_file_name="p21c.res")', 'foo.profile')
-        dsr = DSR()
+        dsr = DSR(list_db=True)
     except Exception as e:
         import logging
         import platform
