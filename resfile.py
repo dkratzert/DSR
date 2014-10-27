@@ -121,7 +121,6 @@ class ResListEdit():
         :param remove:  True/False, remove the line
         :param frontspace: True/False, activate removing with a front space
         '''
-
         line = self._reslist[linenum]
         if rem:   # comment out with 'rem ' in front
             self._reslist[linenum] = 'rem '+line

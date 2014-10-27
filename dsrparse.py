@@ -14,6 +14,7 @@ import re
 import sys
 import misc
 import textwrap
+import logging
 
 
 __metaclass__ = type  # use new-style classes
@@ -38,6 +39,10 @@ class DSR_Parser():
         self._rle = rle
         self._dsr_regex = '^rem\s{1,5}DSR\s{1,5}.*'
         self._dsr_string = self.find_dsr_command(line=True).lower()
+        try:
+          logging.info('DSR command line: {}'.format(self._dsr_string))
+        except:
+          pass
         self._dsr_list = misc.makelist(self._dsr_string)
         self.dsr_dict = self.parse_dsr_line()
 
