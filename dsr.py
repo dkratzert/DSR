@@ -13,6 +13,7 @@
 from __future__ import print_function
 import sys
 import os
+import logging
 from dsrparse import DSR_Parser
 from options import OptionsParser
 from dbfile import global_DB, ImportGRADE
@@ -26,7 +27,7 @@ from restraints import ListFile, Lst_Deviations, format_atom_names
 from restraints import Restraints, Adjacency_Matrix
 from misc import find_line_of_residue, remove_file
 
-VERSION = '1.5.12'
+VERSION = '1.5.13'
 # dont forget to change version in Innoscript file, spec file and deb file.
 program_name = '\n-----------------------------'\
            ' D S R - v{}' \
@@ -54,7 +55,6 @@ class DSR():
                  export_clip=None, import_grade=None, export_all=None,
                  list_db=None, no_refine=None, invert=None):
         '''
-
         :param res_file_name:  name of the SHELXL res file, like 'p21c.res'
         :type res_file_name:   string
         :param external_restr: turn external restraints file on or off
@@ -514,14 +514,12 @@ class DSR():
 
         # write to file:
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
-
         if self.no_refine:
             self.prepare_no_refine(shx, rl, reslist)
             sys.exit()
         shx.set_refinement_cycles('0')
         shx.remove_acta_card()
         rl.write_resfile(reslist, '.ins')
-
         #  Refine with L.S. 0 to insert the fragment
         self.go_refine(shx)
         # Display the results from the list file:
@@ -545,11 +543,10 @@ class DSR():
             dfix_restraints = self.generate_dfix_restraints(lf, fragment_numberscheme,
                                                         resi.get_resinumber, cell, dsrp.part)
             self.use_generated_dfix_restraints(reslist, resi.get_residue_class, basefilename,
-                                               dsr_line_number, resi.get_resinumber, dfix_restraints,
-                                               delcount)
+                                               dsr_line_number, resi.get_resinumber, 
+                                               dfix_restraints, delcount)
         # final resfile write:
         rl.write_resfile(reslist, '.res')
-
 
 
 if __name__ == '__main__':
@@ -559,24 +556,30 @@ if __name__ == '__main__':
     #import cProfile
     try:
         #cProfile.run('dsr = DSR(res_file_name="p21c.res")', 'foo.profile')
-        dsr = DSR(list_db=True)
-    except Exception as e:
-        import logging
-        import platform
         remove_file('dsr_bug_report.log')
         logging.basicConfig(filename='dsr_bug_report.log', level=logging.INFO)
+        dsr = DSR()
+    except Exception as e:
+        import platform
+        remove_file('dsr_bug_report.log')
         logging.info('DSR version: {}'.format(VERSION))
         logging.info('Python version: {}'.format(sys.version))
         try:
-            logging.info('Platform: {} {}, {}'.format(platform.system(), platform.release(), ' '.join(platform.uname())))
+            logging.info('Platform: {} {}, {}'.format(platform.system(),
+                               platform.release(), ' '.join(platform.uname())))
         except:
             pass
         logger = logging.getLogger('dsr')
         ch = logging.StreamHandler()
         logger.addHandler(ch)
         print('\n\n')
-        print('Congratulations! You found a bug in DSR. Please send the file "report-bug.log" to dkratzert@gmx.de\n')
+        print('Congratulations! You found a bug in DSR. Please send the file '\
+              '"report-bug.log" to dkratzert@gmx.de\n')
         logger.exception(e)
+    try:
+      logger()
+    except:
+      remove_file('dsr_bug_report.log')
 
 
 
