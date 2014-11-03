@@ -18,6 +18,7 @@ import tarfile
 
 from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS
 import misc
+from atoms import Element
 
 
 
@@ -491,6 +492,7 @@ class ImportGRADE():
         :param invert:
         :type invert:
         '''
+        self.el = Element()
         self.invert = invert
         self._getdb = ReadDB(dbdir=os.environ["DSR_DB_DIR"],
                  dbnames=["dsr_db.txt", "dsr_user_db.txt"])
@@ -654,6 +656,7 @@ class ImportGRADE():
                     continue
                 tmp = []
                 tmp.append(line[2])
+                tmp.append(line[11])
                 tmp.extend(line[6:9])
                 atomlines.append(tmp)
         if not atomlines:
@@ -727,8 +730,8 @@ class ImportGRADE():
                     comment = imported_entry[name]['comment']
                     comment = '\n'.join([' '.join(i) for i in comment if i])
                     head = '\n'.join([' '.join(x) for x in imported_entry[name]['head']])
-                    atoms = '\n'.join(['{:<6}  1  {:>8.3f}{:>8.3f}{:>8.3f}'\
-                            .format(y[0], float(y[1]), float(y[2]), float(y[3])) for y in atomlist])
+                    atoms = '\n'.join(['{:<6} -{}  {:>8.3f}{:>8.3f}{:>8.3f}'\
+                            .format(y[0], self.el.get_atomic_number(y[1]),float(y[2]), float(y[3]), float(y[4])) for y in atomlist])
                     resi_name = str(name)
                     cell = '  '.join(imported_entry[name]['fragline'])
                     dbentry = '<{}> \n{} \nRESI {} \n{} \n{} \n{} \n</{}>\n''\
