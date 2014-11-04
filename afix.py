@@ -208,8 +208,9 @@ class InsertAfix(object):
         # a list of zeroed atom coordinates (afix_list) is built:
         for i in self._dbatoms:
             l = []
+            sfac_num = str(e2s.elem_2_sfac(reversed_fragm_atom_types.pop()))
             l.insert(0, str(i[0]))         # Atomname
-            l.insert(1, str(e2s.elem_2_sfac(reversed_fragm_atom_types.pop())))  # SFAC number
+            l.insert(1, sfac_num)  # SFAC number
             l.insert(2, '0       ')
             l.insert(3, '0       ')
             l.insert(4, '0       ')
