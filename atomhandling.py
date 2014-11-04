@@ -12,7 +12,7 @@
 from __future__ import print_function
 import re, sys
 import string
-from atoms import Element as el
+from atoms import Element
 from misc import find_line, get_atoms, find_multi_lines
 from constants import atomregex, SHX_CARDS
 from atoms import atoms
@@ -39,7 +39,15 @@ def get_atomtypes(dbatoms):
     # print get_atoms(dbatoms)
     elements = [x.upper() for x in atoms]
     for i in dbatoms:
+        sfacnum = i[1]
         i = i[0].upper()    # i is the full atom name with number suffix like C1
+        try:
+            if int(sfacnum) <= 0:
+                el = Element()
+                found.append(el.get_element(abs(int(sfacnum))))
+                continue
+        except:
+          pass
         atom=''
         for x in i:       # iterate over characters in i
             if re.match(r'^[A-Za-z#]', x):
@@ -629,21 +637,22 @@ if __name__ == '__main__':
     db = gdb.build_db_dict()
 
     #resiopt = dsr_dict['resi']
-    #resiopt = False
+    resiopt = False
 
-    fragment = 'oc(cf3)3'
+    #fragment = 'oc(cf3)3'
+    fragment = 'PFA1'
     #fragline = gdb.get_fragline_from_fragment(fragment)
     dbatoms = gdb.get_atoms_from_fragment(fragment)
     #dbhead = gdb.get_head_from_fragment(fragment)
 
     dsrp = DSR_Parser(reslist, rle)
     dsr_dict = dsrp.parse_dsr_line()
-   # num = NumberScheme(reslist, dbatoms, resiopt)
+    num = NumberScheme(reslist, dbatoms, resiopt)
     # das printet auch auf bilschirm:
-  #  numbers = num.get_fragment_number_scheme()
-    #print('#######################')
-  #  print(numbers)
-    #print('#######################')
+    numbers = num.get_fragment_number_scheme()
+    print('#######################')
+    print(numbers)
+    print('#######################')
   #  dbtypes = get_atomtypes(dbatoms)
 
 

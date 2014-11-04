@@ -204,8 +204,8 @@ class DSR_Parser():
         if float(part) > 999:
             print('only 99 parts allowed in SHELXL!')
             sys.exit(False)
-        elif len(part) >= 2:
-            print('Illegal part number supplied. Please give just one digit in the DSR command.')
+        elif len(part) > 4:
+            print('Illegal part number supplied: {}. Please give just one digit (positive or negative) in the DSR command.'.format(part))
             sys.exit(False)
         occupancy = self.find_commands('OCC')
         try:

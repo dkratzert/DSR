@@ -270,9 +270,9 @@ class global_DB():
         '''
         atoms = []
         end = False
+        regex = re.escape(r'</{}>'.format(fragment.lower()))
         for i in self._db_plain_dict[db_name][int(line):]:
             i = i.strip('\n\r')
-            regex = re.escape(r'</{}>'.format(fragment.lower()))
             if re.match(regex, i.lower()):  # find the endtag of db entry
                 end = True
                 break
