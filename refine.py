@@ -15,7 +15,7 @@ import sys, os, re
 import shutil
 from resfile import ResList
 import misc
-from misc import find_line
+from misc import find_line, checkFileExist
 
 
 
@@ -102,7 +102,7 @@ class ShelxlRefine():
         '''
         Modifies the number of refinement cycles in the reslist.
         '''
-        status=self.checkFileExist(self.resfile_name+'.res')
+        status=checkFileExist(self.resfile_name+'.res')
         if not status:
             print('Error: unable to find res file!')
             sys.exit(-1)
@@ -189,23 +189,6 @@ class ShelxlRefine():
         else:
             if afix_line:
                 self._reslist[afix_line] = 'AFIX 0\n'
-
-
-
-    def checkFileExist(self, filename):
-        '''
-        check if shelxl has written a res file successfully
-        '''
-        status = False
-        res_filesize = 0
-        try:
-            res_filesize = int(os.stat(str(filename)).st_size)
-        except:
-            print('"{}" not found!'.format(filename))
-            status = False
-        if res_filesize > 10:
-            status = True
-        return status
 
 
     def backup_shx_file(self):
@@ -302,7 +285,7 @@ class ShelxlRefine():
         resfile = self.resfile_name+'.res'
         hklfile = self.resfile_name+'.hkl'
 
-        if not self.checkFileExist(hklfile):
+        if not checkFileExist(hklfile):
             print('You need a proper hkl file to use DSR.')
             sys.exit()
 
@@ -327,7 +310,7 @@ class ShelxlRefine():
         # output only the most importand things from shelxl:
         self.pretty_shx_output(output)
 
-        status = self.checkFileExist(resfile) # status is False if shelx was unsecessful
+        status = checkFileExist(resfile) # status is False if shelx was unsecessful
 
         if not status: # fail
             print('-----------------------------------------------------------------')
