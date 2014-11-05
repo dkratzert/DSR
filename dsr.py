@@ -26,6 +26,7 @@ from resi import Resi
 from restraints import ListFile, Lst_Deviations, format_atom_names
 from restraints import Restraints, Adjacency_Matrix
 from misc import find_line_of_residue, remove_file
+import misc
 
 VERSION = '1.5.13'
 # dont forget to change version in Innoscript file, spec file and deb file.
@@ -556,12 +557,12 @@ if __name__ == '__main__':
     #import cProfile
     try:
         #cProfile.run('dsr = DSR(res_file_name="p21c.res")', 'foo.profile')
-        remove_file('dsr_bug_report.log')
-        logging.basicConfig(filename='dsr_bug_report.log', level=logging.INFO)
-        dsr = DSR()
+        remove_file(misc.reportlog)
+        dsr = DSR(res_file_name='p21c.res')
     except Exception as e:
         import platform
-        remove_file('dsr_bug_report.log')
+        logging.basicConfig(filename=misc.reportlog, filemode='w', level=logging.DEBUG)
+        remove_file(misc.reportlog)
         logging.info('DSR version: {}'.format(VERSION))
         logging.info('Python version: {}'.format(sys.version))
         try:
@@ -573,14 +574,9 @@ if __name__ == '__main__':
         ch = logging.StreamHandler()
         logger.addHandler(ch)
         print('\n\n')
-        print('Congratulations! You found a bug in DSR. Please send the file '\
-              '"report-bug.log" to dkratzert@gmx.de\n')
+        print('Congratulations! You found a bug in DSR. Please send the file\n'\
+              ' "report-bug.log" to dkratzert@gmx.de\n')
         logger.exception(e)
-    try:
-      logger()
-    except:
-      remove_file('dsr_bug_report.log')
-
 
 
 

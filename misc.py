@@ -19,6 +19,29 @@ alphabet = string.ascii_uppercase
 
 __metaclass__ = type  # use new-style classes
 
+reportlog = 'dsr_bug_report.log'
+
+def checkFileExist(filename):
+    '''
+    Check if a file exists and has some content.
+    A file zize above 0 returns True.
+    A non-existing file returns False.
+    A file size of 0 retrurns 'zero'.
+    '''
+    filesize = False
+    status = False
+    try:
+        filesize = int(os.stat(str(filename)).st_size)
+    except:
+        print('File "{}" not found!'.format(filename))
+        status = False
+    if isinstance(filesize, int) and filesize > 0:
+        status = True
+    if isinstance(filesize, int) and filesize == 0:
+        status = 'zero'
+    return status
+
+
 def get_atoms(atlist):
     '''
     returns all atoms found in the input as list of lists

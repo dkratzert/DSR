@@ -39,12 +39,12 @@ class DSR_Parser():
         self._rle = rle
         self._dsr_regex = '^rem\s{1,5}DSR\s{1,5}.*'
         self._dsr_string = self.find_dsr_command(line=True).lower()
-        try:
-          logging.info('DSR command line: {}'.format(self._dsr_string))
-        except:
-          pass
         self._dsr_list = misc.makelist(self._dsr_string)
-        self.dsr_dict = self.parse_dsr_line()
+        try:
+          self.dsr_dict = self.parse_dsr_line()
+        except:
+          logging.basicConfig(filename=misc.reportlog, filemode='w', level=logging.DEBUG)
+          logging.info('DSR command line: {}'.format(self._dsr_string))
 
 
     def find_dsr_command(self, line=False):
