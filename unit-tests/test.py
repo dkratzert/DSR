@@ -718,7 +718,7 @@ class ImportGRADE_Test(unittest.TestCase):
             self.assertListEqual(['AL1', 'AL', '9.463', '-3.351', '3.397'], pdbatoms[0])
 
     def testrun_bild_grade_db_entry(self):
-        import db
+        import db # db.py with test data
         dbentry = self.ig.bild_grade_db_entry()
         self.maxDiff = None
         dbtest = db.dbtest
