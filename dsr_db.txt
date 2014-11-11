@@ -28,9 +28,11 @@
 # RESTRAINTS                       <- Any restraints and comments following the SHELXL syntax.
 #                                     You must enter at least one restraint! e.g. RIGU C1 > C7
 # FRAG 17 a b c alpha beta gamma   <- FRAG card with afix number and cell parameters.
-# Atom sfac-number coordinates     <- One isotropic atom per line following SHELX syntax.
-#   e.g. O1  2  x  y  z            <- The SFAC number is arbitrary.
-         C1  1  x  y  z               Atom types are recognized by its name.
+#      Atom  number  coordinates   <- One isotropic atom per line. 
+# e.g.  O1     1       x  y  z     <- Either the atom type is recognized by the atom name for 
+                                      positive numbers.
+# e.g.  O1    -8       x  y  z     <- Or the atom type is defined by the negative atomic     
+                                      number.
 # </name>                          <- End tag. Same as start tag but with /
 #
 # - Anything not being an atom after FRAG is ignored.
@@ -109,13 +111,13 @@ FLAT C5 C6 C7 C2
 FLAT C6 C7 C2 C3
 FLAT C7 C2 C3 C4
 FRAG  17  1  1  1  90  90  90
-C1     1       1.200    -0.023     3.615
-C2     1       1.203    -0.012     2.106
-C3     1       0.015    -0.011     1.390
-C4     1       0.015    -0.001     0.005
-C5     1       1.208     0.008    -0.688
-C6     1       2.398     0.006     0.009
-C7     1       2.394    -0.004     1.394
+C1     -6      1.200    -0.023     3.615
+C2     -6      1.203    -0.012     2.106
+C3     -6      0.015    -0.011     1.390
+C4     -6      0.015    -0.001     0.005
+C5     -6      1.208     0.008    -0.688
+C6     -6      2.398     0.006     0.009
+C7     -6      2.394    -0.004     1.394
 </TOLUENE>
 
 
@@ -917,20 +919,20 @@ SADI 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1
 SIMU O1 > F9
 RIGU O1 > F9
 FRAG 17  1  1  1  90  90  90
-O1   1      -0.01453        1.66590        0.10966
-C1   1      -0.00146        0.26814        0.06351
-C2   1      -1.13341       -0.23247       -0.90730
-F1   1      -2.34661       -0.11273       -0.34544
-F2   1      -0.96254       -1.50665       -1.29080
-F3   1      -1.12263        0.55028       -2.01763
-C3   1       1.40566       -0.23179       -0.43131
-F4   1       2.38529        0.42340        0.20561
-F5   1       1.53256        0.03843       -1.75538
-F6   1       1.57833       -1.55153       -0.25035
-C4   1      -0.27813       -0.21605        1.52795
-F7   1       0.80602       -0.03759        2.30431
-F8   1      -0.58910       -1.52859        1.53460
-F9   1      -1.29323        0.46963        2.06735
+O1   -8      -0.01453        1.66590        0.10966
+C1   -6      -0.00146        0.26814        0.06351
+C2   -6      -1.13341       -0.23247       -0.90730
+F1   -9      -2.34661       -0.11273       -0.34544
+F2   -9      -0.96254       -1.50665       -1.29080
+F3   -9      -1.12263        0.55028       -2.01763
+C3   -6       1.40566       -0.23179       -0.43131
+F4   -9       2.38529        0.42340        0.20561
+F5   -9       1.53256        0.03843       -1.75538
+F6   -9       1.57833       -1.55153       -0.25035
+C4   -6      -0.27813       -0.21605        1.52795
+F7   -9       0.80602       -0.03759        2.30431
+F8   -9      -0.58910       -1.52859        1.53460
+F9   -9      -1.29323        0.46963        2.06735
 </OC(CF3)3>
 
 

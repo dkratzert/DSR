@@ -21,7 +21,6 @@ import misc
 from atoms import Element
 
 
-
 def invert_dbatoms_coordinates(atoms):
     '''
     Inverts SHELXL atom coordinates like
