@@ -437,7 +437,8 @@ class DSR():
             else:
                 restraints = '{}'.format(dfix_restraints) # insert restraints after dsr_line_number
                 # position in res file is shifted up by the comment and the +filename instruction
-                reslist[position] = reslist[position] + restraints
+                reslist[position] = reslist[position] + restraints
+
 
 
 

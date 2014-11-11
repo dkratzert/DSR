@@ -715,7 +715,7 @@ class ImportGRADE_Test(unittest.TestCase):
         with open('./grade-PFA.pdb') as pdb_file:
             pdblines = pdb_file.readlines()
             pdbatoms = self.ig.get_pdbatoms(pdblines)
-            self.assertListEqual(['AL1', '9.463', '-3.351', '3.397'], pdbatoms[0])
+            self.assertListEqual(['AL1', 'AL', '9.463', '-3.351', '3.397'], pdbatoms[0])
 
     def testrun_bild_grade_db_entry(self):
         import db
