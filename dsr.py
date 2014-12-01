@@ -231,7 +231,7 @@ class DSR():
         for fragment in list(db.keys()):
             gdb.check_consistency(db[fragment], fragment)
             gdb.check_db_atom_consistency(db[fragment]['atoms'], fragment)
-            gdb.check_db_header_consistency(db[fragment]['head'], fragment)
+            gdb.check_db_header_consistency(db[fragment]['head'], db[fragment]['atoms'], fragment)
         sys.exit()
 
 

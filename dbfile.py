@@ -334,28 +334,42 @@ class global_DB():
                 continue
 
 
-    def check_db_header_consistency(self, head, fragment):
+    def check_db_header_consistency(self, restraints, atoms, fragment_name):
         '''
-        This method check the db header for consistency
-         - before frag only comments or cards are alllowed. in case off error raise warning
-           with fragment name and line itself
-        :param head: list of strings
-        :type head: list
-        :param fragment: fragment name
-        :type fragment: string
+        - Checks if the Atomnames in the restraints of the dbhead are also in
+          the list of the atoms of the respective dbentry.
+        - Checks wether restraints cards are vaid.
         '''
-        for n, line in enumerate(head):
-            line = line.upper()
-            line = line.split()
+        status = True
+        atoms = [i[0].upper() for i in atoms]
+        restraint_atoms_list = []
+        for n, line in enumerate(restraints):
             if not line:
                 continue
-            if line[0] not in SHX_CARDS:  # only the first 4 characters, because SADI_TOL would be bad
-                print('Bad line in header of database entry "{}" found!'.format(n, fragment))
+            # only the first 4 characters, because SADI_TOL would be bad:
+            if line[:4].upper() not in SHX_CARDS:  
+                status = False
+                print('Bad line in header of database entry "{}" found!'.format(n, fragment_name))
                 print(' '.join(line))
-                sys.exit(False)
-        return True
-
-
+                sys.exit(status)
+            if line[:4].upper() in RESTRAINT_CARDS:
+                line = line[5:].split()
+                for i in line:
+                    if i in ('>', '<'):
+                        continue
+                    try:
+                        float(i)
+                    except(ValueError):
+                        restraint_atoms_list.append(i)
+        for atom in restraint_atoms_list:
+            atom = atom.upper()
+            if not atom in atoms:
+                status = False
+                print('Bad atom "{}" in restraints of "{}".'.format(atom, fragment_name))
+        if not status:
+            print('\nCheck database entry.\n')
+        return status
+    
 
     def get_head_lines(self, fragment, db, line):
         '''
@@ -397,7 +411,6 @@ class global_DB():
             nhead.append(line)
         # nhead is list of strings
         nhead = misc.unwrap_head_lines(nhead)
-        self.check_db_header_consistency(nhead, fragment)
         if not comment:
             comment = ['']
         try:
@@ -443,9 +456,14 @@ class global_DB():
 
     def get_head_from_fragment(self, fragment):
         '''
-        returns the header of the dbentry of fragment
+        returns the header of the dbentry of fragment.
+        This header does not include comments, only the restraints.
+        
         '''
-        return self._dbentry_dict[fragment.lower()]['head']
+        head = self._dbentry_dict[fragment.lower()]['head']
+        atoms = self.get_atoms_from_fragment(fragment)
+        self.check_db_header_consistency(head, atoms, fragment)
+        return head
 
 
     def get_resi_from_fragment(self, fragment):
