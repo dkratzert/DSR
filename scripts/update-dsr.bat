@@ -2,9 +2,9 @@
 
 rem DSR startup script for windows
 echo %DSRDIR%
-set DSRDIR="F:\Programme\DSR"
+set DSRDIR="d:\Programme\DSR"
 rem cd C:\Users\ntrapp\Documents\GitHub\DSR
-set GIT="C:\Users\ntrapp\Documents\GitHub\DSR"
+set GIT="D:\GitHub\DSR\"
 rem set GIT="."
 
 xcopy /Y %GIT%\afix.py %DSRDIR%
