@@ -208,14 +208,19 @@ class DSR_Parser():
             print('Illegal part number supplied: {}. Please give just one digit (positive or negative) in the DSR command.'.format(part))
             sys.exit(False)
         occupancy = self.find_commands('OCC')
+        badocc_message = 'Occupancy without numerical value supplied. Please define occupancy value after OCC.'
+        badocc_status = False
         try:
             if float(occupancy) > 999:
                 print('only 99 free variables allowed in SHELXL!')
                 sys.exit()
         except(ValueError):
-            print('Occupancy without numerical value supplied. Please give an occupancy after OCC.')
-            sys.exit(False)
-
+            badocc_status = True
+        if 'OCC' in self._dsr_list and not occupancy:
+            badocc_status = True
+        if badocc_status:
+            print(badocc_message)
+            sys.exit()
         dsr_dict = {
             'command': str(command),
             'fragment': str(fragment),
