@@ -79,22 +79,15 @@ class DSR():
         '''
         # options from the commandline options parser:
         self.options = OptionsParser(program_name)
-        self.external = False
 
-        if not res_file_name and not external_restr:
-            if not self.options.res_file:
-                self.res_file = self.options.external_restr
-                self.external = True
-            else:
-                self.res_file = self.options.res_file
-                self.external = False
+        if not external_restr:
+            self.external = self.options.external_restr
         else:
-            if not res_file_name:
-                self.res_file = external_restr
-                self.external = True
-            else:
-                self.res_file = res_file_name
-                self.external = False
+            self.external = external_restr
+        if not res_file_name:
+            self.res_file = self.options.res_file
+        else:
+            self.res_file = res_file_name
         if not export_fragment:
             self.export_fragment = self.options.export_fragment
         else:
@@ -554,12 +547,12 @@ class DSR():
 if __name__ == '__main__':
     '''main function'''
     #dsr = DSR(list_db=True)
-    #dsr = DSR(res_file='p21c.res')
+    #dsr = DSR(res_file_name='p21c.res', external_restr=True)
     #import cProfile
     try:
         #cProfile.run('dsr = DSR(res_file_name="p21c.res")', 'foo.profile')
         remove_file(misc.reportlog)
-        dsr = DSR(res_file_name='p21c.res')
+        dsr = DSR()
     except Exception as e:
         import platform
         logging.basicConfig(filename=misc.reportlog, filemode='w', level=logging.DEBUG)
