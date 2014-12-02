@@ -584,7 +584,8 @@ class globalDB(unittest.TestCase):
             db = gdb.build_db_dict()
             fragment = 'dmel'
             head = db[fragment]['head']
-            gdb.check_db_header_consistency(head, fragment)
+            atoms = db[fragment]['atoms']
+            gdb.check_db_header_consistency(head, atoms, fragment)
 
     def testrun_header_consistency2(self):
         self.maxDiff = None
@@ -594,7 +595,8 @@ class globalDB(unittest.TestCase):
             db = gdb.build_db_dict()
             fragment = 'dmem'
             head = db[fragment]['head']
-            gdb.check_db_header_consistency(head, fragment)
+            atoms = db[fragment]['atoms']
+            gdb.check_db_header_consistency(head, atoms, fragment)
 
 
     def testrun_get_comment_from_fragment1(self):
@@ -1088,8 +1090,8 @@ class MiscTest(unittest.TestCase):
 
 
     def testrun_which(self):
-        which = misc.which('twunk_32')[0]
-        self.assertEqual(which, 'C:\\Windows\\twunk_32.exe')
+        which = misc.which('notepad')[0]
+        self.assertEqual(which, 'C:\\Windows\\system32\\notepad.exe')
 
 
     def testrun_zero(self):

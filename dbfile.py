@@ -99,7 +99,7 @@ class ReadDB():
         '''
         This method lists all fragment names in the database
         '''
-        regex = r'^<[^/].*>'  # regular expression for db tag.
+        regex = r'^<[^/].*>$'  # regular expression for db tag.
         dbnames = []
         dbkeys = list(self._databases.keys())  # names of the databases
         for db in dbkeys:
@@ -129,37 +129,18 @@ class ReadDB():
 
 class global_DB():
     '''
-    creates a final dictionary where all dbs are included:
-
-    {'toluene':
-       {'head'   : ('rem Source: Gaussian', 'SADI C1 C2 ...')
-        'resi'   : 'TOL'
-        'frag'   : 'FRAG 17 1 1 1 90 90 90'
-        'atoms'  : ('C1 1 0.234234 1.567234 0.845662', 'C2 1 ...')
-        'line'   : '123'
-        'db'     : 'dsr_db'
-        'comment': 'rem Source: Gaussian'
-       }
-     'benzene':
-       {'head'   : ()
-        'resi'   : ''
-        'frag'   : ''
-        'atoms   : ()
-        'line'   : ''
-        'db'     : 'dsr_db' or 'dsr_user_db'
-        'comment': ''
-       }
-    }
+    creates a final dictionary where all dbs are included
     '''
-
     def __init__(self, invert=False, dbdir=False,
                  dbnames=["dsr_db.txt", "dsr_user_db.txt"]):
         '''
         self._db_tags: ['12-DICHLOROBENZ', 590, 'dsr_db']
+        
         self._db_plain_dict: dictionary with plain text of the individual databases
                   {'dsr_db': ['# Fragment database of DSR.py\n', '#\n',
                               '# Some Fragments are from geometry optimizations with Gaussian 03:\n',
                               '#  Gaussian 03, Revision B.04,\n', '#  M. J. Frisch, et. al. Gaussian, ...}
+        
         self._dbentry_dict: dictionary with the individial fragments
                   {'benzene':
                     {'comment': ['Source: GRADE import', 'Name: Benzene, C6H6'],
@@ -220,13 +201,13 @@ class global_DB():
             comment = self.get_head_lines(fragment, db, line)[2]
             comment = [' '.join(x) for x in comment]
             db_dict[fragment] = {
-                'head'    : header,
-                'resi'    : residue,
-                'fragline': fragline.split(),
-                'atoms'   : atoms,
-                'line'    : line,
-                'db'      : db,
-                'comment' : comment,
+                'head'    : header, # header with just the restraints
+                'resi'    : residue, # the residue class
+                'fragline': fragline.split(), # FRAG ...
+                'atoms'   : atoms, # the atoms as lists of list
+                'line'    : line, # line number
+                'db'      : db,   # user or dsr db
+                'comment' : comment, # the comment line
                 'name'    : i[0]
                 }
         return db_dict
@@ -346,13 +327,15 @@ class global_DB():
         for n, line in enumerate(restraints):
             if not line:
                 continue
+            line = line.upper()
+            line2 = line.split()
             # only the first 4 characters, because SADI_TOL would be bad:
-            if line[:4].upper() not in SHX_CARDS:  
+            if line2[0] not in SHX_CARDS:  
                 status = False
                 print('Bad line in header of database entry "{}" found!'.format(n, fragment_name))
                 print(' '.join(line))
                 sys.exit(status)
-            if line[:4].upper() in RESTRAINT_CARDS:
+            if line[:4] in RESTRAINT_CARDS:
                 line = line[5:].split()
                 for i in line:
                     if i in ('>', '<'):
