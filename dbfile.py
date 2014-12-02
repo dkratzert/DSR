@@ -342,7 +342,7 @@ class global_DB():
         '''
         status = True
         atoms = [i[0].upper() for i in atoms]
-        restraint_atoms_list = []
+        restraint_atoms_list = set([])
         for n, line in enumerate(restraints):
             if not line:
                 continue
@@ -360,14 +360,14 @@ class global_DB():
                     try:
                         float(i)
                     except(ValueError):
-                        restraint_atoms_list.append(i)
+                        restraint_atoms_list.add(i)
         for atom in restraint_atoms_list:
             atom = atom.upper()
             if not atom in atoms:
                 status = False
-                print('Bad atom "{}" in restraints of "{}".'.format(atom, fragment_name))
+                print('\nBad atom "{}" in restraints of "{}".'.format(atom, fragment_name))
         if not status:
-            print('\nCheck database entry.\n')
+            print('Check database entry.\n')
         return status
     
 
