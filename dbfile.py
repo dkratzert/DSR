@@ -83,7 +83,7 @@ class ReadDB():
                 with open(filename, 'r') as f:
                     for line in f:
                         if line.startswith('#'):
-                            continue
+                            line = ' '
                         dblist.append(line)
             except(IOError) as e:
                 if not str(e).find('dsr_db'):
