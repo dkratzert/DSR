@@ -42,7 +42,7 @@ def get_atomtypes(dbatoms):
         sfacnum = i[1]
         i = i[0].upper()    # i is the full atom name with number suffix like C1
         try:
-            if int(sfacnum) <= 0:
+            if int(sfacnum) < 0:
                 el = Element()
                 found.append(el.get_element(abs(int(sfacnum))))
                 continue
@@ -50,7 +50,7 @@ def get_atomtypes(dbatoms):
           pass
         atom=''
         for x in i:       # iterate over characters in i
-            if re.match(r'^[A-Za-z#]', x):
+            if re.match(r'^[A-Za-z#]', x): # Alphabet and "#" as allowed characters in names
                 atom = atom+x      # add characters to atoms until numbers occur
             else:                  # now we have atoms like C, Ca, but also Caaa
                 break
