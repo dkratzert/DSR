@@ -30,7 +30,6 @@ pyperclip.py
 dsr_db.txt
 manuals/DSR-manual.pdf
 setup/OlexDSR.py
-setup/custom.xld
 setup/dsr.sh
 dsr
 example/p21c.hkl

@@ -40,7 +40,7 @@ DisableProgramGroupPage=yes
 AppendDefaultGroupName=True
 AppContact=dkratzert@gmx.de
 AppCopyright=Daniel Kratzert
-AppSupportPhone=+49 761 201 6156
+AppSupportPhone=+49 761 203 6156
 VersionInfoProductName=DSR - Disordered Structure Refinement
 AlwaysShowComponentsList=False
 ShowComponentSizes=False
@@ -64,7 +64,7 @@ Name: "modifypath"; Description: "Add application directory to your environmenta
 [Files]
 Source: "..\dsr_db.txt"; DestDir: "{app}"; Flags: ignoreversion; Permissions: users-modify
 Source: "..\dsr.bat"; DestDir: "{app}"; Flags: ignoreversion; Permissions: users-modify
-Source: "..\dsr-shelxle.bat"; DestDir: "{app}"; Flags: ignoreversion; Permissions: users-modify
+;Source: "..\dsr-shelxle.bat"; DestDir: "{app}"; Flags: ignoreversion; Permissions: users-modify
 ;Source: "C:\Users\ntrapp\Downloads\python-2.7.5.msi"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\dsr.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\manuals\DSR-manual.pdf"; DestDir: "{app}\manual"; Flags: ignoreversion

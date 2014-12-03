@@ -204,9 +204,13 @@ class DSR_Parser():
         if float(part) > 999:
             print('only 99 parts allowed in SHELXL!')
             sys.exit(False)
-        elif len(part) > 4:
-            print('Illegal part number supplied: {}. Please give just one digit (positive or negative) in the DSR command.'.format(part))
-            sys.exit(False)
+        try:
+            if len(part) > 4:
+                print('Illegal part number supplied: {}. Please give just one digit (positive or negative) in the DSR command.'.format(part))
+                sys.exit(False)
+        except(TypeError):
+            # no part specified
+            pass
         occupancy = self.find_commands('OCC')
         badocc_message = 'Occupancy without numerical value supplied. Please define occupancy value after OCC.'
         badocc_status = False

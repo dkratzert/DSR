@@ -79,15 +79,19 @@ class DSR():
         '''
         # options from the commandline options parser:
         self.options = OptionsParser(program_name)
-
-        if not external_restr:
-            self.external = self.options.external_restr
-        else:
-            self.external = external_restr
+        
+        self.external = False
         if not res_file_name:
             self.res_file = self.options.res_file
         else:
             self.res_file = res_file_name
+        
+        if self.options.external_restr:
+            self.external = True
+            self.res_file = self.options.external_restr
+        if external_restr:
+            self.external = True
+            self.res_file = external_restr
         if not export_fragment:
             self.export_fragment = self.options.export_fragment
         else:
