@@ -58,7 +58,6 @@ install -m 644 pyperclip.py /opt/DSR/pyperclip.py
 install -m 644 dsr_db.txt /opt/DSR/dsr_db.txt
 install -m 644 manuals/DSR-manual.pdf /opt/DSR/manuals/DSR-manual.pdf
 install -m 644 setup/dsr.sh /etc/profile.d/dsr.sh
-install -m 644 setup/OlexDSR.py /opt/DSR/setup/OlexDSR.py
 install -m 644 example/p21c.hkl /opt/DSR/example/p21c.hkl
 install -m 644 example/p21c.res /opt/DSR/example/p21c.res
 install -m 644 example/p21c_step0.res /opt/DSR/example/p21c_step0.res
@@ -102,7 +101,6 @@ cp setup/dsr.sh $RPM_BUILD_ROOT/etc/profile.d
 #/opt/DSR/dsr_user_db.txt
 /opt/DSR/manuals/DSR-manual.pdf
 #/opt/DSR/setup/set_environ.py
-/opt/DSR/setup/OlexDSR.py
 /opt/DSR/networkx/
 %attr(777, root, users) /opt/DSR/example
 %attr(666, root, users) /opt/DSR/example/p21c.hkl
