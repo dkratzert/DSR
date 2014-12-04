@@ -4,7 +4,7 @@ GIT="/home/daniel/Downloads/DSR"
 PACK="/usr/src/packages"
 cd $GIT
 
-dos2unix *
+#dos2unix *
 
 VERSION=$(cat $GIT/dsr.py|grep -e "VERSION ="|cut -d ' ' -f3|tr -d "\'")
 
@@ -20,7 +20,22 @@ cp $GIT/setup/dsr-linux.spec $PACK/SPECS
 
 cd $PACK/SPECS
 
-rpmbuild -bb dsr-linux.spec
+dos2unix dsr-linux.spec
+
+echo -e "\n####### building rpm #########" 
+
+#rpmbuild -bp dsr-linux.spec -v
+rpmbuild -bb dsr-linux.spec -v
+
+echo -e "####### rpm ready #########\n" 
+
+cp /usr/src/packages/RPMS/noarch/DSR-$VERSION-0.noarch.rpm /usr/src/packages/BUILD/
+cp /usr/src/packages/SOURCES/DSR-$VERSION.tar.gz /usr/src/packages/BUILD/
+
+#exit 
+#######################################
+## Debian:
+##########################################
 
 cd $GIT
 
@@ -32,5 +47,4 @@ dpkg-deb --build dsr
 
 mv dsr.deb dsr-$VERSION.deb 
 
-cp /usr/src/packages/RPMS/noarch/DSR-$VERSION-0.noarch.rpm /usr/src/packages/BUILD/
-cp /usr/src/packages/SOURCES/DSR-$VERSION.tar.gz /usr/src/packages/BUILD/
+
