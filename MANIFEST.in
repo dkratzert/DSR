@@ -1,0 +1,43 @@
+include README
+include afix.py
+
+include afix.py
+include atomhandling.py
+include atoms.py
+include constants.py
+include dbfile.py
+include dsr.py
+include dsr_db.txt
+include dsr_user_db.txt
+include dsrparse.py
+include export.py
+include misc.py
+include options.py
+include pyperclip.py
+include refine.py
+include resfile.py
+include resi.py
+include restraints.py
+include terminalsize.py
+include dsr
+include dsr.bat
+include manuals/DSR-manual.pdf
+include example/p21c.res 
+include example/p21c.hkl 
+include example/p21c_step0.res 
+include example/p21c_step1.res 
+include example/p21c_step2.res 
+include example/p21c_step3.res
+
+graft networkx
+
+prune .externalToolBuilders
+prune .git
+prune .settings
+prune example
+prune manuals
+prune old
+prune scripts
+prune setup
+prune unit-tests
+prune .
