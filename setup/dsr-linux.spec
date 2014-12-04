@@ -23,92 +23,92 @@ Development is on GitHub: https://github.com/dkratzert/dsr
 
 %prep
 %setup -q
-mkdir -p /opt/DSR
-mkdir -p /opt/DSR/manuals
-mkdir -p /opt/DSR/example
-mkdir -p /opt/DSR/setup
+mkdir -p %{prefix}/DSR
+mkdir -p %{prefix}/DSR/manuals
+mkdir -p %{prefix}/DSR/example
+mkdir -p %{prefix}/DSR/setup
 
 %post
-if [ ! -f /opt/DSR/dsr_user_db.txt ]
+if [ ! -f %{prefix}/DSR/dsr_user_db.txt ]
 then
-    touch /opt/DSR/dsr_user_db.txt
-    chmod a+rw /opt/DSR/dsr_user_db.txt
+    touch %{prefix}/DSR/dsr_user_db.txt
+    chmod a+rw %{prefix}/DSR/dsr_user_db.txt
 else
-    chmod a+rw /opt/DSR/dsr_user_db.txt
+    chmod a+rw %{prefix}/DSR/dsr_user_db.txt
 fi
-chmod a+rw /opt/DSR/example
+chmod a+rw %{prefix}/DSR/example
 source /etc/profile
 
 %install
-install -m 644 afix.py /opt/DSR/afix.py
-install -m 644 atomhandling.py /opt/DSR/atomhandling.py
-install -m 644 atoms.py /opt/DSR/atoms.py
-install -m 644 constants.py /opt/DSR/constants.py
-install -m 644 dbfile.py /opt/DSR/dbfile.py
-install -m 644 dsr.py /opt/DSR/dsr.py
-install -m 755 dsr /opt/DSR/dsr
-install -m 644 dsrparse.py /opt/DSR/dsrparse.py
-install -m 644 export.py /opt/DSR/export.py
-install -m 644 misc.py /opt/DSR/misc.py
-install -m 644 options.py /opt/DSR/options.py
-install -m 644 terminalsize.py /opt/DSR/terminalsize.py
-install -m 644 resfile.py /opt/DSR/resfile.py
-install -m 644 restraints.py /opt/DSR/restraints.py
-install -m 644 resi.py /opt/DSR/resi.py
-install -m 644 refine.py /opt/DSR/refine.py
-install -m 644 pyperclip.py /opt/DSR/pyperclip.py
-install -m 644 dsr_db.txt /opt/DSR/dsr_db.txt
-install -m 644 manuals/DSR-manual.pdf /opt/DSR/manuals/DSR-manual.pdf
+install -m 644 afix.py %{prefix}/DSR/afix.py
+install -m 644 atomhandling.py %{prefix}/DSR/atomhandling.py
+install -m 644 atoms.py %{prefix}/DSR/atoms.py
+install -m 644 constants.py %{prefix}/DSR/constants.py
+install -m 644 dbfile.py %{prefix}/DSR/dbfile.py
+install -m 644 dsr.py %{prefix}/DSR/dsr.py
+install -m 755 dsr %{prefix}/DSR/dsr
+install -m 644 dsrparse.py %{prefix}/DSR/dsrparse.py
+install -m 644 export.py %{prefix}/DSR/export.py
+install -m 644 misc.py %{prefix}/DSR/misc.py
+install -m 644 options.py %{prefix}/DSR/options.py
+install -m 644 terminalsize.py %{prefix}/DSR/terminalsize.py
+install -m 644 resfile.py %{prefix}/DSR/resfile.py
+install -m 644 restraints.py %{prefix}/DSR/restraints.py
+install -m 644 resi.py %{prefix}/DSR/resi.py
+install -m 644 refine.py %{prefix}/DSR/refine.py
+install -m 644 pyperclip.py %{prefix}/DSR/pyperclip.py
+install -m 644 dsr_db.txt %{prefix}/DSR/dsr_db.txt
+install -m 644 manuals/DSR-manual.pdf %{prefix}/DSR/manuals/DSR-manual.pdf
 install -m 644 setup/dsr.sh /etc/profile.d/dsr.sh
-install -m 644 example/p21c.hkl /opt/DSR/example/p21c.hkl
-install -m 644 example/p21c.res /opt/DSR/example/p21c.res
-install -m 644 example/p21c_step0.res /opt/DSR/example/p21c_step0.res
-install -m 644 example/p21c_step1.res /opt/DSR/example/p21c_step1.res
-install -m 644 example/p21c_step2.res /opt/DSR/example/p21c_step2.res
-install -m 644 example/p21c_step3.res /opt/DSR/example/p21c_step3.res
-install -m 644 example/p21c-step2.ins /opt/DSR/example/p21c-step2.ins
-install -d -m 755 networkx /opt/DSR/networkx
-mkdir -p $RPM_BUILD_ROOT/opt/DSR
+install -m 644 example/p21c.hkl %{prefix}/DSR/example/p21c.hkl
+install -m 644 example/p21c.res %{prefix}/DSR/example/p21c.res
+install -m 644 example/p21c_step0.res %{prefix}/DSR/example/p21c_step0.res
+install -m 644 example/p21c_step1.res %{prefix}/DSR/example/p21c_step1.res
+install -m 644 example/p21c_step2.res %{prefix}/DSR/example/p21c_step2.res
+install -m 644 example/p21c_step3.res %{prefix}/DSR/example/p21c_step3.res
+install -m 644 example/p21c-step2.ins %{prefix}/DSR/example/p21c-step2.ins
+install -d -m 755 networkx %{prefix}/DSR/networkx
+mkdir -p $RPM_BUILD_ROOT%{prefix}/DSR
 dos2unix *
-cp -R * $RPM_BUILD_ROOT/opt/DSR
+cp -R * $RPM_BUILD_ROOT%{prefix}/DSR
 mkdir -p $RPM_BUILD_ROOT/etc/profile.d
 cp setup/dsr.sh $RPM_BUILD_ROOT/etc/profile.d
 
 
 %files
-%doc /opt/DSR/manuals/DSR-manual.pdf
+%doc %{prefix}/DSR/manuals/DSR-manual.pdf
 #%defattr(644, root, root, 755)
 %attr(644, root, root) /etc/profile.d/dsr.sh
 %config /etc/profile.d/dsr.sh
-#%attr(666, root, users) /opt/DSR/dsr_user_db.txt
-%attr(755, root, users) /opt/DSR/dsr
-/opt/DSR/afix.py
-/opt/DSR/atomhandling.py
-/opt/DSR/atoms.py
-/opt/DSR/setup/dsr.sh
-/opt/DSR/constants.py
-/opt/DSR/dbfile.py
-/opt/DSR/dsr.py
-/opt/DSR/dsrparse.py
-/opt/DSR/export.py
-/opt/DSR/misc.py
-/opt/DSR/terminalsize.py
-/opt/DSR/options.py
-/opt/DSR/resfile.py
-/opt/DSR/restraints.py
-/opt/DSR/resi.py
-/opt/DSR/refine.py
-/opt/DSR/pyperclip.py
-/opt/DSR/dsr_db.txt
-#/opt/DSR/dsr_user_db.txt
-/opt/DSR/manuals/DSR-manual.pdf
-#/opt/DSR/setup/set_environ.py
-/opt/DSR/networkx/
-%attr(777, root, users) /opt/DSR/example
-%attr(666, root, users) /opt/DSR/example/p21c.hkl
-%attr(666, root, users) /opt/DSR/example/p21c.res
-%attr(666, root, users) /opt/DSR/example/p21c_step0.res
-%attr(666, root, users) /opt/DSR/example/p21c_step1.res
-%attr(666, root, users) /opt/DSR/example/p21c_step2.res
-%attr(666, root, users) /opt/DSR/example/p21c_step3.res
-%attr(666, root, users) /opt/DSR/example/p21c-step2.ins
+#%attr(666, root, users) %{prefix}/DSR/dsr_user_db.txt
+%attr(755, root, users) %{prefix}/DSR/dsr
+%{prefix}/DSR/afix.py
+%{prefix}/DSR/atomhandling.py
+%{prefix}/DSR/atoms.py
+%{prefix}/DSR/setup/dsr.sh
+%{prefix}/DSR/constants.py
+%{prefix}/DSR/dbfile.py
+%{prefix}/DSR/dsr.py
+%{prefix}/DSR/dsrparse.py
+%{prefix}/DSR/export.py
+%{prefix}/DSR/misc.py
+%{prefix}/DSR/terminalsize.py
+%{prefix}/DSR/options.py
+%{prefix}/DSR/resfile.py
+%{prefix}/DSR/restraints.py
+%{prefix}/DSR/resi.py
+%{prefix}/DSR/refine.py
+%{prefix}/DSR/pyperclip.py
+%{prefix}/DSR/dsr_db.txt
+#%{prefix}/DSR/dsr_user_db.txt
+%{prefix}/DSR/manuals/DSR-manual.pdf
+#%{prefix}/DSR/setup/set_environ.py
+%{prefix}/DSR/networkx/
+%attr(777, root, users) %{prefix}/DSR/example
+%attr(666, root, users) %{prefix}/DSR/example/p21c.hkl
+%attr(666, root, users) %{prefix}/DSR/example/p21c.res
+%attr(666, root, users) %{prefix}/DSR/example/p21c_step0.res
+%attr(666, root, users) %{prefix}/DSR/example/p21c_step1.res
+%attr(666, root, users) %{prefix}/DSR/example/p21c_step2.res
+%attr(666, root, users) %{prefix}/DSR/example/p21c_step3.res
+%attr(666, root, users) %{prefix}/DSR/example/p21c-step2.ins
