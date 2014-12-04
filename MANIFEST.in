@@ -1,6 +1,5 @@
 include README
 include afix.py
-
 include afix.py
 include atomhandling.py
 include atoms.py
