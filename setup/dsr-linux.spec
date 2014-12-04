@@ -5,7 +5,8 @@ Packager: dkratzert@gmx.de
 Version: 1.5.13
 Release: 0
 Requires: python, xclip
-BuildRoot: %{_tmppath}/%{name}-%{version}-build/opt/DSR
+Prefix: /opt
+BuildRoot: %{_tmppath}/%{name}-%{version}-build
 BuildArch: noarch
 URL: https://www.xs3.uni-freiburg.de/research/dsr
 License: Beerware
