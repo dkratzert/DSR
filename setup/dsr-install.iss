@@ -83,8 +83,8 @@ Source: "..\restraints.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\resfile.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\resi.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\pyperclip.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\setup\OlexDSR.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\setup\custom.xld"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "..\setup\OlexDSR.py"; DestDir: "{app}"; Flags: ignoreversion
+;Source: "..\setup\custom.xld"; DestDir: "{app}"; Flags: ignoreversion
 ;Source: "C:\Users\ntrapp\Documents\Python27\*"; DestDir: "{app}\Python27"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "C:\Python27-dsr\*"; DestDir: "{app}\Python27"; Flags: ignoreversion createallsubdirs recursesubdirs
 ;Source: "..\setup\vcredist_x86.exe"; DestDir: "{app}"; Flags: ignoreversion
