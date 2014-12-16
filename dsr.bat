@@ -4,6 +4,8 @@ rem DSR startup script for windows
 rem echo %DSRDIR%
 rem set DSRDIR="C:\Program Files (x86)\DSR\"
 
+TITLE "DSR - Disordered Structure Refinement"
+
 SET cmd=%1
 SET args=%*
 
