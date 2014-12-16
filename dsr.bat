@@ -36,3 +36,6 @@ IF NOT DEFINED DSRDIR (GOTO setdsrdir) ELSE (GOTO arguments)
 
 
 :end
+rem This is for ShelXle. Otherwise the DSR output would
+rem vanish immediately in detached mode.
+IF /i %0 NEQ dsr PAUSE
