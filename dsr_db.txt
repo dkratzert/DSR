@@ -733,15 +733,12 @@ C6    1    0.214656    0.164146    0.107732
 
 
 
-<NEt4>
+<et4N+>
 rem Src: CCDC ABENRE
-rem Name: Tetraethylammonium, C8H20N+, NEt4
+rem Name: Tetraethylammonium, C8H20N+, NEt4+, et4N+
 RESI NET4
-SADI N1 C1 N1 C7 N1 C3 N1 C5
-SADI C1 C2 C3 C4 C5 C6 C7 C8
-SADI 0.04 C1 C3 C3 C5 C5 C7 C7 C1
-SADI 0.08 C2 C4 C4 C6 C6 C8
-SADI 0.04 N1 C2 N1 C4 N1 C6 N1 C8
+SAME N1 C3 > C8 C1 C2
+SAME N1 C1 C2 C5 C6
 SIMU N1 > C8
 RIGU N1 > C8
 rem these FLAT restraints might me removed later:
@@ -757,7 +754,7 @@ C5    2  0.448800  0.305400 -0.078300
 C6    2  0.425700  0.413400 -0.084300
 C7    2  0.464300  0.310400  0.072100
 C8    2  0.554900  0.316400  0.069100
-</NEt4>
+</et4N+>
 
 
 
