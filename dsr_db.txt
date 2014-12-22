@@ -903,7 +903,7 @@ C15  1   -2.1106   2.5726  -1.2661
 
 
 <OC(CF3)3>
-rem Name: Nonafluoro-tert-butyl, (CF3)3CO-
+rem Name: Nonafluoro-tert-butoxy, [(CF3)3CO]-
 rem Src: TURBOMOLE V6.0  B-P86/def-SV(P)
 RESI CCF3
 SADI 0.02 C1 C2 C1 C3 C1 C4
