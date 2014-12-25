@@ -198,7 +198,7 @@ class global_DB():
             fragline = headboth[1]
             residue = self.get_residue_from_head(header, fragment)
             atoms = self.get_fragment_atoms(fragment, db, line)
-            comment = self.get_head_lines(fragment, db, line)[2]
+            comment = headboth[2]
             comment = [' '.join(x) for x in comment]
             db_dict[fragment] = {
                 'head'    : header, # header with just the restraints
