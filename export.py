@@ -310,7 +310,8 @@ class Export():
                     break
         except() as e:
             print('unable to run platon!', e)
-            extensions = ('.bin', '.def', '.hkp', '.ins', '.pjn', '.lis', '.res', '.sar', '.sum', '.eld', '.out')
+            extensions = ('.bin', '.def', '.hkp', '.ins', '.pjn', '_pl.spf', 
+                          '.lis', '.res', '.sar', '.sum', '.eld', '.out')
             try:
                 plat.terminate()
             except:
@@ -320,7 +321,7 @@ class Export():
             sys.exit()
 
         misc.remove_file('platon.out', terminate=plat)
-        extensions = ('.lis', '.eld', '.def', '.pjn')
+        extensions = ('.lis', '.eld', '.def', '.pjn', '_pl.spf')
         for i in extensions:
             misc.remove_file(self._fragment_name+i)
         misc.remove_file(insfile)
@@ -353,6 +354,7 @@ class Export():
 
         misc.remove_file(self._fragment_name+'.lis')
         misc.remove_file(self._fragment_name+'.eld')
+        misc.remove_file(self._fragment_name+'_pl.spf')
         plat.terminate()
 
 
