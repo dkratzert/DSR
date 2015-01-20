@@ -1424,7 +1424,7 @@ C10  6   -0.058852  0.386127  0.561687
 
 <Nitrate>
 rem Src: pbe1pbe/6-311+G(3df), Ilia A. Guzei
-REM Name: Nitrate anion, [NO3]2-
+REM Name: Nitrate anion, [NO3]-
 RESI NITR
 DFIX 0.01 1.246 N1 O1 N1 O2 N1 O3
 DFIX 0.01 2.158 O1 O2 O2 O3 O3 O1
