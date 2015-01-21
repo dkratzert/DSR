@@ -210,6 +210,9 @@ class global_DB():
                 'comment' : comment, # the comment line
                 'name'    : i[0]
                 }
+        if not db_dict:
+            print('No database dsr_db.txt found!\n')
+            sys.exit()
         return db_dict
 
 
