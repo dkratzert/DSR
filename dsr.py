@@ -209,6 +209,7 @@ class DSR():
                 '-----------------------------------')
         frags = sorted(db.keys())
         names_list = []
+        num = 0
         for num, i in enumerate(frags):
             fragname = gdb.get_comment_from_fragment(i)
             names_list.append([i, fragname])
@@ -224,7 +225,6 @@ class DSR():
         print('\n {} Fragments in the database(s).'.format(num),
               '\n Feel free to add more fragments to "{}dsr_user_db.txt"' \
               '\n or mail them to dkratzert@gmx.de.'.format(dbdir + os.path.sep))
-
         for fragment in list(db.keys()):
             gdb.check_consistency(db[fragment], fragment)
             gdb.check_db_atom_consistency(db[fragment]['atoms'], fragment)
