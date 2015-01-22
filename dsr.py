@@ -28,19 +28,15 @@ from restraints import Restraints, Adjacency_Matrix
 from misc import find_line_of_residue, remove_file
 import misc
 
-VERSION = '1.5.13'
+VERSION = '1.5.14'
 # dont forget to change version in Innoscript file, spec file and deb file.
 program_name = '\n-----------------------------'\
            ' D S R - v{}' \
            ' ----------------------------------'.format(VERSION)
 
 # TODO and ideas:
-# -back-port atoms.py from db-export branch
-# -FLAT: see for every ring atom if there is also an attached atom in the same plane
-# -To manual: what to do if something does not work.
-# -try to iterate all target atoms if fit is really bad
-# -select atoms in shelxle > export to db
-# -If second part of a disordered atom is very close to the first, make EADP?
+# -create own connectivity table for DFIX.
+# -If second part of a disordered atom is very close to the first, make EADP.
 # -detect empty residues and parts after atom deletion
 # -import also from pdb, dfix, obprop alone.
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
