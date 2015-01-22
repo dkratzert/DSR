@@ -325,7 +325,7 @@ def remove_partsymbol(atom):
         else:
             atom = prefix+'_'+suffix
     else:
-        atom = atom+'_0  ! This restraint might be inaccurate.'
+        atom = atom+' ! <-- This restraint might be inaccurate.'
     return atom
 
 

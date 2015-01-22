@@ -99,10 +99,10 @@ class ReadDB():
         '''
         This method lists all fragment names in the database
         '''
-        regex = r'^<[^/].*>$'  # regular expression for db tag.
+        regex = r'^<[^/].*>'  # regular expression for db tag.
         dbnames = []
-        dbkeys = list(self._databases.keys())  # names of the databases
-        for db in dbkeys:
+        #dbkeys = list(self._databases.keys())  # names of the databases
+        for db in self._databases:
             for num, line in enumerate(self._databases[db]):
                 if re.match(regex, line):
                     frag = [str(line.strip('<> \n\r')).upper(), num + 1, db]  # stripping spaces is important here!

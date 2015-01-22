@@ -126,14 +126,14 @@ class Export():
             i[0] = i[0]+' ' # more space for long atom names
             i.append('11.00   0.04')  #make it a full qualified atom line with occupancy and U value
 
-        final_atomlist = ll_to_string(self._dbatoms)      #convert to string
+        final_atomlist = [('{:4.4s} {:4.2s} {:>8.5f}  {:>8.5f}  {:>8.5f}\n'.format(
+           str(i[0]), str(i[1]), float(i[2]), float(i[3]), float(i[4]))) for i in self._dbatoms] 
         res_export.append('TITL '+self._fragment_name+'\n')     #title card with fragment name
         try:
             res_export.append('REM This file was exported by DSR version {}\n'.format(VERSION))
         except(NameError):
             pass
         comment = '\nREM '.join(self._comment)
-
         res_export.append('REM '+comment+'\n')
         res_export.append('CELL 0.71073 '+self._cellstring+'\n')   # the cell with wavelength
         res_export.append('ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n')
@@ -146,9 +146,9 @@ class Export():
             res_export.append('rem Restraints from DSR database:\n')
             restraints = wrap_headlines(self._head)
             res_export.append(''.join(restraints))
-        res_export.append('\n\n')
+        res_export.append('\n')
         res_export.append(final_atomlist)                         # the atoms
-        res_export.append('\nHKLF 4\nEND\n')         # the end
+        res_export.append('\nHKLF 0\nEND\n')         # the end
         return res_export
 
 

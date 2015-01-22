@@ -8,6 +8,10 @@ TITLE "DSR - Disordered Structure Refinement"
 
 SET cmd=%1
 SET args=%*
+rem ###############################################################
+rem # deletes '"' from arguments for compatibility with ShelXle:  #
+rem ###############################################################
+SET args=%args:"=%
 
 rem cls
 
@@ -36,6 +40,8 @@ IF NOT DEFINED DSRDIR (GOTO setdsrdir) ELSE (GOTO arguments)
 
 
 :end
-rem This is for ShelXle. Otherwise the DSR output would
-rem vanish immediately in detached mode.
+rem ########################################################
+rem # This is for ShelXle. Otherwise the DSR output would  #
+rem # vanish immediately in detached mode.                 #
+rem ########################################################
 IF /i %0 NEQ dsr PAUSE
