@@ -573,7 +573,7 @@ if __name__ == '__main__':
         logger.addHandler(ch)
         print('\n\n')
         print('Congratulations! You found a bug in DSR. Please send the file\n'\
-              ' "report-bug.log" to dkratzert@gmx.de\n')
+              ' "report-bug.log" and the .res file (if possible) to dkratzert@gmx.de\n')
         logger.exception(e)
 
 

@@ -686,7 +686,7 @@ F2     9     1.713722   -1.355385    0.000000
 
 <Napht>
 rem Src: b3lyp/6-311+G(d), Ilia A. Guzei
-REM: Name: Naphthalene C10H8
+REM: Name: Naphthalene, C10H8
 RESI NAPH
 SADI 0.0200  C2 C3  C1 C2  C3 C4  C4 C4A  C1 C8A  C4A C5  C5 C6  C6 C7  C8 C8A =
      C7 C8 C4A C8A
