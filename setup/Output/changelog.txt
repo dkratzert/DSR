@@ -1,6 +1,7 @@
 Recent changes
--1.5.13 Improved error logging. Implemented Support for negative atomic number for atom type. Fixed some typos in 
-        the database.
+-1.5.14 Bug fixes, nicer export, warning about missing database, database updates, manual updates.
+-1.5.13 Improved error logging. Implemented Support for negative atomic number for atom type. 
+        Fixed some typos in the database.
 -1.5.12 Fixed bug in replace mode.
 -1.5.11 Ignore lines starting with # in the DB. Python3 compatible again. Lower case resi fixed. Exceptions get logged.
         Several improvements for external restraints.
