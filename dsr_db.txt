@@ -1404,7 +1404,7 @@ C3    6     -1.292738   -0.614241    0.000006
 
 
 <Ethylac>
-rem Src: Own measurement
+rem Src: Daniel Kratzert
 rem Name: Ethyl acetate, C4H8O2
 RESI ETAC
 SIMU O1 > C4
