@@ -44,4 +44,4 @@ rem ########################################################
 rem # This is for ShelXle. Otherwise the DSR output would  #
 rem # vanish immediately in detached mode.                 #
 rem ########################################################
-IF /i %0 NEQ dsr PAUSE
+rem IF /i %0 NEQ dsr PAUSE
