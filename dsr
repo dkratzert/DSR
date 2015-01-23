@@ -1,10 +1,12 @@
 #!/bin/bash
+
 if [ clear ]; then
     clear
 fi
 # initialize DSR_DIR to default directory if not set properly
 if [ ! $DSR_DIR ]; then 
     DSR_DIR=/opt/DSR
+    DSR_DB_DIR=/opt/DSR
 fi
 
 # test if python 2.7 is available

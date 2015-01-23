@@ -65,7 +65,7 @@ chmod a+rw %{buildroot}%{prefix}/DSR/example
 echo "DSR was installed in $RPM_INSTALL_PREFIX/DSR"
 sed /etc/profile.d/dsr.sh -i -e "s./opt.$RPM_INSTALL_PREFIX."
 sed $RPM_INSTALL_PREFIX/DSR/dsr -i -e "s./opt.$RPM_INSTALL_PREFIX."
-source /etc/profile
+source /etc/profile.d/dsr.sh
 
 
 %install
