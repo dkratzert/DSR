@@ -5,4 +5,4 @@ touch /opt/DSR/dsr_user_db.txt
 chmod a+rw /opt/DSR/dsr_user_db.txt
 chmod 644 /etc/profile.d/dsr.sh
 chmod a+w /opt/DSR/example
-source /etc/profile
+source /etc/profile.d/dsr.sh
