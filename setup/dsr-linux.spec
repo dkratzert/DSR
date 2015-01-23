@@ -62,10 +62,10 @@ mkdir -p %{buildroot}/etc/profile.d
 chmod a+rw %{buildroot}%{prefix}/DSR/example
 
 %post
-echo "DSR was installed in $RPM_INSTALL_PREFIX/DSR"
-sed /etc/profile.d/dsr.sh -i -e "s./opt.$RPM_INSTALL_PREFIX."
-sed $RPM_INSTALL_PREFIX/DSR/dsr -i -e "s./opt.$RPM_INSTALL_PREFIX."
+echo "DSR was installed in /opt/DSR"
+echo "Please restart your system to ensure that the environment variables are set."
 source /etc/profile.d/dsr.sh
+
 
 
 %install
