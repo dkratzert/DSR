@@ -506,7 +506,7 @@ class ImportGRADE():
         gradefiles = self.get_gradefiles(grade_tar_file)
         self._pdbfile = gradefiles[0]
         self._dfixfile = gradefiles[1]
-        self._obpropfile = gradefiles[2]
+        #self._obpropfile = gradefiles[2]
         self._atoms = self.get_pdbatoms(self._pdbfile)
         self._firstlast = self.get_first_last_atom(self._atoms)
         self._restraints = self.get_restraints()
@@ -536,21 +536,21 @@ class ImportGRADE():
                 pdbfile = gradefile.extractfile(i)
             if i.endswith('.dfix'):
                 dfixfile = gradefile.extractfile(i)
-            if i.endswith('obprop.txt'):
-                propfile = gradefile.extractfile(i)
+            #if i.endswith('obprop.txt'):
+            #    propfile = gradefile.extractfile(i)
         if not pdbfile:
             print(' .pdb file not found!')
             self.import_error(grade_tar_file)
         elif not dfixfile:
             print(' .dfix file not found!')
             self.import_error(grade_tar_file)
-        elif not propfile:
-            print(' obprop.txt file not found!')
-            self.import_error(grade_tar_file)
+        #elif not propfile:
+        #    print(' obprop.txt file not found!')
+        #    self.import_error(grade_tar_file)
         output = []
         output.append(self._read_tarfile_as_ascii(pdbfile))
         output.append(self._read_tarfile_as_ascii(dfixfile))
-        output.append(self._read_tarfile_as_ascii(propfile))
+        #output.append(self._read_tarfile_as_ascii(propfile))
         return output
 
 
@@ -577,9 +577,11 @@ class ImportGRADE():
                 line = line.replace('_', '')
                 line = line.replace('-', '')
                 line = line.replace('#', '')
-                line = line.split()
                 break
+        if not line:
+            return 'NONE'
         try:
+            line = line.split()
             line[4]
         except(IndexError):
             return 'NONE'
