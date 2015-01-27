@@ -510,7 +510,7 @@ class ImportGRADE():
         self._atoms = self.get_pdbatoms(self._pdbfile)
         self._firstlast = self.get_first_last_atom(self._atoms)
         self._restraints = self.get_restraints()
-        self._resi_name = self.get_name_from_obprop(self._obpropfile)
+        self._resi_name = self.get_name_from_pdbfile(self._pdbfile)
         if not isinstance(self._resi_name, str):
                 self._resi_name = self._resi_name.decode()
         self._comments = self.get_comments()
@@ -563,26 +563,27 @@ class ImportGRADE():
         return tmp
 
 
-    def get_name_from_obprop(self, obprop):
+    def get_name_from_pdbfile(self, pdbfile):
         '''
-        get the fragment name from the obprop.txt file
-        :param obprop: file with some information about the molecule
-        :type obprop: list of strings
+        get the fragment name from the pdbfile.txt file
+        :param pdbfile: file with some information about the molecule
+        :type pdbfile: list of strings
         '''
-        regex = re.compile(r'sequence')
-        for line in obprop:
+        regex = re.compile(r'^.*Compound full name.*')
+        for line in pdbfile:
             if not isinstance(line, str):
                 line = line.decode('ascii')
             if regex.match(line):
+                line = line.replace('_', '')
+                line = line.replace('-', '')
+                line = line.replace('#', '')
                 line = line.split()
                 break
-            else:
-                line = ['found', 'NONE']
         try:
-            line[1]
+            line[4]
         except(IndexError):
-            line = ['found', 'NONE']
-        return line[1]
+            return 'NONE'
+        return line[5]
 
 
     def get_comments(self):
