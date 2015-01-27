@@ -644,7 +644,7 @@ class ImportGRADE_Test(unittest.TestCase):
         '''
         self.maxDiff = None
         files = self.ig.get_gradefiles('./test-data/PFA.gradeserver_all.tgz')
-        filenames = ['./grade-PFA.pdb', './grade-PFA.dfix', './obprop.txt']
+        filenames = ['./grade-PFA.pdb', './grade-PFA.dfix']
         endings = []
         for num, i in enumerate(filenames):
             with open(i) as test_file:
@@ -659,21 +659,17 @@ class ImportGRADE_Test(unittest.TestCase):
 
     def testrun_get_name_from_obprop(self):
         self.maxDiff = None
-        filename = './obprop.txt'
+        filename = './grade-PFA.pdb'
         with open(filename) as filen:
             ob = filen.readlines()
-        name = self.ig.get_name_from_obprop(ob)
-        self.assertEqual(name, 'PFA')
-        filename2 = './obprop_2.txt'
+        name = self.ig.get_name_from_pdbfile(ob)
+        self.assertEqual(name, 'AlOCCF334')
+        filename2 = './grade-PFA2.pdb'
         with open(filename2) as filen:
             ob = filen.readlines()
-        name = self.ig.get_name_from_obprop(ob)
+        name = self.ig.get_name_from_pdbfile(ob)
         self.assertEqual(name, 'NONE')
-        filename3 = './obprop_3.txt'
-        with open(filename3) as filen:
-            ob = filen.readlines()
-        name = self.ig.get_name_from_obprop(ob)
-        self.assertEqual(name, 'NONE')
+
 
     def testrun_get_comments(self):
         self.maxDiff = None
@@ -684,7 +680,7 @@ class ImportGRADE_Test(unittest.TestCase):
                 #line = str(line, encoding='ascii')
                 ob.append(line.split())
         comments = self.ig.get_comments()
-        name = u'REM Name: ' + u'PFA'
+        name = u'REM Name: ' + u'AlOCCF334'
         ob.insert(0, name.split()) # Name is always at first place
         self.assertEqual(comments, ob)
 
@@ -791,13 +787,20 @@ class ExportTest(unittest.TestCase):
         export = Export(fragment, self.gdb, self.invert)
         resfile = export.export_resfile()
         resgood = ['TITL toluene\n', 'REM This file was exported by DSR version {}\n'.format(VERSION),
-                   'REM Name: Toluene, C7H8\nREM Source: GRADE import\nREM Gradeserver from http://grade.globalphasing.org\n',
-                   'CELL 0.71073    50.000   50.000   50.000   90.000   90.000   90.000\n',
+                   'REM Name: Toluene, C7H8\nREM Source: CCDC CESLUJ\n',
+                   'CELL 0.71073    11.246   14.123   27.184   90.000  100.079   90.000\n',
                    'ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n', 'LATT  -1\n', 'SFAC C\n',
-                   'UNIT 1 \n', 'WGHT  0.1\n', 'FVAR  1\n', 'rem Restraints from DSR database:\n',
-                   'DFIX 1.509 0.011 C1 C2\nDFIX 1.385 0.012 C2 C3\nDFIX 1.385 0.012 C2 C7\nDFIX 1.384 0.010 C3 C4\nDFIX 1.379 0.015 C4 C5\nDFIX 1.379 0.015 C5 C6\nDFIX 1.384 0.010 C6 C7\nDANG 2.520 0.017 C1 C3\nDANG 2.520 0.017 C1 C7\nDANG 2.374 0.018 C3 C7\nDANG 2.410 0.019 C2 C4\nDANG 2.396 0.019 C3 C5\nDANG 2.386 0.022 C4 C6\nDANG 2.396 0.019 C5 C7\nDANG 2.410 0.019 C2 C6\nFLAT C2 C1 C3 C7\nFLAT C2 C3 C4 C5\nFLAT C3 C4 C5 C6\nFLAT C4 C5 C6 C7\nFLAT C5 C6 C7 C2\nFLAT C6 C7 C2 C3\nFLAT C7 C2 C3 C4\n',
-                   '\n\n', 'C1    1     0.024000    -0.000460     0.072300   11.00   0.04\nC2    1     0.024060    -0.000240     0.042120   11.00   0.04\nC3    1     0.000300    -0.000220     0.027800   11.00   0.04\nC4    1     0.000300    -0.000020     0.000100   11.00   0.04\nC5    1     0.024160     0.000160    -0.013760   11.00   0.04\nC6    1     0.047960     0.000120     0.000180   11.00   0.04\nC7    1     0.047880    -0.000080     0.027880   11.00   0.04',
-                   '\nHKLF 4\nEND\n']
+                   'UNIT 1 \n', 'WGHT  0.1\n', 'FVAR  1\n',
+                   'rem Restraints from DSR database:\n',
+                   'SADI C2 C3 C3 C4 C4 C5 C5 C6 C6 C7 C7 C2\nSADI 0.04 C2 C6 C2 C4 C7 C5 C3 C7 C4 C6 C3 C5\nSADI 0.04 C1 C7 C1 C3\nFLAT C1 > C7\nSIMU C1 > C7\nRIGU C1 > C7\n',
+                   '\n', ['C1   1     0.34810   0.50619   0.44851\n',
+                   'C2   1     0.37174   0.58816   0.41613\n',
+                   'C3   1     0.27706   0.63878   0.38821\n',
+                   'C4   1     0.29758   0.71355   0.35825\n',
+                   'C5   1     0.41548   0.73951   0.35559\n',
+                   'C6   1     0.51068   0.69033   0.38312\n',
+                   'C7   1     0.48938   0.61536   0.41297\n'],
+                   '\nHKLF 0\nEND\n']
         self.assertListEqual(resfile, resgood)
 
     def testrun_do_export_fragment_all(self):
@@ -807,12 +810,18 @@ class ExportTest(unittest.TestCase):
         export = Export(fragment, self.gdb, self.invert, export_all=True)
         resfile = export.export_resfile()
         resgood = ['TITL toluene\n', 'REM This file was exported by DSR version {}\n'.format(VERSION),
-                   'REM Name: Toluene, C7H8\nREM Source: GRADE import\nREM Gradeserver from http://grade.globalphasing.org\n',
-                   'CELL 0.71073    50.000   50.000   50.000   90.000   90.000   90.000\n',
+                   'REM Name: Toluene, C7H8\nREM Source: CCDC CESLUJ\n',
+                   'CELL 0.71073    11.246   14.123   27.184   90.000  100.079   90.000\n',
                    'ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n', 'LATT  -1\n', 'SFAC C\n',
                    'UNIT 1 \n', 'WGHT  0.1\n', 'FVAR  1\n',
-                   '\n\n', 'C1    1     0.024000    -0.000460     0.072300   11.00   0.04\nC2    1     0.024060    -0.000240     0.042120   11.00   0.04\nC3    1     0.000300    -0.000220     0.027800   11.00   0.04\nC4    1     0.000300    -0.000020     0.000100   11.00   0.04\nC5    1     0.024160     0.000160    -0.013760   11.00   0.04\nC6    1     0.047960     0.000120     0.000180   11.00   0.04\nC7    1     0.047880    -0.000080     0.027880   11.00   0.04',
-                   '\nHKLF 4\nEND\n']
+                   '\n', ['C1   1     0.34810   0.50619   0.44851\n',
+                   'C2   1     0.37174   0.58816   0.41613\n',
+                   'C3   1     0.27706   0.63878   0.38821\n',
+                   'C4   1     0.29758   0.71355   0.35825\n',
+                   'C5   1     0.41548   0.73951   0.35559\n',
+                   'C6   1     0.51068   0.69033   0.38312\n',
+                   'C7   1     0.48938   0.61536   0.41297\n'],
+                   '\nHKLF 0\nEND\n']
         self.assertListEqual(resfile, resgood)
 
 
