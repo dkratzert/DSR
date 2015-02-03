@@ -178,7 +178,7 @@ N11 7 -1.172349 0.000000  2.107931
 
 <acetate>
 rem Src: b3lyp/6-31+G(d), Ilia A. Guzei
-rem Name: Acetate, C2H3O2
+rem Name: Acetate anion, C2H3O2-
 RESI OAC
 DFIX O1 C3 1.2623
 DFIX O2 C3 1.2623
