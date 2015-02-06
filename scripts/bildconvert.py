@@ -8,13 +8,11 @@ import os, sys
 from subprocess import call
 import fnmatch
 
+java_prog = r"C:/Progra~2/Java/jre1.8.0_31/bin/java"
+progm = r"c:\Progra~1\ImageMagick-6.9.0-Q16\montage.exe"
+prog_png = r"c:\Progra~1\ImageMagick-6.9.0-Q16\convert.exe"
+    
 
-
-#try:
-#    noconvert = sys.argv[1]
-#except(IndexError):
-#    pass
-#
 
 def write_options_file(fragment, options):
     ## write to file:
@@ -44,7 +42,7 @@ for f in files:
 
 def set_options(fragment):
     options = ' -Djmol.logger.info=false -Djmol.logger.warn=false -Xmx512m -jar \
-        F:\Programme\jmol\Jmol.jar {}.res -ions bildererstellung.txt -g 600x600 \
+        d:\jmol\Jmol.jar {}.res -ions bildererstellung.txt -g 600x600 \
         -w PNG:{}.png -x'.format(fragment, fragment)
     #options = ' -Xmx512m  -jar "F:\Programme\jmol\jmol.jar"'
     #options = ""
@@ -54,11 +52,11 @@ def set_options(fragment):
 
 for num, fragment in enumerate(list_of_fragments):
     Name, fileExtension = os.path.splitext(fragment)
-    java_prog = "f:/programme/Java/bin/java"
+    
     java_options = set_options(Name)
     options_png = " {}.png -geometry 600x600-30-40-30-30 -font Arial -pointsize 40 label:{} \
                         -gravity South -composite {}.png".format(Name, Name, Name)
-    prog_png = "f:\ImageMagick-6.8.9-4\convert.exe"
+
     num = str(num+1)
     print('\n'+Name+'  '+num+'\n')
     # remove next lines if only montage is required
@@ -68,9 +66,8 @@ for num, fragment in enumerate(list_of_fragments):
     os.system(prog_png+options_png)
 
 
-
 # make tiles
-optionsm = " *.png -geometry 600x600 -tile 3x4 output\\alle_bilder.png"
-progm = "f:\ImageMagick-6.8.9-4\montage.exe"
+optionsm = " *.png -geometry 600x600 -tile 3x4 output\alle_bilder.png"
+
 
 os.system(progm+optionsm)
