@@ -1,6 +1,6 @@
 @echo off
 mkdir output
-C:\Python27\python "bildconvert.py" %1
+C:\tools\Python27\python "bildconvert.py" %1
 
 
 
