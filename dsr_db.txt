@@ -1379,7 +1379,7 @@ O3    3    0.80703   0.27957   0.36326
 
 
 <N-Adamantane>
-rem Name: Adamantane-N, C10H16N
+rem Name: Adamantane-N, C10H15N
 rem Src: own measurement
 RESI NADA
 SADI N1 C2 N1 C3 N1 C4
