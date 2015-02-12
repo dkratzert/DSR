@@ -126,8 +126,8 @@ class Export():
             i[0] = i[0]+' ' # more space for long atom names
             i.append('11.00   0.04')  #make it a full qualified atom line with occupancy and U value
 
-        final_atomlist = [('{:4.4s} {:4.2s} {:>8.5f}  {:>8.5f}  {:>8.5f}\n'.format(
-           str(i[0]), str(i[1]), float(i[2]), float(i[3]), float(i[4]))) for i in self._dbatoms] 
+        final_atomlist = [('{:4.4s} {:4.2s} {:>8.5f}  {:>8.5f}  {:>8.5f}   11.0   0.04\n'.format(
+           str(i[0]), str(i[1]), float(i[2]), float(i[3]), float(i[4]) )) for i in self._dbatoms] 
         res_export.append('TITL '+self._fragment_name+'\n')     #title card with fragment name
         try:
             res_export.append('REM This file was exported by DSR version {}\n'.format(VERSION))
