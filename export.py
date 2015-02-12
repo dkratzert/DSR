@@ -59,6 +59,7 @@ class Export():
             sys.exit()
         self._gdb.check_consistency(self._db, self._fragment_name)
         self._head = self._gdb.get_head_from_fragment(self._fragment_name)
+        self._resi = self._gdb.get_resi_from_fragment(self._fragment_name)
         self._comment = self._db['comment']
         self._dbatoms = self._db['atoms']
         self._clipatoms = copy.deepcopy(self._dbatoms)
@@ -140,6 +141,7 @@ class Export():
         res_export.append('LATT  -1\n')
         res_export.append('SFAC '+'  '.join(sfac)+'\n')
         res_export.append('UNIT '+' '.join(unit)+'\n')
+        res_export.append('REM  RESIDUE: {}\n'.format(self._resi))
         res_export.append('WGHT  0.1'+'\n')
         res_export.append('FVAR  1'+'\n')
         if not self._export_all:
@@ -349,6 +351,9 @@ class Export():
             else:
                 print('Unable to write .png file. Is platon and ImageMagic installed?')
                 plat.terminate()
+                misc.remove_file(self._fragment_name+'.lis')
+                misc.remove_file(self._fragment_name+'.eld')
+                misc.remove_file(self._fragment_name+'_pl.spf')
         except(EnvironmentError) as e:
             print('unable to convert file', e)
 
