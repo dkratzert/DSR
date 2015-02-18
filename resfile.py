@@ -11,11 +11,8 @@
 #
 from __future__ import print_function
 import misc
-#import shutil
-#import re
 import sys
 import os
-#import constants
 
 
 __metaclass__ = type  # use new-style classes
@@ -26,15 +23,11 @@ def filename_wo_ending(resfilename):
     returns the input file name without ending
     :param resfilename: string like 'p21c.res'
     '''
-    file_ext = ''
-    try:
-        file_ext = os.path.splitext(resfilename)
-        basefile = file_ext[0]
-        if file_ext[1] != '.res':
-            print("Please give a res-file name with a file extension as an argument!")
-            sys.exit(0)
-    except(AttributeError):
-        basefile = ''
+    file_ext = os.path.splitext(resfilename)
+    basefile = file_ext[0]
+    if not file_ext[1] in ['.res', '']:
+        print("Please give a .res file as argument.")
+        sys.exit(0)
     return str(basefile)
 
 

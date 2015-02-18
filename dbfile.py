@@ -336,7 +336,7 @@ class global_DB():
             if line2[0] not in SHX_CARDS:  
                 status = False
                 print('Bad line in header of database entry "{}" found!'.format(n, fragment_name))
-                print(' '.join(line))
+                print(line)
                 sys.exit(status)
             if line[:4] in RESTRAINT_CARDS:
                 line = line[5:].split()
