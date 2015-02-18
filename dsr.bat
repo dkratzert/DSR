@@ -6,12 +6,7 @@ rem set DSRDIR="C:\Program Files (x86)\DSR\"
 
 TITLE "DSR - Disordered Structure Refinement"
 
-SET cmd=%1
 SET args=%*
-rem ###############################################################
-rem # deletes '"' from arguments for compatibility with ShelXle:  #
-rem ###############################################################
-SET args=%args:"=%
 
 rem cls
 
@@ -38,10 +33,4 @@ IF NOT DEFINED DSRDIR (GOTO setdsrdir) ELSE (GOTO arguments)
     "%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py -h
     GOTO end
 
-
 :end
-rem ########################################################
-rem # This is for ShelXle. Otherwise the DSR output would  #
-rem # vanish immediately in detached mode.                 #
-rem ########################################################
-rem IF /i %0 NEQ dsr PAUSE

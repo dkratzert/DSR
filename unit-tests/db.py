@@ -4,7 +4,7 @@ db_testhead = ['SADI 0.02 C1 C2 C1 C3 C1 C4', 'SADI 0.02 F1 C2 F2 C2 F3 C2 F4 C3
                'SADI 0.04 F1 F2 F2 F3 F3 F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7 ',
                'SADI 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1 ',
                'SIMU O1 > F9', 'RIGU O1 > F9']
-dbtest = {'ALO4': {'atoms': [['AL1', 'AL', '9.463', '-3.351', '3.397'],
+dbtest = {'ALO1': {'atoms': [['AL1', 'AL', '9.463', '-3.351', '3.397'],
                     ['O1', 'O', '8.422', '-2.079', '4.093'],
                     ['C1', 'C', '7.600', '-1.044', '4.188'],
                     ['C2', 'C', '6.402', '-1.006', '3.088'],
@@ -258,5 +258,5 @@ dbtest = {'ALO4': {'atoms': [['AL1', 'AL', '9.463', '-3.351', '3.397'],
                    ['SIMU', 'AL1', '>', 'F36'],
                    ['RIGU', 'AL1', '>', 'F36']],
           'line': None,
-          'name': 'ALO4',
-          'resi': 'ALO4'}}
+          'name': 'ALO1',
+          'resi': 'ALO1'}}
