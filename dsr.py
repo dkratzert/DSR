@@ -28,7 +28,7 @@ from restraints import Restraints, Adjacency_Matrix
 from misc import find_line_of_residue, remove_file
 import misc
 
-VERSION = '1.5.14'
+VERSION = '1.5.15'
 # dont forget to change version in Innoscript file, spec file and deb file.
 program_name = '\n-----------------------------'\
            ' D S R - v{}' \
