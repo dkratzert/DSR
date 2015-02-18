@@ -1,4 +1,5 @@
 Recent changes
+-1.5.15 Database updates, Fixed missing U values in exported res files, during import the name comes from the pdb file now.
 -1.5.14 Bug fixes, nicer export, warning about missing database, database updates, manual updates.
 -1.5.13 Improved error logging. Implemented Support for negative atomic number for atom type. 
         Fixed some typos in the database.
