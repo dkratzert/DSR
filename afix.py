@@ -188,9 +188,9 @@ class InsertAfix(object):
         new_atomnames = list(reversed(self.numberscheme)) # i reverse it to pop() later
         if resi.get_residue_class:
             self._dbhead = self.remove_duplicate_restraints(self._dbhead, 
-                                                        resi.get_residue_class)
+                                                            resi.get_residue_class)
         else:
-            # applies new naming scheme to head
+            # applies new naming scheme to head:
             old_atoms = [ i[0] for i in self._dbatoms]
             self._dbhead = rename_dbhead_atoms(new_atomnames, old_atoms, self._dbhead)
         if external_restraints:
@@ -198,7 +198,7 @@ class InsertAfix(object):
             self._dbhead = misc.wrap_headlines(self._dbhead)
             # returns the real name of the restraints file:
             dfx_file_name = write_dbhead_to_file(dfx_file_name, self._dbhead, 
-                                      resi.get_residue_class, resi.get_resinumber)
+                                    resi.get_residue_class, resi.get_resinumber)
         else:
             self._dbhead = misc.wrap_headlines(self._dbhead)
         # list of atom types in reverse order
@@ -264,10 +264,6 @@ class InsertAfix(object):
 
 
 if __name__ == '__main__':
-    from dbfile import global_DB
-    from dsrparse import DSR_Parser
-    from atomhandling import SfacTable
-    from resfile import ResList, ResListEdit
     # from resi import Resi
     res_file = 'p21c.res'
     invert = True

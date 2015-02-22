@@ -157,7 +157,7 @@ class Element():
 
 if __name__ == '__main__':
     el = Element()
-    num = el.get_atomic_number('Fe')
-    ele = el.get_element(26)
+    num = el.get_atomic_number('N')
+    ele = el.get_element(7)
     print(num)
     print(ele)

@@ -164,7 +164,6 @@ class ShelxlRefine():
             return True
 
 
-
     def remove_afix(self):
         '''
         removes the AFIX 9 after refinement.
