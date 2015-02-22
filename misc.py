@@ -67,6 +67,23 @@ def get_atoms(atlist):
     return atoms
 
 
+def flatten(nested):
+    '''
+    flattens a nested list
+    '''
+    result = []
+    try:
+        # dont iterate over string-like objects:
+        try: nested + ''
+        except(TypeError): pass
+        else: raise TypeError
+        for sublist in nested:
+            for element in flatten(sublist):
+                result.append(element)
+    except(TypeError):
+        result.append(nested)
+    return result
+
 def sortedlistdir(directory):
     '''
     returns a sorted list of files in directory directory.
@@ -205,6 +222,14 @@ def unwrap_head_lines(headlines):
     '''
     import constants
     tmp = ''
+    # it is faster with this loop:
+    eq = False
+    for line in headlines:
+        if '=' in line:
+            eq = True
+            break
+    if not eq:
+        return headlines
     for line in headlines:
         line = line.strip(' \n=')
         line = line.replace('=', ' ')
@@ -214,7 +239,6 @@ def unwrap_head_lines(headlines):
         if i[:4] in constants.SHX_CARDS:
             line[n] = '\n'+line[n]
     new_head = ' '.join(line).strip().split('\n')
-    #new_head = [i.rstrip(' ')+'\n' for i in new_head]
     new_head = [i.rstrip(' ') for i in new_head]
     return new_head
 
@@ -324,8 +348,8 @@ def remove_partsymbol(atom):
             atom = prefix
         else:
             atom = prefix+'_'+suffix
-    else:
-        atom = atom+' ! <-- This restraint might be inaccurate.'
+    #else:
+    #    atom = atom+'_0  ! This restraint might be inaccurate.'
     return atom
 
 
@@ -395,7 +419,7 @@ def subtract_vect(a, b):
             a[2] - b[2])
 
 
-def vol_tetrahedron(a, b, c, d, cell):
+def vol_tetrahedron(a, b, c, d, cell=None):
     '''
     returns the volume of a terahedron spanned by four points:
     e.g. A = (3, 2, 1), B = (1, 2, 4), C = (4, 0, 3), D = (1, 1, 7)
@@ -416,14 +440,15 @@ def vol_tetrahedron(a, b, c, d, cell):
 
     V = 1/6*5
     '''
-    a = [float(i) for i in a]
-    b = [float(i) for i in b]
-    c = [float(i) for i in c]
-    d = [float(i) for i in d]
-    A = frac_to_cart(a, cell)
-    B = frac_to_cart(b, cell)
-    C = frac_to_cart(c, cell)
-    D = frac_to_cart(d, cell)
+    A = [float(i) for i in a]
+    B = [float(i) for i in b]
+    C = [float(i) for i in c]
+    D = [float(i) for i in d]
+    if cell:
+        A = frac_to_cart(a, cell)
+        B = frac_to_cart(b, cell)
+        C = frac_to_cart(c, cell)
+        D = frac_to_cart(d, cell)
 
     AB = subtract_vect(A, B)
     AC = subtract_vect(A, C)
@@ -539,7 +564,16 @@ def levenshtein(s1, s2):
 
     return previous_row[-1]
 
-
+def distance(x1, y1, z1, x2, y2, z2, round_out=False):
+    '''
+    distance between two points in space
+    '''
+    import math as m
+    d = m.sqrt((x1-x2)**2+(y1-y2)**2+(z1-z2)**2)
+    if round_out:
+        return round(d, round_out)
+    else:
+        return d
 
 #def bond_angle(dx1, dx2, cell):
 #    pass

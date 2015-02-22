@@ -20,13 +20,14 @@ from dbfile import global_DB, ImportGRADE
 from resfile import ResList, ResListEdit, filename_wo_ending
 from atomhandling import SfacTable, get_atomtypes, check_source_target
 from atomhandling import FindAtoms, NumberScheme, Elem_2_Sfac
-from afix import InsertAfix, write_dbhead_to_file
-from refine import ShelxlRefine
 from resi import Resi
-from restraints import ListFile, Lst_Deviations, format_atom_names
-from restraints import Restraints, Adjacency_Matrix
-from misc import find_line_of_residue, remove_file
+from restraints import ListFile, Lst_Deviations
+from restraints import Restraints
+from misc import remove_file
 import misc
+from afix import write_dbhead_to_file, InsertAfix
+from terminalsize import get_terminal_size
+from refine import ShelxlRefine
 
 VERSION = '1.5.15'
 # dont forget to change version in Innoscript file, spec file and deb file.
@@ -35,7 +36,6 @@ program_name = '\n-----------------------------'\
            ' ----------------------------------'.format(VERSION)
 
 # TODO and ideas:
-# -create own connectivity table for DFIX.
 # -If second part of a disordered atom is very close to the first, make EADP.
 # -detect empty residues and parts after atom deletion
 # -import also from pdb, dfix, obprop alone.
@@ -193,7 +193,6 @@ class DSR():
         list all entries in the db.
         '''
         try:
-            from terminalsize import get_terminal_size
             (width, height) = get_terminal_size()  # @UnusedVariable
         except():
             width = 80
@@ -287,8 +286,6 @@ class DSR():
             print('Unable to set refinement cycles')
 
 
-
-
     def set_final_db_sfac_types(self, db_atom_types, dbatoms, sfac_table):
         '''
         corrects the sfac types of the dbentry according to sfac card of the
@@ -342,24 +339,6 @@ class DSR():
             sys.exit()
 
 
-    def generate_dfix_restraints(self, lf, dbatoms, residue_number, cell, part=''):
-        '''
-        returns a string of DFIX restraints for all 1,2- and 1,3-Bond distances
-        in the current fragment.
-        'DFIX at1 at2 distance\n DFIX at1 at2 distance\n ...'
-
-        dbatoms: formated atoms (with new number scheme) of the fragment
-        '''
-        lst_file_coordinates = lf.get_all_coordinates
-        lst_file_connectivity_table = lf.read_conntable()
-        fragment_atoms = format_atom_names(dbatoms, part, residue_number)
-        am = Adjacency_Matrix(fragment_atoms, lst_file_connectivity_table, lst_file_coordinates, cell)
-        re = Restraints(lst_file_coordinates, am.get_adjmatrix, fragment_atoms, cell)
-        dfixes = re.get_formated_12_dfixes+re.get_formated_13_dfixes+re.get_formated_flats
-        return ''.join(dfixes)
-
-
-
     def restraints_with_resi_or_not(self, residue_class, basefilename, residue_number,
                         dfix_restraints, current_residue_line):
         '''
@@ -391,49 +370,6 @@ class DSR():
         return external_hint
 
 
-    def use_generated_dfix_restraints(self, reslist, residue_class, basefilename,
-                                      dsr_line_number, residue_number, dfix_restraints, delcount):
-        '''
-        Generates DFIX restraints instead of the restraints in the database header
-        :param reslist: resfile content
-        :type reslist: list of lists
-        :param residue_class: residue class
-        :type residue_class: string
-        :param basefilename: base of res file name
-        :type basefilename: string
-        :param dsr_line_number: line number of dsr commend in reslist
-        :type dsr_line_number: string
-        :param delcount: list of atom lines which were deleted
-        :type delcount: list of integers e.g. [23, 66, 111]
-        '''
-        delcount = len(delcount)
-        current_residue_line = ' '
-        position = dsr_line_number - delcount - 2
-        if residue_number: #residue defined
-            # in this case the place for dfix restraints is found be the residue number
-            resiline_index, current_residue_line = find_line_of_residue(reslist, residue_number)
-            restraints = self.restraints_with_resi_or_not(residue_class, basefilename,
-                                                            residue_number, dfix_restraints,
-                                                            current_residue_line)
-            # position the restraints below the residue definition:
-            reslist[resiline_index] = restraints
-        else: # no residue defined
-            # in this case restraints are placed by the dsrline position
-            if self.external:
-                # in this case restraints are written to external file
-                restraints = self.restraints_with_resi_or_not(residue_class, basefilename,
-                                                        residue_number, dfix_restraints,
-                                                        current_residue_line)
-                # position in res file is shifted up with the number of deleted atoms + the two lines
-                # from the comment and the +filename instruction
-                reslist[position] = reslist[position] + restraints
-            else:
-                restraints = '{}'.format(dfix_restraints) # insert restraints after dsr_line_number
-                # position in res file is shifted up by the comment and the +filename instruction
-                reslist[position] = reslist[position] + restraints
-
-
-
 
     def prepare_no_refine(self, shx, rl, reslist):
         shx.remove_acta_card()
@@ -460,7 +396,7 @@ class DSR():
         if dsrp.occupancy:
             rle.set_free_variables(dsrp.occupancy, fvarlines)
 
-        fragment = dsrp.fragment
+        fragment = dsrp.fragment.lower()
 
         fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
         dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
@@ -489,10 +425,17 @@ class DSR():
         basefilename = filename_wo_ending(self.res_file)
         num = NumberScheme(reslist, dbatoms, resi.get_resinumber)
         fragment_numberscheme = num.get_fragment_number_scheme()
+        dfix_head = ''
+        if dsrp.dfix_active:
+            restr = Restraints(fragment, gdb)
+            dfix_12 = restr.get_formated_12_dfixes()
+            dfix_13 = restr.get_formated_13_dfixes()
+            flats = restr.get_formated_flats()
+            dfix_head = dfix_12+dfix_13+flats
         afix = InsertAfix(reslist, dbatoms, db_atom_types, dbhead, dsr_dict,
-                          sfac_table, find_atoms, fragment_numberscheme)
+                          sfac_table, find_atoms, fragment_numberscheme, dfix_head)
         afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfix',
-                                           resi.get_residue_class)
+                                           resi)
         # line where the dsr command is found in the resfile:
         dsr_line_number = dsrp.find_dsr_command(line=False)
         if dsr_line_number < fvarlines[-1]:
@@ -503,9 +446,8 @@ class DSR():
         reslist.insert(dsr_line_number+1, afix_entry)
 
         ##### comment out all target atom lines in replace mode:
-        delcount = []
         if dsrp.command == 'REPLACE':
-            delcount = self.replacemode(dsrp.target, rle, reslist, sfac_table)
+            self.replacemode(dsrp.target, rle, reslist, sfac_table)
 
         # write to file:
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
@@ -522,7 +464,7 @@ class DSR():
         lst_file = lf.read_lst_file()
         lfd = Lst_Deviations(lst_file)
         lfd.print_LS_fit_deviations()
-        cell = lf.get_lst_cell_parameters
+        #cell = lf.get_lst_cell_parameters
 
         # open res file again to restore 8 refinement cycles:
         rl = ResList(self.res_file)
@@ -534,12 +476,6 @@ class DSR():
         self.set_post_refine_cycles(shx, '8')
         shx.remove_afix()   # removes the afix 9
 
-        if dsrp.dfix_active:
-            dfix_restraints = self.generate_dfix_restraints(lf, fragment_numberscheme,
-                                                        resi.get_resinumber, cell, dsrp.part)
-            self.use_generated_dfix_restraints(reslist, resi.get_residue_class, basefilename,
-                                               dsr_line_number, resi.get_resinumber, 
-                                               dfix_restraints, delcount)
         # final resfile write:
         rl.write_resfile(reslist, '.res')
 
