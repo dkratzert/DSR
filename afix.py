@@ -11,13 +11,16 @@
 #
 from __future__ import print_function
 from atomhandling import Elem_2_Sfac, rename_dbhead_atoms, FindAtoms,\
-    get_atomtypes, NumberScheme
+    get_atomtypes, NumberScheme, SfacTable
 import misc
 import os
 import sys
 import constants
 import re
 import fnmatch
+from resfile import ResList, ResListEdit
+from dsrparse import DSR_Parser
+from dbfile import global_DB
 
 __metaclass__ = type  # use new-style classes
 
@@ -74,7 +77,7 @@ class InsertAfix(object):
     '''
 
     def __init__(self, reslist, dbatoms, fragment_atom_types, dbhead, dsr_line_dict, sfac_table,
-                find_atoms, numberscheme):
+                find_atoms, numberscheme, dfix_head=False):
         '''
         :param reslist:      list of the .res file
         :type reslist: list
@@ -99,6 +102,9 @@ class InsertAfix(object):
         self._find_atoms = find_atoms
         self._dbatoms = dbatoms
         self._dbhead = dbhead
+        distance_and_other = self.distance_and_other_restraints(dbhead)
+        self.distance = distance_and_other[0]
+        self.other_head = distance_and_other[1]
         self._fragment_atom_types = fragment_atom_types
         self._sfac_table = sfac_table
         self.numberscheme = numberscheme
@@ -131,6 +137,8 @@ class InsertAfix(object):
             resline = resline.strip().split()
             for num, headline in enumerate(dbhead):
                 headline = headline.strip().split()
+                if not headline:
+                    continue
                 if headline == resline and headline[0][:4] in constants.RESTRAINT_CARDS:
                     # remove the restraint:
                     newhead[num] = '' #'rem '+newhead[num]
@@ -142,7 +150,7 @@ class InsertAfix(object):
         return newhead
 
 
-    def remove_all_restraints(self, dbhead):
+    def distance_and_other_restraints(self, dbhead):
         '''
         Devides header in distance restraints (distance)
         and all other lines (others)
@@ -166,41 +174,33 @@ class InsertAfix(object):
 
 
 
-    def build_afix_entry(self, external_restraints, dfx_file_name, residue_class):
+    def build_afix_entry(self, external_restraints, dfx_file_name, resi):
         '''
         build an afix entry with atom coordinates from the target atoms
 
         :param external_restraints:  True/False decision if restraints should be
                                      written to external file
         :param dfx_file_name:        name of file for external restraints
-        :param residue_class:        SHELXL residue class
+        :param resi:                Residue() object
         '''
         afix_list = []   # the final list with atoms, sfac and coordinates
         e2s = Elem_2_Sfac(self._sfac_table)
         new_atomnames = list(reversed(self.numberscheme)) # i reverse it to pop() later
-        # all non-atoms between start tag and FRAG card with new names:
-        dbhead = self._dbhead
-        if residue_class:
-            dbhead = self.remove_duplicate_restraints(dbhead, residue_class)
+        if resi.get_residue_class:
+            self._dbhead = self.remove_duplicate_restraints(self._dbhead, 
+                                                        resi.get_residue_class)
         else:
-            # applies new naming scheme
+            # applies new naming scheme to head
             old_atoms = [ i[0] for i in self._dbatoms]
-            dbhead = rename_dbhead_atoms(new_atomnames, old_atoms, dbhead)
-        removed_restr = self.remove_all_restraints(dbhead)
-        dbhead_for_dfix = removed_restr[0]
-        dbhead_others = misc.wrap_headlines(removed_restr[1])
-        if self._dfix:
-            dbhead = dbhead_others
-        if external_restraints and not self._dfix:
-            # in case of dfix, write restraints ti file after fragment fit
-            dbhead = dbhead_others
-            resinumber = False
-            dbhead_for_dfix = misc.wrap_headlines(dbhead_for_dfix)
+            self._dbhead = rename_dbhead_atoms(new_atomnames, old_atoms, self._dbhead)
+        if external_restraints:
+            # in case of dfix, write restraints to file after fragment fit
+            self._dbhead = misc.wrap_headlines(self._dbhead)
             # returns the real name of the restraints file:
-            dfx_file_name = write_dbhead_to_file(dfx_file_name, dbhead_for_dfix, residue_class, resinumber)
-        if not external_restraints and not self._dfix:
-            dbhead_for_dfix = misc.wrap_headlines(dbhead_for_dfix)
-            dbhead = dbhead_others+dbhead_for_dfix
+            dfx_file_name = write_dbhead_to_file(dfx_file_name, self._dbhead, 
+                                      resi.get_residue_class, resi.get_resinumber)
+        else:
+            self._dbhead = misc.wrap_headlines(self._dbhead)
         # list of atom types in reverse order
         reversed_fragm_atom_types = list(reversed(self._fragment_atom_types))
         coordinates = self._find_atoms.get_atomcoordinates(self.target_atoms)
@@ -245,20 +245,20 @@ class InsertAfix(object):
         else:
             part = ''
             part2 = ''
-        if residue_class:
+        if resi.get_residue_class:
             resi = 'RESI 0\n'
         else:
             resi = ''
-        if external_restraints and not self._dfix:
-            if residue_class:
-                dbhead.append('REM The restraints for residue {} are in this'\
-                          ' file:\n+{}\n'.format(residue_class, dfx_file_name))
+        if external_restraints:
+            if resi.get_residue_class:
+                self._dbhead.append('REM The restraints for residue {} are in this'\
+                    ' file:\n+{}\n'.format(resi.get_residue_class, dfx_file_name))
             else:
-                dbhead.append('REM The restraints for this moiety are in this'\
+                self._dbhead.append('REM The restraints for this moiety are in this'\
                           ' file:\n+{}\n'.format(dfx_file_name))
-        dbhead = ''.join(dbhead)
+        self._dbhead = ''.join(self._dbhead)
         warn = self.insert_dsr_warning()
-        afix = warn+dbhead+str(part)+'AFIX '+str(self.afixnumber)+'\n'+atoms+(
+        afix = warn+self._dbhead+str(part)+'AFIX '+str(self.afixnumber)+'\n'+atoms+(
                 '\nAFIX 0\n'+part2+resi+'rem The end of the DSR entry\n\n')
         return afix
 

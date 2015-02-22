@@ -101,7 +101,6 @@ class ReadDB():
         '''
         regex = r'^<[^/].*>'  # regular expression for db tag.
         dbnames = []
-        #dbkeys = list(self._databases.keys())  # names of the databases
         for db in self._databases:
             for num, line in enumerate(self._databases[db]):
                 if re.match(regex, line):
@@ -432,7 +431,15 @@ class global_DB():
             sys.exit()
         return fragline
 
-
+    def get_unit_cell(self, fragment):
+        '''
+        returns the unit cell parameters of the fragment
+        [a, b, c, alpha, beta, gamma]
+        '''
+        return self.get_fragline_from_fragment(fragment)[2:]
+    
+    
+    
     def get_line_number_from_fragment(self, fragment):
         '''
         returns the line number from the dbentry
@@ -444,7 +451,6 @@ class global_DB():
         '''
         returns the header of the dbentry of fragment.
         This header does not include comments, only the restraints.
-        
         '''
         head = self._dbentry_dict[fragment.lower()]['head']
         atoms = self.get_atoms_from_fragment(fragment)
@@ -476,6 +482,22 @@ class global_DB():
                 break
         comment = ', '.join(comment)
         return comment
+
+    def get_src_from_fragment(self, fragment):
+        '''
+        returns the source line of the dbentry of a fragment
+        if a line with "rem Src:" is present.
+        :param fragment: actual fragment name
+        :type fragment: string
+        '''
+        src = self._dbentry_dict[fragment.lower()]['comment']
+        for i in src:
+            if re.match(r'.*[s|S][r|R][c|C]|Source:.*', i):
+                i = i.split(' ', 1)[1:]
+                src = i
+                break
+        src = ', '.join(src)
+        return src
 
 
     def get_db_name_from_fragment(self, fragment):
@@ -528,7 +550,6 @@ class ImportGRADE():
             sys.exit(0)
         pdbfile = False
         dfixfile = False
-        propfile = False
         for i in gradefile.getnames():
             if i.endswith('.pdb'):
                 if re.match(r'.*obabel.*', i):
@@ -536,21 +557,15 @@ class ImportGRADE():
                 pdbfile = gradefile.extractfile(i)
             if i.endswith('.dfix'):
                 dfixfile = gradefile.extractfile(i)
-            #if i.endswith('obprop.txt'):
-            #    propfile = gradefile.extractfile(i)
         if not pdbfile:
             print(' .pdb file not found!')
             self.import_error(grade_tar_file)
         elif not dfixfile:
             print(' .dfix file not found!')
             self.import_error(grade_tar_file)
-        #elif not propfile:
-        #    print(' obprop.txt file not found!')
-        #    self.import_error(grade_tar_file)
         output = []
         output.append(self._read_tarfile_as_ascii(pdbfile))
         output.append(self._read_tarfile_as_ascii(dfixfile))
-        #output.append(self._read_tarfile_as_ascii(propfile))
         return output
 
 

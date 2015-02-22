@@ -15,6 +15,12 @@ from resfile import ResList
 from dsrparse import DSR_Parser
 import string
 import misc
+from collections import OrderedDict
+from atomhandling import get_atomtypes
+from dbfile import ReadDB
+from elements import ELEMENTS
+from misc import distance, vol_tetrahedron
+from networkx.classes.function import neighbors
 # all upper case for case insensitivity:
 alphabet = [ i for i in string.ascii_uppercase ]
 import networkx as nx
@@ -70,6 +76,22 @@ def format_atom_names(atoms, part, resinum):
     # list file:
     atomnames = [i+numpart for i in atoms]
     return atomnames
+
+
+def generate_dfix_restraints(self, fragment, residue_number, part=''):
+    '''
+    returns a string of DFIX restraints for all 1,2- and 1,3-Bond distances
+    in the current fragment.
+    'DFIX at1 at2 distance\n DFIX at1 at2 distance\n ...'
+
+    dbatoms: formated atoms (with new number scheme) of the fragment
+    '''
+    am = Adjacency_Matrix(fragment_atoms, lst_file_connectivity_table, lst_file_coordinates, cell)
+    re = Restraints(lst_file_coordinates, am.get_adjmatrix, fragment_atoms, cell)
+    dfixes = re.get_formated_12_dfixes+re.get_formated_13_dfixes+re.get_formated_flats
+    return ''.join(dfixes)
+
+
 
 
 
@@ -224,7 +246,7 @@ class ListFile():
 
 
 
-class Adjacency_Matrix():
+class Restraints():
     '''
     returns an adjacence matrix for all atoms in the .lst file.
     edge property is the bond length
@@ -232,55 +254,87 @@ class Adjacency_Matrix():
     needs atoms with numpart like C1_2b
     '''
 
-    def __init__(self, atoms, conntable, coords, cell):
-        self._atoms = atoms
-        self._connectivity_table = conntable
-        self._coordinates = coords
-        self._cell = cell
-        self.adjmatrix()
+    def __init__(self, fragment, gdb):
+        fragment = fragment.lower()
+        self.gdb = gdb
+        self.db = self.gdb.build_db_dict()
+        self._atoms = [i[0] for i in self.db[fragment]['atoms']]
+        self._cell = self.gdb.get_unit_cell(fragment)
+        self.fragment = fragment
+        cart_coords = self.get_fragment_atoms_cartesian()
+        self.cart_coords = [[float(y) for y in i] for i in cart_coords]
+        self.atom_types = get_atomtypes(self.db[fragment]['atoms'])
+        self._connectivity_table = self.get_conntable_from_fragment()
+        self.coords_dict = self.get_coords_dict()
+        self._G = self.get_adjmatrix()
+        
+    def get_coords_dict(self):
+        coords = OrderedDict({})
+        for name, co in zip(self._atoms, self.cart_coords):
+            coords[name] = co
+        return coords
+
+    def get_fragment_atoms_cartesian(self):
+        '''
+        returns the coordinates of the fragment as cartesian coords
+        as list of lists [['-2.7538', '15.9724', '22.6810'], ['0.7939', '16.3333', '21.3135'], ...
+        :param fragment:
+        :type fragment:
+        '''
+        from export import Export
+        ex = Export(self.fragment, self.gdb, False)
+        atoms = ex.format_atoms_for_export()
+        coords = []
+        for i in atoms:
+            coords.append(i.split()[2:5])
+        return coords
 
     def adjmatrix(self):
         '''
         create a distance matrix for the atom coordinates
         '''
         G=nx.Graph()
+        #print(self._atoms, self.coords_dict)
         for i in self._connectivity_table:
             atom1 = i[0]
             atom2 = i[1]
             if atom1 in self._atoms:
-                coord1 = self._coordinates[atom1]
-                coord2 = self._coordinates[atom2]
-                dist = misc.atomic_distance(coord1, coord2, self._cell)
+                coord1 = self.coords_dict[atom1]
+                coord2 = self.coords_dict[atom2]
+                dist = misc.distance(coord1[0], coord1[1], coord1[2], \
+                                     coord2[0], coord2[1], coord2[2])
                 G.add_edge(atom1, atom2, weight=dist)
         return G
 
+    def get_conntable_from_fragment(self):
+        '''
+        returns a connectivity table from the atomic coordinates and the covalence
+        radii of the fragment atoms.
+        '''
+        names = []
+        for n, i in enumerate(self._atoms, 1):
+            names.append([n, i])
+        conlist = []
+        for co1, typ, n1 in zip(self.cart_coords, self.atom_types, names):
+            for co2, typ2, n2 in zip(self.cart_coords, self.atom_types, names):
+                ele1 = ELEMENTS[typ.capitalize()]
+                ele2 = ELEMENTS[typ2.capitalize()]
+                d = distance(co1[0], co1[1], co1[2], co2[0], co2[1], co2[2], round_out=5)
+                if d <= (ele1.covrad+ele2.covrad)+0.05 and d != 0.0:
+                    if n1 == n2:
+                        continue
+                    conlist.append([n2, n1])
+                    if [n1, n2] in conlist:
+                        continue
+                    #print('{}--{}: {}'.format(n1, n2, d))
+        conlist = [(i[0][1], i[1][1]) for i in conlist]
+        #print('####', conlist)
+        return (conlist)
 
-    @property
     def get_adjmatrix(self):
         return self.adjmatrix()
 
 
-
-class Restraints():
-    '''
-    This class uses connectivity table from the SHELXL lst file and
-    generates 1,2- and 1,3-bond distance restraints.
-    '''
-    def __init__(self, coordinates, G, atoms, cell):
-        '''
-        :param coordinates: list of coordinates for all atoms from the lst file
-        :param G:  adjacency matrix
-        :param atoms:  list, fragment atoms
-        :param cell: list, cell parameters
-        '''
-        self.coordinates = coordinates
-        self.atoms = atoms
-        cell = [float(i) for i in cell]
-        self._cell = cell
-        self._G = G
-
-
-    @property
     def get_12_dfixes(self):
         '''
         returns the requested dfixes als list of strings
@@ -294,17 +348,14 @@ class Restraints():
                 dfix.append((atom1, atom2, dist))
         return dfix
 
-
-    @property
     def get_formated_12_dfixes(self):
         dfix_formated = []
-        dfix_restraints = self.get_12_dfixes
+        dfix_restraints = self.get_12_dfixes()
         dfix_restraints = remove_duplicate_bonds(dfix_restraints)
         for n, i in enumerate(dfix_restraints, 1):  # @UnusedVariable
             dfix_formated.append('DFIX {:.4f}  {:7}{:7}\n'.format(i[2], \
                 misc.remove_partsymbol(i[0]), misc.remove_partsymbol(i[1])))
         return dfix_formated
-
 
     def get_neighbors(self, atoms):
         '''
@@ -328,7 +379,7 @@ class Restraints():
         returns the next-neighbors of the fragment atoms
         '''
         nn = []
-        nb12 = self.get_neighbors(self.atoms)
+        nb12 = self.get_neighbors(self._atoms)
         for i in nb12:
             atom1 = i[0]
             bonded = i[1]
@@ -358,9 +409,10 @@ class Restraints():
         for i in nn:
             atom1 = i[0]
             atom2 = i[1]
-            c1 = self.coordinates[atom1]
-            c2 = self.coordinates[atom2]
-            dist_13.append((atom1, atom2, misc.atomic_distance(c1, c2, self._cell)))
+            c1 = self.coords_dict[atom1]
+            c2 = self.coords_dict[atom2]
+            dist_13.append((atom1, atom2, distance(c1[0], c1[1], c1[2], 
+                                                   c2[0], c2[1], c2[2])))
         return dist_13
 
 
@@ -383,41 +435,55 @@ class Restraints():
         searches for rings in the graph G, splits it in 4-member chunks and tests if
         they are flat: volume of tetrahedron of chunk < 0.1 A-3.
         returns list of flat chunks.
+        
+        first add neighbor atoms to neighbors
+        check if original rings are flat, if flat check if ring with neighbor
+        is flat, if yes, add this chunk minus first atom
         '''
-        from misc import vol_tetrahedron
         list_of_rings = nx.cycle_basis(self._G)
         #print('The list of rings:', list_of_rings)
         if not list_of_rings:
             return False
-        # This creates a list of attached tetrahedron_atoms but is unused atm:
-        #attached_atoms = []
-        #for ring in list_of_rings:
-        #    for atom in ring:
-        #        nb = G.neighbors(atom)[1:]
-        #        for i in nb:
-        #            attached_atoms.append(i)
-        #attached_atoms = tuple(set(attached_atoms))
         flats = []
+        neighbors = []
         for ring in list_of_rings:
+            for atom in ring:
+                # lets see if there is a neighboring atom:
+                nb = self._G.neighbors(atom)[1:]
+                for i in nb:
+                    if not i in ring:
+                        neighbors.append(i)
             if len(ring) < 4:
                 continue #wenn ring zu wenig atome hat dann nächsten
             chunks = self.get_overlapped_chunks(ring, 4)
-            for p in chunks:
-                tetrahedron_atoms = []
-                for atom in p:
-                    single_atom_coordinate = self.coordinates[atom]
-                    tetrahedron_atoms.append(single_atom_coordinate)
-                a, b, c, d = tetrahedron_atoms
-                volume = (vol_tetrahedron(a, b, c, d, self._cell))
-                if volume < 0.1:
-                    flats.append(p)
-                else:
-                    pass
-                    #print('volume of', p, 'too big:', volume)
+            for chunk in chunks:
+                if self.is_flat(chunk):
+                    flats.append(chunk[:])
+                for i in neighbors:
+                    chunk.append(i)
+                    del chunk[0]
+                    del neighbors[0]
+                    if self.is_flat(chunk):
+                        flats.append(chunk)
         return flats
 
 
-    @property
+    def is_flat(self, chunk):
+        '''
+        check if four atoms are flat
+        '''
+        tetrahedron_atoms = []
+        for atom in chunk:
+            single_atom_coordinate = self.coords_dict[atom]
+            tetrahedron_atoms.append(single_atom_coordinate)
+        a, b, c, d = tetrahedron_atoms
+        volume = (vol_tetrahedron(a, b, c, d))
+        if volume < 0.1:
+            return True
+        else:
+            print('volume of', chunk, 'too big:', volume)
+            return False
+            
     def get_formated_flats(self):
         '''
         formats the FLAT restraints and removes the part symbol
@@ -431,8 +497,6 @@ class Restraints():
             flat_format.append('FLAT {}\n'.format(' '.join(i)))
         return flat_format
 
-
-    @property
     def get_formated_13_dfixes(self):
         nextneighbors = remove_duplicate_bonds(self.get_next_neighbors())
         dfixes_13 = self.make_13_dist(nextneighbors)
@@ -494,18 +558,14 @@ if __name__ == '__main__':
     res_list = rl.get_res_list()
     dsrp = DSR_Parser(res_list, rl)
     dsr_dict = dsrp.parse_dsr_line()
-    fragment = 'benzene'#dsr_dict['fragment']
+    fragment = 'OC(CF3)3'
+    fragment= fragment.lower()
     invert = True
     gdb = global_DB(invert)
 
     residue = '4'
     part = '2'
 
-    lf = ListFile(basefilename)
-    cell = lf.get_lst_cell_parameters
-    lst_file = lf.read_lst_file()
-    coords = lf.get_all_coordinates
-    conntable = lf.read_conntable()
     dbatoms = gdb.get_atoms_from_fragment(fragment)
 
     num = NumberScheme(res_list, dbatoms, residue)
@@ -513,22 +573,17 @@ if __name__ == '__main__':
     #print(numberscheme)
     #fragment_atoms = [i[0] for i in dbatoms]
     fragment_atoms = misc.format_atom_names(fragment_atoms, part, residue)
-    print(fragment_atoms, cell)
-    am = Adjacency_Matrix(fragment_atoms, conntable, coords, cell)
-    G = am.get_adjmatrix
-    #print('nodes:', G.nodes())
-    # print('dihkstra (kürzester pfad):')
-    # print(nx.dijkstra_path(G, 'C1_4C', 'C4_4C'))
-    # print('\ncycle_basis')
-    #l = nx.cycle_basis(G)
-    # print('liste der cycles im Graph:')
-    #print(sorted(l))
-    #print('end\n')
-    restr = Restraints(coords, am.get_adjmatrix, fragment_atoms, cell)
-    #dfixes = re.get_formated_12_dfixes
-    #dfixes_13 = re.get_formated_13_dfixes
-    #flats = restr.get_formated_flats
-    #print(''.join(flats), 'flats')
+    #print(fragment_atoms)
+
+    restr = Restraints(fragment, gdb)
+    dfix_12 = restr.get_formated_12_dfixes()
+    dfix_13 = restr.get_formated_13_dfixes()
+    for i in dfix_12:
+        print(i.strip('\n'))
+    for i in dfix_13:
+        print(i.strip('\n'))
+    flats = restr.get_formated_flats()
+    print('flats:\n'+''.join(flats))
     #print(''.join(dfixes_13))
 
     def make_eadp(self):
