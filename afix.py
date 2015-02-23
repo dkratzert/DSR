@@ -21,6 +21,7 @@ import fnmatch
 from resfile import ResList, ResListEdit
 from dsrparse import DSR_Parser
 from dbfile import global_DB
+from misc import ll_to_string
 
 __metaclass__ = type  # use new-style classes
 
@@ -102,11 +103,7 @@ class InsertAfix(object):
         self._find_atoms = find_atoms
         self._dbatoms = dbatoms
         self._dbhead = dbhead
-        distance_and_other = self.distance_and_other_restraints(self._dbhead)
-        self.distance = distance_and_other[0]
-        self.other_head = distance_and_other[1]
-        if dfix_head:
-            self._dbhead = self.other_head+dfix_head
+        self.dfix_head = dfix_head
         self._fragment_atom_types = fragment_atom_types
         self._sfac_table = sfac_table
         self.numberscheme = numberscheme
@@ -191,18 +188,36 @@ class InsertAfix(object):
         if resi.get_residue_class:
             self._dbhead = self.remove_duplicate_restraints(self._dbhead, 
                                                             resi.get_residue_class)
+            if not external_restraints:
+                self._dbhead = self._dbhead+['RESI {} {}'.format(
+                                        resi.get_residue_class, resi.get_resinumber)]
+            self._dbhead = resi.format_restraints(self._dbhead)
+            #print(self._dbhead)
         else:
             # applies new naming scheme to head:
             old_atoms = [ i[0] for i in self._dbatoms]
             self._dbhead = rename_dbhead_atoms(new_atomnames, old_atoms, self._dbhead)
         # decide if restraints to external file or internal:
+        distance_and_other = self.distance_and_other_restraints(self._dbhead)
+        distance = distance_and_other[0]
+        other_head = distance_and_other[1]
         if external_restraints:
             # in case of dfix, write restraints to file after fragment fit
-            self._dbhead = misc.wrap_headlines(self._dbhead)
+            self._dbhead = misc.wrap_headlines(distance)
             # returns the real name of the restraints file:
-            dfx_file_name = write_dbhead_to_file(dfx_file_name, self._dbhead, 
+            if self.dfix_head:
+                dfx_file_name = write_dbhead_to_file(dfx_file_name, self.dfix_head, 
                                     resi.get_residue_class, resi.get_resinumber)
+            else:
+                dfx_file_name = write_dbhead_to_file(dfx_file_name, self._dbhead, 
+                                    resi.get_residue_class, resi.get_resinumber)
+            if self.dfix_head:
+                self._dbhead = other_head
+            self._dbhead = self._dbhead+['RESI {} {}'.format(
+                                        resi.get_residue_class, resi.get_resinumber)]
         else:
+            if self.dfix_head:
+                self._dbhead = other_head+self.dfix_head
             self._dbhead = misc.wrap_headlines(self._dbhead)
         # list of atom types in reverse order
         reversed_fragm_atom_types = list(reversed(self._fragment_atom_types))
@@ -239,7 +254,7 @@ class InsertAfix(object):
             i[4] = '{:>10.6f}'.format(float(i[4]))
             newlist.append('   '.join(i).rstrip())
         atoms = '\n'.join(newlist)
-        self.afixnumber = '179'   # makes afix 179 default
+        afixnumber = '179'   # makes afix 179 default
         if not self.occ:
             self.occ = ''
         if self.part:
@@ -254,15 +269,16 @@ class InsertAfix(object):
             resinum = ''
         if external_restraints:
             if resi.get_residue_class:
-                self._dbhead.append('REM The restraints for residue {} are in this'\
+                self._dbhead.append('\nREM The restraints for residue {} are in this'\
                     ' file:\n+{}\n'.format(resi.get_residue_class, dfx_file_name))
             else:
-                self._dbhead.append('REM The restraints for this moiety are in this'\
+                self._dbhead.append('\nREM The restraints for this moiety are in this'\
                           ' file:\n+{}\n'.format(dfx_file_name))
         self._dbhead = ''.join(self._dbhead)
         warn = self.insert_dsr_warning()
-        afix = warn+self._dbhead+part+'AFIX '+str(self.afixnumber)+'\n'+atoms+(
+        afix = warn+self._dbhead+part+'AFIX '+str(afixnumber)+'\n'+atoms+(
                 '\nAFIX 0\n'+part2+resinum+'rem The end of the DSR entry\n\n')
+        #print(self._dbhead)
         return afix
 
 

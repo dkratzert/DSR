@@ -404,7 +404,7 @@ class DSR():
         db_residue_string = gdb.get_resi_from_fragment(fragment)
         db_atom_types = get_atomtypes(dbatoms)                 # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
         resi = Resi(reslist, dsr_dict, dbhead, db_residue_string, find_atoms)
-        dbhead = resi.make_resihead()
+        dbhead = resi.remove_resi(dbhead)
         sf = SfacTable(reslist, db_atom_types)
         sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
 

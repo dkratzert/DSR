@@ -27,7 +27,8 @@ RESTRAINT_CARDS = ('SIMU', 'RIGU', 'DELU', 'SAME', 'FREE', 'DFIX', 'BUMP', 'HFIX
                'SADI', 'CHIV', 'FLAT', 'DEFS', 'ISOR', 'NCSY', 'DANG')
 
 # restraints regarding distances only:
-DIST_RESTRAINT_CARDS = ('SAME', 'SADI', 'FREE', 'DFIX', 'BUMP', 'CHIV', 'FLAT', 'HFIX', 'DEFS', 'ISOR', 'NCSY', 'DANG')
+DIST_RESTRAINT_CARDS = ('SAME', 'SADI', 'FREE', 'DFIX', 'BUMP', 'CHIV', 'FLAT', 'HFIX', 'DEFS', 
+                        'ISOR', 'NCSY', 'DANG')
 
     # SHELXL atom definition:
     # start at line beginning, one to 4 letters, zero to 3 digits,
