@@ -14,6 +14,7 @@ xcopy /Y %GIT%\constants.py %DSRDIR%
 xcopy /Y %GIT%\dbfile.py %DSRDIR%
 xcopy /Y %GIT%\dsr.py %DSRDIR%
 xcopy /Y %GIT%\dsrparse.py %DSRDIR%
+xcopy /Y %GIT%\elements.py %DSRDIR%
 xcopy /Y %GIT%\export.py %DSRDIR%
 xcopy /Y %GIT%\misc.py %DSRDIR%
 xcopy /Y %GIT%\options.py %DSRDIR%
