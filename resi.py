@@ -70,8 +70,6 @@ class Resi(object):
         self._resi_dict_db = self.get_resi_syntax(self._db_resi_list)
         self._combined_resi = self.build_up_residue()
 
-
-
     @property
     def get_resinumber(self):
         '''
@@ -80,7 +78,6 @@ class Resi(object):
         '''
         return self._combined_resi['number']
 
-
     @property
     def get_residue_class(self):
         '''
@@ -88,7 +85,6 @@ class Resi(object):
         :type self._combined_resi['class']: string
         '''
         return self._combined_resi['class']
-
 
     def remove_resi(self, head):
         '''
@@ -114,35 +110,6 @@ class Resi(object):
             rhead.append(line)
         return rhead
 
-
-
-    def make_resihead(self):
-        '''
-        Finally builds up the afix header with residue informations.
-        '''
-        resi_to_insert = []
-        resi = False
-        #we need at least a class
-        if self._dsr_dict['resi'] or self._combined_resi['class']:
-            resi = True
-        if resi:
-            head = self.remove_resi(self._dbhead)
-            residef = (['RESI', self._combined_resi['number'],
-                        self._combined_resi['class'],
-                        self._combined_resi['alias']])
-            for i in residef:
-                if i:
-                    resi_to_insert.append(i)
-            residef = ' '.join(resi_to_insert)
-            head.append(residef)
-            head = self.format_restraints(head)
-            return head
-        else:
-            # residues deactivated, removing resi from head
-            head = self.remove_resi(self._dbhead)
-            return head
-
-
     def format_restraints(self, head):
         '''
         in case of RESI, format the restraints like "SAME_class"
@@ -151,13 +118,16 @@ class Resi(object):
         for line in head:
             line = line.upper()
             line = line.split()
-            if line[0]in RESTRAINT_CARDS:
+            try:
+                line[0]
+            except:
+                continue
+            if line[0] in RESTRAINT_CARDS:
                 line[0] = line[0]+'_'+self._combined_resi['class']
                 line = ' '.join(line)
             else:
                 line = ' '.join(line)
             newhead.append(line)
-        #print newhead
         return newhead
 
 

@@ -18,9 +18,9 @@ import misc
 from collections import OrderedDict
 from atomhandling import get_atomtypes
 from dbfile import ReadDB
-from elements import ELEMENTS
 from misc import distance, vol_tetrahedron
 from networkx.classes.function import neighbors
+from elements import ELEMENTS
 # all upper case for case insensitivity:
 alphabet = [ i for i in string.ascii_uppercase ]
 import networkx as nx
@@ -76,23 +76,6 @@ def format_atom_names(atoms, part, resinum):
     # list file:
     atomnames = [i+numpart for i in atoms]
     return atomnames
-
-
-def generate_dfix_restraints(self, fragment, residue_number, part=''):
-    '''
-    returns a string of DFIX restraints for all 1,2- and 1,3-Bond distances
-    in the current fragment.
-    'DFIX at1 at2 distance\n DFIX at1 at2 distance\n ...'
-
-    dbatoms: formated atoms (with new number scheme) of the fragment
-    '''
-    am = Adjacency_Matrix(fragment_atoms, lst_file_connectivity_table, lst_file_coordinates, cell)
-    re = Restraints(lst_file_coordinates, am.get_adjmatrix, fragment_atoms, cell)
-    dfixes = re.get_formated_12_dfixes+re.get_formated_13_dfixes+re.get_formated_flats
-    return ''.join(dfixes)
-
-
-
 
 
 class ListFile():
