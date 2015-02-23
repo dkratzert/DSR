@@ -102,9 +102,11 @@ class InsertAfix(object):
         self._find_atoms = find_atoms
         self._dbatoms = dbatoms
         self._dbhead = dbhead
-        distance_and_other = self.distance_and_other_restraints(dbhead)
+        distance_and_other = self.distance_and_other_restraints(self._dbhead)
         self.distance = distance_and_other[0]
         self.other_head = distance_and_other[1]
+        if dfix_head:
+            self._dbhead = self.other_head+dfix_head
         self._fragment_atom_types = fragment_atom_types
         self._sfac_table = sfac_table
         self.numberscheme = numberscheme
@@ -193,6 +195,7 @@ class InsertAfix(object):
             # applies new naming scheme to head:
             old_atoms = [ i[0] for i in self._dbatoms]
             self._dbhead = rename_dbhead_atoms(new_atomnames, old_atoms, self._dbhead)
+        # decide if restraints to external file or internal:
         if external_restraints:
             # in case of dfix, write restraints to file after fragment fit
             self._dbhead = misc.wrap_headlines(self._dbhead)
@@ -246,9 +249,9 @@ class InsertAfix(object):
             part = ''
             part2 = ''
         if resi.get_residue_class:
-            resi = 'RESI 0\n'
+            resinum = 'RESI 0\n'
         else:
-            resi = ''
+            resinum = ''
         if external_restraints:
             if resi.get_residue_class:
                 self._dbhead.append('REM The restraints for residue {} are in this'\
@@ -258,8 +261,8 @@ class InsertAfix(object):
                           ' file:\n+{}\n'.format(dfx_file_name))
         self._dbhead = ''.join(self._dbhead)
         warn = self.insert_dsr_warning()
-        afix = warn+self._dbhead+str(part)+'AFIX '+str(self.afixnumber)+'\n'+atoms+(
-                '\nAFIX 0\n'+part2+resi+'rem The end of the DSR entry\n\n')
+        afix = warn+self._dbhead+part+'AFIX '+str(self.afixnumber)+'\n'+atoms+(
+                '\nAFIX 0\n'+part2+resinum+'rem The end of the DSR entry\n\n')
         return afix
 
 
