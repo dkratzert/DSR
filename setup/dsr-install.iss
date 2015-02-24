@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "DSR - Disordered Structure Refinement"
-#define MyAppVersion "1.5.15"
+#define MyAppVersion "1.6.0"
 #define MyAppPublisher "Daniel Kratzert"
 
 [Setup]
@@ -65,7 +65,6 @@ Name: "modifypath"; Description: "Add application directory to your environmenta
 Source: "..\dsr_db.txt"; DestDir: "{app}"; Flags: ignoreversion; Permissions: users-modify
 Source: "..\dsr.bat"; DestDir: "{app}"; Flags: ignoreversion; Permissions: users-modify
 ;Source: "..\dsr-shelxle.bat"; DestDir: "{app}"; Flags: ignoreversion; Permissions: users-modify
-;Source: "C:\Users\ntrapp\Downloads\python-2.7.5.msi"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\dsr.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\manuals\DSR-manual.pdf"; DestDir: "{app}\manual"; Flags: ignoreversion
 Source: "..\atoms.py"; DestDir: "{app}"; Flags: ignoreversion
@@ -83,11 +82,9 @@ Source: "..\restraints.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\resfile.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\resi.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\pyperclip.py"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "..\setup\OlexDSR.py"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\elements.py"; DestDir: "{app}"; Flags: ignoreversion
 ;Source: "..\setup\custom.xld"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "C:\Users\ntrapp\Documents\Python27\*"; DestDir: "{app}\Python27"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "C:\Python27-dsr\*"; DestDir: "{app}\Python27"; Flags: ignoreversion createallsubdirs recursesubdirs
-;Source: "..\setup\vcredist_x86.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\example\*"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: ".\Output\changelog.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\dsr_user_db.txt"; DestDir: "{app}"; Flags: ignoreversion confirmoverwrite uninsneveruninstall onlyifdoesntexist; Permissions: users-modify
