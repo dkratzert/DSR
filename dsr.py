@@ -29,7 +29,7 @@ from afix import write_dbhead_to_file, InsertAfix
 from terminalsize import get_terminal_size
 from refine import ShelxlRefine
 
-VERSION = '1.5.15'
+VERSION = '1.6.0'
 # dont forget to change version in Innoscript file, spec file and deb file.
 program_name = '\n-----------------------------'\
            ' D S R - v{}' \
