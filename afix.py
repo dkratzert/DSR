@@ -211,6 +211,7 @@ class InsertAfix(object):
             else:
                 dfx_file_name = write_dbhead_to_file(dfx_file_name, self._dbhead, 
                                     resi.get_residue_class, resi.get_resinumber)
+                self._dbhead = self._dbhead = other_head
             if self.dfix_head:
                 self._dbhead = other_head
             self._dbhead = self._dbhead+['RESI {} {}'.format(
