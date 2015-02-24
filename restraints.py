@@ -17,9 +17,7 @@ import string
 import misc
 from collections import OrderedDict
 from atomhandling import get_atomtypes
-from dbfile import ReadDB
 from misc import distance, vol_tetrahedron
-from networkx.classes.function import neighbors
 from elements import ELEMENTS
 # all upper case for case insensitivity:
 alphabet = [ i for i in string.ascii_uppercase ]
@@ -48,29 +46,34 @@ def remove_duplicate_bonds(bonds):
     return new_bonds
 
 
-def format_atom_names(atoms, part, resinum):
+def format_atom_names(atoms, part='', resinum=''):
     '''
-    needs a list of atoms ['C1', 'C2', 'O1', ..] with part number and a residue number
+    needs a list of atoms ['C1', 'C2', 'O1', ..] with part number and a residue number.
     returns a list with atoms like ['C1_4b', 'C2_4b', 'O1_4b', ..]
     :param atoms:  list of plain atom names
     :param part:  string, part number
     :param resinum: string, residue number
     '''
-    if resinum:
-        pass
-    else:
+    part = str(part)
+    resinum = str(resinum)
+    if not resinum:
         resinum = ''
-    if int(part) > 0:
-        partsymbol = alphabet[int(part)-1] # turns part number into a letter
-    else:
+    try:
+        int(part)
+        if int(part) > 0:
+            partsymbol = alphabet[int(part)-1] # turns part number into a letter
+        else:
+            print('Warning! Part symbol with non-numeric character detected.')
+            partsymbol = ''
+    except(ValueError):
         partsymbol = ''
     if resinum and partsymbol:
         numpart = '_'+resinum+partsymbol
-    elif resinum and not partsymbol:
-        numpart = '_'+resinum
-    elif not resinum and partsymbol:
+    if not resinum and partsymbol:
         numpart = '_'+partsymbol
-    else:
+    if resinum and not partsymbol:
+        numpart = '_'+resinum
+    if not resinum and not partsymbol:
         numpart = ''
     # add the _'num''partsymbol' to each atom to be able to find them in the
     # list file:
