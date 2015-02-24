@@ -1,4 +1,6 @@
 Recent changes
+-1.6.0  Completely changed DFIX/DANG/FLAT routines. Connectivity list is now calculated by DSR and not from .lst file.
+        FLAT also includes neighboring ring atoms.
 -1.5.15 Database updates, Fixed missing U values in exported res files, during import the name comes from the pdb file now.
 -1.5.14 Bug fixes, nicer export, warning about missing database, database updates, manual updates.
 -1.5.13 Improved error logging. Implemented Support for negative atomic number for atom type. 
