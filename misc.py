@@ -303,38 +303,6 @@ def matrix_mult(matrix1,matrix2):
     return new_matrix
 
 
-def format_atom_names(atoms, part='', resinum=''):
-    '''
-    needs a list of atoms ['C1', 'C2', 'O1', ..] with part number and a residue number.
-    returns a list with atoms like ['C1_4b', 'C2_4b', 'O1_4b', ..]
-    '''
-    part = str(part)
-    resinum = str(resinum)
-    if not resinum:
-        resinum = ''
-    try:
-        int(part)
-        if int(part) > 0:
-            partsymbol = alphabet[int(part)-1] # turns part number into a letter
-        else:
-            print('Warning! Part symbol with non-numeric character detected.')
-            partsymbol = ''
-    except(ValueError):
-        partsymbol = ''
-    if resinum and partsymbol:
-        numpart = '_'+resinum+partsymbol
-    if not resinum and partsymbol:
-        numpart = '_'+partsymbol
-    if resinum and not partsymbol:
-        numpart = '_'+resinum
-    if not resinum and not partsymbol:
-        numpart = ''
-    # add the _'num''partsymbol' to each atom to be able to find them in the
-    # list file:
-    atomnames = [i+numpart for i in atoms]
-    return atomnames
-
-
 def remove_partsymbol(atom):
     '''
     strips the part symbol like C1_4b from an atom name

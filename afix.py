@@ -38,9 +38,9 @@ def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
     number = '1'
     files = []
     # find a unique number for the restraint file:
-    for file in misc.sortedlistdir('.'):
-        if fnmatch.fnmatch(file, 'dsr_*_'+filename):
-            filenum = file.split('_')
+    for filen in misc.sortedlistdir('.'):
+        if fnmatch.fnmatch(filen, 'dsr_*_'+filename):
+            filenum = filen.split('_')
             if str.isdigit(filenum[1]):
                 files.append(filenum[1])
     try:
@@ -69,6 +69,24 @@ def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
     dfix_file.close()
     return filename
 
+def add_residue_to_dfix(dfix_head, resinum):
+    '''
+    Add a residue to a list of DFIX/DANG restraints
+    DFIX 1.234 C1 C2 -> DFIX 1.234 C1_4 C2_4 
+    '''
+    newhead = []
+    for line in dfix_head:
+        line = line.split()
+        try:
+            line[3]
+        except:
+            newhead.append(' '.join(line))
+            continue
+        line[2] = line[2]+'_'+str(resinum)
+        line[3] = line[3]+'_'+str(resinum)
+        line = '  '.join(line)+'\n'
+        newhead.append(line)
+    return newhead
 
 class InsertAfix(object):
     '''
@@ -206,8 +224,11 @@ class InsertAfix(object):
             self._dbhead = misc.wrap_headlines(distance)
             # returns the real name of the restraints file:
             if self.dfix_head:
+                if resi.get_residue_class:
+                    self.dfix_head = add_residue_to_dfix(self.dfix_head, resi.get_resinumber)
                 dfx_file_name = write_dbhead_to_file(dfx_file_name, self.dfix_head, 
                                     resi.get_residue_class, resi.get_resinumber)
+                
             else:
                 dfx_file_name = write_dbhead_to_file(dfx_file_name, self._dbhead, 
                                     resi.get_residue_class, resi.get_resinumber)
@@ -218,6 +239,8 @@ class InsertAfix(object):
                                         resi.get_residue_class, resi.get_resinumber)]
         else:
             if self.dfix_head:
+                if resi.get_residue_class:
+                    self.dfix_head = add_residue_to_dfix(self.dfix_head, resi.get_resinumber)
                 self._dbhead = other_head+self.dfix_head
             self._dbhead = misc.wrap_headlines(self._dbhead)
         # list of atom types in reverse order
