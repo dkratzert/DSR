@@ -20,6 +20,7 @@ dsr.py
 dsrparse.py
 export.py
 misc.py
+elements.py
 options.py
 resfile.py
 restraints.py

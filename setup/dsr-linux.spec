@@ -60,6 +60,7 @@ mkdir -p %{buildroot}%{prefix}/DSR/networkx/testing/tests
 touch %{buildroot}%{prefix}/DSR/dsr_user_db.txt
 mkdir -p %{buildroot}/etc/profile.d
 chmod a+rw %{buildroot}%{prefix}/DSR/example
+chmod a+rw %{buildroot}%{prefix}/DSR/dsr_user_db.txt
 
 %post
 echo "DSR was installed in /opt/DSR"
@@ -82,6 +83,7 @@ install -m 644 misc.py %{buildroot}%{prefix}/DSR/misc.py
 install -m 644 options.py %{buildroot}%{prefix}/DSR/options.py
 install -m 644 terminalsize.py %{buildroot}%{prefix}/DSR/terminalsize.py
 install -m 644 resfile.py %{buildroot}%{prefix}/DSR/resfile.py
+install -m 644 elements.py %{buildroot}%{prefix}/DSR/elements.py
 install -m 644 restraints.py %{buildroot}%{prefix}/DSR/restraints.py
 install -m 644 resi.py %{buildroot}%{prefix}/DSR/resi.py
 install -m 644 refine.py %{buildroot}%{prefix}/DSR/refine.py
@@ -424,7 +426,8 @@ dos2unix -q %{buildroot}%{prefix}/*
 %{prefix}/DSR/misc.py
 %{prefix}/DSR/terminalsize.py
 %{prefix}/DSR/options.py
-%{prefix}/DSR/resfile.py 
+%{prefix}/DSR/resfile.py
+%{prefix}/DSR/elements.py
 %{prefix}/DSR/restraints.py
 %{prefix}/DSR/resi.py
 %{prefix}/DSR/refine.py
