@@ -28,6 +28,7 @@ xcopy /Y %GIT%\terminalsize.py %DSRDIR%
 xcopy /Y %GIT%\dsr_db.txt %DSRDIR%
 xcopy /Y %GIT%\manuals\DSR-manual.pdf %DSRDIR%
 xcopy /Y %GIT%\example\p21c.res %DSRDIR%\example
+xcopy /Y %GIT%\example\p21c.hkl %DSRDIR%\example
 
 rem xcopy /Y %GIT%\update-dsr.bat %DSRDIR%
 

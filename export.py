@@ -13,10 +13,11 @@
 from __future__ import print_function
 import sys, os
 import atomhandling as at
-from misc import ll_to_string, wrap_headlines
+from misc import wrap_headlines
 from dbfile import global_DB
 import copy
 import pyperclip
+from restraints import Restraints
 
 
 __metaclass__ = type  # use new-style classes
@@ -90,6 +91,14 @@ class Export():
                 cell[n] = '50'
         return cell
 
+    def make_dfix(self):
+        restr = Restraints(self._fragment_name, self._gdb)
+        dfix_12 = restr.get_formated_12_dfixes()
+        dfix_13 = restr.get_formated_13_dfixes()
+        flats = restr.get_formated_flats()
+        dfix_head = dfix_12+dfix_13+flats
+        return dfix_head
+
 
     def export_resfile(self):
         '''
@@ -144,10 +153,12 @@ class Export():
         res_export.append('REM  RESIDUE: {}\n'.format(self._resi))
         res_export.append('WGHT  0.1'+'\n')
         res_export.append('FVAR  1'+'\n')
-        if not self._export_all:
-            res_export.append('rem Restraints from DSR database:\n')
-            restraints = wrap_headlines(self._head)
-            res_export.append(''.join(restraints))
+        #if not self._export_all:
+        res_export.append('rem Restraints from DSR database:\n')
+        res_export.append( ''.join(wrap_headlines(self._head)) )
+        res_export.append('rem Restraints from atom connectivities:\n')
+        res_export.append(self.make_dfix())
+        res_export.append('rem end of restraints\n')
         res_export.append('\n')
         res_export.append(final_atomlist)                         # the atoms
         res_export.append('\nHKLF 0\nEND\n')         # the end

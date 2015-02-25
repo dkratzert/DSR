@@ -18,8 +18,9 @@ from dsrparse import DSR_Parser
 from options import OptionsParser
 from dbfile import global_DB, ImportGRADE
 from resfile import ResList, ResListEdit, filename_wo_ending
-from atomhandling import SfacTable, get_atomtypes, check_source_target
-from atomhandling import FindAtoms, NumberScheme, Elem_2_Sfac
+from atomhandling import SfacTable, get_atomtypes, check_source_target,\
+    set_final_db_sfac_types
+from atomhandling import FindAtoms, NumberScheme
 from resi import Resi
 from restraints import ListFile, Lst_Deviations
 from restraints import Restraints
@@ -287,26 +288,6 @@ class DSR():
             print('Unable to set refinement cycles')
 
 
-    def set_final_db_sfac_types(self, db_atom_types, dbatoms, sfac_table):
-        '''
-        corrects the sfac types of the dbentry according to sfac card of the
-        res file
-        :param db_atom_types: element names of each atom in the database entry
-                              like ['C', 'C', 'N', ... ]
-        :type db_atom_types: list
-        :param dbatoms: full atoms of the database entry
-        :type dbatoms: list
-        :param sfac_table: list of scattering factors from SHELXL
-        :type sfac_table: list
-        '''
-        e2s = Elem_2_Sfac(sfac_table)
-        atype = list(reversed(db_atom_types))
-        for line in dbatoms:                    # go through db entry
-            # replace scattering factor (line[1]) with true one
-            line[1] = e2s.elem_2_sfac(atype.pop())
-        return dbatoms
-
-
     def replacemode(self, res_target_atoms, rle, reslist, sfac_table):
         '''
         Target atoms are being replaced if this is executed
@@ -340,38 +321,6 @@ class DSR():
             sys.exit()
 
 
-    def restraints_with_resi_or_not(self, residue_class, basefilename, residue_number,
-                        dfix_restraints, current_residue_line):
-        '''
-        Decides if external or internal restraints are used.
-        Returns residue like "RESI 4 CCF3 with restraints afterwards"
-        If restraints are external, the hint about the external file is written.
-        :param resi: residue object
-        :type resi: object
-        :param basefilename: base of res file name
-        :type basefilename: string
-        :param resinumber: number of current residue
-        :type resinumber: string
-        :param dfix_restraints: list of restraints
-        :type dfix_restraints: list
-        :param current_residue_line: line like RESI 4 CCF3
-        :type current_residue_line: string
-        '''
-        if self.external:
-            external_file_name = write_dbhead_to_file(basefilename + '.dfix', dfix_restraints,
-                                                      residue_class, residue_number)
-            if residue_number:
-                external_hint = '{}\nREM The restraints for residue {} '\
-                'are in this file:\n+{}\n'.format(current_residue_line, residue_number, external_file_name)
-            else:
-                external_hint = '{}\nREM The restraints for this moiety '\
-                'are in this file:\n+{}\n'.format(current_residue_line, external_file_name)
-        else:
-            external_hint = '{} \n{}\n'.format(current_residue_line, dfix_restraints)
-        return external_hint
-
-
-
     def prepare_no_refine(self, shx, rl, reslist):
         shx.remove_acta_card()
         shx.set_refinement_cycles('0')
@@ -393,12 +342,10 @@ class DSR():
         dsrp = DSR_Parser(reslist, rle)
         dsr_dict = dsrp.parse_dsr_line()
         fvarlines = rle.find_fvarlines()
-
         if dsrp.occupancy:
             rle.set_free_variables(dsrp.occupancy, fvarlines)
 
         fragment = dsrp.fragment.lower()
-
         fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
         dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
         dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
@@ -410,7 +357,7 @@ class DSR():
         sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
 
         ### corrects the atom type according to the previous defined global sfac table:
-        dbatoms = self.set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table)
+        dbatoms = set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table)
 
         ## Insert FRAG ... FEND entry:
         rle.insert_frag_fend_entry(dbatoms, fragline, fvarlines)
