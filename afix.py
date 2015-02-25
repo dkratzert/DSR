@@ -242,6 +242,7 @@ class InsertAfix(object):
                 if resi.get_residue_class:
                     self.dfix_head = add_residue_to_dfix(self.dfix_head, resi.get_resinumber)
                 self._dbhead = other_head+self.dfix_head
+                self._dbhead = rename_dbhead_atoms(new_atomnames, old_atoms, self._dbhead)
             self._dbhead = misc.wrap_headlines(self._dbhead)
         # list of atom types in reverse order
         reversed_fragm_atom_types = list(reversed(self._fragment_atom_types))
