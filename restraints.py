@@ -17,7 +17,7 @@ import string
 import misc
 from collections import OrderedDict
 from atomhandling import get_atomtypes
-from misc import distance, vol_tetrahedron
+from misc import distance, vol_tetrahedron, flatten
 from elements import ELEMENTS
 # all upper case for case insensitivity:
 alphabet = [ i for i in string.ascii_uppercase ]
@@ -172,6 +172,7 @@ class Restraints():
         returns a connectivity table from the atomic coordinates and the covalence
         radii of the fragment atoms.
         '''
+        extra_param = 0.15
         names = []
         for n, i in enumerate(self._atoms, 1):
             names.append([n, i])
@@ -181,7 +182,10 @@ class Restraints():
                 ele1 = ELEMENTS[typ.capitalize()]
                 ele2 = ELEMENTS[typ2.capitalize()]
                 d = distance(co1[0], co1[1], co1[2], co2[0], co2[1], co2[2], round_out=5)
-                if d <= (ele1.covrad+ele2.covrad)+0.05 and d != 0.0:
+                #print(d, n1, n2, (ele1.covrad+ele2.covrad)+extra_param)
+                # a bond is defined with less than the sum of the covalenve 
+                # radii plus the extra_param:
+                if d <= (ele1.covrad+ele2.covrad)+extra_param and d > (ele1.covrad or ele2.covrad):
                     if n1 == n2:
                         continue
                     conlist.append([n2, n1])
@@ -189,7 +193,6 @@ class Restraints():
                         continue
                     #print('{}--{}: {}'.format(n1, n2, d))
         conlist = [(i[0][1], i[1][1]) for i in conlist]
-        #print('####', conlist)
         return (conlist) 
 
     def get_adjmatrix(self):
@@ -202,6 +205,7 @@ class Restraints():
         '''
         dfix = []
         for n,i in self._G.adjacency_iter():
+            #print(n, i)
             for i, x in list(i.items()):
                 dist=x['weight'] # weight of edge is the atomic distance
                 atom1 = n
@@ -229,7 +233,7 @@ class Restraints():
             try:
                 nb = self._G.neighbors(at)
             except(exception.NetworkXError):
-                print('Unable to find neighboring atom for "{}"'.format(at))
+                print('Information: Atom "{}" has no neighbours.'.format(at))
                 #sys.exit()
             neighbors.append([at, nb])
         return(neighbors)
@@ -241,6 +245,7 @@ class Restraints():
         '''
         nn = []
         nb12 = self.get_neighbors(self._atoms)
+        #print(nb12)
         for i in nb12:
             atom1 = i[0]
             bonded = i[1]
@@ -252,10 +257,16 @@ class Restraints():
                         ' Check your SHELXL listing file.')
                 sys.exit()
             for n in bonded:
+                #print(n)
                 nb = self._G.neighbors(n)
-                nb.remove(atom1)
+                #print(nb, atom1)
                 if not nb:
                     continue
+                try:    
+                    nb.remove(atom1)
+                except:
+                    #print('Atom {0} has no neighbour.'.format(atom1))
+                    pass
                 for at in nb: # nb -> neighbors of n
                     nn.append((atom1, at))
         return(nn)
@@ -312,7 +323,7 @@ class Restraints():
                 # lets see if there is a neighboring atom:
                 nb = self._G.neighbors(atom)[1:]
                 for i in nb:
-                    if not i in ring:
+                    if not i in flatten(list_of_rings):
                         neighbors.append(i)
             if len(ring) < 4:
                 continue #wenn ring zu wenig atome hat dann nächsten
@@ -342,7 +353,7 @@ class Restraints():
         if volume < 0.1:
             return True
         else:
-            print('volume of', chunk, 'too big:', volume)
+            #print('volume of', chunk, 'too big:', volume)
             return False
             
     def get_formated_flats(self):

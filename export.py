@@ -50,7 +50,6 @@ class Export():
         '''
         self.invert = invert
         self._fragment_name = fragment_name.lower()
-        #self._gdb = global_DB(self.invert)
         self._gdb = gdb
         self._export_all = export_all
         try:
@@ -155,7 +154,7 @@ class Export():
         res_export.append('FVAR  1'+'\n')
         #if not self._export_all:
         res_export.append('rem Restraints from DSR database:\n')
-        res_export.append( ''.join(wrap_headlines(self._head)) )
+        res_export.append( ''.join(wrap_headlines(self._head[:])) )
         res_export.append('rem Restraints from atom connectivities:\n')
         res_export.append(self.make_dfix())
         res_export.append('rem end of restraints\n')

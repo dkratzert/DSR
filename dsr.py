@@ -26,7 +26,7 @@ from restraints import ListFile, Lst_Deviations
 from restraints import Restraints
 from misc import remove_file
 import misc
-from afix import write_dbhead_to_file, InsertAfix
+from afix import InsertAfix
 from terminalsize import get_terminal_size
 from refine import ShelxlRefine
 
@@ -165,7 +165,7 @@ class DSR():
         gdb = global_DB(self.invert)
         export = Export(self.export_fragment, gdb, self.invert)
         export.write_res_file()
-        sys.exit(1)
+        sys.exit()
 
     def export_all_fragments(self):
         '''
