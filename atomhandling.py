@@ -409,6 +409,25 @@ def rename_dbhead_atoms(new_atoms, old_atoms, dbhead):
     return headneu
 
 
+def set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table):
+    '''
+    corrects the sfac types of the dbentry according to sfac card of the
+    res file
+    :param db_atom_types: element names of each atom in the database entry
+                          like ['C', 'C', 'N', ... ]
+    :type db_atom_types: list
+    :param dbatoms: full atoms of the database entry
+    :type dbatoms: list
+    :param sfac_table: list of scattering factors from SHELXL
+    :type sfac_table: list
+    '''
+    e2s = Elem_2_Sfac(sfac_table)
+    atype = list(reversed(db_atom_types))
+    for line in dbatoms:                    # go through db entry
+        # replace scattering factor (line[1]) with true one
+        line[1] = e2s.elem_2_sfac(atype.pop())
+    return dbatoms
+
 
 class SfacTable():
     '''

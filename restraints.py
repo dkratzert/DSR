@@ -10,7 +10,7 @@
 # ----------------------------------------------------------------------------
 #
 from __future__ import print_function
-import sys, re, os
+import sys, re
 from resfile import ResList
 from dsrparse import DSR_Parser
 import string
@@ -94,13 +94,6 @@ class ListFile():
         '''
         reads the .lst file and returns it as list.
         ['Sn1 -       Distance       Angles\n', 'O1_a      2.0997 (0.0088)\n''...']
-
-        Connectivity list:
-        Sn1 -       Distance       Angles
-        O1_a      2.0997 (0.0088)
-        O2        2.1054 (0.0083)   85.87 (0.35)
-        O3        2.1176 (0.0082)   83.95 (0.34)  85.10 (0.35)
-                    Sn1 -         O1_a          O2
         '''
         listfile = []
         try:
@@ -111,124 +104,6 @@ class ListFile():
             print('Unable to read file {}.'.format(self._listfile))
             sys.exit()
         return listfile
-
-
-    def read_conntable(self):
-        '''
-        reads the connectivity table from self._listfile_list
-        returns a list of all bonded atom pairs. Symmetry equivalent atoms
-        are filtered out.
-        '''
-        symmeq = False
-        # find the start of the conntable
-        start_line = misc.find_line(self._listfile_list, self._conntable_regex)
-        if start_line:
-            for num, line in enumerate(self._listfile_list[start_line:]):
-                line = line.split()
-                # find the end of covalent radii
-                if not line:
-                    start_line = num+start_line+1
-                    break
-        connpairs = []
-        connections_list = []
-        for i in self._listfile_list[start_line:]:
-            line = i.split()
-            if not line:
-                break
-            if 'found' in line:
-                continue
-            connections_list.append(i.strip(os.linesep).replace('-', '').split())
-        for i in connections_list:
-            atom = i.pop(0)
-            for connected_atom in i:
-                if '$' in connected_atom:
-                    symmeq = True
-                    continue
-                # uppper case for case insensitivity:
-                atom = atom.upper()
-                connected_atom = connected_atom.upper()
-                connpairs.append((atom, connected_atom))
-        if symmeq:
-            print('\nConnections to symmetry equivalent atoms found.'\
-                    ' \nGenerated DFIX restraints might be nonsense!!')
-        return connpairs
-
-
-    def coordinates(self):
-        '''
-        reads all atom coordinates of the lst-file
-        returns a dictionary with {'atom' : ['x', 'y', 'z']}
-        '''
-        atom_coordinates = {}
-        start_line = int(misc.find_line(self._listfile_list, self._coord_regex))+2
-        for line in self._listfile_list[start_line:]:
-            line = line.split()
-            try:
-                line[0]
-            except(IndexError):
-                break
-            xyz = line[1:4]
-            try:
-                xyz = [float(i) for i in xyz]
-            except(ValueError):
-                print('No atoms found in .lst file!')
-                sys.exit(0)
-            atom = {str(line[0]).upper(): xyz}
-            atom_coordinates.update(atom)
-        return atom_coordinates
-
-
-    def get_cell(self):
-        '''
-        Returns the unit cell parameters from the list file as list:
-        ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
-        '''
-        cell = False
-        for num, line in enumerate(self._listfile_list):
-            if line.startswith(' CELL'):
-                cell = line.split()[2:]
-                try:
-                    cell = [float(i) for i in cell]
-                except(ValueError) as e:
-                    print(e, '\nbad cell parameters in line {} in the list file.'.format(num+1))
-                    sys.exit()
-                break
-        if not cell:
-            print('Unable to find unit cell parameters in the .lst file.')
-            sys.exit()
-        return cell
-
-    @property
-    def get_lst_cell_parameters(self):
-        '''
-        Returns the unit cell parameters from the list file as list:
-        ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
-        '''
-        return self.get_cell()
-
-    @property
-    def get_all_coordinates(self):
-        '''
-        return all atom coordinates as property
-        {'atom' : ['x', 'y', 'z'], 'atom2' : [...]}
-        '''
-        return self.coordinates()
-
-
-    @property
-    def get_single_coordinate(self):
-        '''
-        return the coordinates of a single atom as ['x', 'y', 'z']
-        '''
-        coord = self.coordinates()
-        try:
-            return coord[self._single_atom]
-        except(KeyError):
-            return None
-
-    @get_single_coordinate.setter
-    def single_atom(self, atom):
-        self._single_atom = atom
 
 
 
@@ -315,7 +190,7 @@ class Restraints():
                     #print('{}--{}: {}'.format(n1, n2, d))
         conlist = [(i[0][1], i[1][1]) for i in conlist]
         #print('####', conlist)
-        return (conlist)
+        return (conlist) 
 
     def get_adjmatrix(self):
         return self.adjmatrix()
