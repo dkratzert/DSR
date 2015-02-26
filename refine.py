@@ -263,13 +263,17 @@ class ShelxlRefine():
                 gof = True
                 line = out.split()
                 print(' {} {} {:>5}0'.format(line[0], line[1], line[4][:5]))
+            if re.match(r'.*CANNOT RESOLVE (SAME|RIGU|SIMU|DELU)', out):
+                print('\nWarning: Are you sure that all atoms are in the correct order?\n')
             if re.match(r'.*CANNOT\s+OPEN\s+FILE.*hkl.*', out):
                 print(' No hkl file found!')
                 print('You need a proper hkl file to use DSR!')
                 sys.exit()
             if re.match(r'.*\*\* MERG code changed to 0', out):
+                # disable this output
                 continue
             if re.match(r'.*\*\* Bond\(s\) to .* ignored', out):
+                # disable this output
                 continue
             if re.match(r'.*\*\*.*', out):
                 print(' SHELXL says:')

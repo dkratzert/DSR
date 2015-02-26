@@ -417,10 +417,8 @@ class Lst_Deviations():
 
 
 if __name__ == '__main__':
-
-
     from dbfile import global_DB
-    #from atomhandling import FindAtoms
+    from atomhandling import FindAtoms
     from resfile import filename_wo_ending
     #import networkx as nx
     from atomhandling import NumberScheme
@@ -433,19 +431,21 @@ if __name__ == '__main__':
     fragment = 'OC(CF3)3'
     fragment= fragment.lower()
     invert = True
+    rl = ResList(res_file)
+    reslist = rl.get_res_list()
     gdb = global_DB(invert)
-
+    fa = FindAtoms(reslist)
     residue = '4'
     part = '2'
 
     dbatoms = gdb.get_atoms_from_fragment(fragment)
-
+    print('dbatoms:', dbatoms)
     num = NumberScheme(res_list, dbatoms, residue)
     fragment_atoms = num.get_fragment_number_scheme()
     #print(numberscheme)
     #fragment_atoms = [i[0] for i in dbatoms]
-    fragment_atoms = misc.format_atom_names(fragment_atoms, part, residue)
-    #print(fragment_atoms)
+    fragment_atoms = format_atom_names(fragment_atoms, part, residue)
+    print(fragment_atoms)
 
     restr = Restraints(fragment, gdb)
     dfix_12 = restr.get_formated_12_dfixes()
@@ -458,9 +458,21 @@ if __name__ == '__main__':
     print('flats:\n'+''.join(flats))
     #print(''.join(dfixes_13))
 
-    def make_eadp(self):
+    def make_eadp(fa, fragatoms, resi_class, wavelength=0.71):
         '''
-        find atoms nearby and make them eadp
+        find atoms of same residue nearby and make them EADP
         '''
-        for at in self.all_atoms:
-            pass
+        types = get_atomtypes(fragatoms)
+        resi = fa.get_atoms_as_residues()
+        min_d_for_EADP = wavelength/2
+        for resinum in resi:
+            for at in resi[resinum]:
+                co1 = at[1]
+                for i, type in zip(fragatoms, types):
+                    distab = distance(float(co1[0]), float(co1[1]), float(co1[2]),\
+                                                     float(i[2]), float(i[3]), float(i[3]))
+                    if at[3] == 'CF3' and distab < min_d_for_EADP:
+                        print('make eadp:', co1, i)
+                        print(distab)
+            
+    make_eadp(fa, dbatoms, 'CF3')

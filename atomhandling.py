@@ -47,7 +47,7 @@ def get_atomtypes(dbatoms):
                 found.append(el.get_element(abs(int(sfacnum))))
                 continue
         except:
-          pass
+            pass
         atom=''
         for x in i:       # iterate over characters in i
             if re.match(r'^[A-Za-z#]', x): # Alphabet and "#" as allowed characters in names
@@ -97,6 +97,14 @@ class FindAtoms():
         self._reslist = reslist
         self._residues = self.collect_residues()
 
+    def get_atoms_as_residues(self):
+        '''
+        returns   residues = { {'0': ['C1', ['x', 'y', 'z'], linenumber, class], 
+                           ['C2', ['x', 'y', 'z'], linenumber, class]},
+                     {'1': ['C1', ['x', 'y', 'z'], linenumber, class], 
+                     []} }
+        '''
+        return self._residues
 
     def is_atom(self, atomline):
         '''
@@ -147,8 +155,10 @@ class FindAtoms():
         residues is a dictionary which includes a dictionary for each residue
         which in turn includes a list of its atoms.
 
-        residues = { {'0': ['C1', 'x y z', linenumber], ['C2', 'x y z', linenumber]},
-                     {'1': ['C1', 'x y z', linenumber], []} }
+        residues = { {'0': ['C1', ['x', 'y', 'z'], linenumber, class], 
+                           ['C2', ['x', 'y', 'z'], linenumber, class]},
+                     {'1': ['C1', ['x', 'y', 'z'], linenumber, class], 
+                     []} }
 
         for i in residues.keys():
             ats = residues[i]
@@ -194,10 +204,8 @@ class FindAtoms():
         :param atom: an atom name with or without residue number like C1 or C1_1
         :type atom: string
         '''
-        #all_resi_numbers = self._residues.keys()
         num = self.get_atoms_resinumber(atom)
         atom = atom.split('_')[0]
-        #print(all_resi_numbers)
         residue = self._residues[num]
         if atom in residue[1]:
             #  atom-name  class
