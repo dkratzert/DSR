@@ -37,8 +37,6 @@ program_name = '\n-----------------------------'\
            ' ----------------------------------'.format(VERSION)
 
 # TODO and ideas:
-# -If second part of a disordered atom is very close to the first, make EADP.
-# -detect empty residues and parts after atom deletion
 # -import also from pdb, dfix, obprop alone.
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 
