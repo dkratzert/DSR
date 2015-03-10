@@ -37,6 +37,7 @@ program_name = '\n-----------------------------'\
            ' ----------------------------------'.format(VERSION)
 
 # TODO and ideas:
+# -detect collinear atoms
 # -import also from pdb, dfix, obprop alone.
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 
