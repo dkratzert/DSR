@@ -760,7 +760,7 @@ class ImportGRADE():
         except(IOError) as e:
             print(e)
             sys.exit(-1)
-        # try to write existing dbentrys:
+        # try to write existing dbentries:
         try:
             with open(filename, 'a+') as fu:
                 for i in fragments:

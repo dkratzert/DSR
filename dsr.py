@@ -66,7 +66,7 @@ class DSR():
         :type import_grade:    string
         :param export_all:     export all fragments at once
         :type export_all:      boolean
-        :param list_db:        list database entrys
+        :param list_db:        list database entries
         :type list_db:         boolean
         :param no_refine:      turn refinement off
         :type no_refine:       boolean
@@ -123,7 +123,7 @@ class DSR():
 
         #  List of database Fragments:
         if self.list_db:
-            self.list_dbentrys()
+            self.list_dbentries()
         if self.search_string:
             result = self.search_fragment_name()
             self.print_search_results(result)
@@ -188,7 +188,7 @@ class DSR():
         export.export_to_clip()
         sys.exit(True)
 
-    def list_dbentrys(self):
+    def list_dbentries(self):
         '''
         list all entries in the db.
         '''
@@ -258,7 +258,7 @@ class DSR():
         prints the results of a database search to screen and exit.
         results are
         '''
-        print('\n\n Found following database entrys:\n')
+        print('\n\n Found following database entries:\n')
         print(' Fragment          | Full name, Comments                      | Line number')
         print(' ---------------------------------------------------------------------------')
         for line in results:
