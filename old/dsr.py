@@ -37,7 +37,7 @@ def find_dsr_command(reslist):
     '''find the lines with a DSR command entry and return its line number'''
     regex = 'rem.DSR.put.*'.lower()
     i = []
-    print 'searching for following entrys in the resfile:', regex, '\n'
+    print 'searching for following entries in the resfile:', regex, '\n'
     i = [i for i, l in enumerate(reslist) for m in [re.search(regex, l.lower())] if m]
     try: 
         i[0]
