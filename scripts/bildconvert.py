@@ -9,8 +9,8 @@ from subprocess import call
 import fnmatch
 
 java_prog = r"C:/Progra~2/Java/jre1.8.0_31/bin/java"
-progm = r"c:\Progra~1\ImageMagick-6.9.0-Q16\montage.exe"
-prog_png = r"c:\Progra~1\ImageMagick-6.9.0-Q16\convert.exe"
+progm = r"D:\ImageMagick-6.8.9-4\montage.exe"
+prog_png = r"D:\ImageMagick-6.8.9-4\convert.exe"
     
 
 
@@ -61,13 +61,13 @@ for num, fragment in enumerate(list_of_fragments):
     print('\n'+Name+'  '+num+'\n')
     # remove next lines if only montage is required
     # create png images from res file:
-    os.system(java_prog+java_options)
+    #os.system(java_prog+java_options)
     # label image:
     os.system(prog_png+options_png)
 
 
 # make tiles
-optionsm = " *.png -geometry 600x600 -tile 3x4 output\alle_bilder.png"
+optionsm = r" *.png -geometry 600x600 -tile 3x4 output\\alle_bilder.png"
 
 
 os.system(progm+optionsm)
