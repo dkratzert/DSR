@@ -39,6 +39,8 @@ program_name = '\n-----------------------------'\
 # TODO and ideas:
 # - In replace mode, check for atoms in PART 0 which are near the fitting fragment
 #   e.g. below 1.4 Angstroms and delete them.
+#   To prevent deletion of needed atoms, only delete atoms that are shorter
+#   away than the covalence distance of the atom pair. maybe 2/3 of the distance?
 # -detect collinear atoms
 # -import also from pdb, dfix, obprop alone.
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
