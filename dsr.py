@@ -37,6 +37,8 @@ program_name = '\n-----------------------------'\
            ' ----------------------------------'.format(VERSION)
 
 # TODO and ideas:
+# - In replace mode, check for atoms in PART 0 which are near the fitting fragment
+#   e.g. below 1.4 Angstroms and delete them.
 # -detect collinear atoms
 # -import also from pdb, dfix, obprop alone.
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
