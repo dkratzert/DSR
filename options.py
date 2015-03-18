@@ -34,7 +34,7 @@ class OptionsParser():
         return
 
     def error(self):
-        print("\nPlease give one of the options as argument!\n")
+        #print("\nPlease give one of the options as argument!\n")
         self.parser.print_help()
         sys.exit()
 
