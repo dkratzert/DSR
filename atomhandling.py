@@ -154,8 +154,22 @@ class FindAtoms():
         '''
         partstring = partstring.upper()
         part = partstring.split()
-        return part[1]
-        
+        try:
+            partnum = int(part[1])
+        except ValueError:
+            print('Wrong PART definition found! Check your PART instructions.')
+        return partnum
+    
+    def remove_near_atoms(self):
+        '''
+        this method looks around every atom of the fitted fragment and removes 
+        atoms that are near a certain distance to improve the replace mode
+        '''
+        atoms = self.get_atoms_as_residues()
+        for i in atoms:
+            for y in atoms[i]:
+                if int(y[4] == 0):
+                    # check the distances here
 
     def collect_residues(self):
         '''

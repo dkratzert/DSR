@@ -303,7 +303,7 @@ class DSR():
         for i in res_target_atoms:
             if '_' in i:
                 print('\nDo you really want to REPLACE atom {} inside a residue?'.format(i))
-                print('This will very likely not work.\n')
+                print('This will very likely damage something.\n')
                 break
         fa = FindAtoms(reslist)
         print('Replace mode active.')
@@ -425,6 +425,12 @@ class DSR():
         # open res file again to restore 8 refinement cycles:
         rl = ResList(self.res_file)
         reslist = rl.get_res_list()
+        if dsrp.command == 'REPLACE':
+            fa = FindAtoms(reslist)
+            # I have to put in the new fragment atoms here with their new coordinates
+            # if residue 0: use atomnames. if residue > 0 use the residue number to 
+            # get them from the fa.collect residues
+            fa.remove_near_atoms(fragment_atoms)
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
 #        shx.restore_acta_card()
         shx.check_refinement_results(lst_file)
