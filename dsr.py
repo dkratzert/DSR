@@ -79,7 +79,10 @@ class DSR():
         '''
         # options from the commandline options parser:
         self.options = OptionsParser(program_name)
-        
+        # vars() retrieves the options as dict, values() the values and any()
+        # decides if any option is set.
+        if not any(vars(self.options.all_options).values()):
+            self.options.error()
         self.external = False
         if not res_file_name:
             self.res_file = self.options.res_file
@@ -124,7 +127,10 @@ class DSR():
             self.search_string = self.options.search_string
         else:
             self.search_string = search_string
-
+        if self.invert:
+            if not any([self.res_file, self.external, self.import_grade, 
+                       self.export_clip, self.export_all]):
+                self.options.error()
         #  List of database Fragments:
         if self.list_db:
             self.list_dbentries()

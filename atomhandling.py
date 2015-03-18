@@ -146,7 +146,16 @@ class FindAtoms():
                 resi_dict['number'] = resi[0]
                 del resi[0]
         return resi_dict
-
+    
+    
+    def get_patnumber(self, partstring):
+        '''
+        get the part number from a string like PART 1 oder PART 2 -21
+        '''
+        partstring = partstring.upper()
+        part = partstring.split()
+        return part[1]
+        
 
     def collect_residues(self):
         '''
@@ -168,10 +177,13 @@ class FindAtoms():
         :type linenumber: int
         '''
         resi = False
+        part = False
+        partnum = '0'
         resiclass = None
         residues = {'0': []}
         for num, i in enumerate(self._reslist):
             i = i.upper()
+            # First collect the residue
             if re.match(r'^RESI\s+0', i) and resi:
                 resi = False
                 continue
@@ -184,15 +196,30 @@ class FindAtoms():
                 resiclass = self.get_resinum(i.split())['class']
                 residues.update({resinum: []})
                 continue
+            # Now collect the part:
+            if re.match(r'^PART\s+0', i) and part:
+                part = False
+                partnum = '0'
+                continue
+            if i.startswith(('END', 'HKLF')) and part:
+                part = False
+                continue
+            if i.startswith('PART') and not re.match(r'^PART\s+0', i):
+                part = True
+                partnum = self.get_patnumber(i)
+                continue
+            #####################
             if resi:
                 atom = self.is_atom(i)
                 if atom:
-                    residues[resinum].append([atom[0], atom[2:5], num, resiclass])
+                    residues[resinum].append([atom[0], atom[2:5], num, 
+                                              resiclass, partnum])
             else:
                 atom = self.is_atom(i)
                 resinum = '0'   # all other atoms are residue 0
                 if atom:
-                    residues[resinum].append([atom[0], atom[2:5], num, resiclass])
+                    residues[resinum].append([atom[0], atom[2:5], num, 
+                                              resiclass, partnum])
         return residues
 
 
@@ -666,8 +693,8 @@ if __name__ == '__main__':
     #resiopt = dsr_dict['resi']
     resiopt = False
 
-    #fragment = 'oc(cf3)3'
-    fragment = 'PFA1'
+    fragment = 'oc(cf3)3'
+    #fragment = 'PFA1'
     #fragline = gdb.get_fragline_from_fragment(fragment)
     dbatoms = gdb.get_atoms_from_fragment(fragment)
     #dbhead = gdb.get_head_from_fragment(fragment)
@@ -710,6 +737,12 @@ if __name__ == '__main__':
     #sys.exit()
 
     fa = FindAtoms(reslist)
+    
+    atoms = fa.get_atoms_as_residues()
+    for i in atoms:
+      for y in atoms[i]:
+        print(y)
+    sys.exit()
 
     # this might be used to find nearest atoms in same class to make eadp
  #   print(fa.get_atoms_resiclass('C1_2'))
