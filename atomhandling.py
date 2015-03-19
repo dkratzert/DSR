@@ -161,16 +161,20 @@ class FindAtoms():
             print('Wrong PART definition found! Check your PART instructions.')
         return partnum
     
-    def remove_near_atoms(self, frag_atoms, cell):
+    def remove_near_atoms(self, frag_atoms, cell, remdist=1.2):
         '''
         this method looks around every atom of the fitted fragment and removes 
         atoms that are near a certain distance to improve the replace mode
         '''
+        atoms_to_delete = []
         frag_coords = self.get_atomcoordinates(frag_atoms)
         atoms = self._residues
         for i in atoms:
             # i is the resideue number
             for y in atoms[i]:
+                if y[0].startswith('Q'):
+                    # ignore q peaks:
+                    continue
                 # y[4] is the part number
                 if int(y[4]) == 0:
                     for co in frag_coords:
@@ -179,8 +183,11 @@ class FindAtoms():
                         d = atomic_distance(at1, at2, cell)
                         # now get the atom types of the pair atoms and with that
                         # the covalence radius
-                        if d < 1.2:
-                            print(co, y[0], d)
+                        if d < remdist:
+                            atoms_to_delete.append(y[0]) 
+                            #print(co, y[0], d)
+        return atoms_to_delete
+    
 
     def collect_residues(self):
         '''
