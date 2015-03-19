@@ -89,7 +89,16 @@ class ResListEdit():
         '''
         self._reslist = reslist
         self._find_atoms = find_atoms
-
+    
+    def get_cell(self):
+        '''
+        returns cell parameters of the res file
+        '''
+        for line in self._reslist:
+            if line.startswith('CELL'):
+                cell = line.split()[2:8]
+                cell = [float(i) for i in cell]
+        return cell
 
     def add_line(self, linenum, new_line):
         '''

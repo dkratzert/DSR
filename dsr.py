@@ -421,7 +421,7 @@ class DSR():
         lst_file = lf.read_lst_file()
         lfd = Lst_Deviations(lst_file)
         lfd.print_LS_fit_deviations()
-        #cell = lf.get_lst_cell_parameters
+        cell = rle.get_cell()
 
         # open res file again to restore 8 refinement cycles:
         rl = ResList(self.res_file)
@@ -433,12 +433,12 @@ class DSR():
             # get them from the fa.collect residues
             if resi.get_resinumber:
                 frag_at = []
-                for n, i in enumerate(fragment_numberscheme):
-                    at = i[n]+'_{}'.format(resi.get_resinumber)
+                for i in fragment_numberscheme:
+                    at = i+'_{}'.format(resi.get_resinumber)
                     frag_at.append(at)
             else:
                 frag_at = fragment_numberscheme
-            fa.remove_near_atoms(frag_at)
+            fa.remove_near_atoms(frag_at, cell)
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
 #        shx.restore_acta_card()
         shx.check_refinement_results(lst_file)
