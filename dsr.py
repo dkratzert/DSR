@@ -380,6 +380,7 @@ class DSR():
         check_source_target(dsrp.source, dsrp.target, dbatoms)
         basefilename = filename_wo_ending(self.res_file)
         num = NumberScheme(reslist, dbatoms, resi.get_resinumber)
+        # returns also the atom names if residue is active
         fragment_numberscheme = num.get_fragment_number_scheme()
         dfix_head = ''
         if dsrp.dfix_active:
@@ -430,7 +431,14 @@ class DSR():
             # I have to put in the new fragment atoms here with their new coordinates
             # if residue 0: use atomnames. if residue > 0 use the residue number to 
             # get them from the fa.collect residues
-            fa.remove_near_atoms(fragment_atoms)
+            if resi.get_resinumber:
+                frag_at = []
+                for n, i in enumerate(fragment_numberscheme):
+                    at = i[n]+'_{}'.format(resi.get_resinumber)
+                    frag_at.append(at)
+            else:
+                frag_at = fragment_numberscheme
+            fa.remove_near_atoms(frag_at)
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
 #        shx.restore_acta_card()
         shx.check_refinement_results(lst_file)
