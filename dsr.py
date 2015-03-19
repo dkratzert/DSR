@@ -438,7 +438,14 @@ class DSR():
                     frag_at.append(at)
             else:
                 frag_at = fragment_numberscheme
-            fa.remove_near_atoms(frag_at, cell)
+            atoms_to_delete = fa.remove_near_atoms(frag_at, cell)
+            print(atoms_to_delete)
+            target_lines = fa.get_atom_line_numbers(atoms_to_delete)
+            #print(target_lines)
+            for i in target_lines:
+                i = int(i)
+                rle.remove_line(i, rem=False, remove=True, frontspace=False)
+        #rl.write_resfile(reslist, '.res')
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
 #        shx.restore_acta_card()
         shx.check_refinement_results(lst_file)
