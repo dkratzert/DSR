@@ -261,10 +261,10 @@ def which(name, flags=os.X_OK):
     result = []
     #exts = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))
     exts = ['.exe', '.EXE']
-    path = os.environ.get('PATH', None)
+    path = os.getenv('PATH', None)
     if path is None:
         return []
-    for p in os.environ.get('PATH', '').split(os.pathsep):
+    for p in os.getenv('PATH', '').split(os.pathsep):
         p = os.path.join(p, name)
         if os.access(p, flags):
             result.append(p)
@@ -673,4 +673,4 @@ if __name__ == '__main__':
     print(levenshtein('hallo', 'holla'))
     print(dice_coefficient('hallo', 'holla'))
     print(dice_coefficient2('hallo', 'holla'))
-
+    print(which('ls'))

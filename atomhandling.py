@@ -13,7 +13,8 @@ from __future__ import print_function
 import re, sys
 import string
 from atoms import Element
-from misc import find_line, get_atoms, find_multi_lines, distance
+from misc import find_line, get_atoms, find_multi_lines, distance,\
+    atomic_distance
 from constants import atomregex, SHX_CARDS
 from atoms import atoms
 #from collections import OrderedDict
@@ -160,7 +161,7 @@ class FindAtoms():
             print('Wrong PART definition found! Check your PART instructions.')
         return partnum
     
-    def remove_near_atoms(self, frag_atoms):
+    def remove_near_atoms(self, frag_atoms, cell):
         '''
         this method looks around every atom of the fitted fragment and removes 
         atoms that are near a certain distance to improve the replace mode
@@ -168,13 +169,18 @@ class FindAtoms():
         frag_coords = self.get_atomcoordinates(frag_atoms)
         atoms = self._residues
         for i in atoms:
-            # the resideue number
+            # i is the resideue number
             for y in atoms[i]:
-                if int(y[4] == 0):
+                # y[4] is the part number
+                if int(y[4]) == 0:
                     for co in frag_coords:
-                        d = distance(co[0], co[1], co[2], y[1][0], y[1][1], y[1][2])
-                        if d < 5:
-                            print(d)
+                        at1 = [float(i) for i in frag_coords[co]]
+                        at2 = [float(i) for i in y[1]]
+                        d = atomic_distance(at1, at2, cell)
+                        # now get the atom types of the pair atoms and with that
+                        # the covalence radius
+                        if d < 1.2:
+                            print(co, y[0], d)
 
     def collect_residues(self):
         '''
