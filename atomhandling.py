@@ -13,7 +13,7 @@ from __future__ import print_function
 import re, sys
 import string
 from atoms import Element
-from misc import find_line, get_atoms, find_multi_lines
+from misc import find_line, get_atoms, find_multi_lines, distance
 from constants import atomregex, SHX_CARDS
 from atoms import atoms
 #from collections import OrderedDict
@@ -160,16 +160,21 @@ class FindAtoms():
             print('Wrong PART definition found! Check your PART instructions.')
         return partnum
     
-    def remove_near_atoms(self):
+    def remove_near_atoms(self, frag_atoms):
         '''
         this method looks around every atom of the fitted fragment and removes 
         atoms that are near a certain distance to improve the replace mode
         '''
-        atoms = self.get_atoms_as_residues()
+        frag_coords = self.get_atomcoordinates(frag_atoms)
+        atoms = self._residues
         for i in atoms:
+            # the resideue number
             for y in atoms[i]:
                 if int(y[4] == 0):
-                    # check the distances here
+                    for co in frag_coords:
+                        d = distance(co[0], co[1], co[2], y[1][0], y[1][1], y[1][2])
+                        if d < 5:
+                            print(d)
 
     def collect_residues(self):
         '''
@@ -650,10 +655,7 @@ class NumberScheme():
         '''
         if self.__resi:
             print('RESI instruction is enabled. Leaving atom numbers as they are.')
-            atoms = []
-            for i in self.__dbatome:
-                atoms.append(i[0].upper())
-            return atoms
+            return [i[0].upper() for i in self.__dbatome]
         num = 0
         atom = []
         newatom = []
