@@ -177,15 +177,22 @@ class FindAtoms():
                     continue
                 # y[4] is the part number
                 if int(y[4]) == 0:
-                    for co in frag_coords:
-                        at1 = [float(i) for i in frag_coords[co]]
+                    for name in frag_coords:
+                        # name is the atom name
+                        if name == y[0]:
+                            # do not delete the fitted fragment
+                            continue
+                        at1 = [float(i) for i in frag_coords[name]]
                         at2 = [float(i) for i in y[1]]
+                        if at1 == at2:
+                            # do not delete atoms on exactly the same position
+                            continue
                         d = atomic_distance(at1, at2, cell)
                         # now get the atom types of the pair atoms and with that
                         # the covalence radius
                         if d < remdist:
                             atoms_to_delete.append(y[0]) 
-                            #print(co, y[0], d)
+                            #print('delete', y[0], d)
         return atoms_to_delete
     
 
