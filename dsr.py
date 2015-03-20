@@ -336,6 +336,32 @@ class DSR():
         print('\nPerforming no fragment fit. Just prepared the .ins file for you.')
 
 
+
+    def replace_after_fit(self, rl, reslist, resi, fragment_numberscheme, cell):
+        '''
+        deletes the atoms in replace mode that are < 1.2 A near the fragment atoms
+        '''
+        find_atoms = FindAtoms(reslist)
+        if resi.get_resinumber:
+            frag_at = []
+            for i in fragment_numberscheme:
+                at = i + '_{}'.format(resi.get_resinumber)
+                frag_at.append(at)
+        else:
+            frag_at = fragment_numberscheme
+        atoms_to_delete = find_atoms.remove_near_atoms(frag_at, cell)
+        print('Replacing following atoms (< 1.2 A near fragment):\n', 
+              ' '.join(atoms_to_delete))
+        target_lines = find_atoms.get_atom_line_numbers(atoms_to_delete)
+        rle = ResListEdit(reslist, find_atoms)
+        for i in target_lines:
+            i = int(i)
+            rle.remove_line(i, rem=False, remove=False, frontspace=True)
+        
+        rl.write_resfile(reslist, '.res')
+        reslist = rl.get_res_list()
+        return reslist, find_atoms
+
     def main(self):
         '''
         main object to run DSR as command line program
@@ -427,29 +453,12 @@ class DSR():
         rl = ResList(self.res_file)
         reslist = rl.get_res_list()
         if dsrp.command == 'REPLACE':
-            fa = FindAtoms(reslist)
-            # I have to put in the new fragment atoms here with their new coordinates
-            # if residue 0: use atomnames. if residue > 0 use the residue number to 
-            # get them from the fa.collect residues
-            if resi.get_resinumber:
-                frag_at = []
-                for i in fragment_numberscheme:
-                    at = i+'_{}'.format(resi.get_resinumber)
-                    frag_at.append(at)
-            else:
-                frag_at = fragment_numberscheme
-            atoms_to_delete = fa.remove_near_atoms(frag_at, cell)
-            print(atoms_to_delete)
-            target_lines = fa.get_atom_line_numbers(atoms_to_delete)
-            #print(target_lines)
-            for i in target_lines:
-                i = int(i)
-                rle.remove_line(i, rem=False, remove=True, frontspace=False)
-        #rl.write_resfile(reslist, '.res')
+            reslist, find_atoms = self.replace_after_fit(rl, reslist, resi, 
+                                                    fragment_numberscheme, cell)
+            
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
 #        shx.restore_acta_card()
         shx.check_refinement_results(lst_file)
-
         self.set_post_refine_cycles(shx, '8')
         shx.remove_afix()   # removes the afix 9
 
