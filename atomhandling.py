@@ -165,6 +165,10 @@ class FindAtoms():
         '''
         this method looks around every atom of the fitted fragment and removes 
         atoms that are near a certain distance to improve the replace mode
+
+        :param frag_atoms: atoms of the fitting fragment
+        :param cell: unit cell parameters (list)
+        :param remdist: distance below atoms shoud be deleted
         '''
         atoms_to_delete = []
         frag_coords = self.get_atomcoordinates(frag_atoms)
@@ -189,11 +193,13 @@ class FindAtoms():
                             continue
                         d = atomic_distance(at1, at2, cell)
                         # now get the atom types of the pair atoms and with that
-                        # the covalence radius
+                        # the covalence radius. 
                         if d < remdist:
                             atoms_to_delete.append(y[0]) 
                             #print('delete', y[0], d)
-        return atoms_to_delete
+        print('Replacing following atoms (< {0} A near fragment):\n'.format(remdist), 
+              ' '.join(sorted(atoms_to_delete)))
+        return sorted(atoms_to_delete)
     
 
     def collect_residues(self):

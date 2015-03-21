@@ -120,23 +120,29 @@ class ShelxlRefine():
         '''
         regex = r'^ACTA'
         acta_lines = misc.find_multi_lines(self._reslist, regex)
+        commands = []
         if acta_lines:
             for i in acta_lines:
-                self._reslist[i] = 'rem ACTA\n'
-        return acta_lines
+                commands.append(self._reslist[i])
+                self._reslist[i] = 'REM '+self._reslist[i]
+        return commands
 
 
-    def restore_acta_card(self):
+    def restore_acta_card(self, lines):
         '''
         restores original acta cards.
 
         :param lines: list of lines with previous acta cards
         '''
-        regex = r'^rem ACTA'
+        if not lines:
+            return
+        regex = r'^rem\s{1,5}ACTA'
         acta_lines = misc.find_multi_lines(self._reslist, regex)
+        if not len(lines) == len(acta_lines):
+            return
         if acta_lines:
-            for i in acta_lines:
-                self._reslist[i] = 'ACTA\n'
+            for n, i in enumerate(acta_lines):
+                self._reslist[i] = lines[n]
 
 
 
@@ -172,9 +178,7 @@ class ShelxlRefine():
         afix_line = False  # @UnusedVariable
         regex = r'^AFIX\s+9'
         afix_line = misc.find_multi_lines(self._reslist, regex)
-        try:
-            afix_line[0]
-        except(IndexError):
+        if not afix_line:
             return # safely return, because no lines found
         if len(afix_line) > 1:
             print('Multiple "AFIX 9" commands were found. Please remove "AFIX 9" for fitted fragment yourselves.')

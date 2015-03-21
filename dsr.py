@@ -30,17 +30,14 @@ from afix import InsertAfix
 from terminalsize import get_terminal_size
 from refine import ShelxlRefine
 
-VERSION = '1.6.0'
+VERSION = '1.6.1'
 # dont forget to change version in Innoscript file, spec file and deb file.
 program_name = '\n-----------------------------'\
            ' D S R - v{}' \
            ' ----------------------------------'.format(VERSION)
 
 # TODO and ideas:
-# - In replace mode, check for atoms in PART 0 which are near the fitting fragment
-#   e.g. below 1.4 Angstroms and delete them.
-#   To prevent deletion of needed atoms, only delete atoms that are shorter
-#   away than the covalence distance of the atom pair. maybe 2/3 of the distance?
+# -add mesitylene to database
 # -detect collinear atoms
 # -import also from pdb, dfix, obprop alone.
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
@@ -88,7 +85,6 @@ class DSR():
             self.res_file = self.options.res_file
         else:
             self.res_file = res_file_name
-        
         if self.options.external_restr:
             self.external = True
             self.res_file = self.options.external_restr
@@ -329,14 +325,6 @@ class DSR():
             sys.exit()
 
 
-    def prepare_no_refine(self, shx, rl, reslist):
-        shx.remove_acta_card()
-        shx.set_refinement_cycles('0')
-        rl.write_resfile(reslist, '.ins')
-        print('\nPerforming no fragment fit. Just prepared the .ins file for you.')
-
-
-
     def replace_after_fit(self, rl, reslist, resi, fragment_numberscheme, cell):
         '''
         deletes the atoms in replace mode that are < 1.2 A near the fragment atoms
@@ -350,14 +338,11 @@ class DSR():
         else:
             frag_at = fragment_numberscheme
         atoms_to_delete = find_atoms.remove_near_atoms(frag_at, cell)
-        print('Replacing following atoms (< 1.2 A near fragment):\n', 
-              ' '.join(atoms_to_delete))
         target_lines = find_atoms.get_atom_line_numbers(atoms_to_delete)
         rle = ResListEdit(reslist, find_atoms)
         for i in target_lines:
             i = int(i)
             rle.remove_line(i, rem=False, remove=False, frontspace=True)
-        
         rl.write_resfile(reslist, '.res')
         reslist = rl.get_res_list()
         return reslist, find_atoms
@@ -434,12 +419,12 @@ class DSR():
 
         # write to file:
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
-        if self.no_refine:
-            self.prepare_no_refine(shx, rl, reslist)
-            sys.exit()
+        acta_lines = shx.remove_acta_card()
         shx.set_refinement_cycles('0')
-        shx.remove_acta_card()
         rl.write_resfile(reslist, '.ins')
+        if self.no_refine:        
+            print('\nPerforming no fragment fit. Just prepared the .ins file for you.')
+            sys.exit()
         #  Refine with L.S. 0 to insert the fragment
         self.go_refine(shx)
         # Display the results from the list file:
@@ -448,20 +433,17 @@ class DSR():
         lfd = Lst_Deviations(lst_file)
         lfd.print_LS_fit_deviations()
         cell = rle.get_cell()
-
         # open res file again to restore 8 refinement cycles:
         rl = ResList(self.res_file)
         reslist = rl.get_res_list()
         if dsrp.command == 'REPLACE':
             reslist, find_atoms = self.replace_after_fit(rl, reslist, resi, 
                                                     fragment_numberscheme, cell)
-            
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
-#        shx.restore_acta_card()
+        shx.restore_acta_card(acta_lines)
         shx.check_refinement_results(lst_file)
         self.set_post_refine_cycles(shx, '8')
         shx.remove_afix()   # removes the afix 9
-
         # final resfile write:
         rl.write_resfile(reslist, '.res')
 

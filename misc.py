@@ -168,6 +168,7 @@ def find_line(inputlist, regex, start=None):
 def find_multi_lines(inputlist, regex):
     '''
     returns the index number of all lines where regex is found in the inputlist
+    ! this method is case insensitive !
     '''
     reg = re.compile(regex, re.IGNORECASE)
     foundlist = []
@@ -188,7 +189,7 @@ def remove_file(filename, exit_dsr=False, terminate=False):
     if os.path.isfile(filename):
         try:
             os.remove(filename)
-        except(WindowsError, OSError):
+        except(WindowsError, OSError):  # @UndefinedVariable
             #print 'unable to cleanup ins {} files!'.format(file)
             if terminate:
                 pgrogname=terminate
