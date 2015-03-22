@@ -79,7 +79,8 @@ class OptionsParser():
         if not self._options.search_string:
             return None
         # search characters allowed: a-z A-Z 0-9 _ - , () {} [] ' " + * | = .
-        chars = re.match(r'^[\w\-,\(\)\[\]\{\}\'\"\+\*\|\=\.]+$', self._options.search_string)
+        chars = re.match(r'^[\w\-,\(\)\[\]\{\}\'\"\+\*\|\=\.]+$', 
+                         self._options.search_string)
         if not chars:
             print('Characters not allowed for searching.')
             sys.exit()
@@ -102,11 +103,11 @@ class OptionsParser():
         description='Disordered Structure Refinement (DSR)\n'
         +'\n'+self.progname
         +'\nExample DSR .res file command line:\n'
-        +'\nREM DSR PUT/REPLACE "Fragment" WITH C1 C2 C3 ON Q1 Q2 Q3 PART 1 OCC 21.0 ='
-        +'\n  RESI 1 BENZ DFIX\n'
+        +'\nREM DSR PUT/REPLACE "Fragment" WITH C1 C2 C3 ON Q1 Q2 Q3 PART 1 OCC -21 ='
+        +'\n  RESI DFIX\n'
         +sep_line
         +'   PUT:     Just put the fragment source atoms here.\n'
-        +'   REPLACE: Replace existing target atoms or q-peaks.'
+        +'   REPLACE: Replace atoms of PART 0 in 1.2 A distance around target atoms.'
         +sep_line
         )
         self.parser.add_argument("-r", dest="res_file", metavar='"res file"', \

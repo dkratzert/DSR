@@ -125,7 +125,7 @@ class DSR():
             self.search_string = search_string
         if self.invert:
             if not any([self.res_file, self.external, self.import_grade, 
-                       self.export_clip, self.export_all]):
+                       self.export_clip, self.export_all, self.export_fragment]):
                 self.options.error()
         #  List of database Fragments:
         if self.list_db:
@@ -424,7 +424,7 @@ class DSR():
         rl.write_resfile(reslist, '.ins')
         if self.no_refine:        
             print('\nPerforming no fragment fit. Just prepared the .ins file for you.')
-            sys.exit()
+            return
         #  Refine with L.S. 0 to insert the fragment
         self.go_refine(shx)
         # Display the results from the list file:
