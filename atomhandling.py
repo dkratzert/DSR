@@ -13,7 +13,7 @@ from __future__ import print_function
 import re, sys
 import string
 from atoms import Element
-from misc import find_line, get_atoms, find_multi_lines, distance,\
+from misc import find_line, get_atoms, find_multi_lines,\
     atomic_distance
 from constants import atomregex, SHX_CARDS
 from atoms import atoms
@@ -84,6 +84,49 @@ def check_db_names_for_consistency(dbhead, dbatoms):
         else:
             pass
 
+def replacemode(res_target_atoms, rle, reslist, sfac_table):
+    '''
+    Target atoms are being replaced if this is executed
+    '''
+    for i in res_target_atoms:
+        if '_' in i:
+            print('\nDo you really want to REPLACE atom {} inside a residue?'.format(i))
+            print('This will very likely damage something.\n')
+            break
+    fa = FindAtoms(reslist)
+    print('Replace mode active.')
+    target_lines = fa.get_atom_line_numbers(res_target_atoms)
+    for i in target_lines:
+        i = int(i)
+        rle.remove_line(i, rem=False, remove=False, frontspace=True)
+    h_delcount = fa.remove_adjacent_hydrogens(res_target_atoms, sfac_table)
+    if h_delcount:
+        return target_lines+h_delcount
+    else:
+        return target_lines
+
+def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
+    '''
+    deletes the atoms in replace mode that are < 1.2 A near the fragment atoms
+    '''
+    from resfile import ResListEdit
+    find_atoms = FindAtoms(reslist)
+    if resi.get_resinumber:
+        frag_at = []
+        for i in fragment_numberscheme:
+            at = i + '_{}'.format(resi.get_resinumber)
+            frag_at.append(at)
+    else:
+        frag_at = fragment_numberscheme
+    atoms_to_delete = find_atoms.remove_near_atoms(frag_at, cell)
+    target_lines = find_atoms.get_atom_line_numbers(atoms_to_delete)
+    rle = ResListEdit(reslist, find_atoms)
+    for i in target_lines:
+        i = int(i)
+        rle.remove_line(i, rem=False, remove=False, frontspace=True)
+    rl.write_resfile(reslist, '.res')
+    reslist = rl.get_res_list()
+    return reslist, find_atoms
 
 
 class FindAtoms():
@@ -109,7 +152,7 @@ class FindAtoms():
 
     def is_atom(self, atomline):
         '''
-        returns all atoms found in the input as list
+        returns all atoms found in the input as list if they are real atoms
 
         :param atomline:  'O1    3    0.120080   0.336659   0.494426  11.00000   0.01445 ...'
         '''
@@ -197,7 +240,8 @@ class FindAtoms():
                         if d < remdist:
                             atoms_to_delete.append(y[0]) 
                             #print('delete', y[0], d)
-        print('Replacing following atoms (< {0} A near fragment):\n'.format(remdist), 
+        if atoms_to_delete:
+            print('Replacing following atoms (< {0} A near fragment):\n'.format(remdist), 
               ' '.join(sorted(atoms_to_delete)))
         return sorted(atoms_to_delete)
     
@@ -209,9 +253,9 @@ class FindAtoms():
         residues is a dictionary which includes a dictionary for each residue
         which in turn includes a list of its atoms.
 
-        residues = { {'0': ['C1', ['x', 'y', 'z'], linenumber, class], 
-                           ['C2', ['x', 'y', 'z'], linenumber, class]},
-                     {'1': ['C1', ['x', 'y', 'z'], linenumber, class], 
+        residues = { {'0': ['C1', ['x', 'y', 'z'], linenumber, class, part], 
+                           ['C2', ['x', 'y', 'z'], linenumber, class, part]},
+                     {'1': ['C1', ['x', 'y', 'z'], linenumber, class, part], 
                      []} }
 
         for i in residues.keys():
@@ -308,6 +352,8 @@ class FindAtoms():
     def get_atomcoordinates(self, atoms):
         '''
         finds an atom regardless if it is in a residue or not.
+        
+        rerturns a dictionary {'C1': ['1.123', '0.7456', '3.245']}
 
         start with digit-> rest auch digit-> resinumber or alias
         start with letter-> rest letter or digit -> residue class
@@ -443,10 +489,7 @@ def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
     :param dbatoms:           [['C1', 1, '-0.00146', '0.26814', '0.06351'],
                                ['C2', 1, '-1.13341', '-0.23247', '-0.90730'], ...]]
     '''
-    temp = []
-    for i in dbatoms:
-        i = i[0].upper()
-        temp.append(i)
+    temp = [i[0].upper() for i in dbatoms]
     # check if source and target are of same length:
     nsrc = len(db_source_atoms)
     ntrg = len(res_target_atoms)

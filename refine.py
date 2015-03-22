@@ -288,16 +288,12 @@ class ShelxlRefine():
         '''
         This method runs shelxl 2013 on the res file self.resfile_name
         '''
-
         resfile = self.resfile_name+'.res'
         hklfile = self.resfile_name+'.hkl'
-
         if not checkFileExist(hklfile):
             print('You need a proper hkl file to use DSR.')
             sys.exit()
-
         command_line='{} -b{} {}'.format(self._shelx_command, self.b_array, self.resfile_name).split()
-
         self.backup_shx_file()
         print('-----------------------------------------------------------------')
         print(' refining with "{}" and "L.S. 0"'.format(' '.join(command_line)))
@@ -305,20 +301,16 @@ class ShelxlRefine():
                             stdout = subprocess.PIPE, stderr=subprocess.STDOUT)
         (child_stdin, child_stdout_and_stderr) = (p.stdin, p.stdout)
         child_stdin.close()
-
         # Watch the output for successful termination
         out = child_stdout_and_stderr.readline().decode('ascii')
         output = []
         while out:
             output.append(out)
             out = child_stdout_and_stderr.readline().decode('ascii')
-
         child_stdout_and_stderr.close()
         # output only the most importand things from shelxl:
         self.pretty_shx_output(output)
-
         status = checkFileExist(resfile) # status is False if shelx was unsecessful
-
         if not status: # fail
             print('-----------------------------------------------------------------')
             print('\nError: SHELXL terminated unexpectedly. Restoring original file.')

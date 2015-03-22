@@ -19,7 +19,7 @@ from options import OptionsParser
 from dbfile import global_DB, ImportGRADE
 from resfile import ResList, ResListEdit, filename_wo_ending
 from atomhandling import SfacTable, get_atomtypes, check_source_target,\
-    set_final_db_sfac_types
+    set_final_db_sfac_types, replacemode, replace_after_fit
 from atomhandling import FindAtoms, NumberScheme
 from resi import Resi
 from restraints import ListFile, Lst_Deviations
@@ -291,29 +291,6 @@ class DSR():
         except(IndexError):
             print('Unable to set refinement cycles')
 
-
-    def replacemode(self, res_target_atoms, rle, reslist, sfac_table):
-        '''
-        Target atoms are being replaced if this is executed
-        '''
-        for i in res_target_atoms:
-            if '_' in i:
-                print('\nDo you really want to REPLACE atom {} inside a residue?'.format(i))
-                print('This will very likely damage something.\n')
-                break
-        fa = FindAtoms(reslist)
-        print('Replace mode active.')
-        target_lines = fa.get_atom_line_numbers(res_target_atoms)
-        for i in target_lines:
-            i = int(i)
-            rle.remove_line(i, rem=False, remove=False, frontspace=True)
-        h_delcount = fa.remove_adjacent_hydrogens(res_target_atoms, sfac_table)
-        if h_delcount:
-            return target_lines+h_delcount
-        else:
-            return target_lines
-
-
     def go_refine(self, shx):
         '''
         actually starts the fragment fit
@@ -325,27 +302,7 @@ class DSR():
             sys.exit()
 
 
-    def replace_after_fit(self, rl, reslist, resi, fragment_numberscheme, cell):
-        '''
-        deletes the atoms in replace mode that are < 1.2 A near the fragment atoms
-        '''
-        find_atoms = FindAtoms(reslist)
-        if resi.get_resinumber:
-            frag_at = []
-            for i in fragment_numberscheme:
-                at = i + '_{}'.format(resi.get_resinumber)
-                frag_at.append(at)
-        else:
-            frag_at = fragment_numberscheme
-        atoms_to_delete = find_atoms.remove_near_atoms(frag_at, cell)
-        target_lines = find_atoms.get_atom_line_numbers(atoms_to_delete)
-        rle = ResListEdit(reslist, find_atoms)
-        for i in target_lines:
-            i = int(i)
-            rle.remove_line(i, rem=False, remove=False, frontspace=True)
-        rl.write_resfile(reslist, '.res')
-        reslist = rl.get_res_list()
-        return reslist, find_atoms
+
 
     def main(self):
         '''
@@ -415,7 +372,7 @@ class DSR():
 
         ##### comment out all target atom lines in replace mode:
         if dsrp.command == 'REPLACE':
-            self.replacemode(dsrp.target, rle, reslist, sfac_table)
+            replacemode(dsrp.target, rle, reslist, sfac_table)
 
         # write to file:
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
@@ -437,7 +394,7 @@ class DSR():
         rl = ResList(self.res_file)
         reslist = rl.get_res_list()
         if dsrp.command == 'REPLACE':
-            reslist, find_atoms = self.replace_after_fit(rl, reslist, resi, 
+            reslist, find_atoms = replace_after_fit(rl, reslist, resi, 
                                                     fragment_numberscheme, cell)
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
         shx.restore_acta_card(acta_lines)
