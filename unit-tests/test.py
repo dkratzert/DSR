@@ -127,6 +127,7 @@ class reslistTest(unittest.TestCase):
 
 class collect_residuesTest(unittest.TestCase):
     def setUp(self):
+        self.maxDiff = None
         self.res_file = './collect_resi.res'
         self.res_list = ResList(self.res_file)
         self.reslist =  self.res_list.get_res_list()
@@ -134,12 +135,12 @@ class collect_residuesTest(unittest.TestCase):
 
     def testrun_collect_residues(self):
         #print(self.fa.collect_residues())
-        collected_resi = {'0': [['FE1', ['0.100001', '0.200002', '0.300003'], 19, None]],
-                          '1': [['O1', ['0.584527', '0.749093', '0.406892'], 34, 'CCF3'],
-                                ['H2', ['0.2', '0.3', '0.4'], 36, 'CCF3'],
-                                ['C1', ['0.462797', '0.766414', '0.415951'], 37, 'CCF3'],
-                                ['H1', ['0.2', '0.3', '0.4'], 40, 'CCF3']]}
-        resi_null = [['FE1', ['0.100001', '0.200002', '0.300003'], 19, None]]
+        collected_resi = {'0': [['FE1', ['0.100001', '0.200002', '0.300003'], 19, None, '0']],
+                          '1': [['O1', ['0.584527', '0.749093', '0.406892'], 34, 'CCF3', 1],
+                                ['H2', ['0.2', '0.3', '0.4'], 36, 'CCF3', 1],
+                                ['C1', ['0.462797', '0.766414', '0.415951'], 37, 'CCF3', 1],
+                                ['H1', ['0.2', '0.3', '0.4'], 40, 'CCF3', 1]]}
+        resi_null = [['FE1', ['0.100001', '0.200002', '0.300003'], 19, None, '0']]
         resi_fe = 'FE1'
         self.assertEqual(self.fa.collect_residues(), collected_resi)
         self.assertEqual(self.fa.collect_residues()['0'], resi_null)
@@ -754,34 +755,7 @@ class ExportTest(unittest.TestCase):
         self.invert = False
         self.gdb = global_DB(self.invert)
         self.export_clip = 'benzene'
-
-    def testrun_format_calced_coords(self):
-        export = Export(self.export_clip, self.gdb)
-        bigcell = export.format_calced_coords(['1', '1', '1', '90', '90', '90'])
-        smallcell = export.format_calced_coords(['2', '1', '1', '90', '90', '90'])
-        cell1 = ['50', '50', '50', '90', '90', '90']
-        cell2 = ['2', '1', '1', '90', '90', '90']
-        self.assertListEqual(bigcell, cell1)
-        self.assertListEqual(smallcell, cell2)
-
-
-    def testrun_export_to_clip(self):
-        '''
-        Exports the current fragment to the clipboard.
-        '''
-        from export import Export
-        gdb = global_DB(self.invert)
-        export = Export(self.export_clip, gdb)
-#        with self.assertRaises(SystemExit):
-        self.assertTrue(export.export_to_clip())
-
-    def testrun_do_export_fragment(self):
-        self.maxDiff = None
-        fragment = 'toluene'
-        from export import Export
-        export = Export(fragment, self.gdb, self.invert)
-        resfile = export.export_resfile()
-        resgood = ['TITL toluene\n', 'REM This file was exported by DSR version {}\n'.format(VERSION),
+        self.resgood = ['TITL toluene\n', 'REM This file was exported by DSR version {}\n'.format(VERSION),
                    'REM Name: Toluene, C7H8\nREM Source: CCDC CESLUJ\n',
                    'CELL 0.71073    11.246   14.123   27.184   90.000  100.079   90.000\n',
                    'ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n', 'LATT  -1\n', 'SFAC C\n',
@@ -817,47 +791,13 @@ class ExportTest(unittest.TestCase):
                    'C6   1     0.51068   0.69033   0.38312   11.0   0.04\n',
                    'C7   1     0.48938   0.61536   0.41297   11.0   0.04\n'],
                    '\nHKLF 0\nEND\n']
-        self.assertListEqual(resfile, resgood)
-
-    def testrun_do_export_fragment_all(self):
-        self.maxDiff = None
-        fragment = 'toluene'
-        from export import Export
-        export = Export(fragment, self.gdb, self.invert, export_all=True)
-        resfile = export.export_resfile()
-        resgood = ['TITL toluene\n', 'REM This file was exported by DSR version {}\n'.format(VERSION),
+        self.resgoodall = ['TITL toluene\n', 'REM This file was exported by DSR version {}\n'.format(VERSION),
                    'REM Name: Toluene, C7H8\nREM Source: CCDC CESLUJ\n',
                    'CELL 0.71073    11.246   14.123   27.184   90.000  100.079   90.000\n',
                    'ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n', 'LATT  -1\n', 'SFAC C\n',
                    'UNIT 1 \n', 'REM  RESIDUE: TOL\n', 'WGHT  0.1\n', 'FVAR  1\n',
-                   'rem Restraints from DSR database:\n',
-                    'SADI C2 C3 C3 C4 C4 C5 C5 C6 C6 C7 C7 C2\n'
-                    'SADI 0.04 C2 C6 C2 C4 C7 C5 C3 C7 C4 C6 C3 C5\n'
-                    'SADI 0.04 C1 C7 C1 C3\n'
-                    'FLAT C1 > C7\n'
-                    'SIMU C1 > C7\n'
-                    'RIGU C1 > C7\n',
-                    'rem Restraints from atom connectivities:\n',
-                    ['DFIX 1.3922  C3     C2     \n', 
-                     'DFIX 1.3775  C3     C4     \n',
-                     'DFIX 1.5058  C2     C1     \n', 
-                     'DFIX 1.3946  C2     C7     \n',
-                     'DFIX 1.3802  C7     C6     \n',
-                     'DFIX 1.3814  C6     C5     \n',
-                     'DFIX 1.3897  C5     C4     \n',
-                     'DANG 2.5246  C1     C3     \n',
-                     'DANG 2.5243  C1     C7     \n', 
-                     'DANG 2.4183  C2     C4     \n',
-                     'DANG 2.4124  C2     C6     \n', 
-                     'DANG 2.3878  C3     C7     \n', 
-                     'DANG 2.3909  C3     C5     \n',
-                     'DANG 2.3961  C4     C6     \n',
-                     'DANG 2.3967  C5     C7     \n', 
-                     'FLAT C2 C7 C6 C5\n',
-                     'FLAT C7 C6 C5 C1\n',
-                     'FLAT C6 C5 C4 C3\n'],
-                     'rem end of restraints\n',
-                   '\n', ['C1   1     0.34810   0.50619   0.44851   11.0   0.04\n',
+                      '\n', 
+                   ['C1   1     0.34810   0.50619   0.44851   11.0   0.04\n',
                    'C2   1     0.37174   0.58816   0.41613   11.0   0.04\n',
                    'C3   1     0.27706   0.63878   0.38821   11.0   0.04\n',
                    'C4   1     0.29758   0.71355   0.35825   11.0   0.04\n',
@@ -865,7 +805,42 @@ class ExportTest(unittest.TestCase):
                    'C6   1     0.51068   0.69033   0.38312   11.0   0.04\n',
                    'C7   1     0.48938   0.61536   0.41297   11.0   0.04\n'],
                    '\nHKLF 0\nEND\n']
-        self.assertListEqual(resfile, resgood)
+
+    def testrun_format_calced_coords(self):
+        export = Export(self.export_clip, self.gdb)
+        bigcell = export.format_calced_coords(['1', '1', '1', '90', '90', '90'])
+        smallcell = export.format_calced_coords(['2', '1', '1', '90', '90', '90'])
+        cell1 = ['50', '50', '50', '90', '90', '90']
+        cell2 = ['2', '1', '1', '90', '90', '90']
+        self.assertListEqual(bigcell, cell1)
+        self.assertListEqual(smallcell, cell2)
+
+
+    def testrun_export_to_clip(self):
+        '''
+        Exports the current fragment to the clipboard.
+        '''
+        from export import Export
+        gdb = global_DB(self.invert)
+        export = Export(self.export_clip, gdb)
+#        with self.assertRaises(SystemExit):
+        self.assertTrue(export.export_to_clip())
+
+    def testrun_do_export_fragment(self):
+        self.maxDiff = None
+        fragment = 'toluene'
+        from export import Export
+        export = Export(fragment, self.gdb, self.invert)
+        resfile = export.export_resfile()
+        self.assertListEqual(resfile, self.resgood)
+
+    def testrun_do_export_fragment_all(self):
+        self.maxDiff = None
+        fragment = 'toluene'
+        from export import Export
+        export = Export(fragment, self.gdb, self.invert, export_all=True)
+        resfile = export.export_resfile()
+        self.assertListEqual(resfile, self.resgoodall)
 
 
 class ResListEditTest(unittest.TestCase):
