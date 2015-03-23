@@ -39,7 +39,6 @@ program_name = '\n-----------------------------'\
 # TODO and ideas:
 # -add mesitylene to database
 # -detect collinear atoms
-# -import also from pdb, dfix, obprop alone.
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 
 
@@ -145,7 +144,7 @@ class DSR():
                 print(e)
         if self.export_clip:
             try:
-                self.export_to_clip()
+                self.export_to_clipboard()
             except() as e:
                 print(e)
         ## Import a GRADE fragment
@@ -159,6 +158,7 @@ class DSR():
         runtime = (time2 - time1)
         print('Runtime: {:>.1f} s'.format(runtime))
         print('\nDSR run complete.')
+        
 ###############################################################################
 
     def do_export_fragment(self):
@@ -184,7 +184,7 @@ class DSR():
             export.write_res_file()
         sys.exit(1)
 
-    def export_to_clip(self):
+    def export_to_clipboard(self):
         '''
         Exports the current fragment to the clipboard.
         '''
@@ -238,7 +238,6 @@ class DSR():
         searches the Name: comments in the database for a given name
         '''
         from misc import dice_coefficient
-        #from misc import levenshtein
         gdb = global_DB()
         db = gdb.build_db_dict()
         frags = sorted(db.keys())
@@ -254,8 +253,8 @@ class DSR():
             #coefficient = levenshtein(self.search_string, db_entry)
             coefficient = dice_coefficient(self.search_string, db_entry)
             search_results[coefficient] = i
-        # select the best 4 results:
-        selected_results = [search_results[i] for i in sorted(search_results)[0:4]]
+        # select the best 5 results:
+        selected_results = [search_results[i] for i in sorted(search_results)[0:5]]
         return selected_results
 
 
@@ -301,9 +300,6 @@ class DSR():
             print(e)
             sys.exit()
 
-
-
-
     def main(self):
         '''
         main object to run DSR as command line program
@@ -320,7 +316,6 @@ class DSR():
         fvarlines = rle.find_fvarlines()
         if dsrp.occupancy:
             rle.set_free_variables(dsrp.occupancy, fvarlines)
-
         fragment = dsrp.fragment.lower()
         fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
         dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
@@ -369,11 +364,8 @@ class DSR():
             sys.exit()
         reslist[dsr_line_number] = reslist[dsr_line_number]+'\n'
         reslist.insert(dsr_line_number+1, afix_entry)
-
-        ##### comment out all target atom lines in replace mode:
         if dsrp.command == 'REPLACE':
             replacemode(dsrp.target, rle, reslist, sfac_table)
-
         # write to file:
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
         acta_lines = shx.remove_acta_card()
@@ -395,7 +387,7 @@ class DSR():
         reslist = rl.get_res_list()
         if dsrp.command == 'REPLACE':
             reslist, find_atoms = replace_after_fit(rl, reslist, resi, 
-                                                    fragment_numberscheme, cell)
+                                                fragment_numberscheme, cell)
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
         shx.restore_acta_card(acta_lines)
         shx.check_refinement_results(lst_file)

@@ -107,7 +107,7 @@ def replacemode(res_target_atoms, rle, reslist, sfac_table):
 
 def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     '''
-    deletes the atoms in replace mode that are < 1.2 A near the fragment atoms
+    deletes the atoms in replace mode that are near the fragment atoms
     '''
     from resfile import ResListEdit
     find_atoms = FindAtoms(reslist)
@@ -118,7 +118,7 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
             frag_at.append(at)
     else:
         frag_at = fragment_numberscheme
-    atoms_to_delete = find_atoms.remove_near_atoms(frag_at, cell)
+    atoms_to_delete = find_atoms.find_atoms_to_replace(frag_at, cell)
     target_lines = find_atoms.get_atom_line_numbers(atoms_to_delete)
     rle = ResListEdit(reslist, find_atoms)
     for i in target_lines:
@@ -191,8 +191,7 @@ class FindAtoms():
                 del resi[0]
         return resi_dict
     
-    
-    def get_patnumber(self, partstring):
+    def get_partnumber(self, partstring):
         '''
         get the part number from a string like PART 1 oder PART 2 -21
         '''
@@ -204,7 +203,7 @@ class FindAtoms():
             print('Wrong PART definition found! Check your PART instructions.')
         return partnum
     
-    def remove_near_atoms(self, frag_atoms, cell, remdist=1.2):
+    def find_atoms_to_replace(self, frag_atoms, cell, remdist=1.2):
         '''
         this method looks around every atom of the fitted fragment and removes 
         atoms that are near a certain distance to improve the replace mode
@@ -295,7 +294,7 @@ class FindAtoms():
                 continue
             if i.startswith('PART') and not re.match(r'^PART\s+0', i):
                 part = True
-                partnum = self.get_patnumber(i)
+                partnum = self.get_partnumber(i)
                 continue
             #####################
             if resi:
@@ -504,11 +503,6 @@ def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
             print('\nAtom {} not found in database entry! Exiting...\n'.format(i))
             sys.exit(False)
     return True
-    #return 'check_source_target() succeded!\n'
-
-
-
-
 
 def rename_dbhead_atoms(new_atoms, old_atoms, dbhead):
     '''
