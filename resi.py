@@ -193,27 +193,6 @@ class Resi(object):
             return final_residue
 
 
-
-    def get_resi_from_db(self):
-        '''
-        Unused!
-
-        gets the RESI num class from the db
-        '''
-        resi_list = False
-        for line in self._dbhead:
-            line = line.upper()
-            if line.startswith('RESI'):
-                resi_list = line.split()
-                del resi_list[0]
-                return resi_list
-                break
-        if not resi_list:
-            print('No valid RESI instruction found in the database entry.')
-            sys.exit()
-
-
-
     def _wrong_syntax(self):
         print('This is not a valid RESIdue syntax!')
 
@@ -278,12 +257,16 @@ class Resi(object):
 
         find out if the atom names of the current residue class fit
         to the atom names in already existing classes.
+        
+        go through residues:
+            go through atoms:
+                if atom == current residue class:
+                    add atom to at_list
+            compare for residue if fragment atom list fits to at_list
         '''
         for num in list(self._atoms_in_reslist.keys()):
             print(num, len(self._atoms_in_reslist[num]), self._atoms_in_reslist[num][:][0][3], \
                     [i[0] for i in self._atoms_in_reslist[num][:]])
-
-
 
 
 

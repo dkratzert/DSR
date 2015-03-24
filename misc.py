@@ -245,7 +245,9 @@ def unwrap_head_lines(headlines):
 
 
 def makelist(string):
-    '''returns an upper-case list from a text string'''
+    '''
+    returns an upper-case list from a text string
+    '''
     stringlist = []
     for i in string.split():
         stringlist.append(i.upper())
