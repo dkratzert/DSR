@@ -224,7 +224,6 @@ class ShelxlRefine():
             #sys.exit(-1)
 
 
-
     def restore_shx_file(self):
         '''
         restores filename from backup
@@ -272,7 +271,9 @@ class ShelxlRefine():
             if re.match(r'.*CANNOT\s+OPEN\s+FILE.*hkl.*', out):
                 print(' No hkl file found!')
                 print('You need a proper hkl file to use DSR!')
-                sys.exit()
+                sys.exit()    
+            if re.match(r'.*\*\* Extinction \(EXTI\) or solvent.*', out):
+                continue
             if re.match(r'.*\*\* MERG code changed to 0', out):
                 # disable this output
                 continue

@@ -41,10 +41,10 @@ class DSR_Parser():
         self._dsr_string = self.find_dsr_command(line=True).lower()
         self._dsr_list = misc.makelist(self._dsr_string)
         try:
-          self.dsr_dict = self.parse_dsr_line()
+            self.dsr_dict = self.parse_dsr_line()
         except:
-          logging.basicConfig(filename=misc.reportlog, filemode='w', level=logging.DEBUG)
-          logging.info('DSR command line: {}'.format(self._dsr_string))
+            logging.basicConfig(filename=misc.reportlog, filemode='w', level=logging.DEBUG)
+            logging.info('DSR command line: {}'.format(self._dsr_string))
 
 
     def find_dsr_command(self, line=False):
