@@ -16,12 +16,12 @@ import misc
 import os
 import sys
 import constants
-import re
 import fnmatch
 from resfile import ResList, ResListEdit
 from dsrparse import DSR_Parser
 from dbfile import global_DB
-from misc import ll_to_string
+from constants import RESTRAINT_CARDS
+
 
 __metaclass__ = type  # use new-style classes
 
@@ -142,23 +142,41 @@ class InsertAfix(object):
     def remove_duplicate_restraints(self, dbhead, residue_class=''):
         '''
         removes restraints from the header which are already
-        in the res-file
+        in the res-file.
 
         :param dbhead:         database header (list of strings)
         :param residue_class:  SHELXL residue class
         :type residue_class:   string
         '''
+        all_restraints =[]
         modified = False
         newhead = dbhead[:]
-        for resline in self._reslist:
-            resline = resline.strip().split()
-            for num, headline in enumerate(dbhead):
-                headline = headline.strip().split()
-                if not headline:
-                    continue
-                if headline == resline and headline[0][:4] in constants.RESTRAINT_CARDS:
-                    # remove the restraint:
-                    newhead[num] = '' #'rem '+newhead[num]
+        for n, resline in enumerate(self._reslist):
+            resline = resline.strip(' \n\r')
+            resline = resline.split()
+            try:
+                resline[0][:4]
+            except:
+                continue
+            if resline[0][:4] in RESTRAINT_CARDS:
+                # see for the next four lines if the lines continues with "=":
+                if resline[-1] == '=':
+                    resline = resline[:-1]+self._reslist[n+1].split()
+                    second = self._reslist[n+1].split()
+                    if second[-1] == '=':
+                        resline = resline[:-1]+self._reslist[n+2].split()
+                        third = self._reslist[n+2].split()
+                        if third[-1] == '=':
+                            resline = resline[:-1]+self._reslist[n+3].split()
+                            fourth = self._reslist[n+3].split()
+                            if fourth[-1] == '=':
+                                resline = resline[:-1]+self._reslist[n+4].split()
+                all_restraints.append(resline)
+        for num, headline in enumerate(dbhead):
+            headline = headline.split()
+            for restr in all_restraints:
+                if headline == restr:
+                    newhead[num] = ''
                     modified = True
                     break
         if modified:
@@ -308,7 +326,7 @@ class InsertAfix(object):
 
 
 if __name__ == '__main__':
-    # from resi import Resi
+    from resi import Resi
     res_file = 'p21c.res'
     invert = True
     rl = ResList(res_file)
@@ -319,7 +337,7 @@ if __name__ == '__main__':
     rle = ResListEdit(reslist, find_atoms)
     gdb = global_DB(invert)
     db = gdb.build_db_dict()
-    fragment = 'OC(CF3)3'
+    fragment = 'pph3'
     fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
     dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
     dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
@@ -328,7 +346,7 @@ if __name__ == '__main__':
     dbtypes = get_atomtypes(dbatoms)
     #resi = Resi(reslist, dsr_dict, dbhead, residue, find_atoms)
     #dbhead = resi.make_resihead()
-
+    #resi = Resi(reslist, dsr_dict, dbhead, 'RESI PPH3', find_atoms)
     sf = SfacTable(reslist, dbtypes)
     sfac_table = sf.set_sfac_table()
     num = NumberScheme(reslist, dbatoms, resi)
@@ -336,7 +354,8 @@ if __name__ == '__main__':
 
 
     afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, sfac_table, find_atoms, numberscheme)
-    print(afix.build_afix_entry(False, res_file, 'CF3'))
+    afix.remove_duplicate_restraints(dbhead, 'PPh3')
+    #print(afix.build_afix_entry(False, res_file, '4'))
 
 
 

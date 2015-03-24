@@ -441,7 +441,7 @@ if __name__ == '__main__':
     res_list = rl.get_res_list()
     dsrp = DSR_Parser(res_list, rl)
     dsr_dict = dsrp.parse_dsr_line()
-    fragment = 'OC(CF3)3'
+    fragment = 'PPh3'
     fragment= fragment.lower()
     invert = True
     rl = ResList(res_file)
