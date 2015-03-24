@@ -332,13 +332,26 @@ class Restraints():
                 if self.is_flat(chunk):
                     flats.append(chunk[:])
                 for i in neighbors:
-                    chunk.append(i)
-                    del chunk[0]
-                    del neighbors[0]
+                    for at in chunk:
+                        if self.binds_to(at, i):
+                            chunk.append(i)
+                            del chunk[0]
+                            del neighbors[0]
                     if self.is_flat(chunk):
-                        flats.append(chunk)
+                        if not chunk in flats:
+                            flats.append(chunk)
         return flats
-
+    
+    
+    def binds_to(self, a, b):
+        '''
+        returns True if atom a binds to atoms b
+        '''
+        if (a, b) in self._connectivity_table:
+            return True
+        else:
+            return False
+    
 
     def is_flat(self, chunk):
         '''
@@ -457,6 +470,8 @@ if __name__ == '__main__':
     flats = restr.get_formated_flats()
     print('flats:\n'+''.join(flats))
     #print(''.join(dfixes_13))
+    
+    print(restr.binds_to('C1', 'O1'), 'it binds')
 
     def make_eadp(fa, fragatoms, resi_class, wavelength=0.71):
         '''
