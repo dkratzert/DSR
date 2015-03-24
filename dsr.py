@@ -364,8 +364,8 @@ class DSR():
             sys.exit()
         reslist[dsr_line_number] = reslist[dsr_line_number]+'\n'
         reslist.insert(dsr_line_number+1, afix_entry)
-        if dsrp.command == 'REPLACE':
-            replacemode(dsrp.target, rle, reslist, sfac_table)
+        #if dsrp.command == 'REPLACE':
+        #    replacemode(dsrp.target, rle, reslist, sfac_table)
         # write to file:
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
         acta_lines = shx.remove_acta_card()
@@ -387,7 +387,7 @@ class DSR():
         reslist = rl.get_res_list()
         if dsrp.command == 'REPLACE':
             reslist, find_atoms = replace_after_fit(rl, reslist, resi, 
-                                                fragment_numberscheme, cell)
+                                    fragment_numberscheme, cell)
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
         shx.restore_acta_card(acta_lines)
         shx.check_refinement_results(lst_file)
