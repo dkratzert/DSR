@@ -57,8 +57,6 @@ class DSR_Parser():
         '''
         dsr_str = ''
         multiline = False
-#        indexnum = ([i for i, l in enumerate(self._reslist) for m in
-#                   [re.search(self._dsr_regex, l.lower())] if m])
         indexnum = misc.find_multi_lines(self._reslist, self._dsr_regex)
         try:
             line_number = int(indexnum[0])
@@ -73,7 +71,6 @@ class DSR_Parser():
         if len(indexnum) > 1:
             print('Only one DSR command at once is allowed! Exiting...')
             sys.exit(-1)
-
         if line:  # returns the string
             dsr_str = str(self._reslist[line_number])
             if misc.multiline_test(dsr_str):

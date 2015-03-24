@@ -72,21 +72,11 @@ def get_atomtypes(dbatoms):
         sys.exit(False)
     return found
 
-
-def check_db_names_for_consistency(dbhead, dbatoms):
-    '''Checks if the Atomnames in the restraints of the dbhead are also in
-    the list of the atoms of the respective dbentry
-    Not used ATM
-    '''
-    for i in dbhead:
-        if i not in dbatoms:
-            print('Restraints inconsistent! Atom {} is in a restraint but not in the dbentry!'.format(i))
-        else:
-            pass
-
 def replacemode(res_target_atoms, rle, reslist, sfac_table):
     '''
     Target atoms are being replaced if this is executed
+    
+    obsoleted by replace_after_fit()
     '''
     for i in res_target_atoms:
         if '_' in i:
@@ -108,6 +98,12 @@ def replacemode(res_target_atoms, rle, reslist, sfac_table):
 def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     '''
     deletes the atoms in replace mode that are near the fragment atoms
+    
+    :param rl: Reslist() instance
+    :param reslist: .res file list
+    :param resi: Resi() instance
+    :param fragment_numberscheme: atom names of the fitting fragment
+    :param cell: cell parameters
     '''
     from resfile import ResListEdit
     find_atoms = FindAtoms(reslist)
