@@ -204,13 +204,12 @@ class InsertAfix(object):
         e2s = Elem_2_Sfac(self._sfac_table)
         new_atomnames = list(reversed(self.numberscheme)) # i reverse it to pop() later
         if resi.get_residue_class:
+            self._dbhead = resi.format_restraints(self._dbhead)
             self._dbhead = self.remove_duplicate_restraints(self._dbhead, 
                                                             resi.get_residue_class)
             if not external_restraints:
                 self._dbhead = self._dbhead+['RESI {} {}'.format(
                                         resi.get_residue_class, resi.get_resinumber)]
-            self._dbhead = resi.format_restraints(self._dbhead)
-            #print(self._dbhead)
         else:
             # applies new naming scheme to head:
             old_atoms = [ i[0] for i in self._dbatoms]
