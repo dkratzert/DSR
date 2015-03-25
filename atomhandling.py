@@ -212,6 +212,9 @@ class FindAtoms():
         frag_coords = self.get_atomcoordinates(frag_atoms)
         atoms = self._residues
         for i in atoms:
+            suffix = ''
+            if i != 0:
+                suffix = '_{}'.format(i)
             # i is the resideue number
             for y in atoms[i]:
                 if y[0].startswith('Q'):
@@ -226,16 +229,16 @@ class FindAtoms():
                             continue
                         at1 = [float(x) for x in frag_coords[name]]
                         at2 = [float(x) for x in y[1]]
-                        if at1 == at2:
+                        resinum1 = self.get_atoms_resinumber(name)
+                        resinum2 = self.get_atoms_resinumber(y[0]+suffix)
+                        if at1 == at2 and resinum1 == resinum2:
                             # do not delete atoms on exactly the same position
+                            # and same residue
                             continue
                         d = atomic_distance(at1, at2, cell)
                         # now get the atom types of the pair atoms and with that
                         # the covalence radius. 
                         if d < remdist:
-                            suffix = ''
-                            if i != 0:
-                                suffix = '_{}'.format(i)
                             atoms_to_delete.append(y[0]+suffix) 
         if atoms_to_delete:
             print('Replacing following atoms (< {0} A near fragment):\n'.format(remdist), 
