@@ -19,7 +19,7 @@ from options import OptionsParser
 from dbfile import global_DB, ImportGRADE
 from resfile import ResList, ResListEdit, filename_wo_ending
 from atomhandling import SfacTable, get_atomtypes, check_source_target,\
-    set_final_db_sfac_types, replacemode, replace_after_fit
+    set_final_db_sfac_types, replace_after_fit
 from atomhandling import FindAtoms, NumberScheme
 from resi import Resi
 from restraints import ListFile, Lst_Deviations
@@ -37,7 +37,7 @@ program_name = '\n-----------------------------'\
            ' ----------------------------------'.format(VERSION)
 
 # TODO and ideas:
-# -add mesitylene to database
+# -
 # -detect collinear atoms
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 
