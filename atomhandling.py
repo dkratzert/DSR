@@ -224,8 +224,8 @@ class FindAtoms():
                         if name == y[0]:
                             # do not delete the fitted fragment
                             continue
-                        at1 = [float(i) for i in frag_coords[name]]
-                        at2 = [float(i) for i in y[1]]
+                        at1 = [float(x) for x in frag_coords[name]]
+                        at2 = [float(x) for x in y[1]]
                         if at1 == at2:
                             # do not delete atoms on exactly the same position
                             continue
@@ -233,8 +233,10 @@ class FindAtoms():
                         # now get the atom types of the pair atoms and with that
                         # the covalence radius. 
                         if d < remdist:
-                            atoms_to_delete.append(y[0]) 
-                            #print('delete', y[0], d)
+                            suffix = ''
+                            if i != 0:
+                                suffix = '_{}'.format(i)
+                            atoms_to_delete.append(y[0]+suffix) 
         if atoms_to_delete:
             print('Replacing following atoms (< {0} A near fragment):\n'.format(remdist), 
               ' '.join(sorted(atoms_to_delete)))
