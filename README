@@ -7,3 +7,11 @@ and the DSR program reads this information to put a molecule or fragment with th
 of the target atoms or q-peaks in the unit cell. Bond restraints can be either applied from the database to the molecule 
 or automatically generated.
 Development is on GitHub: https://github.com/dkratzert/dsr
+
+ ----------------------------------------------------------------------------
+ "THE BEER-WARE LICENSE" (Revision 42):
+ <daniel.kratzert@ac.uni-freiburg.de> wrote this Program. As long as you retain
+ this notice you can do whatever you want with this stuff. If we meet some day,
+ and you think this stuff is worth it, you can buy me a beer in return.
+ Daniel Kratzert
+ ----------------------------------------------------------------------------
