@@ -1,9 +1,10 @@
 Recent changes
 -1.6.1  New feature: replace mode will replace all atoms in PART 0 that are 1.2 A near the fitting fragment.
+        Please tell me if 1.2 A is too far.
         New fragment 18-Crown-6 (thanks to Dejan Premužic), New fragment Mesitylene. Bug fixed that introduced 
         restraints again, even if they were already there (thanks to Olaf Petersen).
         Better warning for bad residues. Several small fixes. ACTA card is restored as it was before now. 
-
+        Triphenylphosphane added to database. Fixed replacing of residues.
 -1.6.0  Completely changed DFIX/DANG/FLAT routines. Connectivity list is now calculated by DSR and not from .lst file (SHELXL).
         FLAT also includes neighbouring ring atoms. Exported res files now include DFIX/DANG/FLAT restraints.
         Please report bugs in this release.
