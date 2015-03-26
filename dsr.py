@@ -37,7 +37,8 @@ program_name = '\n-----------------------------'\
            ' ----------------------------------'.format(VERSION)
 
 # TODO and ideas:
-# -
+# -new command to generate CF3 groups: Look around a given C atom and determine
+#  how many disordered F atoms. Then create (disordered) CF3 group with its restraints.  
 # -detect collinear atoms
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 
