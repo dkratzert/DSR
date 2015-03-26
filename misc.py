@@ -14,6 +14,8 @@ import string
 import re
 import os
 from constants import atomregex, SHX_CARDS
+import math
+from math import cos, sqrt, radians, sin
 
 alphabet = string.ascii_uppercase
 
@@ -420,13 +422,20 @@ def vol_tetrahedron(a, b, c, d, cell=None):
         B = frac_to_cart(b, cell)
         C = frac_to_cart(c, cell)
         D = frac_to_cart(d, cell)
-
     AB = subtract_vect(A, B)
     AC = subtract_vect(A, C)
     AD = subtract_vect(A, D)
     D = determinante([AB, AC, AD])
     volume = abs((D/6))
     return volume
+
+def vol_unitcell(a, b, c, al, be, ga):
+    '''
+    calculates the volume of a unit cell
+    '''
+    ca, cb, cg = cos(radians(al)), cos(radians(be)), cos(radians(ga))
+    v = a*b*c*sqrt(1+2*ca*cb*cg-ca**2-cb**2-cg**2)
+    return v
 
 
 def dice_coefficient(a, b):
@@ -575,11 +584,16 @@ def distance(x1, y1, z1, x2, y2, z2, round_out=False):
 #        return angle
 
 if __name__ == '__main__':
+    import sys
+    v = vol_unitcell(2, 2, 2, 90, 90, 90)
+    print(v)
+    sys.exit()
+    
     from resfile import ResList, ResListEdit
     from atomhandling import FindAtoms
     from dsrparse import DSR_Parser
     import math as m
-    import sys
+    
     from dbfile import global_DB
     res_file = 'p21c.res'
     res_list = ResList(res_file)
@@ -676,4 +690,6 @@ if __name__ == '__main__':
     print(levenshtein('hallo', 'holla'))
     print(dice_coefficient('hallo', 'holla'))
     print(dice_coefficient2('hallo', 'holla'))
-    print(which('ls'))
+    print(which('help'))
+
+    
