@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "DSR - Disordered Structure Refinement"
-#define MyAppVersion "1.6.1"
+#define MyAppVersion "1.6.2"
 #define MyAppPublisher "Daniel Kratzert"
 
 [Setup]
@@ -83,7 +83,7 @@ Source: "..\resfile.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\resi.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\pyperclip.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\elements.py"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "..\setup\custom.xld"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\README"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Python27-dsr\*"; DestDir: "{app}\Python27"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\example\*"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: ".\Output\changelog.txt"; DestDir: "{app}"; Flags: ignoreversion
