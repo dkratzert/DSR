@@ -2,7 +2,7 @@ Summary: DSR - A program for modelling of disordered solvents with SHELXL
 Name: DSR
 Provides: DSR
 Packager: dkratzert@gmx.de
-Version: 1.6.1
+Version: 1.6.2
 Release: 0
 Requires: python, xclip
 Prefix: /opt
@@ -70,6 +70,7 @@ source /etc/profile.d/dsr.sh
 
 
 %install
+install -m 644 README %{buildroot}%{prefix}/DSR/README
 install -m 644 afix.py %{buildroot}%{prefix}/DSR/afix.py
 install -m 644 atomhandling.py %{buildroot}%{prefix}/DSR/atomhandling.py
 install -m 644 atoms.py %{buildroot}%{prefix}/DSR/atoms.py
@@ -413,7 +414,7 @@ dos2unix -q %{buildroot}%{prefix}/*
 %files
 %doc %{prefix}/DSR/manuals/DSR-manual.pdf
 %config /etc/profile.d/dsr.sh
-#%{prefix}/DSR/dsr
+%{prefix}/DSR/README
 %{prefix}/DSR/afix.py
 %{prefix}/DSR/atomhandling.py
 %{prefix}/DSR/atoms.py
