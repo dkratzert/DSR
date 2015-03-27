@@ -51,7 +51,8 @@ def cell_from_fcf(filename):
                     F000 = float(line.split()[1])
                 if all([a, b, c, al, be, ga, list_code, F000]):
                     break
-    except(IOError):
+    except(IOError) as e:
+        print(e)
         print('Unable to read {} file.'.format(filename))
         sys.exit()
     return (a, b, c, al, be, ga, list_code, F000)
@@ -110,7 +111,7 @@ def fourier(hklfcfo, xyz, c, diffden=True):
         Foc = [x[4] for x in hklfcfo]
     philist = [p[5] for p in hklfcfo]
     F000 = c[7]
-    summe = F000*1
+    summe = F000
     for F, hklxyz, phi in zip(Foc, expo, philist):
         summe = summe+abs(F)*cmath.exp(-1j*2*pi*(hklxyz-phi))
     print
@@ -124,7 +125,9 @@ def fourier(hklfcfo, xyz, c, diffden=True):
 
 if __name__ == '__main__':
     #filename = '/Users/daniel/Documents/DSR/p21c.fcf'
-    filename = 'D:\Programme\DSR\example\p21c.fcf'
+    #filename = 'D:\Programme\DSR\example\p21c.fcf'
+    filename = r'D:\Programme\DSR\example\nte03a.fcf'
+    
     c = cell_from_fcf(filename)
     print(c)
     da = read_data_from_fcf(filename, type=c[6])
@@ -137,7 +140,7 @@ if __name__ == '__main__':
         #num = float('0.69{}18'.format(r))
         #fourier(da, [num,  0.6019,  0.2177], c)
         #fourier(da, [0.406763,   0.436327,   0.352405], c)
-        fourier(da, [0.7416,  0.4696,  0.0661], c)
+        fourier(da, [0.6015, -0.0444,  0.9054], c)
         #fourier(da, [0.7427,  0.5689,  0.2124], c)
         #fourier(da, [0.177383,    0.298455,   0.290893], c)
     
