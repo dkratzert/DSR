@@ -15,7 +15,7 @@ from misc import vol_unitcell
 import math
 import cmath
 import numbers
-from math import sqrt
+from math import sqrt, cos, sin, exp, pi
 
 
 '''
@@ -29,7 +29,7 @@ def cell_from_fcf(filename):
     '''
     reads unit cell from fcf
     '''
-    a, b, c, al, be, ga, list_code = None, None, None, None, None, None, None  
+    a, b, c, al, be, ga, list_code, F000 = (None, )*8  
     try:
         with open(filename, 'r') as f:
             for line in f:
@@ -47,12 +47,14 @@ def cell_from_fcf(filename):
                     ga = float(line.split()[1])
                 if line.startswith('_shelx_refln_list_code'):
                     list_code = line.split()[1]
-                if all([a, b, c, al, be, ga, list_code]):
+                if line.startswith('_exptl_crystal_F_000'):
+                    F000 = float(line.split()[1])
+                if all([a, b, c, al, be, ga, list_code, F000]):
                     break
     except(IOError):
         print('Unable to read {} file.'.format(filename))
         sys.exit()
-    return (a, b, c, al, be, ga, list_code)
+    return (a, b, c, al, be, ga, list_code, F000)
                 
 
 def read_data_from_fcf(filename, type):
@@ -72,9 +74,10 @@ def read_data_from_fcf(filename, type):
                     except:
                         continue
                     if type == '6':
-                        # h k l Fc^2 Fo^2
+                        # h k l Fo Fc phi
+                        # 0 1 2 3  4  5
                         line = [int(line[0]), int(line[1]), int(line[2]), 
-                                float(line[5]), sqrt(abs(float(line[3])))]
+                                sqrt(float(line[3])), float(line[5]), float(line[6])]
                         data.append(line)
                     if type == '4':
                         data.append([int(line[0]), int(line[1]), int(line[2]), 
@@ -91,40 +94,45 @@ def read_data_from_fcf(filename, type):
     
 def fourier(hklfcfo, xyz, c, diffden=False):
     '''
-    rho = 1/V*SUM([Fo-Fc]*exp(-i2pi(hx+ky+lz)))
+    rho = 1/V*SUM([Fo-Fc]*exp(i*phi)*exp(-i2pi(hx+ky+lz)))
     '''
-    vc = 1/vol_unitcell(c[0], c[1], c[2], c[3], c[4], c[5])
-    expo = [ n[0]*xyz[0] + n[1]*xyz[1] + n[2]*xyz[2] for n in hklfcfo ]
+    v = vol_unitcell(c[0], c[1], c[2], c[3], c[4], c[5])
+    expo = [ (n[0]*xyz[0] + n[1]*xyz[1] + n[2]*xyz[2]) for n in hklfcfo ]
     if diffden:
-        Foc = [sqrt(x[4])-sqrt(x[3]) for x in hklfcfo]
+        Foc = [abs(x[3])-abs(x[4]) for x in hklfcfo]
     else:
-        Foc = [sqrt(abs(x[4])) for x in hklfcfo]
-    #print(Foc)
-    summe = 0.0
-    for F, e in zip(Foc, expo):
-        summe = summe+F*cmath.exp(-2j*math.pi*(e))
-    #print(vc*summe)
-    rho = sqrt(vc*summe.real)+sqrt(vc*summe.imag)
+        Foc = [x[4] for x in hklfcfo]
+    philist = [p[5] for p in hklfcfo]
+    phi=0
+    hklxyz = 0
+    F000 = c[7]
+    summe = abs(F000)*cmath.exp(1j*phi)*cmath.exp(-1j*2*pi*hklxyz)
+    for F, hklxyz, phi in zip(Foc, expo, philist):
+        #summe = summe+abs(F)*cmath.exp(1j*phi)*(cos(hklxyz)+1j*sin(hklxyz))
+        summe = summe+abs(F)*cmath.exp(1j*phi)*cmath.exp(-1j*2*pi*hklxyz)
+    print((1/v)*summe)
+    rho = sqrt(abs((1/v)*summe.real))+sqrt(abs((1/v)*summe.imag))
     print(rho)
 
 
 if __name__ == '__main__':
-    filename = 'D:\Programme\DSR\example\p21c.fcf'
+    filename = '/Users/daniel/Documents/DSR/p21c.fcf'
+    #filename = 'D:\Programme\DSR\example\p21c.fcf'
     c = cell_from_fcf(filename)
     print(c)
-    da = read_data_from_fcf(filename, c[-1])
+    da = read_data_from_fcf(filename, type=c[6])
     
     #print('h     k     l      Fc^2       Fo^2')
     #for i in da[:10]:
     #    print(i)
     # 0.6918  0.6019  0.2177
     print('four:')
-    for r in  range(0, 20):
+    for r in  range(0, 1):
         num = float('0.69{}18'.format(r))
-        fourier(da, [num,  0.6019,  0.2177], c)
-        #fourier(da, [0.2763,  0.3712,  0.4868], c)
+        #fourier(da, [num,  0.6019,  0.2177], c)
+        fourier(da, [-0.1960,  0.2403,  0.3478], c)
         #fourier(da, [0.6918,  0.6019,  0.2177], c)
-        #fourier(da, [0.6806,  0.5286,  0.2073], c)
+        #fourier(da, [0.177383,    0.298455,   0.290893], c)
     
     
     
