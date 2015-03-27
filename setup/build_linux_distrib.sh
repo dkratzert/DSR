@@ -12,6 +12,7 @@ echo $VERSION
 OUTFILE=DSR-$VERSION.tar
 
 FILES="afix.py
+README
 atomhandling.py
 atoms.py
 constants.py
