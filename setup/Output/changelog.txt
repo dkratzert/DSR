@@ -1,7 +1,8 @@
 Recent changes
+-1.6.2  Improved atom deleter in replace mode.
 -1.6.1  New feature: replace mode will replace all atoms in PART 0 that are 1.2 A near the fitting fragment.
         Please tell me if 1.2 A is too far.
-        New fragment 18-Crown-6 (thanks to Dejan Premužic), New fragment Mesitylene. Bug fixed that introduced 
+        New fragment 18-Crown-6 (thanks to Dejan Premuï¿½ic), New fragment Mesitylene. Bug fixed that introduced 
         restraints again, even if they were already there (thanks to Olaf Petersen).
         Better warning for bad residues. Several small fixes. ACTA card is restored as it was before now. 
         Triphenylphosphane added to database. Fixed replacing of residues.
@@ -43,7 +44,7 @@ Recent changes
         More meaningful comments about the import from a GRADE fragment are now included during the import 
         and export. Multiple lines of REM in the database are now supported. 
         The molecules of the paper about "X-ray analysis on the nanogram to microgram scale using porous complexes"
-        from Inokuma, Y. et al. Nature 495, 461–466 (2013) are included!
+        from Inokuma, Y. et al. Nature 495, 461ï¿½466 (2013) are included!
 -1.3.2  FRAG in the database entrys was accidentally case sensitive. A missing residue in the database 
         entry was not properly checked.
 -1.3.1  A lot of improvements: DFIX command now possible without RESI command. line wrap of long command 
