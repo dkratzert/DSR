@@ -37,6 +37,7 @@ program_name = '\n-----------------------------'\
            ' ----------------------------------'.format(VERSION)
 
 # TODO and ideas:
+# -For CF3: rem dsr put cf3/cf6/cf9 on Cx Qx (resi) (part) (occ)
 # -new command to generate CF3 groups: Look around a given C atom and determine
 #  how many disordered F atoms. Then create (disordered) CF3 group with its restraints.  
 # -detect collinear atoms
