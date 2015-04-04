@@ -7,6 +7,8 @@ fi
 if [ ! $DSR_DIR ]; then 
     DSR_DIR=/opt/DSR
     DSR_DB_DIR=/opt/DSR
+    export DSR_DIR
+    export DSR_DB_DIR
 fi
 
 # test if python 2.7 is available
