@@ -85,8 +85,6 @@ def read_data_from_fcf(filename, type):
                     line = [int(line[0]), int(line[1]), int(line[2]), 
                             round(sqrt(float(line[3])), 4), float(line[5]), radians(float(line[6]))]
                     data.append(line)
-                    #data.append([int(line[0]), int(line[1]), int(line[2]), 
-                    #            float(line[3]), float(line[4])])
                     continue
                 if line.startswith(' _refln'):
                     count = count+1
