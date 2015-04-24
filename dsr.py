@@ -42,6 +42,14 @@ program_name = '\n-----------------------------'\
 #  how many disordered F atoms. Then create (disordered) CF3 group with its restraints.  
 # -detect collinear atoms
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
+'''
+-get distance of source from target atoms
+-begin to rotate with a small inclination until all distance pairs are nearly
+ the same
+-Move coords in any direction half the distance 
+-if it gets nearer move half the new distance again
+-if it doesnt get nearer try other coordinates/directions to move
+'''
 
 
 
