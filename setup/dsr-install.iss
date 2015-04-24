@@ -59,7 +59,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 ; adds a new page to the setup where you can choose if the path should be added
 [Tasks]
-Name: "modifypath"; Description: "Add application directory to your environmental path"; GroupDescription: "DSR needs to be in the PATH variable to find its components."
+Name: "modifypath"; Description: "Add application directory to your system environment path variable"; GroupDescription: "DSR needs to be in the PATH variable to find its components."
 
 [Files]
 Source: "..\dsr_db.txt"; DestDir: "{app}"; Flags: ignoreversion; Permissions: users-modify
