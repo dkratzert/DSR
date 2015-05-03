@@ -172,7 +172,7 @@ class Restraints():
         returns a connectivity table from the atomic coordinates and the covalence
         radii of the fragment atoms.
         '''
-        extra_param = 0.15
+        extra_param = 0.16 # empirical value
         names = []
         for n, i in enumerate(self._atoms, 1):
             names.append([n, i])
@@ -183,7 +183,7 @@ class Restraints():
                 ele2 = ELEMENTS[typ2.capitalize()]
                 d = distance(co1[0], co1[1], co1[2], co2[0], co2[1], co2[2], round_out=5)
                 #print(d, n1, n2, (ele1.covrad+ele2.covrad)+extra_param)
-                # a bond is defined with less than the sum of the covalenve 
+                # a bond is defined with less than the sum of the covalence 
                 # radii plus the extra_param:
                 if d <= (ele1.covrad+ele2.covrad)+extra_param and d > (ele1.covrad or ele2.covrad):
                     if n1 == n2:
