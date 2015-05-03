@@ -331,11 +331,20 @@ class Restraints():
             for chunk in chunks:
                 if self.is_flat(chunk):
                     flats.append(chunk[:])
+                    #print('flatchunk:', chunk)
+            if not flats:
+                return False
+            for chunk in chunks:
                 for i in neighbors:
                     for at in chunk:
                         if self.binds_to(at, i):
                             chunk.append(i)
-                            del chunk[0]
+                            if not self.binds_to(chunk[0], i):
+                                # only delete if not bounded to the beforehand added atom
+                                del chunk[0] 
+                            else:
+                                # otherwise delete from the other end
+                                del chunk[-2]
                             del neighbors[0]
                     if self.is_flat(chunk):
                         if not chunk in flats:
