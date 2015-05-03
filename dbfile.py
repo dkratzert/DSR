@@ -19,6 +19,7 @@ import tarfile
 from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS
 import misc
 from atoms import Element
+from atomhandling import get_atomtypes
 
 
 def invert_dbatoms_coordinates(atoms):
@@ -298,6 +299,19 @@ class global_DB():
             sys.exit(False)
         return True
 
+    def get_sum_formula(self, fragment):
+        '''
+        returns the sum formula of a fragment
+        as string like 'SI4 C9 O1'
+        :param fragment: fragment name
+        :type fragment: string
+        '''
+        types = get_atomtypes(self._dbentry_dict[fragment]['atoms'])
+        formula = ''
+        for el in set(types):
+            num = types.count(el)
+            formula+='{}{} '.format(el, num)
+        return formula
 
     def check_db_atom_consistency(self, db, fragment):
         '''This method is for atoms only (without db header)!

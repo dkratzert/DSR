@@ -152,6 +152,7 @@ class Export():
         res_export.append('SFAC '+'  '.join(sfac)+'\n')
         res_export.append('UNIT '+' '.join(unit)+'\n')
         res_export.append('REM  RESIDUE: {}\n'.format(self._resi))
+        res_export.append('REM Sum formula: {}\n'.format(self._gdb.get_sum_formula(self._fragment_name)))
         res_export.append('WGHT  0.1'+'\n')
         res_export.append('FVAR  1'+'\n')
         if not self._export_all:

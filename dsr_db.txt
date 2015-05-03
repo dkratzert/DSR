@@ -81,8 +81,9 @@ F13   4    0.545108    0.756955    0.120484    11.00000    0.05000
 </PFCY>
 
 <ADAM>
-REM Name: Perfluoroadamanthole, 
+REM Name: Perfluoroadamanthole, C10O1F15
 REM Source: Olaf Petersen
+
 RIGU O1 > F15
 RESI ADAM
 FRAG 17 12.0095  22.0262  20.4662   90.000  100.829   90.000
