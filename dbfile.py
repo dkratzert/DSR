@@ -306,7 +306,10 @@ class global_DB():
         :param fragment: fragment name
         :type fragment: string
         '''
-        types = get_atomtypes(self._dbentry_dict[fragment]['atoms'])
+        try:
+            types = get_atomtypes(self._dbentry_dict[fragment]['atoms'])
+        except:
+            return None
         formula = ''
         for el in set(types):
             num = types.count(el)

@@ -63,13 +63,13 @@ def get_atomtypes(dbatoms):
                 found.append(atom[0])  # then for all one-letter atoms
             else:
                 print('\n {} is not a valid atom!!\n'.format(atom))
-                sys.exit(False)
+                raise KeyError
         except(IndexError):
             print('\n {} is not a valid atom!!\n'.format(atom))
-            sys.exit(False)
+            raise KeyError
     if len(dbatoms) != len(found):    # do we really need this here??
         print("One of the Atoms in the database entry is not correct! Exiting...")
-        sys.exit(False)
+        raise KeyError
     return found
 
 def replacemode(res_target_atoms, rle, reslist, sfac_table):
