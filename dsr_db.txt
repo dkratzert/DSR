@@ -908,7 +908,7 @@ rem Src: pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei
 rem Name: Acetonitrile, C2H3N, NMe
 RESI MeCN
 DFIX 0.01 1.162 C1 N1
-DFIX 0.01 1.453 C2 N1
+DFIX 0.01 1.453 C1 N1
 DFIX 0.01 2.616 C2 N1
 SIMU N1 > C2
 RIGU N1 > C2
