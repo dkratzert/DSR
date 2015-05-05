@@ -71,10 +71,10 @@ class get_atomtypesTest(unittest.TestCase):
     def testrun_pos(self):
         self.assertEqual(get_atomtypes(self.dbatoms), ['O', 'C'])
     def testrun_neg1(self):
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(KeyError):
             get_atomtypes(self.bad_dbatoms1)
     def testrun_neg2(self):
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(KeyError):
             get_atomtypes(self.bad_dbatoms2)
 
 class reslistTest(unittest.TestCase):
@@ -752,6 +752,7 @@ class DSRParse2Test(unittest.TestCase):
 
 class ExportTest(unittest.TestCase):
     def setUp(self):
+        self.maxDiff = None
         self.invert = False
         self.gdb = global_DB(self.invert)
         self.export_clip = 'benzene'
@@ -759,7 +760,11 @@ class ExportTest(unittest.TestCase):
                    'REM Name: Toluene, C7H8\nREM Source: CCDC CESLUJ\n',
                    'CELL 0.71073    11.246   14.123   27.184   90.000  100.079   90.000\n',
                    'ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n', 'LATT  -1\n', 'SFAC C\n',
-                   'UNIT 1 \n', 'REM  RESIDUE: TOL\n', 'WGHT  0.1\n', 'FVAR  1\n',
+                   'UNIT 1 \n', 
+                   'REM  RESIDUE: TOL\n', 
+                   'REM Sum formula: C7 \n',
+                   'WGHT  0.1\n', 
+                   'FVAR  1\n',
                    'rem Restraints from DSR database:\n',
                    'SADI C2 C3 C3 C4 C4 C5 C5 C6 C6 C7 C7 C2\nSADI 0.04 C2 C6 C2 C4 C7 C5 C3 C7 C4 C6 C3 C5\nSADI 0.04 C1 C7 C1 C3\nFLAT C1 > C7\nSIMU C1 > C7\nRIGU C1 > C7\n',
                     'rem Restraints from atom connectivities:\n',
@@ -779,8 +784,8 @@ class ExportTest(unittest.TestCase):
                      'DANG 2.3961  C4     C6     \n',
                      'DANG 2.3967  C5     C7     \n', 
                      'FLAT C2 C7 C6 C5\n',
-                     'FLAT C7 C6 C5 C1\n',
-                     'FLAT C6 C5 C4 C3\n'],
+                     'FLAT C6 C5 C4 C3\n',
+                     'FLAT C2 C7 C6 C1\n'],
                      'rem end of restraints\n',
                       '\n', 
                    ['C1   1     0.34810   0.50619   0.44851   11.0   0.04\n',
@@ -794,8 +799,13 @@ class ExportTest(unittest.TestCase):
         self.resgoodall = ['TITL toluene\n', 'REM This file was exported by DSR version {}\n'.format(VERSION),
                    'REM Name: Toluene, C7H8\nREM Source: CCDC CESLUJ\n',
                    'CELL 0.71073    11.246   14.123   27.184   90.000  100.079   90.000\n',
-                   'ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n', 'LATT  -1\n', 'SFAC C\n',
-                   'UNIT 1 \n', 'REM  RESIDUE: TOL\n', 'WGHT  0.1\n', 'FVAR  1\n',
+                   'ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n', 
+                   'LATT  -1\n', 'SFAC C\n',
+                   'UNIT 1 \n', 
+                   'REM  RESIDUE: TOL\n', 
+                   'REM Sum formula: C7 \n',
+                   'WGHT  0.1\n', 
+                   'FVAR  1\n',
                       '\n', 
                    ['C1   1     0.34810   0.50619   0.44851   11.0   0.04\n',
                    'C2   1     0.37174   0.58816   0.41613   11.0   0.04\n',
