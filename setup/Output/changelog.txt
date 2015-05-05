@@ -1,5 +1,7 @@
 Recent changes
+-1.6.3  Improved FLAT restraints. Fixed Pyridine and Acetonitrile restraints. Perfluoro adamantole added.
 -1.6.2  Improved atom deleter in replace mode.
+        Finally, a brand new dmg image for Mac OS X.
 -1.6.1  New feature: replace mode will replace all atoms in PART 0 that are 1.2 A near the fitting fragment.
         Please tell me if 1.2 A is too far.
         New fragment 18-Crown-6 (thanks to Dejan Premu�ic), New fragment Mesitylene. Bug fixed that introduced 
