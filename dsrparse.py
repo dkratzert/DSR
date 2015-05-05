@@ -166,6 +166,9 @@ class DSR_Parser():
         '''returns the different parameters from the dsr command as dict
         It needs find_commands() and find_atoms() to parse the line.
         '''
+        if self._dsr_list[3].upper() == 'CF3':
+            #got_to_the_cf3_routine()
+            pass
         self.minimal_requirements()
         # syntax:
         # rem dsr put|add|replace fragment with source on target part xx AFIX 17x occ occupancy
@@ -234,6 +237,13 @@ class DSR_Parser():
             };
         return dsr_dict
 
+    
+    
+    def special_cf3_parser(self):
+        '''
+        parses the command line in case we want a cf3 group an a carbon atom
+        '''
+        pass
 
     @property
     def fragment(self):
