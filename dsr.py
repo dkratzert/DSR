@@ -30,7 +30,7 @@ from afix import InsertAfix
 from terminalsize import get_terminal_size
 from refine import ShelxlRefine
 
-VERSION = '1.6.2'
+VERSION = '1.6.3'
 # dont forget to change version in Innoscript file, spec file and deb file.
 program_name = '\n-----------------------------'\
            ' D S R - v{}' \
@@ -39,14 +39,14 @@ program_name = '\n-----------------------------'\
 # TODO and ideas:
 # -For CF3: rem dsr put cf3/cf6/cf9 on Cx Qx (resi) (part) (occ)
 # -new command to generate CF3 groups: Look around a given C atom and determine
-#  how many disordered F atoms. Then create (disordered) CF3 group with its restraints.  
+#  how many disordered F atoms. Then create (disordered) CF3 group with its restraints.
 # -detect collinear atoms
 # -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 '''
 -get distance of source from target atoms
 -begin to rotate with a small inclination until all distance pairs are nearly
  the same
--Move coords in any direction half the distance 
+-Move coords in any direction half the distance
 -if it gets nearer move half the new distance again
 -if it doesnt get nearer try other coordinates/directions to move
 '''
@@ -133,7 +133,7 @@ class DSR():
         else:
             self.search_string = search_string
         if self.invert:
-            if not any([self.res_file, self.external, self.import_grade, 
+            if not any([self.res_file, self.external, self.import_grade,
                        self.export_clip, self.export_all, self.export_fragment]):
                 self.options.error()
         #  List of database Fragments:
@@ -168,7 +168,7 @@ class DSR():
         runtime = (time2 - time1)
         print('Runtime: {:>.1f} s'.format(runtime))
         print('\nDSR run complete.')
-        
+
 ###############################################################################
 
     def do_export_fragment(self):
@@ -381,7 +381,7 @@ class DSR():
         acta_lines = shx.remove_acta_card()
         shx.set_refinement_cycles('0')
         rl.write_resfile(reslist, '.ins')
-        if self.no_refine:        
+        if self.no_refine:
             print('\nPerforming no fragment fit. Just prepared the .ins file for you.')
             return
         #  Refine with L.S. 0 to insert the fragment
@@ -396,7 +396,7 @@ class DSR():
         rl = ResList(self.res_file)
         reslist = rl.get_res_list()
         if dsrp.command == 'REPLACE':
-            reslist, find_atoms = replace_after_fit(rl, reslist, resi, 
+            reslist, find_atoms = replace_after_fit(rl, reslist, resi,
                                     fragment_numberscheme, cell)
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
         shx.restore_acta_card(acta_lines)
