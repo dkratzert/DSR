@@ -128,7 +128,7 @@ class Restraints():
         self._connectivity_table = self.get_conntable_from_fragment()
         self.coords_dict = self.get_coords_dict()
         self._G = self.get_adjmatrix()
-        
+
     def get_coords_dict(self):
         coords = OrderedDict({})
         for name, co in zip(self._atoms, self.cart_coords):
@@ -183,7 +183,7 @@ class Restraints():
                 ele2 = ELEMENTS[typ2.capitalize()]
                 d = distance(co1[0], co1[1], co1[2], co2[0], co2[1], co2[2], round_out=5)
                 #print(d, n1, n2, (ele1.covrad+ele2.covrad)+extra_param)
-                # a bond is defined with less than the sum of the covalence 
+                # a bond is defined with less than the sum of the covalence
                 # radii plus the extra_param:
                 if d <= (ele1.covrad+ele2.covrad)+extra_param and d > (ele1.covrad or ele2.covrad):
                     if n1 == n2:
@@ -193,7 +193,7 @@ class Restraints():
                         continue
                     #print('{}--{}: {}'.format(n1, n2, d))
         conlist = [(i[0][1], i[1][1]) for i in conlist]
-        return (conlist) 
+        return (conlist)
 
     def get_adjmatrix(self):
         return self.adjmatrix()
@@ -262,7 +262,7 @@ class Restraints():
                 #print(nb, atom1)
                 if not nb:
                     continue
-                try:    
+                try:
                     nb.remove(atom1)
                 except:
                     #print('Atom {0} has no neighbour.'.format(atom1))
@@ -283,7 +283,7 @@ class Restraints():
             atom2 = i[1]
             c1 = self.coords_dict[atom1]
             c2 = self.coords_dict[atom2]
-            dist_13.append((atom1, atom2, distance(c1[0], c1[1], c1[2], 
+            dist_13.append((atom1, atom2, distance(c1[0], c1[1], c1[2],
                                                    c2[0], c2[1], c2[2])))
         return dist_13
 
@@ -307,7 +307,7 @@ class Restraints():
         searches for rings in the graph G, splits it in 4-member chunks and tests if
         they are flat: volume of tetrahedron of chunk < 0.1 A-3.
         returns list of flat chunks.
-        
+
         first add neighbor atoms to neighbors
         check if original rings are flat, if flat check if ring with neighbor
         is flat, if yes, add this chunk minus first atom
@@ -331,27 +331,27 @@ class Restraints():
             for chunk in chunks:
                 if self.is_flat(chunk):
                     flats.append(chunk[:])
-                    #print('flatchunk:', chunk)
+#                    print('flatchunk:', chunk)
             if not flats:
                 return False
             for chunk in chunks:
                 for i in neighbors:
                     for at in chunk:
                         if self.binds_to(at, i):
-                            chunk.append(i)
                             if not self.binds_to(chunk[0], i):
                                 # only delete if not bounded to the beforehand added atom
-                                del chunk[0] 
+                                del chunk[0]
                             else:
                                 # otherwise delete from the other end
-                                del chunk[-2]
+                                del chunk[-1]
+                            chunk.append(i)
                             del neighbors[0]
                     if self.is_flat(chunk):
                         if not chunk in flats:
                             flats.append(chunk)
         return flats
-    
-    
+
+
     def binds_to(self, a, b):
         '''
         returns True if atom a binds to atoms b
@@ -360,7 +360,7 @@ class Restraints():
             return True
         else:
             return False
-    
+
 
     def is_flat(self, chunk):
         '''
@@ -377,7 +377,7 @@ class Restraints():
         else:
             #print('volume of', chunk, 'too big:', volume)
             return False
-            
+
     def get_formated_flats(self):
         '''
         formats the FLAT restraints and removes the part symbol
@@ -479,7 +479,7 @@ if __name__ == '__main__':
     flats = restr.get_formated_flats()
     print('flats:\n'+''.join(flats))
     #print(''.join(dfixes_13))
-    
+
     print(restr.binds_to('C1', 'O1'), 'it binds')
 
     def make_eadp(fa, fragatoms, resi_class, wavelength=0.71):
@@ -498,5 +498,5 @@ if __name__ == '__main__':
                     if at[3] == 'CF3' and distab < min_d_for_EADP:
                         print('make eadp:', co1, i)
                         print(distab)
-            
+
     make_eadp(fa, dbatoms, 'CF3')
