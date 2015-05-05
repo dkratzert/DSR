@@ -2,7 +2,7 @@ Summary: DSR - A program for modelling of disordered solvents with SHELXL
 Name: DSR
 Provides: DSR
 Packager: dkratzert@gmx.de
-Version: 1.6.2
+Version: 1.6.3
 Release: 0
 Requires: python, xclip
 Prefix: /opt
@@ -25,7 +25,7 @@ from the database to the molecule.
 Development is on GitHub: https://github.com/dkratzert/dsr
 
 %prep
-%setup -q 
+%setup -q
 rm -fr $RPM_BUILD_ROOT
 mkdir -p %{buildroot}%{prefix}/DSR/networkx
 mkdir -p %{buildroot}%{prefix}/DSR/manuals
@@ -56,7 +56,7 @@ mkdir -p %{buildroot}%{prefix}/DSR/networkx/readwrite/tests
 mkdir -p %{buildroot}%{prefix}/DSR/networkx/classes/tests
 mkdir -p %{buildroot}%{prefix}/DSR/networkx/utils/tests
 mkdir -p %{buildroot}%{prefix}/DSR/networkx/drawing/tests
-mkdir -p %{buildroot}%{prefix}/DSR/networkx/testing/tests	
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/testing/tests
 touch %{buildroot}%{prefix}/DSR/dsr_user_db.txt
 mkdir -p %{buildroot}/etc/profile.d
 chmod a+rw %{buildroot}%{prefix}/DSR/example
@@ -117,37 +117,37 @@ install -m 644 networkx/algorithms/assortativity/pairs.py                       
 install -m 644 networkx/algorithms/assortativity/correlation.py                 %{buildroot}%{prefix}/DSR/networkx/algorithms/assortativity/correlation.py
 install -m 644 networkx/algorithms/assortativity/mixing.py                      %{buildroot}%{prefix}/DSR/networkx/algorithms/assortativity/mixing.py
 install -m 644 networkx/algorithms/assortativity/__init__.py                    %{buildroot}%{prefix}/DSR/networkx/algorithms/assortativity/__init__.py
-install -m 644 networkx/algorithms/assortativity/neighbor_degree.py             %{buildroot}%{prefix}/DSR/networkx/algorithms/assortativity/neighbor_degree.py                                                                                       
-install -m 644 networkx/algorithms/assortativity/connectivity.py                %{buildroot}%{prefix}/DSR/networkx/algorithms/assortativity/connectivity.py                                                                                          
-install -m 644 networkx/algorithms/link_analysis/tests/test_hits.py             %{buildroot}%{prefix}/DSR/networkx/algorithms/link_analysis/tests/test_hits.py                                                                                       
-install -m 644 networkx/algorithms/link_analysis/tests/test_pagerank.py         %{buildroot}%{prefix}/DSR/networkx/algorithms/link_analysis/tests/test_pagerank.py                                                                                   
-install -m 644 networkx/algorithms/link_analysis/pagerank_alg.py                %{buildroot}%{prefix}/DSR/networkx/algorithms/link_analysis/pagerank_alg.py                                                                                          
-install -m 644 networkx/algorithms/link_analysis/__init__.py                    %{buildroot}%{prefix}/DSR/networkx/algorithms/link_analysis/__init__.py                                                                                              
-install -m 644 networkx/algorithms/link_analysis/hits_alg.py                    %{buildroot}%{prefix}/DSR/networkx/algorithms/link_analysis/hits_alg.py                                                                                              
-install -m 644 networkx/algorithms/smetric.py                                   %{buildroot}%{prefix}/DSR/networkx/algorithms/smetric.py                                                                                                             
-install -m 644 networkx/algorithms/graphical.py                                 %{buildroot}%{prefix}/DSR/networkx/algorithms/graphical.py                                                                                                           
-install -m 644 networkx/algorithms/shortest_paths/tests/test_generic.py         %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_generic.py                                                                                   
-install -m 644 networkx/algorithms/shortest_paths/tests/test_weighted.py        %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_weighted.py                                                                                  
-install -m 644 networkx/algorithms/shortest_paths/tests/test_astar.py           %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_astar.py                                                                                     
-install -m 644 networkx/algorithms/shortest_paths/tests/test_dense_numpy.py     %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_dense_numpy.py                                                                               
-install -m 644 networkx/algorithms/shortest_paths/tests/test_dense.py           %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_dense.py                                                                                     
-install -m 644 networkx/algorithms/shortest_paths/tests/test_unweighted.py      %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_unweighted.py                                                                                
-install -m 644 networkx/algorithms/shortest_paths/dense.py                      %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/dense.py                                                                                                
-install -m 644 networkx/algorithms/shortest_paths/unweighted.py                 %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/unweighted.py                                                                                           
-install -m 644 networkx/algorithms/shortest_paths/weighted.py                   %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/weighted.py                                                                                             
-install -m 644 networkx/algorithms/shortest_paths/astar.py                      %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/astar.py                                                                                                
-install -m 644 networkx/algorithms/shortest_paths/__init__.py                   %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/__init__.py                                                                                             
-install -m 644 networkx/algorithms/shortest_paths/generic.py                    %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/generic.py                                                                                              
-install -m 644 networkx/algorithms/simple_paths.py                              %{buildroot}%{prefix}/DSR/networkx/algorithms/simple_paths.py                                                                                                        
-install -m 644 networkx/algorithms/vitality.py                                  %{buildroot}%{prefix}/DSR/networkx/algorithms/vitality.py                                                                                                            
-install -m 644 networkx/algorithms/tests/test_mis.py                            %{buildroot}%{prefix}/DSR/networkx/algorithms/tests/test_mis.py                                                                                                      
-install -m 644 networkx/algorithms/tests/test_hierarchy.py                      %{buildroot}%{prefix}/DSR/networkx/algorithms/tests/test_hierarchy.py                                                                                                
-install -m 644 networkx/algorithms/tests/test_swap.py                           %{buildroot}%{prefix}/DSR/networkx/algorithms/tests/test_swap.py                                                                                                     
-install -m 644 networkx/algorithms/tests/test_simple_paths.py                   %{buildroot}%{prefix}/DSR/networkx/algorithms/tests/test_simple_paths.py                                                                                             
-install -m 644 networkx/algorithms/tests/test_cluster.py                        %{buildroot}%{prefix}/DSR/networkx/algorithms/tests/test_cluster.py                                                                                                  
-install -m 644 networkx/algorithms/tests/test_boundary.py                       %{buildroot}%{prefix}/DSR/networkx/algorithms/tests/test_boundary.py                                                                                                 
-install -m 644 networkx/algorithms/tests/test_distance_regular.py               %{buildroot}%{prefix}/DSR/networkx/algorithms/tests/test_distance_regular.py                                                                                         
-install -m 644 networkx/algorithms/tests/test_euler.py                          %{buildroot}%{prefix}/DSR/networkx/algorithms/tests/test_euler.py                                                                                                    
+install -m 644 networkx/algorithms/assortativity/neighbor_degree.py             %{buildroot}%{prefix}/DSR/networkx/algorithms/assortativity/neighbor_degree.py
+install -m 644 networkx/algorithms/assortativity/connectivity.py                %{buildroot}%{prefix}/DSR/networkx/algorithms/assortativity/connectivity.py
+install -m 644 networkx/algorithms/link_analysis/tests/test_hits.py             %{buildroot}%{prefix}/DSR/networkx/algorithms/link_analysis/tests/test_hits.py
+install -m 644 networkx/algorithms/link_analysis/tests/test_pagerank.py         %{buildroot}%{prefix}/DSR/networkx/algorithms/link_analysis/tests/test_pagerank.py
+install -m 644 networkx/algorithms/link_analysis/pagerank_alg.py                %{buildroot}%{prefix}/DSR/networkx/algorithms/link_analysis/pagerank_alg.py
+install -m 644 networkx/algorithms/link_analysis/__init__.py                    %{buildroot}%{prefix}/DSR/networkx/algorithms/link_analysis/__init__.py
+install -m 644 networkx/algorithms/link_analysis/hits_alg.py                    %{buildroot}%{prefix}/DSR/networkx/algorithms/link_analysis/hits_alg.py
+install -m 644 networkx/algorithms/smetric.py                                   %{buildroot}%{prefix}/DSR/networkx/algorithms/smetric.py
+install -m 644 networkx/algorithms/graphical.py                                 %{buildroot}%{prefix}/DSR/networkx/algorithms/graphical.py
+install -m 644 networkx/algorithms/shortest_paths/tests/test_generic.py         %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_generic.py
+install -m 644 networkx/algorithms/shortest_paths/tests/test_weighted.py        %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_weighted.py
+install -m 644 networkx/algorithms/shortest_paths/tests/test_astar.py           %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_astar.py
+install -m 644 networkx/algorithms/shortest_paths/tests/test_dense_numpy.py     %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_dense_numpy.py
+install -m 644 networkx/algorithms/shortest_paths/tests/test_dense.py           %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_dense.py
+install -m 644 networkx/algorithms/shortest_paths/tests/test_unweighted.py      %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_unweighted.py
+install -m 644 networkx/algorithms/shortest_paths/dense.py                      %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/dense.py
+install -m 644 networkx/algorithms/shortest_paths/unweighted.py                 %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/unweighted.py
+install -m 644 networkx/algorithms/shortest_paths/weighted.py                   %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/weighted.py
+install -m 644 networkx/algorithms/shortest_paths/astar.py                      %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/astar.py
+install -m 644 networkx/algorithms/shortest_paths/__init__.py                   %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/__init__.py
+install -m 644 networkx/algorithms/shortest_paths/generic.py                    %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/generic.py
+install -m 644 networkx/algorithms/simple_paths.py                              %{buildroot}%{prefix}/DSR/networkx/algorithms/simple_paths.py
+install -m 644 networkx/algorithms/vitality.py                                  %{buildroot}%{prefix}/DSR/networkx/algorithms/vitality.py
+install -m 644 networkx/algorithms/tests/test_mis.py                            %{buildroot}%{prefix}/DSR/networkx/algorithms/tests/test_mis.py
+install -m 644 networkx/algorithms/tests/test_hierarchy.py                      %{buildroot}%{prefix}/DSR/networkx/algorithms/tests/test_hierarchy.py
+install -m 644 networkx/algorithms/tests/test_swap.py                           %{buildroot}%{prefix}/DSR/networkx/algorithms/tests/test_swap.py
+install -m 644 networkx/algorithms/tests/test_simple_paths.py                   %{buildroot}%{prefix}/DSR/networkx/algorithms/tests/test_simple_paths.py
+install -m 644 networkx/algorithms/tests/test_cluster.py                        %{buildroot}%{prefix}/DSR/networkx/algorithms/tests/test_cluster.py
+install -m 644 networkx/algorithms/tests/test_boundary.py                       %{buildroot}%{prefix}/DSR/networkx/algorithms/tests/test_boundary.py
+install -m 644 networkx/algorithms/tests/test_distance_regular.py               %{buildroot}%{prefix}/DSR/networkx/algorithms/tests/test_distance_regular.py
+install -m 644 networkx/algorithms/tests/test_euler.py                          %{buildroot}%{prefix}/DSR/networkx/algorithms/tests/test_euler.py
 install -m 644 networkx/algorithms/tests/test_graphical.py                      %{buildroot}%{prefix}/DSR/networkx/algorithms/tests/test_graphical.py
 install -m 644 networkx/algorithms/tests/test_dag.py                            %{buildroot}%{prefix}/DSR/networkx/algorithms/tests/test_dag.py
 install -m 644 networkx/algorithms/tests/test_smetric.py                          %{buildroot}%{prefix}/DSR/networkx/algorithms/tests/test_smetric.py
@@ -460,37 +460,37 @@ dos2unix -q %{buildroot}%{prefix}/*
 %{prefix}/DSR/networkx/algorithms/assortativity/correlation.py
 %{prefix}/DSR/networkx/algorithms/assortativity/mixing.py
 %{prefix}/DSR/networkx/algorithms/assortativity/__init__.py
-%{prefix}/DSR/networkx/algorithms/assortativity/neighbor_degree.py                                                                                            
-%{prefix}/DSR/networkx/algorithms/assortativity/connectivity.py                                                                                               
-%{prefix}/DSR/networkx/algorithms/link_analysis/tests/test_hits.py                                                                                            
-%{prefix}/DSR/networkx/algorithms/link_analysis/tests/test_pagerank.py                                                                                        
-%{prefix}/DSR/networkx/algorithms/link_analysis/pagerank_alg.py                                                                                               
-%{prefix}/DSR/networkx/algorithms/link_analysis/__init__.py                                                                                                   
-%{prefix}/DSR/networkx/algorithms/link_analysis/hits_alg.py                                                                                                   
-%{prefix}/DSR/networkx/algorithms/smetric.py                                                                                                                  
-%{prefix}/DSR/networkx/algorithms/graphical.py                                                                                                                
-%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_generic.py                                                                                        
-%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_weighted.py                                                                                       
-%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_astar.py                                                                                          
-%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_dense_numpy.py                                                                                    
-%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_dense.py                                                                                          
-%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_unweighted.py                                                                                     
-%{prefix}/DSR/networkx/algorithms/shortest_paths/dense.py                                                                                                     
-%{prefix}/DSR/networkx/algorithms/shortest_paths/unweighted.py                                                                                                
-%{prefix}/DSR/networkx/algorithms/shortest_paths/weighted.py                                                                                                  
-%{prefix}/DSR/networkx/algorithms/shortest_paths/astar.py                                                                                                     
-%{prefix}/DSR/networkx/algorithms/shortest_paths/__init__.py                                                                                                  
-%{prefix}/DSR/networkx/algorithms/shortest_paths/generic.py                                                                                                   
-%{prefix}/DSR/networkx/algorithms/simple_paths.py                                                                                                             
-%{prefix}/DSR/networkx/algorithms/vitality.py                                                                                                                 
-%{prefix}/DSR/networkx/algorithms/tests/test_mis.py                                                                                                           
-%{prefix}/DSR/networkx/algorithms/tests/test_hierarchy.py                                                                                                     
-%{prefix}/DSR/networkx/algorithms/tests/test_swap.py                                                                                                          
-%{prefix}/DSR/networkx/algorithms/tests/test_simple_paths.py                                                                                                  
-%{prefix}/DSR/networkx/algorithms/tests/test_cluster.py                                                                                                       
-%{prefix}/DSR/networkx/algorithms/tests/test_boundary.py                                                                                                      
-%{prefix}/DSR/networkx/algorithms/tests/test_distance_regular.py                                                                                              
-%{prefix}/DSR/networkx/algorithms/tests/test_euler.py                                                                                                         
+%{prefix}/DSR/networkx/algorithms/assortativity/neighbor_degree.py
+%{prefix}/DSR/networkx/algorithms/assortativity/connectivity.py
+%{prefix}/DSR/networkx/algorithms/link_analysis/tests/test_hits.py
+%{prefix}/DSR/networkx/algorithms/link_analysis/tests/test_pagerank.py
+%{prefix}/DSR/networkx/algorithms/link_analysis/pagerank_alg.py
+%{prefix}/DSR/networkx/algorithms/link_analysis/__init__.py
+%{prefix}/DSR/networkx/algorithms/link_analysis/hits_alg.py
+%{prefix}/DSR/networkx/algorithms/smetric.py
+%{prefix}/DSR/networkx/algorithms/graphical.py
+%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_generic.py
+%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_weighted.py
+%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_astar.py
+%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_dense_numpy.py
+%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_dense.py
+%{prefix}/DSR/networkx/algorithms/shortest_paths/tests/test_unweighted.py
+%{prefix}/DSR/networkx/algorithms/shortest_paths/dense.py
+%{prefix}/DSR/networkx/algorithms/shortest_paths/unweighted.py
+%{prefix}/DSR/networkx/algorithms/shortest_paths/weighted.py
+%{prefix}/DSR/networkx/algorithms/shortest_paths/astar.py
+%{prefix}/DSR/networkx/algorithms/shortest_paths/__init__.py
+%{prefix}/DSR/networkx/algorithms/shortest_paths/generic.py
+%{prefix}/DSR/networkx/algorithms/simple_paths.py
+%{prefix}/DSR/networkx/algorithms/vitality.py
+%{prefix}/DSR/networkx/algorithms/tests/test_mis.py
+%{prefix}/DSR/networkx/algorithms/tests/test_hierarchy.py
+%{prefix}/DSR/networkx/algorithms/tests/test_swap.py
+%{prefix}/DSR/networkx/algorithms/tests/test_simple_paths.py
+%{prefix}/DSR/networkx/algorithms/tests/test_cluster.py
+%{prefix}/DSR/networkx/algorithms/tests/test_boundary.py
+%{prefix}/DSR/networkx/algorithms/tests/test_distance_regular.py
+%{prefix}/DSR/networkx/algorithms/tests/test_euler.py
 %{prefix}/DSR/networkx/algorithms/tests/test_graphical.py
 %{prefix}/DSR/networkx/algorithms/tests/test_dag.py
 %{prefix}/DSR/networkx/algorithms/tests/test_smetric.py
