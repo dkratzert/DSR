@@ -227,7 +227,7 @@ class InsertAfix(object):
                                                             resi.get_residue_class)
             if not external_restraints:
                 self._dbhead = self._dbhead+['RESI {} {}'.format(
-                                        resi.get_resinumber, resi.get_residue_class)]
+                                        resi.get_residue_class, resi.get_resinumber)]
         else:
             # applies new naming scheme to head:
             old_atoms = [ i[0] for i in self._dbatoms]
@@ -253,7 +253,7 @@ class InsertAfix(object):
             if self.dfix_head:
                 self._dbhead = other_head
             self._dbhead = self._dbhead+['RESI {} {}'.format(
-                                        resi.get_resinumber, resi.get_residue_class)]
+                                        resi.get_residue_class, resi.get_resinumber)]
         else:
             if self.dfix_head:
                 if resi.get_residue_class:
