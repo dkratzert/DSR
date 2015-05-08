@@ -35,9 +35,9 @@ class ShelxlRefine():
         self._find_atoms = find_atoms
         self._atoms_in_reslist = self._find_atoms.collect_residues()
         self.atoms = []
-        for residues in list(self._atoms_in_reslist.keys()):
-            for i in self._atoms_in_reslist[residues]:
-                self.atoms.append(i[0])
+        self.number_of_atoms = 0
+        for residues in self._atoms_in_reslist:
+            self.number_of_atoms+=len(self._atoms_in_reslist[residues])
         self.number_of_atoms = len(self.atoms)
         self.resfile_name = str(resfile_name)
         self._reslist = reslist
@@ -374,9 +374,9 @@ if __name__ == '__main__':
     rl = ResList(res_file)
     res_list = rl.get_res_list()
     find_atoms = FindAtoms(res_list)
-    lf = ListFile('p21c')
-    lst_file = lf.read_lst_file()
-    shx = ShelxlRefine(res_list, 'testfile', find_atoms, lst_file)
+    #lf = ListFile('p21c')
+    #lst_file = lf.read_lst_file()
+    shx = ShelxlRefine(res_list, 'testfile', find_atoms)
 
 
     #print(shx.afix_is_closed(110))
