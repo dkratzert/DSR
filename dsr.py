@@ -30,7 +30,7 @@ from afix import InsertAfix
 from terminalsize import get_terminal_size
 from refine import ShelxlRefine
 
-VERSION = '1.6.3'
+VERSION = '1.6.4'
 # dont forget to change version in Innoscript file, spec file and deb file.
 program_name = '\n-----------------------------'\
            ' D S R - v{}' \
