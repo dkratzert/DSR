@@ -288,11 +288,6 @@ class DSR_Parser():
         dfix: bool True/False
         '''
         dfix = self.dsr_dict['dfix']
-        if dfix and not self.part:
-            print('You have to use the "PART" command if you use DFIX in DSR!')
-            print('DSR is unable to find suitable atom connections without "PART".')
-            print('               No restraints inserted!')
-            sys.exit()
         return dfix
 
 

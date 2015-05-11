@@ -265,7 +265,6 @@ class InsertAfix(object):
         # list of atom types in reverse order
         reversed_fragm_atom_types = list(reversed(self._fragment_atom_types))
         coordinates = self._find_atoms.get_atomcoordinates(self.target_atoms)
-        #target = self.target_atoms[:]  # a copy because we edit it later
         # a list of zeroed atom coordinates (afix_list) is built:
         for i in self._dbatoms:
             l = []

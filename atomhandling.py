@@ -375,7 +375,7 @@ class FindAtoms():
             try:
                 self._residues[num]
             except(KeyError):
-                print('Target atom "{}" not found in res file!!'.format(i))
+                print('Atom "{}" not found in res file!!'.format(i))
                 break
                 #return
             for x in self._residues[num]:
@@ -385,7 +385,7 @@ class FindAtoms():
         for i in atoms:
             i = i.upper()
             if i not in list(atom_dict.keys()):
-                print('\nTarget atom "{}" not found in res file!'.format(i))
+                print('\nAtom "{}" not found in res file!'.format(i))
                 sys.exit(0)
         return atom_dict
 
