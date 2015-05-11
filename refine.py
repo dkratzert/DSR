@@ -34,11 +34,9 @@ class ShelxlRefine():
         '''
         self._find_atoms = find_atoms
         self._atoms_in_reslist = self._find_atoms.collect_residues()
-        self.atoms = []
         self.number_of_atoms = 0
         for residues in self._atoms_in_reslist:
             self.number_of_atoms+=len(self._atoms_in_reslist[residues])
-        self.number_of_atoms = len(self.atoms)
         self.resfile_name = str(resfile_name)
         self._reslist = reslist
         self._shelx_command = self.find_shelxl_exe()
@@ -95,6 +93,8 @@ class ShelxlRefine():
         it is slightly more because q-peaks are also counted as atoms
         '''
         barray = self.number_of_atoms * 9
+        if barray <= 3000:
+          barray = 3000
         return barray
 
 
@@ -333,6 +333,13 @@ class ShelxlRefine():
         :param list_file: SHELXL listing file
         :type list_file: list
         '''
+        is_resfile_there = misc.checkFileExist(self.resfile_name+'.res')
+        if is_resfile_there and is_resfile_there == 'zero':
+            print('Something failed in SHELXL. Please check your .ins and .lst file!')
+            sys.exit()
+        if not is_resfile_there:
+            print('Something failed in SHELXL. Please check your .ins and .lst file!')
+            sys.exit()
         regex_final = r' Final Structure Factor Calculation.*\n'
         final_results = find_line(list_file, regex_final)
         # find data and parameters:

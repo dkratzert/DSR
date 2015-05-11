@@ -389,6 +389,7 @@ class DSR():
         # Display the results from the list file:
         lf = ListFile(basefilename)
         lst_file = lf.read_lst_file()
+        shx.check_refinement_results(lst_file)
         lfd = Lst_Deviations(lst_file)
         lfd.print_LS_fit_deviations()
         cell = rle.get_cell()
@@ -400,7 +401,6 @@ class DSR():
                                     fragment_numberscheme, cell)
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
         shx.restore_acta_card(acta_lines)
-        shx.check_refinement_results(lst_file)
         self.set_post_refine_cycles(shx, '8')
         shx.remove_afix()   # removes the afix 9
         # final resfile write:
