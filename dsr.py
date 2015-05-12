@@ -17,7 +17,6 @@ import logging
 from dsrparse import DSR_Parser
 from options import OptionsParser
 from dbfile import global_DB, ImportGRADE
-from resfile import ResList, ResListEdit, filename_wo_ending
 from atomhandling import SfacTable, get_atomtypes, check_source_target,\
     set_final_db_sfac_types, replace_after_fit
 from atomhandling import FindAtoms, NumberScheme
@@ -29,6 +28,7 @@ import misc
 from afix import InsertAfix
 from terminalsize import get_terminal_size
 from refine import ShelxlRefine
+import resfile
 
 VERSION = '1.6.4'
 # dont forget to change version in Innoscript file, spec file and deb file.
@@ -316,17 +316,21 @@ class DSR():
         '''
         print(program_name)
         # The database content:
+        basefilename = resfile.filename_wo_ending(self.res_file)
         gdb = global_DB(self.invert)
-        rl = ResList(self.res_file)
+        rl = resfile.ResList(self.res_file)
         reslist = rl.get_res_list()
         find_atoms = FindAtoms(reslist)
-        rle = ResListEdit(reslist, find_atoms)
+        rle = resfile.ResListEdit(reslist, find_atoms)
         dsrp = DSR_Parser(reslist, rle)
         dsr_dict = dsrp.parse_dsr_line()
         fvarlines = rle.find_fvarlines()
         if dsrp.occupancy:
             rle.set_free_variables(dsrp.occupancy, fvarlines)
         fragment = dsrp.fragment.lower()
+        if fragment == 'cf3':
+            # start_routine_to_make_cf3_group()
+            pass
         fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
         dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
         dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
@@ -351,7 +355,6 @@ class DSR():
 
         # several checks if the atoms in the dsr command line are consistent
         check_source_target(dsrp.source, dsrp.target, dbatoms)
-        basefilename = filename_wo_ending(self.res_file)
         num = NumberScheme(reslist, dbatoms, resi.get_resinumber)
         # returns also the atom names if residue is active
         fragment_numberscheme = num.get_fragment_number_scheme()
@@ -394,7 +397,7 @@ class DSR():
         lfd.print_LS_fit_deviations()
         cell = rle.get_cell()
         # open res file again to restore 8 refinement cycles:
-        rl = ResList(self.res_file)
+        rl = resfile.ResList(self.res_file)
         reslist = rl.get_res_list()
         if dsrp.command == 'REPLACE':
             reslist, find_atoms = replace_after_fit(rl, reslist, resi,

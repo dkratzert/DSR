@@ -166,10 +166,11 @@ class DSR_Parser():
         '''returns the different parameters from the dsr command as dict
         It needs find_commands() and find_atoms() to parse the line.
         '''
+        source = None
         if self._dsr_list[3].upper() == 'CF3':
-            #got_to_the_cf3_routine()
-            pass
-        self.minimal_requirements()
+            print('Generating CF3-Group')
+        else:
+            self.minimal_requirements()
         # syntax:
         # rem dsr put|add|replace fragment with source on target part xx AFIX 17x occ occupancy
         command = self._dsr_list[2]
@@ -181,8 +182,10 @@ class DSR_Parser():
             print('No proper command string found in DSR command line!\n')#, self._dsr_list
             sys.exit(-1)
         # Source and target atoms:
-        # In paerenteses are one start und one to multiple stop conditions:
-        source = self.find_atoms('WITH', 'ON')
+        # In parenteses are one start und one to multiple stop conditions:
+        if not self._dsr_list[3].upper() == 'CF3':
+            # we need no soure atoms for cf3 groups
+            source = self.find_atoms('WITH', 'ON')
         target = self.find_atoms('ON', 'PART', 'OCC', 'RESI', 'DFIX', '')
         if 'RESI' in self._dsr_list:
             residue = self.find_atoms('RESI', 'PART', 'OCC', 'RESI', 'DFIX', '')
@@ -235,6 +238,7 @@ class DSR_Parser():
             'occupancy': occupancy,
             'resi': residue
             };
+        print(dsr_dict)
         return dsr_dict
 
     
