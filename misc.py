@@ -16,6 +16,7 @@ import os
 from constants import atomregex, SHX_CARDS
 import math
 from math import cos, sqrt, radians, sin
+import shutil
 
 alphabet = string.ascii_uppercase
 
@@ -192,12 +193,48 @@ def remove_file(filename, exit_dsr=False, terminate=False):
         try:
             os.remove(filename)
         except(WindowsError, OSError):  # @UndefinedVariable
+            print('can not delete {}'.format(file))
             #print 'unable to cleanup ins {} files!'.format(file)
             if terminate:
                 pgrogname=terminate
                 pgrogname.terminate()
             if exit_dsr:
                 sys.exit(0)
+
+def copy_file(source, target):
+    '''
+    Copy a file from source to target. Source can be a single file or 
+    a directory. Target can be a single file or a directory. 
+    :param source: list or string
+    :param target: string
+    TODO: implement list as source
+    '''
+    #target_file = os.path.basename(target)
+    target_path = os.path.dirname(target)
+    source_file = os.path.basename(source)
+    if isinstance(source, (list, tuple)):
+        print('can not copy a list.') 
+    if not os.path.exists(target_path):
+        try:
+            os.makedirs(target_path)
+        except(IOError, OSError):
+            print('Unable to create directory {}.'.format(target_path))
+    try:
+        shutil.copyfile(source, target)
+    except(IOError):
+        print('Unable to copy {}.'.format(source_file))
+
+
+def make_directory(dirpath):
+    '''
+    create a directory with all subdirs from the last existing path
+    :param dirpath: string
+    '''
+    try:
+        os.makedirs(dirpath)
+    except(IOError, OSError):
+        print('Unable to create directory {}.'.format(dirpath))
+        #sys.exit(False)
 
 
 def wrap_headlines(dbhead):
