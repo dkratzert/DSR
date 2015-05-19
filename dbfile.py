@@ -214,7 +214,10 @@ class global_DB():
             print('No database dsr_db.txt found!\n')
             sys.exit()
         return db_dict
-
+    
+    @property
+    def db_dict(self):
+        return self._dbentry_dict
 
     def get_residue_from_head(self, head, fragment=''):
         '''
@@ -307,7 +310,7 @@ class global_DB():
         :type fragment: string
         '''
         try:
-            types = get_atomtypes(self._dbentry_dict[fragment]['atoms'])
+            types = get_atomtypes(self.db_dict[fragment]['atoms'])
         except:
             return None
         formula = ''
