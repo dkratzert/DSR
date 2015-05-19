@@ -258,9 +258,9 @@ class FindAtoms():
         residues is a dictionary which includes a dictionary for each residue
         which in turn includes a list of its atoms.
 
-        residues = { {'0': ['C1', ['x', 'y', 'z'], linenumber, class, part], 
-                           ['C2', ['x', 'y', 'z'], linenumber, class, part]},
-                     {'1': ['C1', ['x', 'y', 'z'], linenumber, class, part], 
+        residues = { {'0': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number], 
+                           ['C2', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number]},
+                     {'1': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number], 
                      []} }
 
         for i in residues.keys():
@@ -293,7 +293,7 @@ class FindAtoms():
             # Now collect the part:
             if re.match(r'^PART\s+0', i) and part:
                 part = False
-                partnum = '0'
+                partnum = 0
                 continue
             if i.startswith(('END', 'HKLF')) and part:
                 part = False
@@ -308,7 +308,7 @@ class FindAtoms():
                 if atom:
                     sfac = atom[1]
                     elem = self.e2s.sfac_2_elem(sfac)
-                    residues[resinum].append([atom[0], atom[2:5], num, 
+                    residues[resinum].append([atom[0], [float(i) for i in atom[2:5]], num, 
                                               resiclass, partnum, elem, sfac])
             else:
                 atom = self.is_atom(i)
@@ -316,7 +316,7 @@ class FindAtoms():
                 if atom:
                     sfac = atom[1]
                     elem = self.e2s.sfac_2_elem(sfac)
-                    residues[resinum].append([atom[0], atom[2:5], num, 
+                    residues[resinum].append([atom[0], [float(i) for i in atom[2:5]], num, 
                                               resiclass, partnum, elem, sfac])
         return residues
 

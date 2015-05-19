@@ -33,6 +33,8 @@ from atomhandling import FindAtoms, SfacTable
 from dsrparse import DSR_Parser
 from options import OptionsParser
 from refine import ShelxlRefine
+from restraints import Restraints
+from misc import frac_to_cart
 
 
 class CF3(object):
@@ -40,7 +42,7 @@ class CF3(object):
     a class to create cf3 groups at terminal atoms
     '''
 
-    def __init__(self, reslist, fa, sfac_table):
+    def __init__(self, rle, fa, sfac_table, gdb, fragment):
         '''
         Constructor
         '''
@@ -48,25 +50,43 @@ class CF3(object):
         self.fa = fa
         self.reslist = reslist
         self.sfac_table = sfac_table
-        
+        self.fragment = fragment
+        self.gdb = gdb
+        restr = Restraints(self.fragment, self.gdb)
+        atoms = fa.atoms_as_residues
+        atomlist = []
+        for i in atoms:
+            for y in atoms[i]:
+                if y[0][0] == 'Q':
+                    continue
+                atomlist.append(y+[i])
+        self.cell = rle.get_cell()
+        coords = [frac_to_cart(i[1], self.cell) for i in atomlist]
+        conntable = restr.get_conntable_from_atoms(coords, 
+                                       [i[5] for i in atomlist], # types C, N, O
+                                       [i[0]+'_'+i[7] for i in atomlist], # names C1, N2, O1_3
+                                       extra_param=0.16)
+        for i in conntable:
+            print(i)
         
     
     def cf3(self, atom):
         '''
         create CF3 group on atom 
-        ''' 
-        print('removing hydrogens at atom {}\n'.format(atom))
-        delcount = self.fa.remove_adjacent_hydrogens(atom, self.sfac_table)
-        print('removed:', delcount)
-        for i in reslist[103:119]:
-            print(i.strip('\n'))
+        '''
+        pass 
+        #print('removing hydrogens at atom {}\n'.format(atom))
+        #delcount = self.fa.remove_adjacent_hydrogens(atom, self.sfac_table)
+        #print('removed:', delcount)
+        #for i in reslist[103:119]:
+         #   print(i.strip('\n'))
     
 
 
 if __name__ == '__main__':
     options = OptionsParser()
     #res_file = options.res_file
-    res_file = 'p21c.res' 
+    res_file = '/tmp/mlcp57.res' 
     invert = options.invert
     basefilename = resfile.filename_wo_ending(res_file)
     gdb = global_DB(invert)
@@ -82,7 +102,7 @@ if __name__ == '__main__':
     fragment = dsrp.fragment.lower()
     sf = SfacTable(reslist, ['C', 'F', 'F', 'F'])
     sfac_table = sf.set_sfac_table() 
-    cf3 = CF3(reslist, find_atoms, sfac_table)
+    cf3 = CF3(rle, find_atoms, sfac_table, gdb, fragment)
     
     shx = ShelxlRefine(reslist, basefilename, find_atoms)
     acta_lines = shx.remove_acta_card()

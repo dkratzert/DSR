@@ -125,7 +125,7 @@ class Restraints():
         cart_coords = self.get_fragment_atoms_cartesian()
         self.cart_coords = [[float(y) for y in i] for i in cart_coords]
         self.atom_types = get_atomtypes(self.db[fragment]['atoms'])
-        self._connectivity_table = self.get_conntable_from_fragment(
+        self._connectivity_table = self.get_conntable_from_atoms(
                                         self.cart_coords, self.atom_types, self._atoms)
         self.coords_dict = self.get_coords_dict()
         self._G = self.get_adjmatrix()
@@ -168,23 +168,23 @@ class Restraints():
                 G.add_edge(atom1, atom2, weight=dist)
         return G
 
-    def get_conntable_from_fragment(self, cart_coords, atom_types, atoms, extra_param = 0.16):
+    def get_conntable_from_atoms(self, cart_coords, atom_types, atom_names, extra_param = 0.16):
         '''
         returns a connectivity table from the atomic coordinates and the covalence
-        radii of the fragment atoms.
+        radii of the atoms.
         TODO:
         - use this for a global connectivity table
         - use also FREE to make the table!        
         :param cart_coords: cartesian coordinates of the atoms
         :type cart_coords: list
         :param atom_types: Atomic elements
-        :type atom_types:
-        :param atoms:
-        :type atoms:
+        :type atom_types: list of strings
+        :param atom_names: atom name in the file like C1
+        :type atom_names: list of strings
         '''
         #extra_param = 0.16 # empirical value
         names = []
-        for n, i in enumerate(atoms, 1):
+        for n, i in enumerate(atom_names, 1):
             names.append([n, i])
         conlist = []
         for co1, typ, n1 in zip(cart_coords, atom_types, names):
@@ -198,11 +198,11 @@ class Restraints():
                 if d <= (ele1.covrad+ele2.covrad)+extra_param and d > (ele1.covrad or ele2.covrad):
                     if n1 == n2:
                         continue
-                    conlist.append([n2, n1])
-                    if [n1, n2] in conlist:
+                    conlist.append([n2[1], n1[1]])
+                    if [n1[1], n2[1]] in conlist:
                         continue
                     #print('{}--{}: {}'.format(n1, n2, d))
-        conlist = [(i[0][1], i[1][1]) for i in conlist]
+        #conlist = [(i[0][1], i[1][1]) for i in conlist]
         return (conlist)
 
     def get_adjmatrix(self):
