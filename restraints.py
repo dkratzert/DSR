@@ -118,14 +118,15 @@ class Restraints():
     def __init__(self, fragment, gdb):
         fragment = fragment.lower()
         self.gdb = gdb
-        self.db = self.gdb.build_db_dict()
+        self.db = self.gdb.db_dict
         self._atoms = [i[0] for i in self.db[fragment]['atoms']]
         self._cell = self.gdb.get_unit_cell(fragment)
         self.fragment = fragment
         cart_coords = self.get_fragment_atoms_cartesian()
         self.cart_coords = [[float(y) for y in i] for i in cart_coords]
         self.atom_types = get_atomtypes(self.db[fragment]['atoms'])
-        self._connectivity_table = self.get_conntable_from_fragment()
+        self._connectivity_table = self.get_conntable_from_fragment(
+                                        self.cart_coords, self.atom_types, self._atoms)
         self.coords_dict = self.get_coords_dict()
         self._G = self.get_adjmatrix()
 
@@ -167,18 +168,27 @@ class Restraints():
                 G.add_edge(atom1, atom2, weight=dist)
         return G
 
-    def get_conntable_from_fragment(self):
+    def get_conntable_from_fragment(self, cart_coords, atom_types, atoms, extra_param = 0.16):
         '''
         returns a connectivity table from the atomic coordinates and the covalence
         radii of the fragment atoms.
+        TODO:
+        - use this for a global connectivity table
+        - use also FREE to make the table!        
+        :param cart_coords: cartesian coordinates of the atoms
+        :type cart_coords: list
+        :param atom_types: Atomic elements
+        :type atom_types:
+        :param atoms:
+        :type atoms:
         '''
-        extra_param = 0.16 # empirical value
+        #extra_param = 0.16 # empirical value
         names = []
-        for n, i in enumerate(self._atoms, 1):
+        for n, i in enumerate(atoms, 1):
             names.append([n, i])
         conlist = []
-        for co1, typ, n1 in zip(self.cart_coords, self.atom_types, names):
-            for co2, typ2, n2 in zip(self.cart_coords, self.atom_types, names):
+        for co1, typ, n1 in zip(cart_coords, atom_types, names):
+            for co2, typ2, n2 in zip(cart_coords, atom_types, names):
                 ele1 = ELEMENTS[typ.capitalize()]
                 ele2 = ELEMENTS[typ2.capitalize()]
                 d = distance(co1[0], co1[1], co1[2], co2[0], co2[1], co2[2], round_out=5)
@@ -487,7 +497,7 @@ if __name__ == '__main__':
         find atoms of same residue nearby and make them EADP
         '''
         types = get_atomtypes(fragatoms)
-        resi = fa.get_atoms_as_residues()
+        resi = fa.atoms_as_residues
         min_d_for_EADP = wavelength/2
         for resinum in resi:
             for at in resi[resinum]:

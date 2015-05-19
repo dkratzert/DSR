@@ -139,9 +139,13 @@ class FindAtoms():
         :param reslist: SHELXL .res file as list
         '''
         self._reslist = reslist
+        sfacline = find_multi_lines(self._reslist, r'SFAC\s+[a-zA-Z]+')
+        self.sfac = self._reslist[sfacline[0]].split()[1:]
+        self.e2s = Elem_2_Sfac(self.sfac)
         self._residues = self.collect_residues()
 
-    def get_atoms_as_residues(self):
+    @property
+    def atoms_as_residues(self):
         '''
         returns   residues = { {'0': ['C1', ['x', 'y', 'z'], linenumber, class], 
                            ['C2', ['x', 'y', 'z'], linenumber, class]},
@@ -302,14 +306,18 @@ class FindAtoms():
             if resi:
                 atom = self.is_atom(i)
                 if atom:
+                    sfac = atom[1]
+                    elem = self.e2s.sfac_2_elem(sfac)
                     residues[resinum].append([atom[0], atom[2:5], num, 
-                                              resiclass, partnum])
+                                              resiclass, partnum, elem, sfac])
             else:
                 atom = self.is_atom(i)
                 resinum = '0'   # all other atoms are residue 0
                 if atom:
+                    sfac = atom[1]
+                    elem = self.e2s.sfac_2_elem(sfac)
                     residues[resinum].append([atom[0], atom[2:5], num, 
-                                              resiclass, partnum])
+                                              resiclass, partnum, elem, sfac])
         return residues
 
 
@@ -405,26 +413,33 @@ class FindAtoms():
         for at in atoms:
             resinum = self.get_atoms_resinumber(at.upper())
             for x in self._residues[resinum]:
-                if x[0].upper() == at.split('_')[0].upper():
-                    single_atom = x[2] # x[2} is the line number
+                atom1 = x[0].upper()
+                atom2 = at.split('_')[0].upper()
+                if atom1 == atom2:
+                    single_atom = x[2] # x[2] is the line number
                     lines.append(single_atom)
         return lines
 
 
-    def remove_adjacent_hydrogens(self, atoms, sfac_table):
+    def remove_adjacent_hydrogens(self, atoms, sfac_table, type='H'):
         '''
         if an atom is replaced, its hydrogen atoms are deleted
         this method searches for the first afix behind the atom,
         deletes all lines until AFIX 0, HKLF or the 10th line appears.
         Also Hydrogen atoms outside AFIX are deleted. They are recognized by their
         SFAC number.
+        -TODO: create global connectivity table to find atom connections in CF3 CH3 groups
         :param atoms:   list   list of non-Hydrogen atoms
         :param sfac_table: list of atom types ['C', 'H', 'N', ...]
         '''
         delcount = []
+        if type == 'H':
+            name = "hydrogen"
+        if type == 'F':
+            name = "fluorine"
         lines = self.get_atom_line_numbers(atoms)
         try:
-            hydrogen_sfac = sfac_table.index('H')+1
+            hydrogen_sfac = sfac_table.index(type)+1
         except(ValueError):
             hydrogen_sfac = False
             return
@@ -434,9 +449,9 @@ class FindAtoms():
                 continue
             if i == '\n':
                 continue
-            for n in range(0, 10):
+            for n in range(1, 11):
                 try:
-                    line = self._reslist[i+n].upper()
+                    line = self._reslist[i+n+1].upper()
                     atom = line.split()[0].upper()
                     #print('Zeile:', i, 'range:', n, 'line:', line)
                 except(IndexError):
@@ -446,7 +461,7 @@ class FindAtoms():
                 if re.match(atomregex, line) and not afix:
                     # stop if next line is an atom and we are not inside an "AFIX MN"
                     if str(line.split()[1]) == str(hydrogen_sfac):
-                        print('Deleted hydrogen atom {}'.format(atom))
+                        print('Deleted {0} atom {1}'.format(name, atom))
                         delcount.append(atom)
                         self._reslist[i+n] = ''
                         continue
@@ -458,14 +473,14 @@ class FindAtoms():
                     # stop also if next "AFIX mn" begins
                     break
                 if line.startswith('AFIX') and line.split()[1] != '0':
-                    #print('AFIX MN starts:', line)
-                    self._reslist[i+n] = ''
+                    #print('AFIX MN starts:', line, 'linenumber:', i+n+1)
+                    self._reslist[i+n+1] = ''
                     afix = True # turn on afix flag if first "AFIX mn" is found
                     continue
                 if line.startswith('AFIX') and line.split()[1] == '0':
                     #print('AFIX 0:', line)
                     afix = False # turn of afix flag if afix is closed with "AFIX 0"
-                    self._reslist[i+n] = ''
+                    self._reslist[i+n+1] = ''
                     continue
                 if afix:
                     try:
@@ -473,8 +488,8 @@ class FindAtoms():
                         if atom in SHX_CARDS:
                             continue
                         # delete the hydrogen atom
-                        self._reslist[i+n] = ''
-                        print('Deleted Hydrogen atom {}'.format(atom))
+                        self._reslist[i+n+1] = ''
+                        print('Deleted {0} atom {1}'.format(name, atom))
                         delcount.append(atom)
                     except(IndexError):
                         continue
@@ -637,8 +652,7 @@ class Elem_2_Sfac():
         :param atom_type: string 'C'
         :type atom_type: string
         '''
-        for num, element in enumerate(self._sfac_table):
-            num = num+1
+        for num, element in enumerate(self._sfac_table, 1):
             if atom_type.upper() == element.upper():
                 return num         # return sfac number
                 break
@@ -649,8 +663,11 @@ class Elem_2_Sfac():
         returns an element and needs an sfac-number
         :param sfacnum: string like '2'
         '''
-        for num, element in enumerate(self._sfac_table):
-            num = num+1
+        try:
+            sfacnum = int(sfacnum)
+        except:
+            return False
+        for num, element in enumerate(self._sfac_table, 1):
             if sfacnum == num:
                 return element.upper()           # return Element name
                 break
@@ -819,14 +836,14 @@ if __name__ == '__main__':
 
     fa = FindAtoms(reslist)
     
-    atoms = fa.get_atoms_as_residues()
+    atoms = fa.atoms_as_residues
     for i in atoms:
-      for y in atoms[i]:
-        print(y)
+        for y in atoms[i]:
+            print(y)
     sys.exit()
 
     # this might be used to find nearest atoms in same class to make eadp
- #   print(fa.get_atoms_resiclass('C1_2'))
+    # print(fa.get_atoms_resiclass('C1_2'))
 
     SFAC = ['C', 'H', 'N']
 
@@ -836,7 +853,7 @@ if __name__ == '__main__':
     #print( fa.get_atomcoordinates(['Fe1_1', 'C29', 'Q12']) )
     #  print('line number:', fa.get_atom_line_numbers(['C12', 'C333', 'Q12']))
     #
-    res_target_atoms = ['c34', 'c5']
+    res_target_atoms = ['c37', 'c5']
     target_lines = fa.get_atom_line_numbers(res_target_atoms)
     for i in target_lines:
         i = int(i)
@@ -844,11 +861,8 @@ if __name__ == '__main__':
     fa.remove_adjacent_hydrogens(res_target_atoms, SFAC)
     #
 
-    for num, i in enumerate(reslist):
-        if num > 65:
-            print(i.strip('\r\n'))
-        if num > 85:
-            break
+    for i in reslist[105:115]:
+        print(i.strip('\n'))
     #
     #  print('get_atomtypes', get_atomtypes(dbatoms))
     #  print()
