@@ -331,7 +331,7 @@ if __name__ == '__main__':
     rl = ResList(res_file)
     reslist = rl.get_res_list()
     dsrp = DSR_Parser(reslist, rl)
-    dsr_dict = dsrp.parse_dsr_line()
+    dsr_dict = dsrp.get_dsr_dict
     find_atoms = FindAtoms(reslist)
     rle = ResListEdit(reslist, find_atoms)
     gdb = global_DB(invert)

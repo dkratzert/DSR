@@ -46,7 +46,10 @@ class DSR_Parser():
             logging.basicConfig(filename=misc.reportlog, filemode='w', level=logging.DEBUG)
             logging.info('DSR command line: {}'.format(self._dsr_string))
 
-
+    @property
+    def get_dsr_dict(self):
+        return self.dsr_dict
+    
     def find_dsr_command(self, line=False):
         '''
         line = False  -> Line number
@@ -238,7 +241,6 @@ class DSR_Parser():
             'occupancy': occupancy,
             'resi': residue
             };
-        print(dsr_dict)
         return dsr_dict
 
     
@@ -309,9 +311,9 @@ if __name__ == '__main__':
     rl = ResList(res_file)
     reslist = rl.get_res_list()
     rle = ResListEdit(reslist, res_file)
-    #dsr_line = dsrp.parse_dsr_line()
+    #dsr_line = dsrp.get_dsr_dict
     dsrp = DSR_Parser(reslist, rle)
-    dsr_line = dsrp.parse_dsr_line()
+    dsr_line = dsrp.get_dsr_dict
     print(dsr_line)
     #   dsr_str = dsrp.find_dsr_command(line=False)
 
