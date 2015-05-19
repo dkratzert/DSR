@@ -94,7 +94,7 @@ class ShelxlRefine():
         '''
         barray = self.number_of_atoms * 9
         if barray <= 3000:
-          barray = 3000
+            barray = 3000
         return barray
 
 

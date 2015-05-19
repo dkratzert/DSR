@@ -29,9 +29,10 @@ reslist
 '''
 import resfile
 from dbfile import global_DB
-from atomhandling import FindAtoms
+from atomhandling import FindAtoms, SfacTable
 from dsrparse import DSR_Parser
 from options import OptionsParser
+from refine import ShelxlRefine
 
 
 class CF3(object):
@@ -39,14 +40,26 @@ class CF3(object):
     a class to create cf3 groups at terminal atoms
     '''
 
-    def __init__(self, reslist):
+    def __init__(self, reslist, fa, sfac_table):
         '''
         Constructor
         '''
         print('hello')
-        #print(reslist)
+        self.fa = fa
+        self.reslist = reslist
+        self.sfac_table = sfac_table
+        
         
     
+    def cf3(self, atom):
+        '''
+        create CF3 group on atom 
+        ''' 
+        print('removing hydrogens at atom {}\n'.format(atom))
+        delcount = self.fa.remove_adjacent_hydrogens(atom, self.sfac_table)
+        print('removed:', delcount)
+        for i in reslist[103:119]:
+            print(i.strip('\n'))
     
 
 
@@ -67,9 +80,17 @@ if __name__ == '__main__':
     if dsrp.occupancy:
         rle.set_free_variables(dsrp.occupancy, fvarlines)
     fragment = dsrp.fragment.lower()
-    cf3 = CF3(reslist)
+    sf = SfacTable(reslist, ['C', 'F', 'F', 'F'])
+    sfac_table = sf.set_sfac_table() 
+    cf3 = CF3(reslist, find_atoms, sfac_table)
     
-    #cf3.cf3('atom')
+    shx = ShelxlRefine(reslist, basefilename, find_atoms)
+    acta_lines = shx.remove_acta_card()
+    shx.set_refinement_cycles('0')
+    rl.write_resfile(reslist, '.ins')
+    
+    cf3.cf3(['C37'])
+    
     #cf3.cf6('atom')
     # apply to more than one atom:
     #for at in atomlist:
