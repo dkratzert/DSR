@@ -781,7 +781,7 @@ if __name__ == '__main__':
     #dbhead = gdb.get_head_from_fragment(fragment)
 
     dsrp = DSR_Parser(reslist, rle)
-    dsr_dict = dsrp.parse_dsr_line()
+    dsr_dict = dsrp.get_dsr_dict
     num = NumberScheme(reslist, dbatoms, resiopt)
     # das printet auch auf bilschirm:
     numbers = num.get_fragment_number_scheme()
@@ -859,7 +859,7 @@ if __name__ == '__main__':
     #  print('jhdgfd')
     #
     #  dsrp = DSR_Parser(reslist)
-    #  dsr_dict = dsrp.parse_dsr_line()
+    #  dsr_dict = dsrp.get_dsr_dict
 
     print(check_source_target(dsr_dict.get('source'), dsr_dict.get('target'), dbatoms))
 

@@ -83,8 +83,9 @@ class DSR():
         :param invert:         invert the fragment during import, export or LS-fit
         :type invert:          boolean
         '''
+        print(program_name)
         # options from the commandline options parser:
-        self.options = OptionsParser(program_name)
+        self.options = OptionsParser()
         # vars() retrieves the options as dict, values() the values and any()
         # decides if any option is set.
         if not any(vars(self.options.all_options).values()):
@@ -314,7 +315,7 @@ class DSR():
         '''
         main object to run DSR as command line program
         '''
-        print(program_name)
+        #print(program_name)
         # The database content:
         basefilename = resfile.filename_wo_ending(self.res_file)
         gdb = global_DB(self.invert)
@@ -323,7 +324,7 @@ class DSR():
         find_atoms = FindAtoms(reslist)
         rle = resfile.ResListEdit(reslist, find_atoms)
         dsrp = DSR_Parser(reslist, rle)
-        dsr_dict = dsrp.parse_dsr_line()
+        dsr_dict = dsrp.get_dsr_dict
         fvarlines = rle.find_fvarlines()
         if dsrp.occupancy:
             rle.set_free_variables(dsrp.occupancy, fvarlines)

@@ -449,7 +449,7 @@ if __name__ == '__main__':
     rl = ResList(res_file)
     res_list = rl.get_res_list()
     dsrp = DSR_Parser(res_list, rl)
-    dsr_dict = dsrp.parse_dsr_line()
+    dsr_dict = dsrp.get_dsr_dict
     fragment = 'PPh3'
     fragment= fragment.lower()
     invert = True

@@ -284,7 +284,7 @@ if __name__ == '__main__':
     find_atoms = FindAtoms(res_list)
     rle = ResListEdit(res_list, find_atoms)
     dsrp = DSR_Parser(res_list, rle)
-    dsr_dict = dsrp.parse_dsr_line()
+    dsr_dict = dsrp.get_dsr_dict
     #fragment = dsr_dict['fragment']
     fragment = 'toluene'
     invert = True

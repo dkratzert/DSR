@@ -23,6 +23,8 @@ def filename_wo_ending(resfilename):
     returns the input file name without ending
     :param resfilename: string like 'p21c.res'
     '''
+    if not resfilename:
+        return False
     file_ext = os.path.splitext(resfilename)
     basefile = file_ext[0]
     if not file_ext[1] in ['.res', '']:

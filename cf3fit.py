@@ -27,6 +27,11 @@ basefilename
 reslist
 
 '''
+import resfile
+from dbfile import global_DB
+from atomhandling import FindAtoms
+from dsrparse import DSR_Parser
+from options import OptionsParser
 
 
 class CF3(object):
@@ -34,20 +39,38 @@ class CF3(object):
     a class to create cf3 groups at terminal atoms
     '''
 
-    def __init__(self, basefilename):
+    def __init__(self, reslist):
         '''
         Constructor
         '''
-        
+        print('hello')
+        #print(reslist)
         
     
     
 
 
-if '__name__' == '__main__':
-    cf3 = CF3()
+if __name__ == '__main__':
+    options = OptionsParser()
+    #res_file = options.res_file
+    res_file = 'p21c.res' 
+    invert = options.invert
+    basefilename = resfile.filename_wo_ending(res_file)
+    gdb = global_DB(invert)
+    rl = resfile.ResList(res_file)
+    reslist = rl.get_res_list()
+    find_atoms = FindAtoms(reslist)
+    rle = resfile.ResListEdit(reslist, find_atoms)
+    dsrp = DSR_Parser(reslist, rle)
+    dsr_dict = dsrp.get_dsr_dict
+    fvarlines = rle.find_fvarlines()
+    if dsrp.occupancy:
+        rle.set_free_variables(dsrp.occupancy, fvarlines)
+    fragment = dsrp.fragment.lower()
+    cf3 = CF3(reslist)
     
-    cf3.cf3('atom')
-    cf3.cf6('atom')
-    for at in atomlist:
-        cf3.cf3('atom')
+    #cf3.cf3('atom')
+    #cf3.cf6('atom')
+    # apply to more than one atom:
+    #for at in atomlist:
+    #    cf3.cf3('atom')
