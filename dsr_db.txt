@@ -825,7 +825,7 @@ C20   1  -0.793376   0.229548   0.949140  11.00000   0.02592
 rem Src: Gaussian 03 B3LYP/6-311++G(d,p) Opt
 Rem Name: Tetrahydrofurane, thf
 RESI THF
-SADI 0.02  C1 C2  C3 C4
+SADI 0.02  C1 C2  C2 C3  C3 C4
 SADI 0.02  O1 C1  O1 C4
 SADI 0.04  O1 C2  O1 C3
 SADI 0.04  C2 C4  C1 C3
