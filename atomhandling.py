@@ -105,7 +105,7 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     :param fragment_numberscheme: atom names of the fitting fragment
     :param cell: cell parameters
     '''
-    remdist=1.2
+    remdist=1.3
     from resfile import ResListEdit
     find_atoms = FindAtoms(reslist)
     if resi.get_resinumber:
@@ -147,9 +147,10 @@ class FindAtoms():
     @property
     def atoms_as_residues(self):
         '''
-        returns   residues = { {'0': ['C1', ['x', 'y', 'z'], linenumber, class], 
-                           ['C2', ['x', 'y', 'z'], linenumber, class]},
-                     {'1': ['C1', ['x', 'y', 'z'], linenumber, class], 
+        returns   residues = {   #  0           1            2         3      4      5          6
+                            {'0': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number], 
+                           ['C2', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number]},
+                     {'1': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number], 
                      []} }
         '''
         return self._residues
@@ -207,12 +208,12 @@ class FindAtoms():
             print('Wrong PART definition found! Check your PART instructions.')
         return partnum
     
-    def find_atoms_to_replace(self, frag_atoms, cell, remdist=1.2):
+    def find_atoms_to_replace(self, frag_atoms, cell, remdist=1.2, only_this=None):
         '''
         this method looks around every atom of the fitted fragment and removes 
         atoms that are near a certain distance to improve the replace mode
 
-        :param frag_atoms: atoms of the fitting fragment
+        :param frag_atoms: atoms of the fitting fragment ['C1', '1', 'x', 'y', 'z']
         :param cell: unit cell parameters (list)
         :param remdist: distance below atoms shoud be deleted
         '''
@@ -227,6 +228,8 @@ class FindAtoms():
             for y in atoms[i]:
                 if y[0].startswith('Q'):
                     # ignore q peaks:
+                    continue
+                if only_this and only_this != y[5]:
                     continue
                 # y[4] is the part number
                 if int(y[4]) == 0:
@@ -840,7 +843,7 @@ if __name__ == '__main__':
     for i in atoms:
         for y in atoms[i]:
             print(y)
-    sys.exit()
+    #sys.exit()
 
     # this might be used to find nearest atoms in same class to make eadp
     # print(fa.get_atoms_resiclass('C1_2'))
