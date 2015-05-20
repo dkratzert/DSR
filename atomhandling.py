@@ -763,14 +763,12 @@ class NumberScheme():
                 del alph[0]
                 atomlist = self._generate_numbers(atom, num, suffix)
             newatom.extend(atomlist)
-
         # retain the original order of the atomlist:
         # index of the sorted atoms:
         aindex = sorted(list(range(len(self.__atyp))), key=lambda k: self.__atyp[k])
         orglist = [''] * len(newatom)
         for x, i in enumerate(aindex):
             orglist[i] = newatom[x] # every ith aindex element is replaced by newatom[x] to retain original order
-
         print('Fragment atom names:', ', '.join(orglist))
         return orglist
 

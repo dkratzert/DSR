@@ -29,7 +29,7 @@ reslist
 '''
 import resfile
 from dbfile import global_DB
-from atomhandling import FindAtoms, SfacTable, Elem_2_Sfac
+from atomhandling import FindAtoms, SfacTable, Elem_2_Sfac, NumberScheme
 from dsrparse import DSR_Parser
 from options import OptionsParser
 from refine import ShelxlRefine
@@ -104,30 +104,50 @@ class CF3(object):
         for i in found:
             print(i[0]+'_'+i[7])
         self.delete_bound_fluorine(found)
-        self.make_afix(afixnum='137', linenumber=atomlinenumber[0])
+        self.make_afix(afixnum='120', linenumber=atomlinenumber[0])
 
     def make_afix(self, afixnum, linenumber):
         '''
         create an afix to build a CF3 or CH3 group
         :param afixnum: afix number
         :type afixnum: string
+        TODO: 
+        - find next unused free variable to refine parts
+        - refine
         '''
+        num = NumberScheme(reslist, ['F1', 'F2', 'F3', 'F4', 'F5', 'F6'], False)
+        # returns also the atom names if residue is active
+        fragment_numberscheme = num.get_fragment_number_scheme()
         sfac = self.e2s.elem_2_sfac('F')
-        afix_137 = ['\nAFIX {0}',
-                'Fxx1 {1} 0 0 0 11 0.04',
-                'Fxx2 {1} 0 0 0 11 0.04',
-                'Fxx3 {1} 0 0 0 11 0.04',
+        afix_130 = ['\nAFIX {0}',
+                fragment_numberscheme[0]+' {1} 0 0 0 11 0.04',
+                fragment_numberscheme[1]+' {1} 0 0 0 11 0.04',
+                fragment_numberscheme[2]+' {1} 0 0 0 11 0.04',
                 'AFIX 0\n']
-        afix_137 = '\n'.join(afix_137)
-        if str(afixnum) == '137':
-            afix = afix_137
+        afix_120 = ['\nAFIX {0}',
+                'PART 1',
+                fragment_numberscheme[0]+' {1} 0 0 0 11 0.04',
+                fragment_numberscheme[1]+' {1} 0 0 0 11 0.04',
+                fragment_numberscheme[2]+' {1} 0 0 0 11 0.04',
+                'PART 2',
+                fragment_numberscheme[3]+' {1} 0 0 0 11 0.04',
+                fragment_numberscheme[4]+' {1} 0 0 0 11 0.04',
+                fragment_numberscheme[5]+' {1} 0 0 0 11 0.04',
+                'PART 0',
+                'AFIX 0\n']
+        afix_130 = '\n'.join(afix_130)
+        afix_120 = '\n'.join(afix_120)
+        if str(afixnum) == '130':
+            afix = afix_130
+        if str(afixnum) == '120':
+            afix = afix_120
         else:
             print('Only CF3 groups implemented yet.')
         atomline = self.reslist[linenumber].split()
         if atomline[-1] == '=':
             self.reslist[linenumber] = '{:5.4s}{:4.2s}{:>10.8s} {:>10.8s} {:>10.8s}  {:8.6s}  0.04'.format(*atomline)
             self.reslist[linenumber+1] = '' 
-        self.reslist[linenumber] = self.reslist[linenumber]+afix.format(afixnum, sfac)
+        self.reslist[linenumber] = self.reslist[linenumber]+afix.format(afixnum, sfac) 
         #print(self.reslist[linenumber])
 
 if __name__ == '__main__':
@@ -150,21 +170,36 @@ if __name__ == '__main__':
     fragment = dsrp.fragment.lower()
     sf = SfacTable(reslist, ['C', 'F', 'F', 'F'])
     sfac_table = sf.set_sfac_table() 
+
+    def make_refine_cycle():
+        shx = ShelxlRefine(reslist, basefilename, find_atoms)
+        acta_lines = shx.remove_acta_card()
+        shx.set_refinement_cycles('0')
+        rl.write_resfile(reslist, '.ins')
+        #sys.exit()
+        shx.run_shelxl()
+        lf = ListFile(basefilename)
+        lst_file = lf.read_lst_file()
+        shx.check_refinement_results(lst_file)
+        shx.restore_acta_card(acta_lines)
+        shx.set_refinement_cycles('8')
+
     ####################################################
     cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table)
     cf3.cf3('C22')
+    make_refine_cycle()
+    #rl = resfile.ResList(res_file)
+    #reslist = rl.get_res_list()
+    #cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table)
+    cf3.cf3('C1')
+    
+    # TODO: second atom is not treated!
+    
+    #rl = resfile.ResList(res_file)
+    #reslist = rl.get_res_list()
+    make_refine_cycle()
+    print('finished...')
     ####################################################
-    shx = ShelxlRefine(reslist, basefilename, find_atoms)
-    acta_lines = shx.remove_acta_card()
-    shx.set_refinement_cycles('0')
-    rl.write_resfile(reslist, '.ins')
-    sys.exit()
-    shx.run_shelxl()
-    lf = ListFile(basefilename)
-    lst_file = lf.read_lst_file()
-    shx.check_refinement_results(lst_file)
-    shx.restore_acta_card(acta_lines)
-    shx.set_refinement_cycles('8')
     
     #cr = ELEMENTS['C'].covrad
     #fr = ELEMENTS['F'].covrad
