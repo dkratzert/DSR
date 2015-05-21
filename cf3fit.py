@@ -43,8 +43,8 @@ from options import OptionsParser
 from refine import ShelxlRefine
 from restraints import ListFile
 from elements import ELEMENTS
-from misc import atomic_distance, matrix_mult
-from math import sin, cos
+from misc import atomic_distance, matrix_mult, frac_to_cart, cart_to_frac
+from math import sin, cos, radians
 import sys
 from resfile import ResList
 
@@ -167,13 +167,21 @@ class CF3(object):
         '''
         rotates the coordinates of a fluorine atom in the cone 
         around the terminal atom
+        0.698784    1.531988    0.203525
+        
+        F1x   3  0.698784  1.4733719  0.4664599  11 0.04
         '''
-        theta = 115
-        phi = 10
-        Rot = [[cos(phi), sin(phi), 0], 
-               [-cos(theta)*sin(phi), cos(theta)*cos(phi), sin(theta)], 
-               [sin(theta)*sin(phi), -sin(theta)*cos(phi), cos(theta)]]
-        rotated = matrix_mult(Rot, coords)
+        coords = frac_to_cart(coords, self.cell)
+        theta = 115 # grad
+        phi = 10    # grad
+        theta = radians(theta)
+        phi = radians(phi)
+        Rot = [[cos(phi),             sin(phi),             0], 
+               [-cos(theta)*sin(phi), cos(theta)*cos(phi),  sin(theta)], 
+               [sin(theta)*sin(phi), -sin(theta)*cos(phi),  cos(theta)]]
+        rotated = matrix_mult([coords], Rot)[0]
+        rotated = cart_to_frac(rotated, self.cell)
+        rotated = [round(i, 7) for i in rotated]
         return rotated
 
 if __name__ == '__main__':
@@ -215,6 +223,10 @@ if __name__ == '__main__':
 
     ####################################################
     cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table)
+
+    co = cf3.rotate_fluorine_atom([0.698784,1.531988,0.203525])
+    print('{}  {}  {}'.format(*co))
+    sys.exit()
     cf3.cf3('C22')
     make_refine_cycle(rl, reslist)
 
