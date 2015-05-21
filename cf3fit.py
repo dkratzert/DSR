@@ -115,7 +115,7 @@ class CF3(object):
         - find next unused free variable to refine parts
         - refine
         '''
-        num = NumberScheme(reslist, ['F1', 'F2', 'F3', 'F4', 'F5', 'F6'], False)
+        num = NumberScheme(self.reslist, ['F1', 'F2', 'F3', 'F4', 'F5', 'F6'], False)
         # returns also the atom names if residue is active
         fragment_numberscheme = num.get_fragment_number_scheme()
         sfac = self.e2s.elem_2_sfac('F')
@@ -188,16 +188,16 @@ if __name__ == '__main__':
     cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table)
     cf3.cf3('C22')
     make_refine_cycle()
-    #rl = resfile.ResList(res_file)
-    #reslist = rl.get_res_list()
-    #cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table)
+    rl = resfile.ResList(res_file)
+    reslist = rl.get_res_list()
+    cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table)
     cf3.cf3('C1')
     
     # TODO: second atom is not treated!
-    
-    #rl = resfile.ResList(res_file)
-    #reslist = rl.get_res_list()
-    make_refine_cycle()
+    make_refine_cycle()    
+    rl = resfile.ResList(res_file)
+    reslist = rl.get_res_list()
+
     print('finished...')
     ####################################################
     
