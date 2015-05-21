@@ -336,6 +336,7 @@ def matrix_mult(matrix1,matrix2):
     if len(matrix1[0]) != len(matrix2):
         # Check matrix dimensions
         print('Matrices must be m*n and n*p to multiply!')
+        return False
     else:
         # Multiply if correct dimensions
         new_matrix = zero(len(matrix1),len(matrix2[0]))
@@ -396,7 +397,7 @@ def frac_to_cart(frac_coord, cell):
     :param frac_coord: [float, float, float]
     :param cell:       [float, float, float, float, float, float]
     '''
-    from math import cos, sin, sqrt, radians
+    #from math import cos, sin, sqrt, radians
     a, b, c, alpha, beta, gamma = cell
     x, y, z = frac_coord
     alpha = radians(alpha)
@@ -409,6 +410,25 @@ def frac_to_cart(frac_coord, cell):
     Zc = 0   +  0               + (c*sin(beta)*sinastar)*z
     return (Xc, Yc, Zc)
 
+
+def cart_to_frac(cart_coord, cell):
+    '''
+    converts cartesian coordinates to fractional coordinates
+    :param frac_coord: [float, float, float]
+    :param cell:       [float, float, float, float, float, float]
+    '''
+    a, b, c, alpha, beta, gamma = cell
+    X, Y, Z = cart_coord
+    alpha = radians(alpha)
+    beta  = radians(beta)
+    gamma = radians(gamma)
+    cosastar = (cos(beta)*cos(gamma)-cos(alpha))/(sin(beta)*sin(gamma))
+    sinastar = sqrt(1-cosastar**2)
+    z = Z/(c*sin(beta)*sinastar) 
+    y = (Y-(-c*sin(beta)*cosastar)*z)/(b*sin(gamma))
+    x = (X-(b*cos(gamma))*y-(c*cos(beta))*z)/a
+    return (x, y, z)
+    
 
 def determinante(a):
     '''
