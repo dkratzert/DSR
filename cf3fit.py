@@ -23,6 +23,14 @@ Created on 13.05.2015
 - set the sump and free variable
 -
 
+DFIX 1.328 C22 F1A C22 F2A C22 F3A  C22 F4A C22 F5A C22 F6A
+DFIX 2.125 F1A F5A F5A F3A F3A F4A F4A F2A F2A F6A F6A F1A
+SADI 0.1 C19 F1A C19 F2A C19 F3A  C19 F4A C19 F5A C19 F6A
+
+DFIX 1.328 C1 F1B C1 F2B C1 F3B  C1 F4B C1 F5B C1 F6B
+DFIX 2.125 F1B F5B F5B F3B F3B F4B F4B F2B F2B F6B F6B F1B
+SADI 0.1 C2 F1B C2 F2B C2 F3B  C2 F4B C2 F5B C2 F6B
+
 basefilename
 reslist
 
@@ -34,8 +42,9 @@ from dsrparse import DSR_Parser
 from options import OptionsParser
 from refine import ShelxlRefine
 from restraints import ListFile
-from misc import atomic_distance
 from elements import ELEMENTS
+from misc import atomic_distance, matrix_mult
+from math import sin, cos
 import sys
 
 
@@ -104,7 +113,7 @@ class CF3(object):
         for i in found:
             print(i[0]+'_'+i[7])
         self.delete_bound_fluorine(found)
-        self.make_afix(afixnum='120', linenumber=atomlinenumber[0])
+        self.make_afix(afixnum='130', linenumber=atomlinenumber[0])
 
     def make_afix(self, afixnum, linenumber):
         '''
@@ -150,6 +159,20 @@ class CF3(object):
         self.reslist[linenumber] = self.reslist[linenumber]+afix.format(afixnum, sfac) 
         #print(self.reslist[linenumber])
 
+    
+    def rotate_fluorine_atom(self, coords):
+        '''
+        rotates the coordinates of a fluorine atom in the cone 
+        around the terminal atom
+        '''
+        theta = 115
+        phi = 10
+        Rot = [[cos(phi), sin(phi), 0], 
+               [-cos(theta)*sin(phi), cos(theta)*cos(phi), sin(theta)], 
+               [sin(theta)*sin(phi), -sin(theta)*cos(phi), cos(theta)]]
+        rotated = matrix_mult(Rot, coords)
+        return rotated
+
 if __name__ == '__main__':
     options = OptionsParser()
     #res_file = options.res_file
@@ -190,13 +213,9 @@ if __name__ == '__main__':
     make_refine_cycle()
     rl = resfile.ResList(res_file)
     reslist = rl.get_res_list()
-    cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table)
-    cf3.cf3('C1')
-    
+   
     # TODO: second atom is not treated!
-    make_refine_cycle()    
-    rl = resfile.ResList(res_file)
-    reslist = rl.get_res_list()
+
 
     print('finished...')
     ####################################################
