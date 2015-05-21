@@ -359,6 +359,7 @@ class DSR():
         num = NumberScheme(reslist, dbatoms, resi.get_resinumber)
         # returns also the atom names if residue is active
         fragment_numberscheme = num.get_fragment_number_scheme()
+        print('Fragment atom names:', ', '.join(fragment_numberscheme))
         dfix_head = ''
         if dsrp.dfix_active:
             restr = Restraints(fragment, gdb)

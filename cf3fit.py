@@ -46,6 +46,7 @@ from elements import ELEMENTS
 from misc import atomic_distance, matrix_mult
 from math import sin, cos
 import sys
+from resfile import ResList
 
 
 class CF3(object):
@@ -124,31 +125,33 @@ class CF3(object):
         - find next unused free variable to refine parts
         - refine
         '''
-        num = NumberScheme(self.reslist, ['F1', 'F2', 'F3', 'F4', 'F5', 'F6'], False)
+        num_130 = NumberScheme(self.reslist, ['F1', 'F2', 'F3'], False)
+        num_120 = NumberScheme(self.reslist, ['F1', 'F2', 'F3', 'F4', 'F5', 'F6'], False)
         # returns also the atom names if residue is active
-        fragment_numberscheme = num.get_fragment_number_scheme()
+        numberscheme_120 = num_120.get_fragment_number_scheme()
+        numberscheme_130 = num_130.get_fragment_number_scheme()
         sfac = self.e2s.elem_2_sfac('F')
         afix_130 = ['\nAFIX {0}',
-                fragment_numberscheme[0]+' {1} 0 0 0 11 0.04',
-                fragment_numberscheme[1]+' {1} 0 0 0 11 0.04',
-                fragment_numberscheme[2]+' {1} 0 0 0 11 0.04',
+                numberscheme_130[0]+' {1} 0 0 0 11 0.04',
+                numberscheme_130[1]+' {1} 0 0 0 11 0.04',
+                numberscheme_130[2]+' {1} 0 0 0 11 0.04',
                 'AFIX 0\n']
         afix_120 = ['\nAFIX {0}',
                 'PART 1',
-                fragment_numberscheme[0]+' {1} 0 0 0 11 0.04',
-                fragment_numberscheme[1]+' {1} 0 0 0 11 0.04',
-                fragment_numberscheme[2]+' {1} 0 0 0 11 0.04',
+                numberscheme_120[0]+' {1} 0 0 0 11 0.04',
+                numberscheme_120[1]+' {1} 0 0 0 11 0.04',
+                numberscheme_120[2]+' {1} 0 0 0 11 0.04',
                 'PART 2',
-                fragment_numberscheme[3]+' {1} 0 0 0 11 0.04',
-                fragment_numberscheme[4]+' {1} 0 0 0 11 0.04',
-                fragment_numberscheme[5]+' {1} 0 0 0 11 0.04',
+                numberscheme_120[3]+' {1} 0 0 0 11 0.04',
+                numberscheme_120[4]+' {1} 0 0 0 11 0.04',
+                numberscheme_120[5]+' {1} 0 0 0 11 0.04',
                 'PART 0',
                 'AFIX 0\n']
         afix_130 = '\n'.join(afix_130)
         afix_120 = '\n'.join(afix_120)
         if str(afixnum) == '130':
             afix = afix_130
-        if str(afixnum) == '120':
+        elif str(afixnum) == '120':
             afix = afix_120
         else:
             print('Only CF3 groups implemented yet.')
@@ -194,7 +197,7 @@ if __name__ == '__main__':
     sf = SfacTable(reslist, ['C', 'F', 'F', 'F'])
     sfac_table = sf.set_sfac_table() 
 
-    def make_refine_cycle():
+    def make_refine_cycle(rl, reslist):
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
         acta_lines = shx.remove_acta_card()
         shx.set_refinement_cycles('0')
@@ -204,17 +207,19 @@ if __name__ == '__main__':
         lf = ListFile(basefilename)
         lst_file = lf.read_lst_file()
         shx.check_refinement_results(lst_file)
+        rl = ResList(res_file)
+        reslist = rl.get_res_list()
         shx.restore_acta_card(acta_lines)
         shx.set_refinement_cycles('8')
+        rl.write_resfile(reslist, '.res')
 
     ####################################################
     cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table)
     cf3.cf3('C22')
-    make_refine_cycle()
-    rl = resfile.ResList(res_file)
-    reslist = rl.get_res_list()
+    make_refine_cycle(rl, reslist)
+
    
-    # TODO: second atom is not treated!
+    #dsrp.find_dsr_command()
 
 
     print('finished...')
