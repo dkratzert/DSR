@@ -769,7 +769,6 @@ class NumberScheme():
         orglist = [''] * len(newatom)
         for x, i in enumerate(aindex):
             orglist[i] = newatom[x] # every ith aindex element is replaced by newatom[x] to retain original order
-        print('Fragment atom names:', ', '.join(orglist))
         return orglist
 
 
