@@ -331,6 +331,7 @@ def matrix_mult(matrix1,matrix2):
     '''
     Multiplies matrix1 with matrix2.
     Independent from numpy, but slow.
+    [[x1, y1, z1], [x2, y2, z2], [x3, y3, z3]]
     '''
     if len(matrix1[0]) != len(matrix2):
         # Check matrix dimensions
