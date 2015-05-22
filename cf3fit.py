@@ -43,7 +43,8 @@ from options import OptionsParser
 from refine import ShelxlRefine
 from restraints import ListFile
 from elements import ELEMENTS
-from misc import atomic_distance, matrix_mult, frac_to_cart, cart_to_frac
+from misc import atomic_distance, matrix_mult, frac_to_cart, cart_to_frac,\
+    norm_vec, subtract_vect, cross_vec, transpose, matrix_mult_vector
 from math import sin, cos, radians
 import sys
 from resfile import ResList
@@ -163,25 +164,44 @@ class CF3(object):
         #print(self.reslist[linenumber])
 
     
-    def rotate_fluorine_atom(self, coords):
+    def rotate_fluorine_atom(self, ratom, at1, at2, alpha=10):
         '''
         rotates the coordinates of a fluorine atom in the cone 
         around the terminal atom
         0.698784    1.531988    0.203525
         
         F1x   3  0.698784  1.4733719  0.4664599  11 0.04
+        
+        R: rotation matrix
+        M: transformation matrix
+        
         '''
-        coords = frac_to_cart(coords, self.cell)
-        theta = 115 # grad
-        phi = 10    # grad
-        theta = radians(theta)
-        phi = radians(phi)
-        Rot = [[cos(phi),             sin(phi),             0], 
-               [-cos(theta)*sin(phi), cos(theta)*cos(phi),  sin(theta)], 
-               [sin(theta)*sin(phi), -sin(theta)*cos(phi),  cos(theta)]]
-        rotated = matrix_mult([coords], Rot)[0]
-        rotated = cart_to_frac(rotated, self.cell)
-        rotated = [round(i, 7) for i in rotated]
+        alpha = radians(alpha)
+        #ratom = frac_to_cart(ratom, self.cell)
+        at1 = frac_to_cart(at1, self.cell)
+        at2 = frac_to_cart(at2, self.cell)
+        
+        ex = norm_vec(subtract_vect(at1, at2))
+        ey = norm_vec(cross_vec(ex, (1, 0 , 0)))
+        ez = norm_vec(cross_vec(ex, ey))
+        
+        Rx = ( (1,  0,           0          ),
+               (0,  cos(alpha), -sin(alpha) ), 
+               (0,  sin(alpha),  cos(alpha) ) )
+        M_t = ((ex[0], ex[1], ex[2]),
+             (ey[0], ey[1], ey[2]),
+             (ez[0], ez[1], ez[2])
+             )
+        #original:
+        M = ( (ex[0], ey[0], ez[0]),
+              (ex[1], ey[1], ez[1]),
+              (ex[2], ey[2], ez[2]) )
+        
+        Mt = transpose(M)
+        Ri = matrix_mult(Rx, M)
+        R = matrix_mult(Mt, Ri)
+        rotated = matrix_mult_vector(R, ratom)
+        #rotated = cart_to_frac(rotated, self.cell)
         return rotated
 
 if __name__ == '__main__':
@@ -224,8 +244,14 @@ if __name__ == '__main__':
     ####################################################
     cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table)
 
-    co = cf3.rotate_fluorine_atom([0.698784,1.531988,0.203525])
-    print('{}  {}  {}'.format(*co))
+    F = [0.698784,1.531988,0.203525]
+    C1 = [0.671866, 1.535515, 0.269485]
+    C2 = [0.618909, 1.365570, 0.278054]
+    
+    for i in [10, 20, 30]:
+        co = cf3.rotate_fluorine_atom(F, C1, C2, alpha=i)
+        print('{:0<8.6}  {:0<8.6}  {:0<8.6}'.format(*co))
+    
     sys.exit()
     cf3.cf3('C22')
     make_refine_cycle(rl, reslist)

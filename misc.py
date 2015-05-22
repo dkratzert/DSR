@@ -317,36 +317,6 @@ def which(name, flags=os.X_OK):
     return result
 
 
-def zero(m,n):
-    '''
-    Create zero matrix of dimension m,n
-    :param m: integer
-    :param n: integer
-    '''
-    new_matrix = [[0 for row in range(n)] for col in range(m)]  # @UnusedVariable
-    return new_matrix
-
-
-def matrix_mult(matrix1,matrix2):
-    '''
-    Multiplies matrix1 with matrix2.
-    Independent from numpy, but slow.
-    [[x1, y1, z1], [x2, y2, z2], [x3, y3, z3]]
-    '''
-    if len(matrix1[0]) != len(matrix2):
-        # Check matrix dimensions
-        print('Matrices must be m*n and n*p to multiply!')
-        return False
-    else:
-        # Multiply if correct dimensions
-        new_matrix = zero(len(matrix1),len(matrix2[0]))
-        for i in range(len(matrix1)):
-            for j in range(len(matrix2[0])):
-                for k in range(len(matrix2)):
-                    new_matrix[i][j] += matrix1[i][k]*matrix2[k][j]
-    return new_matrix
-
-
 def remove_partsymbol(atom):
     '''
     strips the part symbol like C1_4b from an atom name
@@ -408,7 +378,7 @@ def frac_to_cart(frac_coord, cell):
     Xc = a*x + (b*cos(gamma))*y + (c*cos(beta))*z
     Yc = 0   + (b*sin(gamma))*y + (-c*sin(beta)*cosastar)*z
     Zc = 0   +  0               + (c*sin(beta)*sinastar)*z
-    return (Xc, Yc, Zc)
+    return (round(Xc, 8), round(Yc, 8), round(Zc, 8))
 
 
 def cart_to_frac(cart_coord, cell):
@@ -427,8 +397,65 @@ def cart_to_frac(cart_coord, cell):
     z = Z/(c*sin(beta)*sinastar) 
     y = (Y-(-c*sin(beta)*cosastar)*z)/(b*sin(gamma))
     x = (X-(b*cos(gamma))*y-(c*cos(beta))*z)/a
-    return (x, y, z)
+    return (round(x, 8), round(y, 8), round(z, 8))
     
+def zero(m,n):
+    '''
+    Create zero matrix of dimension m,n
+    :param m: integer
+    :param n: integer
+    '''
+    new_matrix = [[0 for row in range(n)] for col in range(m)]  # @UnusedVariable
+    return new_matrix
+
+
+def matrix_mult(matrix1,matrix2):
+    '''
+    Multiplies matrix1 with matrix2.
+    Independent from numpy, but slow.
+    [[x1, y1, z1], [x2, y2, z2], [x3, y3, z3]]
+    '''
+    if len(matrix1[0]) != len(matrix2):
+        # Check matrix dimensions
+        print('Matrices must be m*n and n*p to multiply!')
+        return False
+    else:
+        # Multiply if correct dimensions
+        new_matrix = zero(len(matrix1),len(matrix2[0]))
+        for i in range(len(matrix1)):
+            for j in range(len(matrix2[0])):
+                for k in range(len(matrix2)):
+                    new_matrix[i][j] += matrix1[i][k]*matrix2[k][j]
+    return new_matrix
+
+def mm(A, B):
+    '''
+    matrix multiplication (might be fatser than above)
+    '''
+    return [[sum(x * B[i][col] for i,x in enumerate(row)) for col in range(len(B[0]))] for row in A]
+
+
+def matrix_mult_vector(A, v):
+    '''
+    multiplies a matrix with a vector
+    | 00 01 02 | |0|
+    | 10 11 12 |*|1|
+    | 20 21 22 | |2|
+    '''
+    if len(A[0]) != len(v):
+        print('Size of matrix and vector not equal.')
+        raise Exception
+    a = A[0][0]*v[0]+A[0][1]*v[1]+A[0][2]*v[2]
+    b = A[1][0]*v[0]+A[1][1]*v[1]+A[1][2]*v[2]
+    c = A[2][0]*v[0]+A[2][1]*v[1]+A[2][2]*v[2]
+    return (a, b, c) 
+
+def translate_coords(coords):
+    '''
+    translate coordinates
+    '''
+    pass
+
 
 def determinante(a):
     '''
@@ -437,6 +464,16 @@ def determinante(a):
     return (a[0][0] * (a[1][1] * a[2][2] - a[2][1] * a[1][2])
            -a[1][0] * (a[0][1] * a[2][2] - a[2][1] * a[0][2])
            +a[2][0] * (a[0][1] * a[1][2] - a[1][1] * a[0][2]))
+
+
+def cross_vec(a, b):
+    '''
+    cross product of vector a and b
+    '''
+    c1 = a[1] * b[2] - a[2] * b[1]
+    c2 = a[2] * b[0] - a[0] * b[2]
+    c3 = a[0] * b[1] - a[1] * b[0]
+    return [c1, c2, c3]
 
 
 def subtract_vect(a, b):
@@ -449,6 +486,20 @@ def subtract_vect(a, b):
             a[1] - b[1],
             a[2] - b[2])
 
+
+def transpose(a):
+    '''
+    transposes a matrix
+    '''
+    return zip(*a)
+
+def norm_vec(a):
+    '''
+    returns a normalized vector
+    '''
+    l = sqrt(a[0]**2 + a[1]**2 + a[2]**2)
+    return (a[0]/l, a[1]/l, a[2]/l)
+    
 
 def vol_tetrahedron(a, b, c, d, cell=None):
     '''
@@ -484,6 +535,7 @@ def vol_tetrahedron(a, b, c, d, cell=None):
     AC = subtract_vect(A, C)
     AD = subtract_vect(A, D)
     D = determinante([AB, AC, AD])
+    print(D, '###')
     volume = abs((D/6))
     return volume
 
