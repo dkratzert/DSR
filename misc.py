@@ -430,7 +430,7 @@ def matrix_mult(matrix1,matrix2):
 
 def mm(A, B):
     '''
-    matrix multiplication (might be fatser than above)
+    matrix multiplication (might be faster than above)
     '''
     return [[sum(x * B[i][col] for i,x in enumerate(row)) for col in range(len(B[0]))] for row in A]
 
@@ -445,10 +445,14 @@ def matrix_mult_vector(A, v):
     if len(A[0]) != len(v):
         print('Size of matrix and vector not equal.')
         raise Exception
-    a = A[0][0]*v[0]+A[0][1]*v[1]+A[0][2]*v[2]
-    b = A[1][0]*v[0]+A[1][1]*v[1]+A[1][2]*v[2]
-    c = A[2][0]*v[0]+A[2][1]*v[1]+A[2][2]*v[2]
-    return (a, b, c) 
+    #a = A[0][0]*v[0]+A[0][1]*v[1]+A[0][2]*v[2]
+    #b = A[1][0]*v[0]+A[1][1]*v[1]+A[1][2]*v[2]
+    #c = A[2][0]*v[0]+A[2][1]*v[1]+A[2][2]*v[2]
+    new_matrix = zero(len(A[0]),0)
+    for i in range(len(A)):
+        for k in range(len(v)):
+            new_matrix[i] += A[i][k]*v[k]
+    return new_matrix
 
 def translate_coords(coords):
     '''
@@ -468,12 +472,12 @@ def determinante(a):
 
 def cross_vec(a, b):
     '''
-    cross product of vector a and b
+    Cross product of two 3D vectors
     '''
-    c1 = a[1] * b[2] - a[2] * b[1]
-    c2 = a[2] * b[0] - a[0] * b[2]
-    c3 = a[0] * b[1] - a[1] * b[0]
-    return [c1, c2, c3]
+    assert len(a) == len(b) == 3, 'For 3D vectors only'
+    a1, a2, a3 = a
+    b1, b2, b3 = b
+    return (a2*b3 - a3*b2, a3*b1 - a1*b3, a1*b2 - a2*b1)
 
 
 def subtract_vect(a, b):
@@ -697,6 +701,13 @@ if __name__ == '__main__':
     import sys
     v = vol_unitcell(2, 2, 2, 90, 90, 90)
     print(v)
+    
+    A = ((1, 0, 0),
+         (1, 1, 0),
+         (0, 0, 1))
+    v = (2, 2, 2)
+    c = matrix_mult_vector(A, v)
+    print(c)
     sys.exit()
     
     from resfile import ResList, ResListEdit
