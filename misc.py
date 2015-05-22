@@ -448,11 +448,12 @@ def matrix_mult_vector(A, v):
     #a = A[0][0]*v[0]+A[0][1]*v[1]+A[0][2]*v[2]
     #b = A[1][0]*v[0]+A[1][1]*v[1]+A[1][2]*v[2]
     #c = A[2][0]*v[0]+A[2][1]*v[1]+A[2][2]*v[2]
-    new_matrix = zero(len(A[0]),0)
+    #d = A[3][0]*v[0]+A[3][1]*v[1]+A[3][2]*v[2]
+    vect = ([0 for i in range(len(A))])
     for i in range(len(A)):
-        for k in range(len(v)):
-            new_matrix[i] += A[i][k]*v[k]
-    return new_matrix
+        for k in range(len(A)):
+            vect[i] += A[i][k]*v[k]
+    return vect
 
 def translate_coords(coords):
     '''

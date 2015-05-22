@@ -208,7 +208,10 @@ class CF3(object):
         '''
         R = T^-1Rx^-1Ry^-1RzRyRxT
         '''
-        ratom = ratom+[1.0]
+        #ratom = frac_to_cart(ratom, self.cell)
+        #at1 = frac_to_cart(at1, self.cell)
+        #at2 = frac_to_cart(at2, self.cell)        
+        ratom = tuple(ratom)+(1.0,)
         delta = radians(delta)
         x0, y0, z0 = at1
         T = ((1, 0, 0, -x0),
@@ -216,8 +219,7 @@ class CF3(object):
              (0, 0, 1, -z0),
              (0, 0, 0,   1))
         T1 = transpose(T)
-        ratom = matrix_mult_vector(T, ratom)
-        #print(ratom)
+        #ratom = matrix_mult_vector(T, ratom)
         vx = at2[0]-at1[0] 
         vy = at2[1]-at1[1]  # P1 - P2
         vz = at2[2]-at1[2]
@@ -281,9 +283,13 @@ class CF3(object):
         R = matrix_mult(R, Rzd)
         R = matrix_mult(R, Ryb1)
         R = matrix_mult(R, Rxa1)
-        x0, y0, z0 = -x0, -y0, -z0  
+        T = ((1, 0, 0, x0),
+             (0, 1, 0, y0),
+             (0, 0, 1, z0),
+             (0, 0, 0,   1))
         R = matrix_mult(R, T)
         R = matrix_mult_vector(R, ratom)
+        #cart_to_frac(R[:3], self.cell)
         return R 
     
 if __name__ == '__main__':
