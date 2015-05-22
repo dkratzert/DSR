@@ -44,8 +44,8 @@ from refine import ShelxlRefine
 from restraints import ListFile
 from elements import ELEMENTS
 from misc import atomic_distance, matrix_mult, frac_to_cart, cart_to_frac,\
-    norm_vec, subtract_vect, cross_vec, transpose, matrix_mult_vector
-from math import sin, cos, radians
+    norm_vec, subtract_vect, cross_vec, transpose, matrix_mult_vector, mm
+from math import sin, cos, radians, sqrt
 import sys
 from resfile import ResList
 
@@ -177,7 +177,7 @@ class CF3(object):
         
         '''
         alpha = radians(alpha)
-        #ratom = frac_to_cart(ratom, self.cell)
+        ratom = frac_to_cart(ratom, self.cell)
         at1 = frac_to_cart(at1, self.cell)
         at2 = frac_to_cart(at2, self.cell)
         
@@ -185,15 +185,14 @@ class CF3(object):
         ey = norm_vec(cross_vec(ex, (1, 0 , 0)))
         ez = norm_vec(cross_vec(ex, ey))
         
-        Rx = ( (1,  0,           0          ),
+        Rx = ( (1,           0,           0 ),
                (0,  cos(alpha), -sin(alpha) ), 
                (0,  sin(alpha),  cos(alpha) ) )
-        M_t = ((ex[0], ex[1], ex[2]),
-             (ey[0], ey[1], ey[2]),
-             (ez[0], ez[1], ez[2])
-             )
+        M = ((ex[0], ex[1], ex[2]),
+               (ey[0], ey[1], ey[2]),
+               (ez[0], ez[1], ez[2]) )
         #original:
-        M = ( (ex[0], ey[0], ez[0]),
+        M_t = ( (ex[0], ey[0], ez[0]),
               (ex[1], ey[1], ez[1]),
               (ex[2], ey[2], ez[2]) )
         
@@ -201,9 +200,92 @@ class CF3(object):
         Ri = matrix_mult(Rx, M)
         R = matrix_mult(Mt, Ri)
         rotated = matrix_mult_vector(R, ratom)
-        #rotated = cart_to_frac(rotated, self.cell)
+        rotated = cart_to_frac(rotated, self.cell)
         return rotated
+    
+    
+    def rotate_fluorine2(self, ratom, at1, at2, delta=10):
+        '''
+        R = T^-1Rx^-1Ry^-1RzRyRxT
+        '''
+        ratom = ratom+[1.0]
+        delta = radians(delta)
+        x0, y0, z0 = at1
+        T = ((1, 0, 0, -x0),
+             (0, 1, 0, -y0),
+             (0, 0, 1, -z0),
+             (0, 0, 0,   1))
+        T1 = transpose(T)
+        ratom = matrix_mult_vector(T, ratom)
+        #print(ratom)
+        vx = at2[0]-at1[0] 
+        vy = at2[1]-at1[1]  # P1 - P2
+        vz = at2[2]-at1[2]
+        vnorm = sqrt(vx**2+vy**2+vz**2)
+        a, b, c = vx/vnorm, vy/vnorm, vz/vnorm
+        d = sqrt(b**2+c**2)
+        
+        sina = c/d # For rotation around alpha
+        cosa = b/d #
 
+        Rxa = ((         1,          0,          0,  0),
+               (         0,       cosa,      -sina,  0),
+               (         0,       sina,       cosa,  0),
+               (         0,          0,          0,  1))
+        '''
+        Rya = ((      cosa,          0,       sina,  0),
+               (         0,          1,          0,  0),
+               (     -sina,          0,       cosa,  0),
+               (         0,          0,          0,  1))
+        
+        Rza = ((      cosa,      -sina,          0,  0),
+               (      sina,       cosa,          0,  0),
+               (         0,          0,          1,  0),
+               (         0,          0,          0,  1))'''
+              
+
+        sinb = -a # rotation around beta
+        cosb = d  #
+        '''
+        Rxb = ((         1,          0,          0,  0),
+               (         0,       cosb,      -sinb,  0),
+               (         0,       sinb,       cosb,  0),
+               (         0,          0,          0,  1))'''
+        
+        Ryb = ((      cosb,          0,       sinb,  0),
+               (         0,          1,          0,  0),
+               (     -sinb,          0,       cosb,  0),
+               (         0,          0,          0,  1))
+        '''
+        Rzb = ((      cosb,      -sinb,          0,  0),
+               (      sinb,       cosb,          0,  0),
+               (         0,          0,          1,  0),
+               (         0,          0,          0,  1))'''
+        
+                
+        sind = sin(delta)
+        cosd = cos(delta)
+        
+        Rzd = ((      cosd,      -sind,          0,  0),
+               (      sind,       cosd,          0,  0),
+               (         0,          0,          1,  0),
+               (         0,          0,          0,  1))
+        
+                
+        Rxa1 = transpose(Rxa)
+        Ryb1 = transpose(Ryb)
+        #Rz1 = transpose(Rz)
+                
+        R = matrix_mult(T, Rxa)
+        R = matrix_mult(R, Ryb)
+        R = matrix_mult(R, Rzd)
+        R = matrix_mult(R, Ryb1)
+        R = matrix_mult(R, Rxa1)
+        x0, y0, z0 = -x0, -y0, -z0  
+        R = matrix_mult(R, T)
+        R = matrix_mult_vector(R, ratom)
+        return R 
+    
 if __name__ == '__main__':
     options = OptionsParser()
     #res_file = options.res_file
@@ -245,11 +327,12 @@ if __name__ == '__main__':
     cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table)
 
     F = [0.698784,1.531988,0.203525]
-    C1 = [0.671866, 1.535515, 0.269485]
-    C2 = [0.618909, 1.365570, 0.278054]
+    C22 = [0.671866, 1.535515, 0.269485]
+    C19 = [0.618909, 1.365570, 0.278054]
     
     for i in [10, 20, 30]:
-        co = cf3.rotate_fluorine_atom(F, C1, C2, alpha=i)
+        co = cf3.rotate_fluorine2(F, C22, C19, delta=i)
+        #co = cf3.rotate_fluorine_atom(F, C22, C19, alpha=i)
         print('{:0<8.6}  {:0<8.6}  {:0<8.6}'.format(*co))
     
     sys.exit()
