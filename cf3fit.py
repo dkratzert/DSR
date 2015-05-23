@@ -31,8 +31,10 @@ DFIX 1.328 C1 F1B C1 F2B C1 F3B  C1 F4B C1 F5B C1 F6B
 DFIX 2.125 F1B F5B F5B F3B F3B F4B F4B F2B F2B F6B F6B F1B
 SADI 0.1 C2 F1B C2 F2B C2 F3B  C2 F4B C2 F5B C2 F6B
 
-basefilename
-reslist
+ Difference electron density (eA^-3x100) at 15 degree intervals for AFIX 130
+ group attached to C1_a. The center of the range is eclipsed (cis) to C7_a
+ and rotation is clockwise looking down C2_a to C1_a.
+   349  237  171  203  358  579  668  504  243   65  -11   41  272  530  563  380  223  146  106  146  316  497  522  451
 
 '''
 import resfile
@@ -48,6 +50,8 @@ from misc import atomic_distance, matrix_mult, frac_to_cart, cart_to_frac,\
 from math import sin, cos, radians, sqrt
 import sys
 from resfile import ResList
+import mpmath as mp
+
 
 
 class CF3(object):
@@ -163,134 +167,95 @@ class CF3(object):
         self.reslist[linenumber] = self.reslist[linenumber]+afix.format(afixnum, sfac) 
         #print(self.reslist[linenumber])
 
+
     
-    def rotate_fluorine_atom(self, ratom, at1, at2, alpha=10):
+    
+    def rotate_atom_around_bond(self, ratom, at1, at2, delta=10):
         '''
-        rotates the coordinates of a fluorine atom in the cone 
-        around the terminal atom
-        0.698784    1.531988    0.203525
-        
-        F1x   3  0.698784  1.4733719  0.4664599  11 0.04
-        
-        R: rotation matrix
-        M: transformation matrix
-        
+        R = T**-1*Rx**-1*Ry**-1*Rz*Ry*Rx*T
         '''
-        alpha = radians(alpha)
         ratom = frac_to_cart(ratom, self.cell)
         at1 = frac_to_cart(at1, self.cell)
         at2 = frac_to_cart(at2, self.cell)
-        
-        ex = norm_vec(subtract_vect(at1, at2))
-        ey = norm_vec(cross_vec(ex, (1, 0 , 0)))
-        ez = norm_vec(cross_vec(ex, ey))
-        
-        Rx = ( (1,           0,           0 ),
-               (0,  cos(alpha), -sin(alpha) ), 
-               (0,  sin(alpha),  cos(alpha) ) )
-        M = ((ex[0], ex[1], ex[2]),
-               (ey[0], ey[1], ey[2]),
-               (ez[0], ez[1], ez[2]) )
-        #original:
-        M_t = ( (ex[0], ey[0], ez[0]),
-              (ex[1], ey[1], ez[1]),
-              (ex[2], ey[2], ez[2]) )
-        
-        Mt = transpose(M)
-        Ri = matrix_mult(Rx, M)
-        R = matrix_mult(Mt, Ri)
-        rotated = matrix_mult_vector(R, ratom)
-        rotated = cart_to_frac(rotated, self.cell)
-        return rotated
-    
-    
-    def rotate_fluorine2(self, ratom, at1, at2, delta=10):
-        '''
-        R = T^-1Rx^-1Ry^-1RzRyRxT
-        '''
-        #ratom = frac_to_cart(ratom, self.cell)
-        #at1 = frac_to_cart(at1, self.cell)
-        #at2 = frac_to_cart(at2, self.cell)        
-        ratom = tuple(ratom)+(1.0,)
+                
+        ratom = mp.matrix(list(ratom)+[1.0])
         delta = radians(delta)
         x0, y0, z0 = at1
-        T = ((1, 0, 0, -x0),
-             (0, 1, 0, -y0),
-             (0, 0, 1, -z0),
-             (0, 0, 0,   1))
-        T1 = transpose(T)
-        #ratom = matrix_mult_vector(T, ratom)
+        T = mp.matrix(((1, 0, 0, -x0),
+                       (0, 1, 0, -y0),
+                       (0, 0, 1, -z0),
+                       (0, 0, 0,   1)))
+        T1 = mp.inverse(T)
+
         vx = at2[0]-at1[0] 
-        vy = at2[1]-at1[1]  # P1 - P2
+        vy = at2[1]-at1[1]  # P2 - P1
         vz = at2[2]-at1[2]
         vnorm = sqrt(vx**2+vy**2+vz**2)
         a, b, c = vx/vnorm, vy/vnorm, vz/vnorm
-        d = sqrt(b**2+c**2)
+        d = mp.sqrt(b**2+c**2)
         
-        sina = c/d # For rotation around alpha
-        cosa = b/d #
+        sina = b/d # For rotation around alpha
+        cosa = c/d #
 
-        Rxa = ((         1,          0,          0,  0),
-               (         0,       cosa,      -sina,  0),
-               (         0,       sina,       cosa,  0),
-               (         0,          0,          0,  1))
+        Rxa = mp.matrix(((         1,          0,          0,  0),
+                         (         0,       cosa,       sina,  0),
+                         (         0,      -sina,       cosa,  0),
+                         (         0,          0,          0,  1)))
         '''
-        Rya = ((      cosa,          0,       sina,  0),
-               (         0,          1,          0,  0),
-               (     -sina,          0,       cosa,  0),
-               (         0,          0,          0,  1))
+        Rya = mp.matrix(((      cosa,          0,      -sina,  0),
+                         (         0,          1,          0,  0),
+                         (      sina,          0,       cosa,  0),
+                         (         0,          0,          0,  1)))
+        ''' '''
+        Rza = mp.matrix(((      cosa,       sina,          0,  0),
+                         (     -sina,       cosa,          0,  0),
+                         (         0,          0,          1,  0),
+                         (         0,          0,          0,  1)))
+        '''
+        Rxa1 = mp.inverse((Rxa))
         
-        Rza = ((      cosa,      -sina,          0,  0),
-               (      sina,       cosa,          0,  0),
-               (         0,          0,          1,  0),
-               (         0,          0,          0,  1))'''
-              
-
-        sinb = -a # rotation around beta
         cosb = d  #
+        sinb = -a # rotation around beta
         '''
-        Rxb = ((         1,          0,          0,  0),
-               (         0,       cosb,      -sinb,  0),
-               (         0,       sinb,       cosb,  0),
-               (         0,          0,          0,  1))'''
-        
-        Ryb = ((      cosb,          0,       sinb,  0),
-               (         0,          1,          0,  0),
-               (     -sinb,          0,       cosb,  0),
-               (         0,          0,          0,  1))
+        Rxb = mp.matrix(((         1,          0,          0,  0),
+                         (         0,       cosb,       sinb,  0),
+                         (         0,      -sinb,       cosb,  0),
+                         (         0,          0,          0,  1)))
         '''
-        Rzb = ((      cosb,      -sinb,          0,  0),
-               (      sinb,       cosb,          0,  0),
-               (         0,          0,          1,  0),
-               (         0,          0,          0,  1))'''
-        
+        Ryb = mp.matrix(((      cosb,          0,      -sinb,  0),
+                         (         0,          1,          0,  0),
+                         (      sinb,          0,       cosb,  0),
+                         (         0,          0,          0,  1)))
+        '''
+        Rzb = mp.matrix(((      cosb,       sinb,          0,  0),
+                         (     -sinb,       cosb,          0,  0),
+                         (         0,          0,          1,  0),
+                         (         0,          0,          0,  1)))
+        '''
+        Ryb1 = mp.inverse((Ryb))
                 
-        sind = sin(delta)
-        cosd = cos(delta)
+        sind = mp.sin(delta)
+        cosd = mp.cos(delta)
+        '''
+        Rxd = mp.matrix(((         1,          0,          0,  0),
+                         (         0,       cosd,       sind,  0),
+                         (         0,      -sind,       cosd,  0),
+                         (         0,          0,          0,  1)))
+        ''' '''
+        Ryd = mp.matrix(((      cosd,          0,      -sind,  0),
+                         (         0,          1,          0,  0),
+                         (      sind,          0,       cosd,  0),
+                         (         0,          0,          0,  1)))
+        '''
+        Rzd = mp.matrix(((      cosd,       sind,          0,  0),
+                         (     -sind,       cosd,          0,  0),
+                         (         0,          0,          1,  0),
+                         (         0,          0,          0,  1)))
         
-        Rzd = ((      cosd,      -sind,          0,  0),
-               (      sind,       cosd,          0,  0),
-               (         0,          0,          1,  0),
-               (         0,          0,          0,  1))
-        
-                
-        Rxa1 = transpose(Rxa)
-        Ryb1 = transpose(Ryb)
-        #Rz1 = transpose(Rz)
-                
-        R = matrix_mult(T, Rxa)
-        R = matrix_mult(R, Ryb)
-        R = matrix_mult(R, Rzd)
-        R = matrix_mult(R, Ryb1)
-        R = matrix_mult(R, Rxa1)
-        T = ((1, 0, 0, x0),
-             (0, 1, 0, y0),
-             (0, 0, 1, z0),
-             (0, 0, 0,   1))
-        R = matrix_mult(R, T)
-        R = matrix_mult_vector(R, ratom)
-        #cart_to_frac(R[:3], self.cell)
-        return R 
+        R = T1*Rxa*Ryb*Rzd*Ryb1*Rxa1*T
+        v = R*ratom
+        v = cart_to_frac(v[:3], self.cell)
+        return v 
     
 if __name__ == '__main__':
     options = OptionsParser()
@@ -332,13 +297,15 @@ if __name__ == '__main__':
     ####################################################
     cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table)
 
-    F = [0.698784,1.531988,0.203525]
+    F1A = [0.698784, 1.531988,  0.203525]
     C22 = [0.671866, 1.535515, 0.269485]
     C19 = [0.618909, 1.365570, 0.278054]
     
-    for i in [10, 20, 30]:
-        co = cf3.rotate_fluorine2(F, C22, C19, delta=i)
-        #co = cf3.rotate_fluorine_atom(F, C22, C19, alpha=i)
+    print('0.669522  1.591690  0.197770')
+    
+    for i in [30, 60, 90]:
+        co = cf3.rotate_atom_around_bond(F1A, C22, C19, delta=i)
+        #co = cf3.rotate_fluorine_atom(F1A, C22, C19, alpha=i)
         print('{:0<8.6}  {:0<8.6}  {:0<8.6}'.format(*co))
     
     sys.exit()
