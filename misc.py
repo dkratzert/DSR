@@ -540,7 +540,6 @@ def vol_tetrahedron(a, b, c, d, cell=None):
     AC = subtract_vect(A, C)
     AD = subtract_vect(A, D)
     D = determinante([AB, AC, AD])
-    print(D, '###')
     volume = abs((D/6))
     return volume
 
