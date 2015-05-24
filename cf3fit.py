@@ -17,7 +17,7 @@ Created on 13.05.2015
 - remove hydrogen and fluorine atoms from the target atom
 - run shelxl with hfix 137 or afix 130 to get the position
 - calculate the exact position of the fluorine atoms from the
-  values of the shelxl run
+  values in the list file. discard the res file in case of a thorus
 - place the atoms with their restraints
 - set the part, residue und occupancy
 - set the sump and free variable
@@ -288,13 +288,22 @@ if __name__ == '__main__':
     
     print('0.669522  1.591690  0.197770')
     
-    for i in [30, 60, 90]:
+    for i in range(0, 360, 10):
         co = cf3.rotate_atom_around_bond(F1A, C22, C19, delta=i)
         #co = cf3.rotate_fluorine_atom(F1A, C22, C19, alpha=i)
-        print('{:0<8.6}  {:0<8.6}  {:0<8.6}'.format(*co))
+        print('F{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  10.08  -1.5'.format(i, *co))
+    
+    
+    
+    
+    for i in range(0, 360, 10):
+        co = cf3.rotate_atom_around_bond(F1A, C22, C19, delta=i)
+        #co = cf3.rotate_fluorine_atom(F1A, C22, C19, alpha=i)
+        print('F{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  10.08  -1.5'.format(i, *co))
+    
     
     sys.exit()
-    cf3.cf3('C22')
+    cf3.cf3('C1')
     make_refine_cycle(rl, reslist)
 
    
