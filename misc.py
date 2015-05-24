@@ -154,6 +154,8 @@ def find_line(inputlist, regex, start=None):
     :param regex: regular expression to search
     :type regex: string
     :param start: line number where to start the search
+    :param start: start searching at line start
+    :type start: string or int
     '''
     if start:
         start = int(start)

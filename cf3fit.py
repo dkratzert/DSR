@@ -23,6 +23,11 @@ Created on 13.05.2015
 - set the sump and free variable
 -
 
+1. generate ordinary cf3 with restraints
+2. generate cf6 with ideal staggered conformation
+3. generate thorus of isotropic atoms with occupation relative to 
+   difference density and inside AFIX 6 or 9
+
 DFIX 1.328 C22 F1A C22 F2A C22 F3A  C22 F4A C22 F5A C22 F6A
 DFIX 2.125 F1A F5A F5A F3A F3A F4A F4A F2A F2A F6A F6A F1A
 SADI 0.1 C19 F1A C19 F2A C19 F3A  C19 F4A C19 F5A C19 F6A
@@ -36,6 +41,7 @@ SADI 0.1 C2 F1B C2 F2B C2 F3B  C2 F4B C2 F5B C2 F6B
  and rotation is clockwise looking down C2_a to C1_a.
    349  237  171  203  358  579  668  504  243   65  -11   41  272  530  563  380  223  146  106  146  316  497  522  451
 
+ After local symmetry averaging:    272   149    88   130   315   536   584   445
 '''
 import resfile
 from dbfile import global_DB
@@ -45,8 +51,7 @@ from options import OptionsParser
 from refine import ShelxlRefine
 from restraints import ListFile
 from elements import ELEMENTS
-from misc import atomic_distance, matrix_mult, frac_to_cart, cart_to_frac,\
-    norm_vec, subtract_vect, cross_vec, transpose, matrix_mult_vector, mm
+from misc import atomic_distance, frac_to_cart, cart_to_frac
 from math import sin, cos, radians, sqrt
 import sys
 from resfile import ResList
@@ -216,37 +221,17 @@ class CF3(object):
         
         cosb = d  #
         sinb = -a # rotation around beta
-        '''
-        Rxb = mp.matrix(((         1,          0,          0,  0),
-                         (         0,       cosb,       sinb,  0),
-                         (         0,      -sinb,       cosb,  0),
-                         (         0,          0,          0,  1)))
-        '''
+
         Ryb = mp.matrix(((      cosb,          0,      -sinb,  0),
                          (         0,          1,          0,  0),
                          (      sinb,          0,       cosb,  0),
                          (         0,          0,          0,  1)))
-        '''
-        Rzb = mp.matrix(((      cosb,       sinb,          0,  0),
-                         (     -sinb,       cosb,          0,  0),
-                         (         0,          0,          1,  0),
-                         (         0,          0,          0,  1)))
-        '''
+
         Ryb1 = mp.inverse((Ryb))
                 
         sind = mp.sin(delta)
         cosd = mp.cos(delta)
-        '''
-        Rxd = mp.matrix(((         1,          0,          0,  0),
-                         (         0,       cosd,       sind,  0),
-                         (         0,      -sind,       cosd,  0),
-                         (         0,          0,          0,  1)))
-        ''' '''
-        Ryd = mp.matrix(((      cosd,          0,      -sind,  0),
-                         (         0,          1,          0,  0),
-                         (      sind,          0,       cosd,  0),
-                         (         0,          0,          0,  1)))
-        '''
+
         Rzd = mp.matrix(((      cosd,       sind,          0,  0),
                          (     -sind,       cosd,          0,  0),
                          (         0,          0,          1,  0),
