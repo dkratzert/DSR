@@ -416,16 +416,19 @@ if __name__ == '__main__':
 #    scale = min(xScreenMax/(xMax-xMin), yScreenMax/(yMax-yMin))
 #    xOffset = -xMin * scale; yOffset = -yMin * scale
 #    for (bond in $bonds) {
-#    atom0 = bond.getAtom(0)
-#    atom1 = bond.getAtom(1)
-#    x0 = xOffset+atom0.getX()*scale; y0 = yOffset+atom0.getY()*scale // (1)
-#    x1 = xOffset+atom1.getX()*scale; y1 = yOffset+atom1.getY()*scale // (2)
-#    x1 = atom1.getX();  y1 = atom1.getY()
-#    xMid = (x0 + x1) /2;  yMid = (y0 + y1) /2;
-#    color0 = ColorTable.getColor(atom0.getSymbol())
-#    drawLine (color0, x0, y0, xMid, yMid)
-#    color1 = ColorTable.getColor(atom1.getSymbol())
-#    drawLine (color1, x1, y1, xMid, yMid)
+#        atom0 = bond.getAtom(0)
+#        atom1 = bond.getAtom(1)
+#        x0 = xOffset+atom0.getX()*scale
+#        y0 = yOffset+atom0.getY()*scale // (1)
+#        x1 = xOffset+atom1.getX()*scale
+#        y1 = yOffset+atom1.getY()*scale // (2)
+#        x1 = atom1.getX()
+#        y1 = atom1.getY()
+#        #xMid = (x0 + x1) /2;  yMid = (y0 + y1) /2;
+#        #color0 = ColorTable.getColor(atom0.getSymbol())
+#        drawLine (color0, x0, y0, xMid, yMid)
+#        #color1 = ColorTable.getColor(atom1.getSymbol())
+#        #drawLine (color1, x1, y1, xMid, yMid)
 #    }
 
 

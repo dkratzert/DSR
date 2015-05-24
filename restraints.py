@@ -19,6 +19,7 @@ from collections import OrderedDict
 from atomhandling import get_atomtypes
 from misc import distance, vol_tetrahedron, flatten
 from elements import ELEMENTS
+import mpmath
 # all upper case for case insensitivity:
 alphabet = [ i for i in string.ascii_uppercase ]
 import networkx as nx
@@ -80,30 +81,6 @@ def format_atom_names(atoms, part='', resinum=''):
     atomnames = [i+numpart for i in atoms]
     return atomnames
 
-
-class ListFile():
-    def __init__(self, basefilename):
-        self._listfile = basefilename+'.lst'
-        self._coord_regex = r'^\s+ATOM\s+x\s+y\s+z'
-        self._conntable_regex = r'^.*radii and connectivity'
-        self._listfile_list = self.read_lst_file()
-        self._single_atom = None
-
-
-    def read_lst_file(self):
-        '''
-        reads the .lst file and returns it as list.
-        ['Sn1 -       Distance       Angles\n', 'O1_a      2.0997 (0.0088)\n''...']
-        '''
-        listfile = []
-        try:
-            with open(self._listfile, 'r') as l:
-                for line in l:
-                    listfile.append(line)
-        except(IOError):
-            print('Unable to read file {}.'.format(self._listfile))
-            sys.exit()
-        return listfile
 
 
 
@@ -411,8 +388,200 @@ class Restraints():
         return dfix_13_format
 
 
+class ListFile():
+    def __init__(self, basefilename):
+        self._listfile = basefilename+'.lst'
+        self._coord_regex = r'^\s+ATOM\s+x\s+y\s+z'
+        self._conntable_regex = r'^.*radii and connectivity'
+        self._listfile_list = self.read_lst_file()
+        self._single_atom = None
 
 
+    def read_lst_file(self):
+        '''
+        reads the .lst file and returns it as list.
+        ['Sn1 -       Distance       Angles\n', 'O1_a      2.0997 (0.0088)\n''...']
+        '''
+        listfile = []
+        try:
+            with open(self._listfile, 'r') as l:
+                for line in l:
+                    listfile.append(line)
+        except(IOError):
+            print('Unable to read file {}.'.format(self._listfile))
+            sys.exit()
+        return listfile
+
+
+    def read_conntable(self):
+        '''
+        reads the connectivity table from self._listfile_list
+        returns a list of all bonded atom pairs. Symmetry equivalent atoms
+        are filtered out.
+        '''
+        symmeq = False
+        # find the start of the conntable
+        start_line = misc.find_line(self._listfile_list, self._conntable_regex)
+        if start_line:
+            for num, line in enumerate(self._listfile_list[start_line:]):
+                line = line.split()
+                # find the end of covalent radii
+                if not line:
+                    start_line = num+start_line+1
+                    break
+        connpairs = []
+        connections_list = []
+        for i in self._listfile_list[start_line:]:
+            line = i.split()
+            if not line:
+                break
+            if 'found' in line:
+                continue
+            connections_list.append(i.strip(os.linesep).replace('-', '').split())
+        for i in connections_list:
+            atom = i.pop(0)
+            for connected_atom in i:
+                if '$' in connected_atom:
+                    symmeq = True
+                    continue
+                # uppper case for case insensitivity:
+                atom = atom.upper()
+                connected_atom = connected_atom.upper()
+                connpairs.append((atom, connected_atom))
+        if symmeq:
+            print('\nConnections to symmetry equivalent atoms found.'\
+                    ' \nGenerated DFIX restraints might be nonsense!!')
+        return connpairs
+
+
+    def coordinates(self):
+        '''
+        reads all atom coordinates of the lst-file
+        returns a dictionary with {'atom' : ['x', 'y', 'z']}
+        '''
+        atom_coordinates = {}
+        start_line = int(misc.find_line(self._listfile_list, self._coord_regex))+2
+        for line in self._listfile_list[start_line:]:
+            line = line.split()
+            try:
+                line[0]
+            except(IndexError):
+                break
+            xyz = line[1:4]
+            try:
+                xyz = [float(i) for i in xyz]
+            except(ValueError):
+                print('No atoms found in .lst file!')
+                sys.exit(0)
+            atom = {str(line[0]).upper(): xyz}
+            atom_coordinates.update(atom)
+        return atom_coordinates
+
+
+    def get_cell(self):
+        '''
+        Returns the unit cell parameters from the list file as list:
+        ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
+        '''
+        cell = False
+        for num, line in enumerate(self._listfile_list):
+            if line.startswith(' CELL'):
+                cell = line.split()[2:]
+                try:
+                    cell = [float(i) for i in cell]
+                except(ValueError) as e:
+                    print(e, '\nbad cell parameters in line {} in the list file.'.format(num+1))
+                    sys.exit()
+                break
+        if not cell:
+            print('Unable to find unit cell parameters in the .lst file.')
+            sys.exit()
+        return cell
+
+    @property
+    def get_lst_cell_parameters(self):
+        '''
+        Returns the unit cell parameters from the list file as list:
+        ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
+        '''
+        return self.get_cell()
+
+    @property
+    def get_all_coordinates(self):
+        '''
+        return all atom coordinates as property
+        {'atom' : ['x', 'y', 'z'], 'atom2' : [...]}
+        '''
+        return self.coordinates()
+
+
+    @property
+    def get_single_coordinate(self):
+        '''
+        return the coordinates of a single atom as ['x', 'y', 'z']
+        '''
+        coord = self.coordinates()
+        try:
+            return coord[self._single_atom]
+        except(KeyError):
+            return None
+
+    @get_single_coordinate.setter
+    def single_atom(self, atom):
+        self._single_atom = atom
+
+    def get_afix_number_of_CF3(self):
+        '''
+        returns the afix number of the atom where SHELXL prints the 
+        difference density at 15 degree intervals
+        '''
+        regex_atom = r"^\sDifference\selectron\sdensity.*at\s15\sdegree"
+        line = misc.find_line(self._listfile_list, regex_atom)
+        if not line:
+            return False
+        at1 = self._listfile_list[line].split('.')[0].split()
+        return at1[-1]
+    
+    def get_bondvector(self):
+        '''
+        get the bond vector in terms of atom names around which SHELXL
+        calculates the difference density in 15 degree interval
+        '''
+        regex = r'^.*is clockwise looking down'
+        line = misc.find_line(self._listfile_list, regex)
+        if not line:
+            return False
+        at1 = self._listfile_list[line].split('.')[0].split()[-3]
+        at2 = self._listfile_list[line].split('.')[0].split()[-1]
+        return (at1, at2)
+    
+    def get_difference_density(self, averaged=False):
+        '''
+        returns the difference density values in 15 degree interval
+        if averaged is True, returns the averaged values.
+        :param averaged: enable averaged values
+        :type averaged: boolean
+        '''
+        regex_atom = r'^.*is clockwise looking down'
+        line = misc.find_line(self._listfile_list, regex_atom)
+        if not line:
+            return False
+        if not averaged:
+            nums = self._listfile_list[line+1].split()
+        else:
+            nums = self._listfile_list[line+3].split()[4:]
+        return [int(i) for i in nums]
+        
+    def get_degree_of_highest_peak(self):
+        '''
+        returns the position in degree of the highest peak in the 
+        difference density. This point is assumed as an atom position.
+        '''
+        dens = self.get_difference_density(averaged=True)
+        maximum = dens.index(max(dens))+1
+        return maximum*15
+        
+        
 class Lst_Deviations():
     '''
     reads the deviations of the fitted group from the lst-file
@@ -510,3 +679,21 @@ if __name__ == '__main__':
                         print(distab)
 
     make_eadp(fa, dbatoms, 'CF3')
+    
+    
+    lf = ListFile('p21n_cf3')
+    bondv = lf.get_bondvector()
+    afa = lf.get_afix_number_of_CF3()
+    diffdens = lf.get_difference_density(averaged=False) 
+    diffdens_av = lf.get_difference_density(averaged=True)
+    degr = lf.get_degree_of_highest_peak()
+    print(bondv)
+    print(afa)
+    print(diffdens)
+    print(diffdens_av)
+    import mpmath as mp
+    print( int(round(mp.mpf(349+243+223)/3 )))
+    print('degree', degr)
+    
+    
+    
