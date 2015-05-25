@@ -176,8 +176,10 @@ class CF3(object):
         for delta in range(0, 360, 15):
             coord = self.rotate_atom_around_bond(ratom, at1, at2, delta)
             coords.append(coord)
-        for i, c in zip(names, coords):
-            print('{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  10.08  -1.5'.format(i, *c))
+        for i, num, co in zip(names, [i for i in range(1, 25)], coords):
+            print('PART {}'.format(num))
+            print('F{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  10.08  -1.5'.format(i, *co))
+        print('PART 0')
         #make atoms from coords here    
         
         
