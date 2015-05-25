@@ -4,8 +4,8 @@ shelXlesaves
 #setup/Output/*.xyz
 test-data/test
 test-data/test/*
-.dsrsaves
-.dsrsaves/*
+dsrsaves
+dsrsaves/*
 *.ps
 *.png
 /manuals/*.pdf
