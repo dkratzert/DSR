@@ -20,6 +20,7 @@ from atomhandling import get_atomtypes
 from misc import distance, vol_tetrahedron, flatten
 from elements import ELEMENTS
 import mpmath
+import os
 # all upper case for case insensitivity:
 alphabet = [ i for i in string.ascii_uppercase ]
 import networkx as nx
@@ -396,6 +397,13 @@ class ListFile():
         self._listfile_list = self.read_lst_file()
         self._single_atom = None
 
+    @property
+    def listfile_list(self):
+        '''
+        the current list file as list
+        '''
+        return self._listfile_list
+        
 
     def read_lst_file(self):
         '''
@@ -548,7 +556,7 @@ class ListFile():
         calculates the difference density in 15 degree interval
         '''
         regex = r'^.*is clockwise looking down'
-        line = misc.find_line(self._listfile_list, regex)
+        line = misc.find_line(self.read_lst_file(), regex)
         if not line:
             return False
         at1 = self._listfile_list[line].split('.')[0].split()[-3]

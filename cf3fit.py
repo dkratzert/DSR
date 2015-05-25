@@ -59,12 +59,14 @@ import mpmath as mp
 
 
 
+
+
 class CF3(object):
     '''
     a class to create cf3 groups at terminal atoms
     '''
 
-    def __init__(self, rle, fa, reslist, fragment, sfac_table):
+    def __init__(self, rle, fa, reslist, fragment, sfac_table, basefilename):
         '''
         Constructor
         '''
@@ -73,6 +75,8 @@ class CF3(object):
         self.reslist = reslist
         self.e2s = Elem_2_Sfac(sfac_table)
         atoms = fa.atoms_as_residues
+        self.basefilename = basefilename
+        self.lf = ListFile(basefilename)
         atomlist = []
         # atomlist: ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number, residue_num]
         for i in atoms:
@@ -119,14 +123,75 @@ class CF3(object):
         create CF3 group on atom 
         '''
         atomlinenumber = self.fa.get_atom_line_numbers([atom])
-        print(atomlinenumber, '#####', atom)
+        #print(atomlinenumber, '#####', atom)
         found = self.find_bonded_fluorine(atom)
         for i in found:
-            print(i[0]+'_'+i[7])
+            print('Deleting ' + i[0] + '_' + i[7] + ' from '+atom)
         self.delete_bound_fluorine(found)
-        self.make_afix(afixnum='130', linenumber=atomlinenumber[0])
+        fatoms = self.make_afix(afixnum='130', linenumber=atomlinenumber[0])
+        return fatoms
+        
+    def cf6(self, atom):
+        '''
+        create disorderd CF3 group on two positions
+        :param atom: central atom of the group
+        :type atom: string
+        '''
+        atomlinenumber = self.fa.get_atom_line_numbers([atom])
+        #print(atomlinenumber, '#####', atom)
+        found = self.find_bonded_fluorine(atom)
+        for i in found:
+            print('Deleting ' + i[0] + '_' + i[7] + ' from '+atom)
+        self.delete_bound_fluorine(found)
+        fatoms = self.make_afix(afixnum='120', linenumber=atomlinenumber[0])
+        return fatoms
+    
+    def make_cf3_thorus(self, atom):
+        '''
+        Creates a thorus of isotropic fluorine atoms around the central
+        atom of a cf3 group. The occupancy is estimated from the 
+        residual density values in the lst file.
+        
+        :param atom: central atom of the cf3 group
+        :type atom: string
+        '''
+        coords = []
+        # returns the atom names of the fluorine atoms:
+        fluorine_names = self.cf3(atom) 
+        ratom = self.lf.get_single_coordinate(fluorine_names[0])
+        #ratom = self.get_coordinates_of_first_atom(fluorine_names)
+        bondvec = self.lf.get_bondvector()
+        for delta in range(0, 360, 15):
+            coord = self.rotate_atom_around_bond(ratom, bondvec[0], bondvec[1], delta)
+            coords.append(coord)
+        #make atoms from coords here    
+        
+        
+    def get_coordinates_of_first_atom(self, names):
+        '''
+        
+        :param names:
+        '''
+        
 
-    def make_afix(self, afixnum, linenumber):
+
+    def do_refine_cycle(self, rl, reslist):
+        shx = ShelxlRefine(reslist, self.basefilename, find_atoms)
+        acta_lines = shx.remove_acta_card()
+        shx.set_refinement_cycles('0')
+        rl.write_resfile(reslist, '.ins')
+        #sys.exit()
+        shx.run_shelxl()
+        lst_file = self.lf.read_lst_file()
+        shx.check_refinement_results(lst_file)
+        rl = ResList(res_file)
+        reslist = rl.get_res_list()
+        shx.restore_acta_card(acta_lines)
+        shx.set_refinement_cycles('8')
+        rl.write_resfile(reslist, '.res')
+        
+        
+    def make_afix(self, afixnum, linenumber, atomtype='F'):
         '''
         create an afix to build a CF3 or CH3 group
         :param afixnum: afix number
@@ -165,13 +230,17 @@ class CF3(object):
             afix = afix_120
         else:
             print('Only CF3 groups implemented yet.')
+            return False
         atomline = self.reslist[linenumber].split()
         if atomline[-1] == '=':
             self.reslist[linenumber] = '{:5.4s}{:4.2s}{:>10.8s} {:>10.8s} {:>10.8s}  {:8.6s}  0.04'.format(*atomline)
             self.reslist[linenumber+1] = '' 
         self.reslist[linenumber] = self.reslist[linenumber]+afix.format(afixnum, sfac) 
         #print(self.reslist[linenumber])
-
+        if str(afixnum) == '120':
+            return numberscheme_120
+        if str(afixnum) == '130':
+            return numberscheme_130
 
     
     
@@ -263,48 +332,16 @@ if __name__ == '__main__':
     sf = SfacTable(reslist, ['C', 'F', 'F', 'F'])
     sfac_table = sf.set_sfac_table() 
 
-    def make_refine_cycle(rl, reslist):
-        shx = ShelxlRefine(reslist, basefilename, find_atoms)
-        acta_lines = shx.remove_acta_card()
-        shx.set_refinement_cycles('0')
-        rl.write_resfile(reslist, '.ins')
-        #sys.exit()
-        shx.run_shelxl()
-        lf = ListFile(basefilename)
-        lst_file = lf.read_lst_file()
-        shx.check_refinement_results(lst_file)
-        rl = ResList(res_file)
-        reslist = rl.get_res_list()
-        shx.restore_acta_card(acta_lines)
-        shx.set_refinement_cycles('8')
-        rl.write_resfile(reslist, '.res')
+    
+
 
     ####################################################
-    cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table)
+    
+    
+    cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, basefilename)
 
-    F1A = [0.698784, 1.531988,  0.203525]
-    C22 = [0.671866, 1.535515, 0.269485]
-    C19 = [0.618909, 1.365570, 0.278054]
-    
-    print('0.669522  1.591690  0.197770')
-    
-    for i in range(0, 360, 10):
-        co = cf3.rotate_atom_around_bond(F1A, C22, C19, delta=i)
-        #co = cf3.rotate_fluorine_atom(F1A, C22, C19, alpha=i)
-        print('F{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  10.08  -1.5'.format(i, *co))
-    
-    
-    
-    
-    for i in range(0, 360, 10):
-        co = cf3.rotate_atom_around_bond(F1A, C22, C19, delta=i)
-        #co = cf3.rotate_fluorine_atom(F1A, C22, C19, alpha=i)
-        print('F{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  10.08  -1.5'.format(i, *co))
-    
-    
-    sys.exit()
     cf3.cf3('C1')
-    make_refine_cycle(rl, reslist)
+   # make_refine_cycle(rl, reslist)
 
    
     #dsrp.find_dsr_command()
@@ -328,4 +365,19 @@ if __name__ == '__main__':
         #                               [i[5] for i in atomlist], # types C, N, O
         #                               [i[0]+'_'+i[7] for i in atomlist], # names C1, N2, O1_3
         #                               extra_param=0.16)
+"""
+
+    for i in range(0, 360, 10):
+        co = cf3.rotate_atom_around_bond(F1A, C22, C19, delta=i)
+        #co = cf3.rotate_fluorine_atom(F1A, C22, C19, alpha=i)
+        print('F{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  10.08  -1.5'.format(i, *co))
+    
+    
+    
+    
+    for i in range(0, 360, 10):
+        co = cf3.rotate_atom_around_bond(F1A, C22, C19, delta=i)
+        #co = cf3.rotate_fluorine_atom(F1A, C22, C19, alpha=i)
+        print('F{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  10.08  -1.5'.format(i, *co))
+"""
         
