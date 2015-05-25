@@ -523,20 +523,16 @@ class ListFile():
         return self.coordinates()
 
 
-    @property
-    def get_single_coordinate(self):
+    def get_single_coordinate(self, atom):
         '''
         return the coordinates of a single atom as ['x', 'y', 'z']
         '''
         coord = self.coordinates()
         try:
-            return coord[self._single_atom]
+            return coord[atom]
         except(KeyError):
             return None
 
-    @get_single_coordinate.setter
-    def single_atom(self, atom):
-        self._single_atom = atom
 
     def get_afix_number_of_CF3(self):
         '''

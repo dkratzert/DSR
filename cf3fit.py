@@ -66,13 +66,15 @@ class CF3(object):
     a class to create cf3 groups at terminal atoms
     '''
 
-    def __init__(self, rle, fa, reslist, fragment, sfac_table, basefilename):
+    def __init__(self, rle, fa, reslist, fragment, sfac_table, basefilename, dsr_dict):
         '''
         Constructor
         '''
         self.fa = fa
+        self.dsr_dict = dsr_dict
         self.fragment = fragment
         self.reslist = reslist
+        self.rl = resfile.ResList(res_file)
         self.e2s = Elem_2_Sfac(sfac_table)
         atoms = fa.atoms_as_residues
         self.basefilename = basefilename
@@ -158,20 +160,26 @@ class CF3(object):
         coords = []
         # returns the atom names of the fluorine atoms:
         fluorine_names = self.cf3(atom) 
-        ratom = self.lf.get_single_coordinate(fluorine_names[0])
+        self.do_refine_cycle(self.rl, self.reslist)
+        print(fluorine_names[0]+'_A')
+        ratom = self.lf.get_single_coordinate(fluorine_names[0]+'_A')
+        print(ratom)
         #ratom = self.get_coordinates_of_first_atom(fluorine_names)
+        self.lf.read_lst_file()
         bondvec = self.lf.get_bondvector()
+        print(bondvec)
+        at1 = self.lf.get_single_coordinate(bondvec[0].upper())
+        at2 = self.lf.get_single_coordinate(bondvec[1].upper())
+        names = ['F{}'.format(i) for i in range(1, 25)]
+        num_thor = NumberScheme(self.reslist, names, False)
+        names = num_thor.get_fragment_number_scheme()
         for delta in range(0, 360, 15):
-            coord = self.rotate_atom_around_bond(ratom, bondvec[0], bondvec[1], delta)
+            coord = self.rotate_atom_around_bond(ratom, at1, at2, delta)
             coords.append(coord)
+        for i, c in zip(names, coords):
+            print('{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  10.08  -1.5'.format(i, *c))
         #make atoms from coords here    
         
-        
-    def get_coordinates_of_first_atom(self, names):
-        '''
-        
-        :param names:
-        '''
         
 
 
@@ -198,8 +206,11 @@ class CF3(object):
         :type afixnum: string
         TODO: 
         - find next unused free variable to refine parts
-        - refine
+        - for 120, find atoms after refine cycle and add parts
         '''
+        occ = 11
+        if self.dsr_dict['occupancy']:
+            occ = self.dsr_dict['occupancy']
         num_130 = NumberScheme(self.reslist, ['F1', 'F2', 'F3'], False)
         num_120 = NumberScheme(self.reslist, ['F1', 'F2', 'F3', 'F4', 'F5', 'F6'], False)
         # returns also the atom names if residue is active
@@ -207,21 +218,23 @@ class CF3(object):
         numberscheme_130 = num_130.get_fragment_number_scheme()
         sfac = self.e2s.elem_2_sfac('F')
         afix_130 = ['\nAFIX {0}',
-                numberscheme_130[0]+' {1} 0 0 0 11 0.04',
-                numberscheme_130[1]+' {1} 0 0 0 11 0.04',
-                numberscheme_130[2]+' {1} 0 0 0 11 0.04',
-                'AFIX 0\n']
+                    ' REM AFIX made by DSR:',    
+                    numberscheme_130[0]+' {1} 0 0 0 {2}  0.04',
+                    numberscheme_130[1]+' {1} 0 0 0 {2}  0.04',
+                    numberscheme_130[2]+' {1} 0 0 0 {2}  0.04',
+                    ' REM end of AFIX by DSR',
+                    'AFIX 0\n']
+        # TODO: set the occupancy coorectly
         afix_120 = ['\nAFIX {0}',
-                'PART 1',
-                numberscheme_120[0]+' {1} 0 0 0 11 0.04',
-                numberscheme_120[1]+' {1} 0 0 0 11 0.04',
-                numberscheme_120[2]+' {1} 0 0 0 11 0.04',
-                'PART 2',
-                numberscheme_120[3]+' {1} 0 0 0 11 0.04',
-                numberscheme_120[4]+' {1} 0 0 0 11 0.04',
-                numberscheme_120[5]+' {1} 0 0 0 11 0.04',
-                'PART 0',
-                'AFIX 0\n']
+                    ' REM AFIX made by DSR:', 
+                    numberscheme_120[0]+' {1} 0 0 0  {2}  0.04',
+                    numberscheme_120[1]+' {1} 0 0 0  {2}  0.04',
+                    numberscheme_120[2]+' {1} 0 0 0  {2}  0.04',
+                    numberscheme_120[3]+' {1} 0 0 0  {2}  0.04',
+                    numberscheme_120[4]+' {1} 0 0 0  {2}  0.04',
+                    numberscheme_120[5]+' {1} 0 0 0  {2}  0.04',
+                    ' REM end of AFIX by DSR',
+                    'AFIX 0\n']
         afix_130 = '\n'.join(afix_130)
         afix_120 = '\n'.join(afix_120)
         if str(afixnum) == '130':
@@ -232,10 +245,12 @@ class CF3(object):
             print('Only CF3 groups implemented yet.')
             return False
         atomline = self.reslist[linenumber].split()
+        # make shure the pivot atom is isotropic:
         if atomline[-1] == '=':
             self.reslist[linenumber] = '{:5.4s}{:4.2s}{:>10.8s} {:>10.8s} {:>10.8s}  {:8.6s}  0.04'.format(*atomline)
             self.reslist[linenumber+1] = '' 
-        self.reslist[linenumber] = self.reslist[linenumber]+afix.format(afixnum, sfac) 
+        # insert the afix:
+        self.reslist[linenumber] = self.reslist[linenumber]+afix.format(afixnum, sfac, occ) 
         #print(self.reslist[linenumber])
         if str(afixnum) == '120':
             return numberscheme_120
@@ -325,6 +340,7 @@ if __name__ == '__main__':
     rle = resfile.ResListEdit(reslist, find_atoms)
     dsrp = DSR_Parser(reslist, rle)
     dsr_dict = dsrp.get_dsr_dict
+    dsr_line_number = dsrp.find_dsr_command(line=False)
     fvarlines = rle.find_fvarlines()
     if dsrp.occupancy:
         rle.set_free_variables(dsrp.occupancy, fvarlines)
@@ -338,10 +354,10 @@ if __name__ == '__main__':
     ####################################################
     
     
-    cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, basefilename)
+    cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, basefilename, dsr_dict)
 
-    cf3.cf3('C1')
-   # make_refine_cycle(rl, reslist)
+    cf3.make_cf3_thorus('C1')
+    #cf3.do_refine_cycle(rl, reslist)
 
    
     #dsrp.find_dsr_command()
