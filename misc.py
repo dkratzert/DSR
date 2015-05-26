@@ -17,6 +17,7 @@ from constants import atomregex, SHX_CARDS
 import math
 from math import cos, sqrt, radians, sin
 import shutil
+import random
 
 alphabet = string.ascii_uppercase
 
@@ -336,6 +337,16 @@ def remove_partsymbol(atom):
     #    atom = atom+'_0  ! This restraint might be inaccurate.'
     return atom
 
+def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+    '''
+        returns a randim ID like 'L5J74W'
+    :param size: length of the string
+    :type size: integer
+    :param chars: characters used for the ID
+    :type chars: string
+    '''
+    return ''.join(random.choice(chars) for _ in range(size))
+
 
 def atomic_distance(p1, p2, cell):
     '''
@@ -430,12 +441,6 @@ def matrix_mult(matrix1,matrix2):
                     new_matrix[i][j] += matrix1[i][k]*matrix2[k][j]
     return new_matrix
 
-def mm(A, B):
-    '''
-    matrix multiplication (might be faster than above)
-    '''
-    return [[sum(x * B[i][col] for i,x in enumerate(row)) for col in range(len(B[0]))] for row in A]
-
 
 def matrix_mult_vector(A, v):
     '''
@@ -447,10 +452,6 @@ def matrix_mult_vector(A, v):
     if len(A[0]) != len(v):
         print('Size of matrix and vector not equal.')
         raise Exception
-    #a = A[0][0]*v[0]+A[0][1]*v[1]+A[0][2]*v[2]
-    #b = A[1][0]*v[0]+A[1][1]*v[1]+A[1][2]*v[2]
-    #c = A[2][0]*v[0]+A[2][1]*v[1]+A[2][2]*v[2]
-    #d = A[3][0]*v[0]+A[3][1]*v[1]+A[3][2]*v[2]
     vect = ([0 for i in range(len(A))])
     for i in range(len(A)):
         for k in range(len(A)):
@@ -459,7 +460,7 @@ def matrix_mult_vector(A, v):
 
 def translate_coords(coords):
     '''
-    translate coordinates
+    translate coordinates in 3D
     '''
     pass
 
