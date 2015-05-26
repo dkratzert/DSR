@@ -15,9 +15,11 @@ Created on 13.05.2015
 - force name tags to be longer than three characters 
 
 - remove hydrogen and fluorine atoms from the target atom
+- make a copy of hkl and res file
 - run shelxl with hfix 137 or afix 130 to get the position
 - calculate the exact position of the fluorine atoms from the
-  values in the list file. discard the res file in case of a thorus
+  values in the list file. Position of one atom is enough. 
+- delete the res/hkl/lst file
 - place the atoms with their restraints
 - set the part, residue und occupancy
 - set the sump and free variable
@@ -56,9 +58,6 @@ from math import sin, cos, radians, sqrt
 import sys
 from resfile import ResList
 import mpmath as mp
-from random import randint
-
-
 
 
 
