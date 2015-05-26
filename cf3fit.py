@@ -53,12 +53,13 @@ from options import OptionsParser
 from refine import ShelxlRefine
 from restraints import ListFile
 from elements import ELEMENTS
-from misc import atomic_distance, frac_to_cart, cart_to_frac
+from misc import atomic_distance, frac_to_cart, cart_to_frac, copy_file,\
+    id_generator, shift
 from math import sin, cos, radians, sqrt
 import sys
 from resfile import ResList
 import mpmath as mp
-
+from _collections import deque
 
 
 class CF3(object):
@@ -70,6 +71,7 @@ class CF3(object):
         '''
         Constructor
         '''
+        self.rand_id = id_generator(size=7)
         self.fa = fa
         self.dsr_dict = dsr_dict
         self.fragment = fragment
@@ -78,7 +80,6 @@ class CF3(object):
         self.e2s = Elem_2_Sfac(sfac_table)
         atoms = fa.atoms_as_residues
         self.basefilename = basefilename
-        self.lf = ListFile(basefilename)
         atomlist = []
         # atomlist: ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number, residue_num]
         for i in atoms:
@@ -120,10 +121,11 @@ class CF3(object):
             i = int(i)
             rle.remove_line(i, rem=False, remove=False, frontspace=True)
     
-    def cf3(self, atom):
+    def cf3(self):
         '''
         create CF3 group on atom 
         '''
+        atom = self.dsr_dict['target'][0]
         atomlinenumber = self.fa.get_atom_line_numbers([atom])
         #print(atomlinenumber, '#####', atom)
         found = self.find_bonded_fluorine(atom)
@@ -139,6 +141,7 @@ class CF3(object):
         :param atom: central atom of the group
         :type atom: string
         '''
+        atom = self.dsr_dict['target'][0]
         atomlinenumber = self.fa.get_atom_line_numbers([atom])
         #print(atomlinenumber, '#####', atom)
         found = self.find_bonded_fluorine(atom)
@@ -148,7 +151,7 @@ class CF3(object):
         fatoms = self.make_afix(afixnum='120', linenumber=atomlinenumber[0])
         return fatoms
     
-    def make_cf3_thorus(self, atom):
+    def make_cf3_thorus(self):
         '''
         Creates a thorus of isotropic fluorine atoms around the central
         atom of a cf3 group. The occupancy is estimated from the 
@@ -158,8 +161,9 @@ class CF3(object):
         :type atom: string
         '''
         coords = []
+        atom = self.dsr_dict['target'][0]
         # returns the atom names of the fluorine atoms:
-        fluorine_names = self.cf3(atom) 
+        fluorine_names = self.cf3() 
         self.do_refine_cycle(self.rl, self.reslist)
         print(fluorine_names[0]+'_A')
         ratom = self.lf.get_single_coordinate(fluorine_names[0]+'_A')
@@ -176,14 +180,31 @@ class CF3(object):
         for delta in range(0, 360, 15):
             coord = self.rotate_atom_around_bond(ratom, at1, at2, delta)
             coords.append(coord)
-        for i, num, co in zip(names, [i for i in range(1, 25)], coords):
-            print('PART {}'.format(num))
-            print('F{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  10.08  -1.5'.format(i, *co))
         print('PART 0')
+        diffden = self.lf.get_difference_density(averaged=False)
+        print(diffden)
+        rotation = self.lf.get_degree_of_highest_peak()
+        print(rotation)
+        n = (rotation/15) #+1
+        diffden = shift(diffden, n)
+        print(len(diffden))
+        print('\n')
+        print
+        print('AFIX 6')
+        for i, num, co, dif in zip(names, [i for i in range(1, 25)], coords, diffden):
+            print('PART {}'.format(num))
+            print('{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  {:<8.6}  -1.2\
+            '.format(i, co[0], co[1], co[2], 10.0+(dif/2760.0)))
+        d = 0
+        for dif in diffden:
+            d += dif/2760.0
+        print('PART 0')
+        print('AFIX 0')
+        print
+        print(d)
         #make atoms from coords here    
         
         
-
 
     def do_refine_cycle(self, rl, reslist):
         shx = ShelxlRefine(reslist, self.basefilename, find_atoms)
@@ -192,6 +213,7 @@ class CF3(object):
         rl.write_resfile(reslist, '.ins')
         #sys.exit()
         shx.run_shelxl()
+        self.lf = ListFile(self.basefilename)
         lst_file = self.lf.read_lst_file()
         shx.check_refinement_results(lst_file)
         rl = ResList(res_file)
@@ -220,22 +242,23 @@ class CF3(object):
         numberscheme_130 = num_130.get_fragment_number_scheme()
         sfac = self.e2s.elem_2_sfac('F')
         afix_130 = ['\nAFIX {0}',
-                    ' REM AFIX made by DSR:',    
+                    'REM AFIX made by DSR: {3}',    
                     numberscheme_130[0]+' {1} 0 0 0 {2}  0.04',
                     numberscheme_130[1]+' {1} 0 0 0 {2}  0.04',
                     numberscheme_130[2]+' {1} 0 0 0 {2}  0.04',
-                    'REM end of AFIX by DSR'+random_id, # insert ID and later change it to the PART usw.
+                    'REM end of AFIX by DSR {3}', # insert ID and later change it to the PART usw.
                     'AFIX 0\n']
         # TODO: set the occupancy coorectly
         afix_120 = ['\nAFIX {0}',
-                    ' REM AFIX made by DSR:', 
+                    'REM PART 1 {3}', 
                     numberscheme_120[0]+' {1} 0 0 0  {2}  0.04',
                     numberscheme_120[1]+' {1} 0 0 0  {2}  0.04',
                     numberscheme_120[2]+' {1} 0 0 0  {2}  0.04',
+                    'REM PART 2 {3}',
                     numberscheme_120[3]+' {1} 0 0 0  {2}  0.04',
                     numberscheme_120[4]+' {1} 0 0 0  {2}  0.04',
                     numberscheme_120[5]+' {1} 0 0 0  {2}  0.04',
-                    ' REM end of AFIX by DSR',
+                    'REM PART 0 {3}',
                     'AFIX 0\n']
         afix_130 = '\n'.join(afix_130)
         afix_120 = '\n'.join(afix_120)
@@ -252,8 +275,11 @@ class CF3(object):
             self.reslist[linenumber] = '{:5.4s}{:4.2s}{:>10.8s} {:>10.8s} {:>10.8s}  {:8.6s}  0.04'.format(*atomline)
             self.reslist[linenumber+1] = '' 
         # insert the afix:
-        self.reslist[linenumber] = self.reslist[linenumber]+afix.format(afixnum, sfac, occ) 
-        #print(self.reslist[linenumber])
+        self.reslist[linenumber] = self.reslist[linenumber]+afix.format(afixnum, 
+                                                                        sfac, 
+                                                                        occ, 
+                                                                        #this ID is to recognize this line later
+                                                                        self.rand_id ) 
         if str(afixnum) == '120':
             return numberscheme_120
         if str(afixnum) == '130':
@@ -335,6 +361,10 @@ if __name__ == '__main__':
     res_file = 'p21n_cf3.res'
     invert = options.invert
     basefilename = resfile.filename_wo_ending(res_file)
+    copy_file(basefilename+'.res', 'test.res')
+    copy_file(basefilename+'.hkl', 'test.hkl')
+    res_file = 'test.res'
+    basefilename = 'test'
     gdb = global_DB(invert)
     rl = resfile.ResList(res_file)
     reslist = rl.get_res_list()
@@ -358,14 +388,14 @@ if __name__ == '__main__':
     
     cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, basefilename, dsr_dict)
 
-    cf3.make_cf3_thorus('C1')
+    cf3.make_cf3_thorus()
     #cf3.do_refine_cycle(rl, reslist)
 
    
     #dsrp.find_dsr_command()
 
 
-    print('finished...')
+    #print('finished...')
     ####################################################
     
     #cr = ELEMENTS['C'].covrad
