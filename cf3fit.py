@@ -56,6 +56,7 @@ from math import sin, cos, radians, sqrt
 import sys
 from resfile import ResList
 import mpmath as mp
+from random import randint
 
 
 
@@ -224,7 +225,7 @@ class CF3(object):
                     numberscheme_130[0]+' {1} 0 0 0 {2}  0.04',
                     numberscheme_130[1]+' {1} 0 0 0 {2}  0.04',
                     numberscheme_130[2]+' {1} 0 0 0 {2}  0.04',
-                    ' REM end of AFIX by DSR',
+                    'REM end of AFIX by DSR'+random_id, # insert ID and later change it to the PART usw.
                     'AFIX 0\n']
         # TODO: set the occupancy coorectly
         afix_120 = ['\nAFIX {0}',
