@@ -215,15 +215,21 @@ def copy_file(source, target):
     #target_file = os.path.basename(target)
     target_path = os.path.dirname(target)
     source_file = os.path.basename(source)
+    listcopy = False
     if isinstance(source, (list, tuple)):
-        print('can not copy a list.') 
-    if not os.path.exists(target_path):
+        listcopy = True
+        #print('can not copy a list.') 
+    if not os.path.exists(target_path) and target_path != '':
         try:
             os.makedirs(target_path)
         except(IOError, OSError):
             print('Unable to create directory {}.'.format(target_path))
     try:
-        shutil.copyfile(source, target)
+        if listcopy:
+            for filen in source:
+                shutil.copyfile(filen, target)
+        else:
+            shutil.copyfile(source, target)
     except(IOError):
         print('Unable to copy {}.'.format(source_file))
 
@@ -347,6 +353,13 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     '''
     return ''.join(random.choice(chars) for _ in range(size))
 
+
+def shift(seq, n):
+    '''
+    shift a list by n
+    '''
+    n = n % len(seq)
+    return seq[n:] + seq[:n]
 
 def atomic_distance(p1, p2, cell):
     '''
