@@ -12,7 +12,8 @@ Created on 13.05.2015
 # ----------------------------------------------------------------------------
 #
 
-- force name tags to be longer than three characters 
+- force name tags to be longer than three characters?
+  Maybe better to reserve CF3, CF6 anf CFx for CF3 groups.  
 
 - remove hydrogen and fluorine atoms from the target atom
 - make a copy of hkl and res file
@@ -29,6 +30,19 @@ Created on 13.05.2015
 2. generate cf6 with ideal staggered conformation
 3. generate thorus of isotropic atoms with occupation relative to 
    difference density and inside AFIX 6 or 9
+
+Try this:
+--------------------------------------------------
+BLOC -1 -1 # -1 for only Uij and occupancy
+F1 ... 
+F2 ... 
+F3 ...
+[...]
+BLOC 0
+with 
+SUMP 3 1 1 1 2 1 3 1 4 ...
++ one FVAR for all Uij
+------------------------------------------------
 
 DFIX 1.328 C22 F1A C22 F2A C22 F3A  C22 F4A C22 F5A C22 F6A
 DFIX 2.125 F1A F5A F5A F3A F3A F4A F4A F2A F2A F6A F6A F1A
@@ -195,6 +209,9 @@ class CF3(object):
             print('PART {}'.format(num))
             print('{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  {:<8.6}  -1.2\
             '.format(i, co[0], co[1], co[2], 10.0+(dif/2760.0)))
+            # with free variables:
+            print('{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  {:<8.6}  261\
+            '.format(i, co[0], co[1], co[2], 10.0*num+1+10))
         d = 0
         for dif in diffden:
             d += dif/2760.0
