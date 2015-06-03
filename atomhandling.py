@@ -119,11 +119,11 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     if atoms_to_delete:
         print('Replacing following atoms (< {0} A near fragment):\n'.format(remdist), 
               ' '.join(sorted(atoms_to_delete)))
-    target_lines = find_atoms.get_atom_line_numbers(atoms_to_delete)
+    target_lines = set(find_atoms.get_atom_line_numbers(atoms_to_delete))
     rle = ResListEdit(reslist, find_atoms)
     for i in target_lines:
         i = int(i)
-        rle.remove_line(i, rem=False, remove=False, frontspace=True)
+        rle.remove_line(i, rem=False, remove=True, frontspace=False)
     rl.write_resfile(reslist, '.res')
     reslist = rl.get_res_list()
     return reslist, find_atoms
