@@ -37,18 +37,11 @@ program_name = '\n-----------------------------'\
            ' ----------------------------------'.format(VERSION)
 
 # TODO and ideas:
-# -For CF3: rem dsr put cf3/cf6/cf9 on Cx Qx (resi) (part) (occ)
-# -new command to generate CF3 groups: Look around a given C atom and determine
-#  how many disordered F atoms. Then create (disordered) CF3 group with its restraints.
-# -detect collinear atoms
-# -debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
 '''
--get distance of source from target atoms
--begin to rotate with a small inclination until all distance pairs are nearly
- the same
--Move coords in any direction half the distance
--if it gets nearer move half the new distance again
--if it doesnt get nearer try other coordinates/directions to move
+-debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
+-inspect behavior of replace mode. Are atoms correctly deleted? No false deletions?
+-finish CF3 and CF6 first.
+-then look at CF3 thorus
 '''
 
 
@@ -379,8 +372,6 @@ class DSR():
             sys.exit()
         reslist[dsr_line_number] = reslist[dsr_line_number]+'\n'
         reslist.insert(dsr_line_number+1, afix_entry)
-        #if dsrp.command == 'REPLACE':
-        #    replacemode(dsrp.target, rle, reslist, sfac_table)
         # write to file:
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
         acta_lines = shx.remove_acta_card()
