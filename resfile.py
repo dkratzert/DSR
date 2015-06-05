@@ -228,9 +228,11 @@ class ResListEdit():
         if len(fvar_list) != 0:
             for line in fvarlines:
                 self._reslist[line] = ' \n' # removes the old FVAR
-        varlen = len(fvar_list) # how many numbers do we have?
-        num = occupancynumber.split('.')   # the occupancynumber is split in the fvar part and the occupancy part
-        fvar = int(num[0])//10              # e.g. 20.5 is fvar 2 and occupancy 0.5
+        # how many numbers do we have?:
+        varlen = len(fvar_list) 
+        # the occupancynumber is split in the fvar part and the occupancy part:
+        num = occupancynumber.split('.')   
+        fvar = int(num[0])//10       # e.g. 20.5 is fvar 2 and occupancy 0.5
         difference = (fvar - varlen)
         if difference > 0:
             for i in range(difference):
@@ -242,7 +244,7 @@ class ResListEdit():
             lines.append(l)
             fvars = '\n'.join(lines)
             fvars = fvars+'\n'
-        self._reslist.insert(fvarlines[0]+1, fvars)
+        self._reslist[fvarlines[0]] = fvars
 
 
 

@@ -15,19 +15,10 @@ Created on 13.05.2015
 - force name tags to be longer than three characters?
   Maybe better to reserve CF3, CF6 anf CFx for CF3 groups.  
 
-- remove hydrogen and fluorine atoms from the target atom
-- make a copy of hkl and res file
-- run shelxl with hfix 137 or afix 130 to get the position
-- calculate the exact position of the fluorine atoms from the
-  values in the list file. Position of one atom is enough. 
-- delete the res/hkl/lst file
-- place the atoms with their restraints
 - set the part, residue und occupancy
 - set the sump and free variable
 -
 
-1. generate ordinary cf3 with restraints
-2. generate cf6 with ideal staggered conformation
 3. generate thorus of isotropic atoms with occupation relative to 
    difference density and inside AFIX 6 or 9
 
@@ -43,14 +34,6 @@ with
 SUMP 3 1 1 1 2 1 3 1 4 ...
 + one FVAR for all Uij
 ------------------------------------------------
-
-DFIX 1.328 C22 F1A C22 F2A C22 F3A  C22 F4A C22 F5A C22 F6A
-DFIX 2.125 F1A F5A F5A F3A F3A F4A F4A F2A F2A F6A F6A F1A
-SADI 0.1 C19 F1A C19 F2A C19 F3A  C19 F4A C19 F5A C19 F6A
-
-DFIX 1.328 C1 F1B C1 F2B C1 F3B  C1 F4B C1 F5B C1 F6B
-DFIX 2.125 F1B F5B F5B F3B F3B F4B F4B F2B F2B F6B F6B F1B
-SADI 0.1 C2 F1B C2 F2B C2 F3B  C2 F4B C2 F5B C2 F6B
 
  Difference electron density (eA^-3x100) at 15 degree intervals for AFIX 130
  group attached to C1_a. The center of the range is eclipsed (cis) to C7_a
@@ -68,7 +51,7 @@ from refine import ShelxlRefine
 from restraints import ListFile
 from elements import ELEMENTS
 from misc import atomic_distance, frac_to_cart, cart_to_frac,\
-    id_generator, shift, remove_partsymbol
+    id_generator, shift, remove_partsymbol, find_multi_lines
 from math import sin, cos, radians, sqrt
 import sys
 from resfile import ResList, ResListEdit
@@ -103,6 +86,8 @@ class CF3(object):
                 atomlist.append(y+[i])
         self.atomlist = atomlist
         self.cell = rle.get_cell()
+        self.startm = '\nREM CF3 group made by DSR:\n'
+        self.endm = 'REM End of CF3 group made by DSR\n\n'
     
     
     def find_bonded_fluorine(self, atom, extra_param=0.16, element='F'):
@@ -142,9 +127,7 @@ class CF3(object):
         Y-Z-F1/F2/F3
         AFIX 130: CF3 group
         AFIX 120: CF6 group
-        TODO: 
-        - find next unused free variable to refine parts
-        - for 120, find atoms after refine cycle and add parts
+
         :param atom: central atom of the group
         :type atom: string
         :param afix: afix number for the CF3 group
@@ -155,25 +138,25 @@ class CF3(object):
         dfixr_130 = ['DFIX 1.328 Z F1 Z F2 Z F3 \n', 
                      'DFIX 2.125 F1 F2 F2 F3 F3 F1 \n',
                      'SADI 0.1 Y F1 Y F2 Y F3 \n'
-                     'RIGU Y Z F1 F2 F3 \n']
+                     'RIGU Y Z F1 F2 F3 ']
         dfixr_120 = ['DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n', 
                      'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 \n',
                      'SADI 0.1 Y F1 Y F2 Y F3  Z F4 Z F5 Z F6 \n'
                      'RIGU Y Z F1 F2 F3 \n'
                      'EADP F1 F4 \n',
                      'EADP F6 F3 \n',
-                     'EADP F2 F5 \n']
+                     'EADP F2 F5 ']
         sadir_130 = ['SADI 0.02 Z F1 Z F2 Z F3 \n',
                      'SADI 0.04 F1 F2 F2 F3 F3 F1 \n',
                      'SADI 0.1 Z F1 Z F2 Z F3 \n',
-                     'RIGU Y Z F1 F2 F3 \n']
+                     'RIGU Y Z F1 F2 F3 ']
         sadir_120 = ['SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n',
                      'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 \n',
                      'SADI 0.1 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n',
                      'RIGU Y Z F1 F2 F3 F4 F5 F6 \n'
                      'EADP F1 F4 \n',
                      'EADP F6 F3 \n',
-                     'EADP F2 F5 \n']
+                     'EADP F2 F5 ']
         if self.dsr_dict['dfix']:
             if afix == '130':
                 restr = dfixr_130
@@ -186,13 +169,13 @@ class CF3(object):
                 restr = sadir_120
         if not atom:
             atom = self.dsr_dict['target'][0]
-        atomlinenumber = self.fa.get_atom_line_numbers([atom])
+        atomline = self.fa.get_atom_line_numbers([atom])
         #print(atomlinenumber, '#####', atom)
         found = self.find_bonded_fluorine(atom)
         for i in found:
             print('Deleting ' + i[0] + '_' + i[7] + ' from '+atom)
         self.delete_bound_fluorine(found)
-        fatoms = self.make_afix(afixnum=afix, linenumber=atomlinenumber[0])
+        fatoms = self.make_afix(afixnum=afix, linenumber=atomline[0])
         self.do_refine_cycle(self.rl, self.reslist)
         Y, Z = self.lf.get_bondvector(atom)
         Y = remove_partsymbol(Y)
@@ -208,14 +191,18 @@ class CF3(object):
             restr = [i.replace(old, new) for i in restr]
         self.reslist = self.rl.get_res_list()
         # get position for the fluorine atoms:
-        atomlinenumber = self.fa.get_atom_line_numbers([atom])
+        atomline = self.fa.get_atom_line_numbers([atom])
         # add restraints to reslist:
-        self.reslist[atomlinenumber[0]] = self.reslist[atomlinenumber[0]]+'\n'+''.join(restr)
+        self.reslist[atomline[0]] = self.reslist[atomline[0]]+self.startm+''.join(restr)
+        regex = r'.*{}'.format(self.rand_id)
+        id_lines = find_multi_lines(self.reslist, regex)
+        for line in id_lines:
+            self.reslist[line] = ' '.join(self.reslist[line].split()[1:-1])+'\n'
         self.rl.write_resfile(self.reslist, '.res')
         return fatoms
     
 
-    def make_afix(self, afixnum, linenumber, atomtype='F'):
+    def make_afix(self, afixnum, linenumber):
         '''
         create an afix to build a CF3 or CH3 group
         :param afixnum: afix number
@@ -238,17 +225,18 @@ class CF3(object):
                     #'REM end of AFIX by DSR {3}', # insert ID and later change it to the PART usw.
                     'AFIX 0\n']
         # TODO: set the occupancy coorectly
-        afix_120 = ['\nAFIX {0}\n',
-                    'REM PART 1 !{3}', 
-                    numberscheme_120[0]+' {1} 0 0 0  {2}  0.04',
-                    numberscheme_120[1]+' {1} 0 0 0  {2}  0.04',
-                    numberscheme_120[2]+' {1} 0 0 0  {2}  0.04',
+        afix_120 = ['\nAFIX {0}',
+                    '\nREM PART 1 !{3}', 
+                    numberscheme_120[0]+' {1} 0 0 0   {2}  0.04',
+                    numberscheme_120[1]+' {1} 0 0 0   {2}  0.04',
+                    numberscheme_120[2]+' {1} 0 0 0   {2}  0.04',
                     'REM PART 2 !{3}',
-                    numberscheme_120[3]+' {1} 0 0 0  {2}  0.04',
-                    numberscheme_120[4]+' {1} 0 0 0  {2}  0.04',
-                    numberscheme_120[5]+' {1} 0 0 0  {2}  0.04',
+                    numberscheme_120[3]+' {1} 0 0 0  -{2}  0.04',
+                    numberscheme_120[4]+' {1} 0 0 0  -{2}  0.04',
+                    numberscheme_120[5]+' {1} 0 0 0  -{2}  0.04',
                     'REM PART 0 !{3}',
-                    '\nAFIX 0\n']
+                    'AFIX 0',
+                    self.endm]
         afix_130 = '\n'.join(afix_130)
         afix_120 = '\n'.join(afix_120)
         if str(afixnum) == '130':
@@ -454,8 +442,11 @@ if __name__ == '__main__':
     reslist = rl.get_res_list()
     find_atoms = FindAtoms(reslist)
     rle = ResListEdit(reslist, find_atoms)
+    fvarlines = rle.find_fvarlines()
     dsrp = DSR_Parser(reslist, rle)
     dsr_dict = dsrp.get_dsr_dict
+    if dsrp.occupancy:
+            rle.set_free_variables(dsrp.occupancy, fvarlines)
     dsr_line_number = dsrp.find_dsr_command(line=False)
     fvarlines = rle.find_fvarlines()
     if dsrp.occupancy:
