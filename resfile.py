@@ -131,9 +131,9 @@ class ResListEdit():
             if misc.multiline_test(line):
                 self._reslist[linenum+1] = 'rem '+self._reslist[linenum+1]
         elif remove:  # really delete the line "linenum"
-            del self._reslist[linenum]
+            self._reslist[linenum] = ' \n'
             if misc.multiline_test(line):
-                del self._reslist[linenum]
+                self._reslist[linenum+1] = ' \n'
         if frontspace:  # only put a space in front
             self._reslist[linenum] = ' '+line
             if misc.multiline_test(line):

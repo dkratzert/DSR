@@ -420,7 +420,6 @@ class ListFile():
             sys.exit()
         return listfile
 
-
     def read_conntable(self):
         '''
         reads the connectivity table from self._listfile_list
@@ -546,14 +545,19 @@ class ListFile():
         at1 = self._listfile_list[line].split('.')[0].split()
         return at1[-1]
     
-    def get_bondvector(self):
+    def get_bondvector(self, atom=None):
         '''
         get the bond vector in terms of atom names around which SHELXL
         calculates the difference density in 15 degree interval
         '''
         regex = r'^.*is clockwise looking down'
         line = misc.find_line(self.read_lst_file(), regex)
-        if not line:
+        if not line and atom:
+            conn = self.read_conntable()
+            G = nx.Graph(conn)
+            #A = nx.adjacency_matrix(G)
+            nb = G[atom]
+            print(nb, '#####')
             return False
         at1 = self._listfile_list[line].split('.')[0].split()[-3]
         at2 = self._listfile_list[line].split('.')[0].split()[-1]

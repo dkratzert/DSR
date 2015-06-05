@@ -110,7 +110,7 @@ class DSR_Parser():
             self._reslist[line_number] = '' # delete old line
             if multiline:
                 self._reslist[line_number+1] = '' # delete old line
-            self._reslist.insert(line_number+1, dsrlines)
+            self._reslist[line_number] = dsrlines
             return line_number                     # return the line index number
 
 

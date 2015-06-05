@@ -18,7 +18,6 @@ REM ACTA
 CONF
 WGHT    0.065900    4.305900
 FVAR       0.34340
-PART 1
 S1    4    0.358236    1.025192    0.310091    11.00000    0.01589    0.01375 =
          0.02370    0.00150    0.00008    0.00055
 C22   1    0.671866    1.535515    0.269485    11.00000    0.04000
@@ -132,8 +131,8 @@ REM  p21n in P2(1)/n
 REM R1 =  0.2635 for    3554 Fo > 4sig(Fo)  and  0.2848 for all    4254 data
 REM    254 parameters refined using      0 restraints
  
-END  
-     
+END 
+ 
 WGHT      0.2000      0.0000 
 
 REM Highest difference peak  4.806,  deepest hole -5.590,  1-sigma level  0.421
