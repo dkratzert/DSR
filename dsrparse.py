@@ -48,7 +48,12 @@ class DSR_Parser():
 
     @property
     def get_dsr_dict(self):
-        return self.dsr_dict
+        try:
+            self.dsr_dict
+            return self.dsr_dict
+        except AttributeError:
+            print('No DSR command line found.')
+            sys.exit()
     
     def find_dsr_command(self, line=False):
         '''
@@ -169,9 +174,10 @@ class DSR_Parser():
         '''returns the different parameters from the dsr command as dict
         It needs find_commands() and find_atoms() to parse the line.
         '''
+        cf3 = False
         source = None
-        if self._dsr_list[3].upper() == 'CF3':
-            print('Generating CF3-Group')
+        if self._dsr_list[3].upper() in ['CF3', 'CF6', 'CFTHORUS']:
+            cf3 = True
         else:
             self.minimal_requirements()
         # syntax:
@@ -186,7 +192,7 @@ class DSR_Parser():
             sys.exit(-1)
         # Source and target atoms:
         # In parenteses are one start und one to multiple stop conditions:
-        if not self._dsr_list[3].upper() == 'CF3':
+        if not cf3:
             # we need no soure atoms for cf3 groups
             source = self.find_atoms('WITH', 'ON')
         target = self.find_atoms('ON', 'PART', 'OCC', 'RESI', 'DFIX', '')
