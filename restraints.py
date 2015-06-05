@@ -549,6 +549,9 @@ class ListFile():
         '''
         get the bond vector in terms of atom names around which SHELXL
         calculates the difference density in 15 degree interval
+        Y-Z-F1/F2/F3
+        at1 = Y
+        at2 = Z
         '''
         regex = r'^.*is clockwise looking down'
         line = misc.find_line(self.read_lst_file(), regex)
@@ -557,7 +560,11 @@ class ListFile():
             G = nx.Graph(conn)
             #A = nx.adjacency_matrix(G)
             nb = G[atom]
-            print(nb, '#####')
+            for i in nb.keys():
+                if i[0] == 'C':
+                    return (i, atom)
+                    break
+        if not line:
             return False
         at1 = self._listfile_list[line].split('.')[0].split()[-3]
         at2 = self._listfile_list[line].split('.')[0].split()[-1]

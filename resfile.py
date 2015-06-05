@@ -180,6 +180,7 @@ class ResListEdit():
                     break
             if not first_atom:
                 print('\nNo atom or Q-peak found! Can not proceed...\n')
+                sys.exit()
             fvarlines = []
             fvarlines.append(first_atom-1)
             self._reslist.insert(first_atom-1, ' \n')
