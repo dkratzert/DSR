@@ -68,7 +68,7 @@ from refine import ShelxlRefine
 from restraints import ListFile
 from elements import ELEMENTS
 from misc import atomic_distance, frac_to_cart, cart_to_frac, copy_file,\
-    id_generator, shift
+    id_generator, shift, remove_partsymbol
 from math import sin, cos, radians, sqrt
 import sys
 from resfile import ResList
@@ -135,11 +135,20 @@ class CF3(object):
             i = int(i)
             rle.remove_line(i, rem=False, remove=False, frontspace=True)
     
-    def cf3(self):
+    def cf3(self, atom=None):
         '''
-        create CF3 group on atom 
+        create CF3 group on atom.
+        Either define atom at startup or let dsrparser get the atom name.
+        Y-Z-F1/F2/F3
+        :param atom: central atom of the group
+        :type atom: string
         '''
-        atom = self.dsr_dict['target'][0]
+        print('Generating CF3-Group')
+        restraints = ['DFIX 1.328 Z F1 Z F2 Z F3 \n', 
+                      'DFIX 2.125 F1 F2 F2 F3 F3 F1 \n',
+                      'SADI 0.1 Y F1 Y F2 Y F3 \n']
+        if not atom:
+            atom = self.dsr_dict['target'][0]
         atomlinenumber = self.fa.get_atom_line_numbers([atom])
         #print(atomlinenumber, '#####', atom)
         found = self.find_bonded_fluorine(atom)
@@ -147,15 +156,30 @@ class CF3(object):
             print('Deleting ' + i[0] + '_' + i[7] + ' from '+atom)
         self.delete_bound_fluorine(found)
         fatoms = self.make_afix(afixnum='130', linenumber=atomlinenumber[0])
+        self.do_refine_cycle(self.rl, self.reslist)
+        Y, Z = self.lf.get_bondvector()
+        Y = remove_partsymbol(Y)
+        Z = remove_partsymbol(Z)
+        F1, F2, F3 = fatoms
+        for old, new in (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3)):
+            restraints = [i.replace(old, new) for i in restraints]
+        self.reslist = self.rl.get_res_list()
+        atomlinenumber = self.fa.get_atom_line_numbers([atom])
+        self.reslist[atomlinenumber[0]] = self.reslist[atomlinenumber[0]]+'\n'+''.join(restraints)
+        self.rl.write_resfile(self.reslist, '.res')
         return fatoms
         
-    def cf6(self, atom):
+    def cf6(self, atom=None):
         '''
-        create disorderd CF3 group on two positions
+        create disorderd CF3 group on two positions.
+        either define atom at startup or let dsrparser get the atom name.
+        
         :param atom: central atom of the group
         :type atom: string
         '''
-        atom = self.dsr_dict['target'][0]
+        print('Generating disordered CF3-Group')
+        if not atom:
+            atom = self.dsr_dict['target'][0]
         atomlinenumber = self.fa.get_atom_line_numbers([atom])
         #print(atomlinenumber, '#####', atom)
         found = self.find_bonded_fluorine(atom)
@@ -163,9 +187,10 @@ class CF3(object):
             print('Deleting ' + i[0] + '_' + i[7] + ' from '+atom)
         self.delete_bound_fluorine(found)
         fatoms = self.make_afix(afixnum='120', linenumber=atomlinenumber[0])
+        self.do_refine_cycle(rl, reslist)
         return fatoms
     
-    def make_cf3_thorus(self):
+    def make_cf3_thorus(self, atom=None):
         '''
         Creates a thorus of isotropic fluorine atoms around the central
         atom of a cf3 group. The occupancy is estimated from the 
@@ -175,7 +200,8 @@ class CF3(object):
         :type atom: string
         '''
         coords = []
-        atom = self.dsr_dict['target'][0]
+        if not atom:
+            atom = self.dsr_dict['target'][0]
         # returns the atom names of the fluorine atoms:
         fluorine_names = self.cf3() 
         self.do_refine_cycle(self.rl, self.reslist)
@@ -378,10 +404,11 @@ if __name__ == '__main__':
     res_file = 'p21n_cf3.res'
     invert = options.invert
     basefilename = resfile.filename_wo_ending(res_file)
-    copy_file(basefilename+'.res', 'test.res')
-    copy_file(basefilename+'.hkl', 'test.hkl')
-    res_file = 'test.res'
-    basefilename = 'test'
+    # spaeter das orginaes resfile verenden und nicht mit dsr-tmp:
+    copy_file(basefilename+'.res', 'dsr-tmp.res')
+    copy_file(basefilename+'.hkl', 'dsr-tmp.hkl')
+    res_file = 'dsr-tmp.res'
+    basefilename = 'dsr-tmp'
     gdb = global_DB(invert)
     rl = resfile.ResList(res_file)
     reslist = rl.get_res_list()
@@ -404,15 +431,19 @@ if __name__ == '__main__':
     
     
     cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, basefilename, dsr_dict)
+    
+    if fragment == 'cf3':
+        cf3.cf3()
+    if fragment == 'cf6':
+        cf3.cf6()
+    #cf3.make_cf3_thorus()
 
-    cf3.make_cf3_thorus()
-    #cf3.do_refine_cycle(rl, reslist)
 
    
     #dsrp.find_dsr_command()
 
 
-    #print('finished...')
+    print('finished...')
     ####################################################
     
     #cr = ELEMENTS['C'].covrad

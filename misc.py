@@ -338,9 +338,10 @@ def remove_partsymbol(atom):
         if not suffix:
             atom = prefix
         else:
-            atom = prefix+'_'+suffix
-    #else:
-    #    atom = atom+'_0  ! This restraint might be inaccurate.'
+            if suffix == '0':
+                atom = prefix
+            else:
+                atom = prefix+'_'+suffix
     return atom
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
