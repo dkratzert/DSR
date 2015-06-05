@@ -71,7 +71,7 @@ from misc import atomic_distance, frac_to_cart, cart_to_frac,\
     id_generator, shift, remove_partsymbol
 from math import sin, cos, radians, sqrt
 import sys
-from resfile import ResList
+from resfile import ResList, ResListEdit
 import mpmath as mp
 
 
@@ -135,28 +135,55 @@ class CF3(object):
             i = int(i[2])
             rle.remove_line(i, rem=False, remove=False, frontspace=True)
     
-    def cf3(self, afix=120, atom=None):
+    def cf3(self, afix=130, atom=None):
         '''
         create CF3 group on atom.
         Either define atom at startup or let dsrparser get the atom name.
         Y-Z-F1/F2/F3
-        
+        AFIX 130: CF3 group
+        AFIX 120: CF6 group
+        TODO: 
+        - find next unused free variable to refine parts
+        - for 120, find atoms after refine cycle and add parts
         :param atom: central atom of the group
         :type atom: string
         :param afix: afix number for the CF3 group
         :type afix: string
         '''
+        afix=str(afix)
         print('Generating CF3-Group')
-        dfixr = ['DFIX 1.328 Z F1 Z F2 Z F3 \n', 
-                 'DFIX 2.125 F1 F2 F2 F3 F3 F1 \n',
-                 'SADI 0.1 Y F1 Y F2 Y F3 ']
-        sadir = ['SADI 0.02 Z F1 Z F2 Z F3 \n',
-                 'SADI 0.04 F1 F2 F2 F3 F3 F4 \n',
-                 'SADI 0.1 Z F1 Z F2 Z F3 ']
+        dfixr_130 = ['DFIX 1.328 Z F1 Z F2 Z F3 \n', 
+                     'DFIX 2.125 F1 F2 F2 F3 F3 F1 \n',
+                     'SADI 0.1 Y F1 Y F2 Y F3 \n'
+                     'RIGU Y Z F1 F2 F3 \n']
+        dfixr_120 = ['DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n', 
+                     'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 \n',
+                     'SADI 0.1 Y F1 Y F2 Y F3  Z F4 Z F5 Z F6 \n'
+                     'RIGU Y Z F1 F2 F3 \n'
+                     'EADP F1 F4 \n',
+                     'EADP F6 F3 \n',
+                     'EADP F2 F5 \n']
+        sadir_130 = ['SADI 0.02 Z F1 Z F2 Z F3 \n',
+                     'SADI 0.04 F1 F2 F2 F3 F3 F1 \n',
+                     'SADI 0.1 Z F1 Z F2 Z F3 \n',
+                     'RIGU Y Z F1 F2 F3 \n']
+        sadir_120 = ['SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n',
+                     'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 \n',
+                     'SADI 0.1 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n',
+                     'RIGU Y Z F1 F2 F3 F4 F5 F6 \n'
+                     'EADP F1 F4 \n',
+                     'EADP F6 F3 \n',
+                     'EADP F2 F5 \n']
         if self.dsr_dict['dfix']:
-            restr = dfixr
+            if afix == '130':
+                restr = dfixr_130
+            if afix == '120':
+                restr = dfixr_120
         else:
-            restr = sadir
+            if afix == '130':
+                restr = sadir_130
+            if afix == '120':
+                restr = sadir_120
         if not atom:
             atom = self.dsr_dict['target'][0]
         atomlinenumber = self.fa.get_atom_line_numbers([atom])
@@ -166,32 +193,33 @@ class CF3(object):
             print('Deleting ' + i[0] + '_' + i[7] + ' from '+atom)
         self.delete_bound_fluorine(found)
         fatoms = self.make_afix(afixnum=afix, linenumber=atomlinenumber[0])
-        print(fatoms)
         self.do_refine_cycle(self.rl, self.reslist)
         Y, Z = self.lf.get_bondvector(atom)
-        print(Y, Z)
         Y = remove_partsymbol(Y)
         Z = remove_partsymbol(Z)
         if afix == '130':
             F1, F2, F3 = fatoms
+            replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3))
         if afix == '120':
             F1, F2, F3, F4, F5, F6 = fatoms
-        for old, new in (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3)):
+            replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3),
+                            ('F4', F4), ('F5', F5), ('F6', F6))
+        for old, new in (replacelist):
             restr = [i.replace(old, new) for i in restr]
         self.reslist = self.rl.get_res_list()
+        # get position for the fluorine atoms:
         atomlinenumber = self.fa.get_atom_line_numbers([atom])
+        # add restraints to reslist:
         self.reslist[atomlinenumber[0]] = self.reslist[atomlinenumber[0]]+'\n'+''.join(restr)
         self.rl.write_resfile(self.reslist, '.res')
         return fatoms
+    
 
     def make_afix(self, afixnum, linenumber, atomtype='F'):
         '''
         create an afix to build a CF3 or CH3 group
         :param afixnum: afix number
         :type afixnum: string
-        TODO: 
-        - find next unused free variable to refine parts
-        - for 120, find atoms after refine cycle and add parts
         '''
         occ = 11
         if self.dsr_dict['occupancy']:
@@ -236,7 +264,7 @@ class CF3(object):
             self.reslist[linenumber] = '{:5.4s}{:4.2s}{:>10.8s} {:>10.8s} {:>10.8s}  {:8.6s}  0.04'.format(*atomline)
             self.reslist[linenumber+1] = '' 
         # insert the afix:
-        self.reslist[linenumber] = self.reslist[linenumber]+afix.format('120', 
+        self.reslist[linenumber] = self.reslist[linenumber]+afix.format(afixnum, 
                                                                         sfac, 
                                                                         occ, 
                                                                         #this ID is to recognize this line later
@@ -425,7 +453,7 @@ if __name__ == '__main__':
     rl = resfile.ResList(res_file)
     reslist = rl.get_res_list()
     find_atoms = FindAtoms(reslist)
-    rle = resfile.ResListEdit(reslist, find_atoms)
+    rle = ResListEdit(reslist, find_atoms)
     dsrp = DSR_Parser(reslist, rle)
     dsr_dict = dsrp.get_dsr_dict
     dsr_line_number = dsrp.find_dsr_command(line=False)
@@ -445,9 +473,9 @@ if __name__ == '__main__':
     cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, basefilename, dsr_dict)
     
     if fragment == 'cf3':
-        cf3.cf3('120', atom='C1')
+        cf3.cf3('130')
     if fragment == 'cf6':
-        cf3.cf6()
+        cf3.cf3('120')
     #cf3.make_cf3_thorus()
 
 
