@@ -19,7 +19,6 @@ from collections import OrderedDict
 from atomhandling import get_atomtypes
 from misc import distance, vol_tetrahedron, flatten
 from elements import ELEMENTS
-import mpmath
 import os
 # all upper case for case insensitivity:
 alphabet = [ i for i in string.ascii_uppercase ]
