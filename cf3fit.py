@@ -15,25 +15,9 @@ Created on 13.05.2015
 - force name tags to be longer than three characters?
   Maybe better to reserve CF3, CF6 anf CFx for CF3 groups.  
 
-- set the part, residue und occupancy
+- set residue und occupancy
 - set the sump and free variable
--
 
-3. generate thorus of isotropic atoms with occupation relative to 
-   difference density and inside AFIX 6 or 9
-
-Try this:
---------------------------------------------------
-BLOC -1 -1 # -1 for only Uij and occupancy
-F1 ... 
-F2 ... 
-F3 ...
-[...]
-BLOC 0
-with 
-SUMP 3 1 1 1 2 1 3 1 4 ...
-+ one FVAR for all Uij
-------------------------------------------------
 
  Difference electron density (eA^-3x100) at 15 degree intervals for AFIX 130
  group attached to C1_a. The center of the range is eclipsed (cis) to C7_a
@@ -55,8 +39,7 @@ from misc import atomic_distance, frac_to_cart, cart_to_frac,\
 from math import sin, cos, radians, sqrt
 import sys
 from resfile import ResList, ResListEdit
-import mpmath as mp
-
+import mpmath as mp 
 
 
 class CF3(object):
@@ -64,10 +47,11 @@ class CF3(object):
     a class to create cf3 groups at terminal atoms
     '''
 
-    def __init__(self, rle, fa, reslist, fragment, sfac_table, basefilename, dsr_dict):
+    def __init__(self, rle, fa, reslist, fragment, sfac_table, basefilename, dsr_dict, resi):
         '''
         Constructor
         '''
+        self.resi = resi
         self.rand_id = id_generator(size=7)
         self.fa = fa
         self.dsr_dict = dsr_dict
@@ -107,15 +91,12 @@ class CF3(object):
                 found_atoms.append(i)
         return found_atoms
     
-    
     def delete_bound_fluorine(self, bound_atoms):
         '''
         deletes fluorine atoms bound to atom
         :param bound_atoms:
         :type bound_atoms:
         '''
-        #atoms = [str(i[0])+'_'+str(i[7]) for i in bound_atoms]
-        #target_lines = self.fa.get_atom_line_numbers(atoms)
         for i in bound_atoms:
             i = int(i[2])
             rle.remove_line(i, rem=False, remove=False, frontspace=True)
@@ -137,13 +118,13 @@ class CF3(object):
         print('Generating CF3-Group')
         dfixr_130 = ['DFIX 1.328 Z F1 Z F2 Z F3 \n', 
                      'DFIX 2.125 F1 F2 F2 F3 F3 F1 \n',
-                     'SADI 0.1 Y F1 Y F2 Y F3 \n'
+                     'SADI 0.1 Y F1 Y F2 Y F3 \n',
                      'RIGU Y Z F1 F2 F3 ']
         dfixr_120 = ['DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n', 
                      'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 \n',
-                     'SADI 0.1 Y F1 Y F2 Y F3  Z F4 Z F5 Z F6 \n'
-                     'RIGU Y Z F1 F2 F3 \n'
-                     'EADP F1 F4 \n',
+                     'SADI 0.1 Y F1 Y F2 Y F3  Z F4 Z F5 Z F6 \n',
+                     'RIGU Y Z F1 F2 F3 \n',
+                     '\nEADP F1 F4 \n',
                      'EADP F6 F3 \n',
                      'EADP F2 F5 ']
         sadir_130 = ['SADI 0.02 Z F1 Z F2 Z F3 \n',
@@ -153,7 +134,7 @@ class CF3(object):
         sadir_120 = ['SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n',
                      'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 \n',
                      'SADI 0.1 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n',
-                     'RIGU Y Z F1 F2 F3 F4 F5 F6 \n'
+                     'RIGU Y Z F1 F2 F3 F4 F5 F6 \n',
                      'EADP F1 F4 \n',
                      'EADP F6 F3 \n',
                      'EADP F2 F5 ']
@@ -167,6 +148,9 @@ class CF3(object):
                 restr = sadir_130
             if afix == '120':
                 restr = sadir_120
+        if self.resi.get_residue_class:
+            restr = self.resi.format_restraints(restr)
+            restr = [i+'\n' for i in restr]
         if not atom:
             atom = self.dsr_dict['target'][0]
         atomline = self.fa.get_atom_line_numbers([atom])
@@ -208,6 +192,8 @@ class CF3(object):
         :param afixnum: afix number
         :type afixnum: string
         '''
+        resistr = ''
+        resi0 = ''
         occ = 11
         if self.dsr_dict['occupancy']:
             occ = self.dsr_dict['occupancy']
@@ -216,16 +202,26 @@ class CF3(object):
         # returns also the atom names if residue is active
         numberscheme_120 = num_120.get_fragment_number_scheme()
         numberscheme_130 = num_130.get_fragment_number_scheme()
+        if self.resi.get_residue_class:
+            resiclass = self.resi.get_residue_class
+            resinum = self.resi.get_resinumber
+            resistr = 'RESI '+resiclass+' '+resinum
+            resi0 = 'RESI 0'
+            numberscheme_130 = ['F1', 'F2', 'F3']
+            numberscheme_120 = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6']
         sfac = self.e2s.elem_2_sfac('F')
-        afix_130 = ['\nAFIX {0}',
+        afix_130 = ['\n'+resistr,
+                    'AFIX {0}',
                     #'REM AFIX made by DSR: {3}',    
                     numberscheme_130[0]+' {1} 0 0 0 {2}  0.04',
                     numberscheme_130[1]+' {1} 0 0 0 {2}  0.04',
                     numberscheme_130[2]+' {1} 0 0 0 {2}  0.04',
                     #'REM end of AFIX by DSR {3}', # insert ID and later change it to the PART usw.
-                    'AFIX 0\n']
+                    'AFIX 0',
+                    resi0+'\n']
         # TODO: set the occupancy coorectly
-        afix_120 = ['\nAFIX {0}',
+        afix_120 = ['\n'+resistr,
+                    'AFIX {0}',
                     '\nREM PART 1 !{3}', 
                     numberscheme_120[0]+' {1} 0 0 0   {2}  0.04',
                     numberscheme_120[1]+' {1} 0 0 0   {2}  0.04',
@@ -236,6 +232,7 @@ class CF3(object):
                     numberscheme_120[5]+' {1} 0 0 0  -{2}  0.04',
                     'REM PART 0 !{3}',
                     'AFIX 0',
+                    resi0,
                     self.endm]
         afix_130 = '\n'.join(afix_130)
         afix_120 = '\n'.join(afix_120)
@@ -327,6 +324,7 @@ class CF3(object):
         print('\n')
         print
         print('AFIX 6')
+        # make restraints:
         for i, num, co, dif in zip(names, [i for i in range(1, 25)], coords, diffden):
             print('PART {}'.format(num))
             print('{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  {:<8.6}  -1.2\
@@ -341,7 +339,7 @@ class CF3(object):
         print('AFIX 0')
         print
         print(d)
-        #make atoms from coords here    
+
         
         
 
@@ -430,6 +428,7 @@ class CF3(object):
         return v 
     
 if __name__ == '__main__':
+    from resi import Resi
     options = OptionsParser()
     #res_file = options.res_file
     #res_file = '/tmp/mlcp57.res' 
@@ -455,13 +454,13 @@ if __name__ == '__main__':
     sf = SfacTable(reslist, ['C', 'F', 'F', 'F'])
     sfac_table = sf.set_sfac_table() 
 
-    
+    resi = Resi(reslist, dsr_dict, dbhead='RESI CF3', db_residue_string='CF3', find_atoms=find_atoms)
 
 
     ####################################################
     
     
-    cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, basefilename, dsr_dict)
+    cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, basefilename, dsr_dict, resi)
     
     if fragment == 'cf3':
         cf3.cf3('130')
