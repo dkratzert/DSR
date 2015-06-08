@@ -57,6 +57,12 @@ mkdir -p %{buildroot}%{prefix}/DSR/networkx/classes/tests
 mkdir -p %{buildroot}%{prefix}/DSR/networkx/utils/tests
 mkdir -p %{buildroot}%{prefix}/DSR/networkx/drawing/tests
 mkdir -p %{buildroot}%{prefix}/DSR/networkx/testing/tests
+
+mkdir -p %{buildroot}%{prefix}/DSR/mpmath/calculus
+mkdir -p %{buildroot}%{prefix}/DSR/mpmath/functions
+mkdir -p %{buildroot}%{prefix}/DSR/mpmath/libmp
+mkdir -p %{buildroot}%{prefix}/DSR/mpmath/matrices
+
 touch %{buildroot}%{prefix}/DSR/dsr_user_db.txt
 mkdir -p %{buildroot}/etc/profile.d
 chmod a+rw %{buildroot}%{prefix}/DSR/example
@@ -407,6 +413,59 @@ install -m 644 networkx/testing/tests/test_utils.py                        %{bui
 install -m 644 networkx/testing/utils.py                                   %{buildroot}%{prefix}/DSR/networkx/testing/utils.py
 install -m 644 networkx/testing/__init__.py                                %{buildroot}%{prefix}/DSR/networkx/testing/__init__.py
 
+install -m 644 mpmath/conftest.py                   %{buildroot}%{prefix}/DSR/mpmath/conftest.py                
+install -m 644 mpmath/ctx_base.py                   %{buildroot}%{prefix}/DSR/mpmath/ctx_base.py                
+install -m 644 mpmath/ctx_fp.py                     %{buildroot}%{prefix}/DSR/mpmath/ctx_fp.py                  
+install -m 644 mpmath/ctx_iv.py                     %{buildroot}%{prefix}/DSR/mpmath/ctx_iv.py                  
+install -m 644 mpmath/ctx_mp.py                     %{buildroot}%{prefix}/DSR/mpmath/ctx_mp.py                  
+install -m 644 mpmath/ctx_mp_python.py              %{buildroot}%{prefix}/DSR/mpmath/ctx_mp_python.py           
+install -m 644 mpmath/function_docs.py              %{buildroot}%{prefix}/DSR/mpmath/function_docs.py           
+install -m 644 mpmath/identification.py             %{buildroot}%{prefix}/DSR/mpmath/identification.py          
+install -m 644 mpmath/math2.py                      %{buildroot}%{prefix}/DSR/mpmath/math2.py                   
+install -m 644 mpmath/matrices                      %{buildroot}%{prefix}/DSR/mpmath/matrices                   
+install -m 644 mpmath/rational.py                   %{buildroot}%{prefix}/DSR/mpmath/rational.py                
+install -m 644 mpmath/usertools.py                  %{buildroot}%{prefix}/DSR/mpmath/usertools.py               
+install -m 644 mpmath/visualization.py              %{buildroot}%{prefix}/DSR/mpmath/visualization.py           
+install -m 644 mpmath/__init__.py                   %{buildroot}%{prefix}/DSR/mpmath/__init__.py                
+install -m 644 mpmath/calculus/approximation.py     %{buildroot}%{prefix}/DSR/mpmath/calculus/approximation.py  
+install -m 644 mpmath/calculus/calculus.py          %{buildroot}%{prefix}/DSR/mpmath/calculus/calculus.py       
+install -m 644 mpmath/calculus/differentiation.py   %{buildroot}%{prefix}/DSR/mpmath/calculus/differentiation.py
+install -m 644 mpmath/calculus/extrapolation.py     %{buildroot}%{prefix}/DSR/mpmath/calculus/extrapolation.py  
+install -m 644 mpmath/calculus/odes.py              %{buildroot}%{prefix}/DSR/mpmath/calculus/odes.py           
+install -m 644 mpmath/calculus/optimization.py      %{buildroot}%{prefix}/DSR/mpmath/calculus/optimization.py   
+install -m 644 mpmath/calculus/polynomials.py       %{buildroot}%{prefix}/DSR/mpmath/calculus/polynomials.py    
+install -m 644 mpmath/calculus/quadrature.py        %{buildroot}%{prefix}/DSR/mpmath/calculus/quadrature.py     
+install -m 644 mpmath/calculus/__init__.py          %{buildroot}%{prefix}/DSR/mpmath/calculus/__init__.py       
+install -m 644 mpmath/functions/bessel.py           %{buildroot}%{prefix}/DSR/mpmath/functions/bessel.py        
+install -m 644 mpmath/functions/elliptic.py         %{buildroot}%{prefix}/DSR/mpmath/functions/elliptic.py      
+install -m 644 mpmath/functions/expintegrals.py     %{buildroot}%{prefix}/DSR/mpmath/functions/expintegrals.py  
+install -m 644 mpmath/functions/factorials.py       %{buildroot}%{prefix}/DSR/mpmath/functions/factorials.py    
+install -m 644 mpmath/functions/functions.py        %{buildroot}%{prefix}/DSR/mpmath/functions/functions.py     
+install -m 644 mpmath/functions/hypergeometric.py   %{buildroot}%{prefix}/DSR/mpmath/functions/hypergeometric.py
+install -m 644 mpmath/functions/orthogonal.py       %{buildroot}%{prefix}/DSR/mpmath/functions/orthogonal.py    
+install -m 644 mpmath/functions/qfunctions.py       %{buildroot}%{prefix}/DSR/mpmath/functions/qfunctions.py    
+install -m 644 mpmath/functions/rszeta.py           %{buildroot}%{prefix}/DSR/mpmath/functions/rszeta.py        
+install -m 644 mpmath/functions/theta.py            %{buildroot}%{prefix}/DSR/mpmath/functions/theta.py         
+install -m 644 mpmath/functions/zeta.py             %{buildroot}%{prefix}/DSR/mpmath/functions/zeta.py          
+install -m 644 mpmath/functions/zetazeros.py        %{buildroot}%{prefix}/DSR/mpmath/functions/zetazeros.py     
+install -m 644 mpmath/functions/__init__.py         %{buildroot}%{prefix}/DSR/mpmath/functions/__init__.py      
+install -m 644 mpmath/libmp/backend.py              %{buildroot}%{prefix}/DSR/mpmath/libmp/backend.py           
+install -m 644 mpmath/libmp/gammazeta.py            %{buildroot}%{prefix}/DSR/mpmath/libmp/gammazeta.py         
+install -m 644 mpmath/libmp/libelefun.py            %{buildroot}%{prefix}/DSR/mpmath/libmp/libelefun.py         
+install -m 644 mpmath/libmp/libhyper.py             %{buildroot}%{prefix}/DSR/mpmath/libmp/libhyper.py          
+install -m 644 mpmath/libmp/libintmath.py           %{buildroot}%{prefix}/DSR/mpmath/libmp/libintmath.py        
+install -m 644 mpmath/libmp/libmpc.py               %{buildroot}%{prefix}/DSR/mpmath/libmp/libmpc.py            
+install -m 644 mpmath/libmp/libmpf.py               %{buildroot}%{prefix}/DSR/mpmath/libmp/libmpf.py            
+install -m 644 mpmath/libmp/libmpi.py               %{buildroot}%{prefix}/DSR/mpmath/libmp/libmpi.py            
+install -m 644 mpmath/libmp/six.py                  %{buildroot}%{prefix}/DSR/mpmath/libmp/six.py               
+install -m 644 mpmath/libmp/__init__.py             %{buildroot}%{prefix}/DSR/mpmath/libmp/__init__.py          
+install -m 644 mpmath/matrices/calculus.py          %{buildroot}%{prefix}/DSR/mpmath/matrices/calculus.py       
+install -m 644 mpmath/matrices/eigen.py             %{buildroot}%{prefix}/DSR/mpmath/matrices/eigen.py          
+install -m 644 mpmath/matrices/eigen_symmetric.py   %{buildroot}%{prefix}/DSR/mpmath/matrices/eigen_symmetric.py
+install -m 644 mpmath/matrices/linalg.py            %{buildroot}%{prefix}/DSR/mpmath/matrices/linalg.py         
+install -m 644 mpmath/matrices/matrices.py          %{buildroot}%{prefix}/DSR/mpmath/matrices/matrices.py       
+install -m 644 mpmath/matrices/__init__.py          %{buildroot}%{prefix}/DSR/mpmath/matrices/__init__.py       
+
 dos2unix -q %{buildroot}%{prefix}/*
 
 
@@ -749,3 +808,56 @@ dos2unix -q %{buildroot}%{prefix}/*
 %{prefix}/DSR/networkx/testing/tests/test_utils.py
 %{prefix}/DSR/networkx/testing/utils.py
 %{prefix}/DSR/networkx/testing/__init__.py
+
+%{prefix}/DSR/mpmath/conftest.py                
+%{prefix}/DSR/mpmath/ctx_base.py                
+%{prefix}/DSR/mpmath/ctx_fp.py                  
+%{prefix}/DSR/mpmath/ctx_iv.py                  
+%{prefix}/DSR/mpmath/ctx_mp.py                  
+%{prefix}/DSR/mpmath/ctx_mp_python.py           
+%{prefix}/DSR/mpmath/function_docs.py           
+%{prefix}/DSR/mpmath/identification.py          
+%{prefix}/DSR/mpmath/math2.py                   
+%{prefix}/DSR/mpmath/matrices                   
+%{prefix}/DSR/mpmath/rational.py                
+%{prefix}/DSR/mpmath/usertools.py               
+%{prefix}/DSR/mpmath/visualization.py           
+%{prefix}/DSR/mpmath/__init__.py                
+%{prefix}/DSR/mpmath/calculus/approximation.py  
+%{prefix}/DSR/mpmath/calculus/calculus.py       
+%{prefix}/DSR/mpmath/calculus/differentiation.py
+%{prefix}/DSR/mpmath/calculus/extrapolation.py  
+%{prefix}/DSR/mpmath/calculus/odes.py           
+%{prefix}/DSR/mpmath/calculus/optimization.py   
+%{prefix}/DSR/mpmath/calculus/polynomials.py    
+%{prefix}/DSR/mpmath/calculus/quadrature.py     
+%{prefix}/DSR/mpmath/calculus/__init__.py       
+%{prefix}/DSR/mpmath/functions/bessel.py        
+%{prefix}/DSR/mpmath/functions/elliptic.py      
+%{prefix}/DSR/mpmath/functions/expintegrals.py  
+%{prefix}/DSR/mpmath/functions/factorials.py    
+%{prefix}/DSR/mpmath/functions/functions.py     
+%{prefix}/DSR/mpmath/functions/hypergeometric.py
+%{prefix}/DSR/mpmath/functions/orthogonal.py    
+%{prefix}/DSR/mpmath/functions/qfunctions.py    
+%{prefix}/DSR/mpmath/functions/rszeta.py        
+%{prefix}/DSR/mpmath/functions/theta.py         
+%{prefix}/DSR/mpmath/functions/zeta.py          
+%{prefix}/DSR/mpmath/functions/zetazeros.py     
+%{prefix}/DSR/mpmath/functions/__init__.py      
+%{prefix}/DSR/mpmath/libmp/backend.py           
+%{prefix}/DSR/mpmath/libmp/gammazeta.py         
+%{prefix}/DSR/mpmath/libmp/libelefun.py         
+%{prefix}/DSR/mpmath/libmp/libhyper.py          
+%{prefix}/DSR/mpmath/libmp/libintmath.py        
+%{prefix}/DSR/mpmath/libmp/libmpc.py            
+%{prefix}/DSR/mpmath/libmp/libmpf.py            
+%{prefix}/DSR/mpmath/libmp/libmpi.py            
+%{prefix}/DSR/mpmath/libmp/six.py               
+%{prefix}/DSR/mpmath/libmp/__init__.py          
+%{prefix}/DSR/mpmath/matrices/calculus.py       
+%{prefix}/DSR/mpmath/matrices/eigen.py          
+%{prefix}/DSR/mpmath/matrices/eigen_symmetric.py
+%{prefix}/DSR/mpmath/matrices/linalg.py         
+%{prefix}/DSR/mpmath/matrices/matrices.py       
+%{prefix}/DSR/mpmath/matrices/__init__.py       

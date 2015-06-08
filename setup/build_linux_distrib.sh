@@ -64,6 +64,8 @@ do
 done
 # copy networkx
 cp -r ../networkx $TMPDIR/
+# and mpmath
+cp -r ../mpmath $TMPDIR/
 
 cd $TMP
 tar -rf $GIT/setup/Output/$OUTFILE DSR-$VERSION 2> /dev/null
@@ -84,6 +86,7 @@ cp $TMPDIR/* $DEBDIR/opt/DSR
 cp -r $TMPDIR/example $DEBDIR/opt/DSR
 cp -r $TMPDIR/manuals $DEBDIR/opt/DSR
 cp -r $TMPDIR/networkx $DEBDIR/opt/DSR
+cp -r $TMPDIR/mpmath $DEBDIR/opt/DSR
 cp $TMPDIR/setup/* $DEBDIR/etc/profile.d
 
 
