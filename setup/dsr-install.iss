@@ -64,7 +64,6 @@ Name: "modifypath"; Description: "Add application directory to your system envir
 [Files]
 Source: "..\dsr_db.txt"; DestDir: "{app}"; Flags: ignoreversion; Permissions: users-modify
 Source: "..\dsr.bat"; DestDir: "{app}"; Flags: ignoreversion; Permissions: users-modify
-;Source: "..\dsr-shelxle.bat"; DestDir: "{app}"; Flags: ignoreversion; Permissions: users-modify
 Source: "..\dsr.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\manuals\DSR-manual.pdf"; DestDir: "{app}\manual"; Flags: ignoreversion
 Source: "..\atoms.py"; DestDir: "{app}"; Flags: ignoreversion
@@ -89,6 +88,7 @@ Source: "..\example\*"; DestDir: "{app}\example"; Flags: ignoreversion createall
 Source: ".\Output\changelog.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\dsr_user_db.txt"; DestDir: "{app}"; Flags: ignoreversion confirmoverwrite uninsneveruninstall onlyifdoesntexist; Permissions: users-modify
 Source: "..\networkx\*"; DestDir: "{app}\networkx"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\mpmath\*"; DestDir: "{app}\mpmath"; Flags: ignoreversion createallsubdirs recursesubdirs
 
 [Icons]
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
