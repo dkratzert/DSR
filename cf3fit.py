@@ -297,14 +297,14 @@ class CF3(object):
             atom = self.dsr_dict['target'][0]
         # returns the atom names of the fluorine atoms:
         fluorine_names = self.cf3() 
-        self.do_refine_cycle(self.rl, self.reslist)
-        print(fluorine_names[0]+'_A')
-        ratom = self.lf.get_single_coordinate(fluorine_names[0]+'_A')
-        print(ratom)
+        #self.do_refine_cycle(self.rl, self.reslist)
+        print(fluorine_names[0])
+        ratom = self.lf.get_single_coordinate(fluorine_names[0])
+        print('ratom:', ratom)
         #ratom = self.get_coordinates_of_first_atom(fluorine_names)
         self.lf.read_lst_file()
         bondvec = self.lf.get_bondvector()
-        print(bondvec)
+        print('bondvec:', bondvec)
         at1 = self.lf.get_single_coordinate(bondvec[0].upper())
         at2 = self.lf.get_single_coordinate(bondvec[1].upper())
         names = ['F{}'.format(i) for i in range(1, 25)]
@@ -313,29 +313,43 @@ class CF3(object):
         for delta in range(0, 360, 15):
             coord = self.rotate_atom_around_bond(ratom, at1, at2, delta)
             coords.append(coord)
-        print('PART 0')
+        #print('PART 0')
         diffden = self.lf.get_difference_density(averaged=False)
         print(diffden)
         rotation = self.lf.get_degree_of_highest_peak()
         print(rotation)
-        n = (rotation/15) #+1
+        n = (rotation/15)+4 #+1
         diffden = shift(diffden, n)
         print(len(diffden))
         print('\n')
         print
         print('AFIX 6')
         # make restraints:
+        sad12 = []
+        sad13 = []
+        ff = []
+        flast = False
         for i, num, co, dif in zip(names, [i for i in range(1, 25)], coords, diffden):
-            print('PART {}'.format(num))
+            #print('PART {}'.format(num))
+            if not flast:
+                flast = 'F24'
+            ff.append((flast, i))
+            flast = i
+            sad12.append(('C22', i))
+            sad13.append(('C19', i))
             print('{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  {:<8.6}  -1.2\
             '.format(i, co[0], co[1], co[2], 10.0+(dif/2760.0)))
             # with free variables:
-            print('{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  {:<8.6}  261\
-            '.format(i, co[0], co[1], co[2], 10.0*num+1+10))
+            #print('{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  {:<8.6}  261\
+            #'.format(i, co[0], co[1], co[2], 10.0*num+1+10))
+        from misc import flatten
+        print('SADI '+' '.join(flatten(sad12)))
+        print('SADI '+' '.join(flatten(sad13)))
+        print('SADI '+' '.join(flatten(ff)))
         d = 0
         for dif in diffden:
             d += dif/2760.0
-        print('PART 0')
+        #print('PART 0')
         print('AFIX 0')
         print
         print(d)
@@ -462,11 +476,11 @@ if __name__ == '__main__':
     
     cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, basefilename, dsr_dict, resi)
     
-    if fragment == 'cf3':
-        cf3.cf3('130')
-    if fragment == 'cf6':
-        cf3.cf3('120')
-    #cf3.make_cf3_thorus()
+    #if fragment == 'cf3':
+    #    cf3.cf3('130')
+    #if fragment == 'cf6':
+    #    cf3.cf3('120')
+    cf3.make_cf3_thorus()
 
 
    
