@@ -15,16 +15,8 @@ Created on 13.05.2015
 - force name tags to be longer than three characters?
   Maybe better to reserve CF3, CF6 anf CFx for CF3 groups.  
 
-- set residue und occupancy
-- set the sump and free variable
+- wrap restraints after 79 characters
 
-
- Difference electron density (eA^-3x100) at 15 degree intervals for AFIX 130
- group attached to C1_a. The center of the range is eclipsed (cis) to C7_a
- and rotation is clockwise looking down C2_a to C1_a.
-   349  237  171  203  358  579  668  504  243   65  -11   41  272  530  563  380  223  146  106  146  316  497  522  451
-
- After local symmetry averaging:    272   149    88   130   315   536   584   445
 '''
 import resfile
 from dbfile import global_DB
@@ -53,7 +45,8 @@ dfixr_120 = ['DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n',
              'EADP F1 F4 \n',
              'EADP F6 F3 \n',
              'EADP F2 F5 ']
-dfixr_cf9 =  ['DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n', 
+dfixr_cf9 = ['SUMP 1 0.0001 1 {0} 1 {1} 1 {2}', 
+             'DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n', 
              'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 \n',
              'SADI 0.1 Y F1 Y F2 Y F3  Z F4 Z F5 Z F6 \n',
              'RIGU Y Z F1 F2 F3 \n',
@@ -90,6 +83,7 @@ class CF3(object):
         self.resi = resi
         self.rand_id = id_generator(size=7)
         self.fa = fa
+        self.rle = rle
         self.dsr_dict = dsr_dict
         self.fragment = fragment
         self.reslist = reslist
@@ -224,6 +218,7 @@ class CF3(object):
         for i in found:
             print('Deleting ' + i[0] + '_' + i[7] + ' from '+atom)
         self.delete_bound_fluorine(found)
+        reslist_copy = self.reslist[:]
         fatoms = self.make_afix(afixnum=130, linenumber=atomline[0])
         self.do_refine_cycle(self.rl, self.reslist)
         # this is the bond around the CF3 group rotates
@@ -233,16 +228,51 @@ class CF3(object):
         numberedatoms = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9']
         nums = NumberScheme(self.reslist, numberedatoms, False)
         F1, F2, F3, F4, F5, F6, F7, F8, F9  = nums.get_fragment_number_scheme()
+        start_f_coord = self.fa.get_atomcoordinates([fatoms[0]]).values()[0]
         replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3),
                             ('F4', F4), ('F5', F5), ('F6', F6), ('F7', F7), ('F8', F8), ('F9', F9))
         for old, new in (replacelist):
             restr = [i.replace(old, new) for i in restr]
         # add restraints to reslist:
-        self.reslist[atomline[0]] = self.reslist[atomline[0]]+self.startm+''.join(restr)
-        regex = r'.*{}'.format(self.rand_id)
-        id_lines = find_multi_lines(self.reslist, regex)
-        for line in id_lines:
-            self.reslist[line] = ' '.join(self.reslist[line].split()[1:-1])+'\n'
+        self.reslist = reslist_copy
+        #fa = FindAtoms(reslist)
+        atomline = self.fa.get_atom_line_numbers([atom])[0]
+        atoms_cf9 = ['\n',
+                    'PART 1 {1}1', 
+                    F1+' {0}   {4}   11.0  0.04',
+                    F2+' {0}   {5}   11.0  0.04',
+                    F3+' {0}   {6}   11.0  0.04',
+                    'PART 2 {2}1',
+                    F4+' {0}   {7}   11.0  0.04',
+                    F5+' {0}   {8}   11.0  0.04',
+                    F6+' {0}   {9}   11.0  0.04',
+                    'PART 3 {3}1',
+                    F7+' {0}   {10}   11.0  0.04',
+                    F8+' {0}   {11}   11.0  0.04',
+                    F9+' {0}   {12}   11.0  0.04',                    
+                    'PART 0\n']
+        restr = ''.join(restr).format(self.rle.get_fvar_count()+1,
+                                      self.rle.get_fvar_count()+2,
+                                      self.rle.get_fvar_count()+3)
+        self.reslist[atomline] = self.reslist[atomline]+self.startm+restr
+        #regex = r'.*{}'.format(self.rand_id)
+        #id_lines = find_multi_lines(self.reslist, regex)
+        #for line in id_lines:
+        #    self.reslist[line] = ' '.join(self.reslist[line].split()[1:-1])+'\n'
+        at1 = self.lf.get_single_coordinate(Y)
+        at2 = self.lf.get_single_coordinate(Z)
+        coords = []
+        for delta in range(0, 360, 36):
+            coord = self.rotate_atom_around_bond(start_f_coord, at1, at2, delta)
+            coords.append('{}  {}  {}'.format(*coord))        
+        self.reslist[atomline] = self.reslist[atomline]\
+                                        + '\n'.join(atoms_cf9).format(self.e2s.elem_2_sfac('F'),
+                                                           self.rle.get_fvar_count()+1,
+                                                           self.rle.get_fvar_count()+2,
+                                                           self.rle.get_fvar_count()+3,
+                                                           *coords
+                                                           )
+        
         self.rl.write_resfile(self.reslist, '.res')
         return fatoms
 
@@ -312,7 +342,7 @@ class CF3(object):
             self.reslist[linenumber+1] = '' 
         # insert the afix:
         self.reslist[linenumber] = self.reslist[linenumber]\
-                                        +afix.format(afixnum, sfac, occ, 
+                                        + afix.format(afixnum, sfac, occ, 
                                             #this ID is to recognize this line later:
                                             self.rand_id ) 
         if str(afixnum) == '120':
@@ -479,6 +509,7 @@ class CF3(object):
         R = T1*Rxa*Ryb*Rzd*Ryb1*Rxa1*T
         v = R*ratom
         v = cart_to_frac(v[:3], self.cell)
+        v = [round(i, 6) for i in v]
         return v 
     
 if __name__ == '__main__':
@@ -499,11 +530,11 @@ if __name__ == '__main__':
     dsrp = DSR_Parser(reslist, rle)
     dsr_dict = dsrp.get_dsr_dict
     if dsrp.occupancy:
-            rle.set_free_variables(dsrp.occupancy, fvarlines)
+            rle.set_free_variables(dsrp.occupancy)
     dsr_line_number = dsrp.find_dsr_command(line=False)
     fvarlines = rle.find_fvarlines()
     if dsrp.occupancy:
-        rle.set_free_variables(dsrp.occupancy, fvarlines)
+        rle.set_free_variables(dsrp.occupancy)
     fragment = dsrp.fragment.lower()
     sf = SfacTable(reslist, ['C', 'F', 'F', 'F'])
     sfac_table = sf.set_sfac_table() 

@@ -91,6 +91,7 @@ class ResListEdit():
         '''
         self._reslist = reslist
         self._find_atoms = find_atoms
+        self.fvarlines = misc.find_multi_lines(self._reslist, r'^FVAR.+[0-9]+')
     
     def get_cell(self):
         '''
@@ -172,8 +173,7 @@ class ResListEdit():
         returns a list of FVAR occurences
         sys.exit() if no atom or FVAR found
         '''
-        fvarlines = misc.find_multi_lines(self._reslist, r'^FVAR.+[0-9]+')
-        if not fvarlines:   # There is no FVAR in the res file after SHELXS!
+        if not self.fvarlines:   # There is no FVAR in the res file after SHELXS!
             for num, i in enumerate(self._reslist):
                 if self._find_atoms.is_atom(i):
                     first_atom = num
@@ -184,7 +184,9 @@ class ResListEdit():
             fvarlines = []
             fvarlines.append(first_atom-1)
             self._reslist.insert(first_atom-1, ' \n')
-        return fvarlines
+            return fvarlines
+        else:
+            return self.fvarlines
 
 
     def insert_frag_fend_entry(self, dbatoms, fragline, fvarlines):
@@ -209,7 +211,16 @@ class ResListEdit():
         self._reslist.insert(fvarlines[-1]+1, dblines)   # insert the db entry right after FVAR
 
 
-    def set_free_variables(self, occupancynumber, fvarlines):
+    def get_fvarlist(self):
+        fvar_list = []
+        for line in self.fvarlines:
+            fvar = self._reslist[line].split()
+            if fvar:
+                del fvar[0]
+            fvar_list.extend(fvar)
+        return fvar_list
+
+    def set_free_variables(self, occupancynumber):
         '''
         Inserts additional free variables according to the occ parameter
         This function starts at the end of parse_dsr_line() so we don't have
@@ -218,13 +229,8 @@ class ResListEdit():
         :param fvarlines:       list, list of line numbers where FVAR is located
                                       in the res file
         '''
+        fvar_list = self.get_fvarlist()
         occupancynumber = occupancynumber.strip('-')
-        fvar_list = []
-        for line in fvarlines:
-            fvar = self._reslist[line].split()
-            if fvar:
-                del fvar[0]
-            fvar_list.extend(fvar)
         if len(fvar_list) != 0:
             for line in fvarlines:
                 self._reslist[line] = ' \n' # removes the old FVAR
@@ -246,7 +252,11 @@ class ResListEdit():
             fvars = fvars+'\n'
         self._reslist[fvarlines[0]] = fvars
 
-
+    def get_fvar_count(self):
+        '''
+        returns the last used free variable defined with FVAR
+        '''
+        return len(self.get_fvarlist())
 
 # for testing
 if __name__ == '__main__':
@@ -267,7 +277,7 @@ if __name__ == '__main__':
 
     fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
     rle.insert_frag_fend_entry(dbatoms, fragline, fvarlines)
-    rle.set_free_variables('91.1234', fvarlines)
+    rle.set_free_variables('91.1234')
 
     for num, i in  enumerate(reslist):
         print(num+1, ''.join(i.strip('\n\r')))

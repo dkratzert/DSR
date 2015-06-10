@@ -320,7 +320,7 @@ class DSR():
         dsr_dict = dsrp.get_dsr_dict
         fvarlines = rle.find_fvarlines()
         if dsrp.occupancy:
-            rle.set_free_variables(dsrp.occupancy, fvarlines)
+            rle.set_free_variables(dsrp.occupancy)
         fragment = dsrp.fragment.lower()
         if fragment == 'cf3':
             # start_routine_to_make_cf3_group()
