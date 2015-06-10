@@ -246,10 +246,17 @@ def make_directory(dirpath):
         #sys.exit(False)
 
 
-def wrap_headlines(dbhead):
+def wrap_headlines(dbhead, width=77):
+    '''
+    wraps lines of a restraint header to prevent too long lines in
+    SHELXL. wrapping is done with = at the end of a line and ' ' at
+    start of the next line
+    :param dbhead: header with restraints
+    :param width: wrap after width characters
+    '''
     import textwrap
     for num, line in enumerate(dbhead):
-        line = textwrap.wrap(line, 77, subsequent_indent = '  ')
+        line = textwrap.wrap(line, width, subsequent_indent = '  ')
         if len(line) > 1:
             newline = []
             for n, l in enumerate(line):

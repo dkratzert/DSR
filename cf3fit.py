@@ -27,7 +27,7 @@ from refine import ShelxlRefine
 from restraints import ListFile
 from elements import ELEMENTS
 from misc import atomic_distance, frac_to_cart, cart_to_frac,\
-    id_generator, shift, remove_partsymbol, find_multi_lines
+    id_generator, shift, remove_partsymbol, find_multi_lines, wrap_headlines
 from math import sin, cos, radians, sqrt
 import sys
 from resfile import ResList, ResListEdit
@@ -65,7 +65,8 @@ sadir_120 = ['SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n',
              'EADP F1 F4 \n',
              'EADP F6 F3 \n',
              'EADP F2 F5 ']
-sadir_cf9 = ['SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9\n',
+sadir_cf9 = ['SUMP 1 0.0001 1 {0} 1 {1} 1 {2}',
+             'SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9\n',
              'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4  F7 F8 F8 F9 F9 F7 \n',
              'SADI 0.1 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 \n',
              'RIGU Y Z F1 > F9 \n']
@@ -181,6 +182,7 @@ class CF3(object):
                             ('F4', F4), ('F5', F5), ('F6', F6))
         for old, new in (replacelist):
             restr = [i.replace(old, new) for i in restr]
+        restr = wrap_headlines(restr, 77)
         self.reslist = self.rl.get_res_list()
         # get position for the fluorine atoms:
         atomline = self.fa.get_atom_line_numbers([atom])
@@ -201,7 +203,7 @@ class CF3(object):
         :param atom: central atom of the group
         :type atom: string
         '''
-        print('Generating twofold disordered CF3-Group at {}.'.format(self.dsr_dict['target'][0]))
+        print('Generating threefold disordered CF3-Group at {}.'.format(self.dsr_dict['target'][0]))
         atom = self.dsr_dict['target'][0]
         if self.dsr_dict['dfix']:
             restr = dfixr_cf9
@@ -210,7 +212,6 @@ class CF3(object):
         if self.resi.get_residue_class:
             restr = self.resi.format_restraints(restr)
             restr = [i+'\n' for i in restr]
-        atom = self.dsr_dict['target'][0]
         if len(self.dsr_dict['target']) > 1:
             print('Using only first target atom {}.'.format(self.dsr_dict['target'][0]))
         atomline = self.fa.get_atom_line_numbers([atom])
@@ -235,10 +236,14 @@ class CF3(object):
             restr = [i.replace(old, new) for i in restr]
         # add restraints to reslist:
         self.reslist = reslist_copy
-        #fa = FindAtoms(reslist)
+        if self.dsr_dict['occupancy']:
+            occ = self.dsr_dict['occupancy']
+        else:
+            occ = str((self.rle.get_fvar_count())*10+1+30)
+        fcount = self.rle.get_fvar_count()
+        fvar = self.rle.set_free_variables(occ) 
         atomline = self.fa.get_atom_line_numbers([atom])[0]
-        atoms_cf9 = ['\n',
-                    'PART 1 {1}1', 
+        atoms_cf9 = ['PART 1 {1}1', 
                     F1+' {0}   {4}   11.0  0.04',
                     F2+' {0}   {5}   11.0  0.04',
                     F3+' {0}   {6}   11.0  0.04',
@@ -250,15 +255,10 @@ class CF3(object):
                     F7+' {0}   {10}   11.0  0.04',
                     F8+' {0}   {11}   11.0  0.04',
                     F9+' {0}   {12}   11.0  0.04',                    
-                    'PART 0\n']
-        restr = ''.join(restr).format(self.rle.get_fvar_count()+1,
-                                      self.rle.get_fvar_count()+2,
-                                      self.rle.get_fvar_count()+3)
+                    'PART 0\n\n']
+        restr = wrap_headlines(restr, 77)
+        restr = ''.join(restr).format(fcount+1, fcount+2, fcount+3)
         self.reslist[atomline] = self.reslist[atomline]+self.startm+restr
-        #regex = r'.*{}'.format(self.rand_id)
-        #id_lines = find_multi_lines(self.reslist, regex)
-        #for line in id_lines:
-        #    self.reslist[line] = ' '.join(self.reslist[line].split()[1:-1])+'\n'
         at1 = self.lf.get_single_coordinate(Y)
         at2 = self.lf.get_single_coordinate(Z)
         coords = []
@@ -267,12 +267,9 @@ class CF3(object):
             coords.append('{}  {}  {}'.format(*coord))        
         self.reslist[atomline] = self.reslist[atomline]\
                                         + '\n'.join(atoms_cf9).format(self.e2s.elem_2_sfac('F'),
-                                                           self.rle.get_fvar_count()+1,
-                                                           self.rle.get_fvar_count()+2,
-                                                           self.rle.get_fvar_count()+3,
-                                                           *coords
-                                                           )
-        
+                                                           fcount+1, fcount+2, fcount+3,
+                                                           *coords)   
+        self.reslist[self.rle.find_fvarlines()[0]] = fvar
         self.rl.write_resfile(self.reslist, '.res')
         return fatoms
 
@@ -288,6 +285,8 @@ class CF3(object):
         occ = 11
         if self.dsr_dict['occupancy']:
             occ = self.dsr_dict['occupancy']
+        else:
+            occ = str((self.rle.get_fvar_count()+1)*10+1)
         num_130 = NumberScheme(self.reslist, ['F1', 'F2', 'F3'], False)
         num_120 = NumberScheme(self.reslist, ['F1', 'F2', 'F3', 'F4', 'F5', 'F6'], False)
         # returns also the atom names if residue is active
@@ -305,9 +304,9 @@ class CF3(object):
         afix_130 = ['\n'+resistr,
                     'AFIX {0}', # AFIX 120 or 130
                     #'REM AFIX made by DSR: {3}',    
-                    numberscheme_130[0]+' {1} 0 0 0 {2}  0.04',
-                    numberscheme_130[1]+' {1} 0 0 0 {2}  0.04',
-                    numberscheme_130[2]+' {1} 0 0 0 {2}  0.04',
+                    numberscheme_130[0]+' {1} 0 0 0 11.0  0.04',
+                    numberscheme_130[1]+' {1} 0 0 0 11.0  0.04',
+                    numberscheme_130[2]+' {1} 0 0 0 11.0  0.04',
                     #'REM end of AFIX by DSR {3}', # insert ID and later change it to the PART usw.
                     'AFIX 0',
                     resi0+'\n']
@@ -529,8 +528,6 @@ if __name__ == '__main__':
     fvarlines = rle.find_fvarlines()
     dsrp = DSR_Parser(reslist, rle)
     dsr_dict = dsrp.get_dsr_dict
-    if dsrp.occupancy:
-            rle.set_free_variables(dsrp.occupancy)
     dsr_line_number = dsrp.find_dsr_command(line=False)
     fvarlines = rle.find_fvarlines()
     if dsrp.occupancy:
@@ -548,7 +545,7 @@ if __name__ == '__main__':
     cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, basefilename, dsr_dict, resi)
     
     if fragment == 'cf3':
-        cf3.cf9()
+        cf3.cf3()
     if fragment == 'cf6':
         cf3.cf3('120')
     #cf3.make_cf3_thorus()

@@ -226,13 +226,14 @@ class ResListEdit():
         This function starts at the end of parse_dsr_line() so we don't have
         to care about it anywhere else.
         :param occupancynumber: string, like '21.0'
+        :type occupancynumber: string
         :param fvarlines:       list, list of line numbers where FVAR is located
                                       in the res file
         '''
         fvar_list = self.get_fvarlist()
         occupancynumber = occupancynumber.strip('-')
         if len(fvar_list) != 0:
-            for line in fvarlines:
+            for line in self.fvarlines:
                 self._reslist[line] = ' \n' # removes the old FVAR
         # how many numbers do we have?:
         varlen = len(fvar_list) 
@@ -250,7 +251,8 @@ class ResListEdit():
             lines.append(l)
             fvars = '\n'.join(lines)
             fvars = fvars+'\n'
-        self._reslist[fvarlines[0]] = fvars
+        self._reslist[self.fvarlines[0]] = fvars
+        return fvars
 
     def get_fvar_count(self):
         '''
