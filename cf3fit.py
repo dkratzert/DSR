@@ -222,6 +222,7 @@ class CF3(object):
         reslist_copy = self.reslist[:]
         fatoms = self.make_afix(afixnum=130, linenumber=atomline[0])
         self.do_refine_cycle(self.rl, self.reslist)
+        #self.reslist = self.rl.get_res_list()
         # this is the bond around the CF3 group rotates
         Y, Z = self.lf.get_bondvector(atom)
         Y = remove_partsymbol(Y)
@@ -229,7 +230,8 @@ class CF3(object):
         numberedatoms = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9']
         nums = NumberScheme(self.reslist, numberedatoms, False)
         F1, F2, F3, F4, F5, F6, F7, F8, F9  = nums.get_fragment_number_scheme()
-        start_f_coord = self.fa.get_atomcoordinates([fatoms[0]]).values()[0]
+        #start_f_coord = self.fa.get_atomcoordinates([fatoms[0]]).values()[0]
+        start_f_coord = self.lf.get_single_coordinate(fatoms[0])
         replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3),
                             ('F4', F4), ('F5', F5), ('F6', F6), ('F7', F7), ('F8', F8), ('F9', F9))
         for old, new in (replacelist):
@@ -545,7 +547,7 @@ if __name__ == '__main__':
     cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, basefilename, dsr_dict, resi)
     
     if fragment == 'cf3':
-        cf3.cf3()
+        cf3.cf9()
     if fragment == 'cf6':
         cf3.cf3('120')
     #cf3.make_cf3_thorus()
