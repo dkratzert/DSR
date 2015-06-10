@@ -42,6 +42,42 @@ from resfile import ResList, ResListEdit
 import mpmath as mp 
 
 
+dfixr_130 = ['DFIX 1.328 Z F1 Z F2 Z F3 \n', 
+             'DFIX 2.125 F1 F2 F2 F3 F3 F1 \n',
+             'SADI 0.1 Y F1 Y F2 Y F3 \n',
+             'RIGU Y Z F1 F2 F3 ']
+dfixr_120 = ['DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n', 
+             'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 \n',
+             'SADI 0.1 Y F1 Y F2 Y F3  Z F4 Z F5 Z F6 \n',
+             'RIGU Y Z F1 F2 F3 \n',
+             'EADP F1 F4 \n',
+             'EADP F6 F3 \n',
+             'EADP F2 F5 ']
+dfixr_cf9 =  ['DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n', 
+             'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 \n',
+             'SADI 0.1 Y F1 Y F2 Y F3  Z F4 Z F5 Z F6 \n',
+             'RIGU Y Z F1 F2 F3 \n',
+             'EADP F1 F4 \n',
+             'EADP F6 F3 \n',
+             'EADP F2 F5 ']
+
+sadir_130 = ['SADI 0.02 Z F1 Z F2 Z F3 \n',
+             'SADI 0.04 F1 F2 F2 F3 F3 F1 \n',
+             'SADI 0.1 Z F1 Z F2 Z F3 \n',
+             'RIGU Y Z F1 F2 F3 ']
+sadir_120 = ['SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n',
+             'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 \n',
+             'SADI 0.1 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n',
+             'RIGU Y Z F1 F2 F3 F4 F5 F6 \n',
+             'EADP F1 F4 \n',
+             'EADP F6 F3 \n',
+             'EADP F2 F5 ']
+sadir_cf9 = ['SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9\n',
+             'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4  F7 F8 F8 F9 F9 F7 \n',
+             'SADI 0.1 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 \n',
+             'RIGU Y Z F1 > F9 \n']
+
+
 class CF3(object):
     '''
     a class to create cf3 groups at terminal atoms
@@ -101,7 +137,7 @@ class CF3(object):
             i = int(i[2])
             rle.remove_line(i, rem=False, remove=False, frontspace=True)
     
-    def cf3(self, afix=130, atom=None):
+    def cf3(self, afix=130):
         '''
         create CF3 group on atom.
         Either define atom at startup or let dsrparser get the atom name.
@@ -115,52 +151,30 @@ class CF3(object):
         :type afix: string
         '''
         afix=str(afix)
-        print('Generating CF3-Group')
-        dfixr_130 = ['DFIX 1.328 Z F1 Z F2 Z F3 \n', 
-                     'DFIX 2.125 F1 F2 F2 F3 F3 F1 \n',
-                     'SADI 0.1 Y F1 Y F2 Y F3 \n',
-                     'RIGU Y Z F1 F2 F3 ']
-        dfixr_120 = ['DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n', 
-                     'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 \n',
-                     'SADI 0.1 Y F1 Y F2 Y F3  Z F4 Z F5 Z F6 \n',
-                     'RIGU Y Z F1 F2 F3 \n',
-                     '\nEADP F1 F4 \n',
-                     'EADP F6 F3 \n',
-                     'EADP F2 F5 ']
-        sadir_130 = ['SADI 0.02 Z F1 Z F2 Z F3 \n',
-                     'SADI 0.04 F1 F2 F2 F3 F3 F1 \n',
-                     'SADI 0.1 Z F1 Z F2 Z F3 \n',
-                     'RIGU Y Z F1 F2 F3 ']
-        sadir_120 = ['SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n',
-                     'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 \n',
-                     'SADI 0.1 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n',
-                     'RIGU Y Z F1 F2 F3 F4 F5 F6 \n',
-                     'EADP F1 F4 \n',
-                     'EADP F6 F3 \n',
-                     'EADP F2 F5 ']
-        if self.dsr_dict['dfix']:
-            if afix == '130':
+        if afix == '130':
+            print('Generating CF3-Group at {}.'.format(self.dsr_dict['target'][0]))
+            restr = sadir_130
+            if self.dsr_dict['dfix']:
                 restr = dfixr_130
-            if afix == '120':
+        if afix == '120':
+            print('Generating twofold disordered CF3-Group at {}.'.format(self.dsr_dict['target'][0]))
+            restr = sadir_120
+            if self.dsr_dict['dfix']:
                 restr = dfixr_120
-        else:
-            if afix == '130':
-                restr = sadir_130
-            if afix == '120':
-                restr = sadir_120
         if self.resi.get_residue_class:
             restr = self.resi.format_restraints(restr)
             restr = [i+'\n' for i in restr]
-        if not atom:
-            atom = self.dsr_dict['target'][0]
+        atom = self.dsr_dict['target'][0]
+        if len(self.dsr_dict['target']) > 1:
+            print('Using only first target atom {}.'.format(self.dsr_dict['target'][0]))
         atomline = self.fa.get_atom_line_numbers([atom])
-        #print(atomlinenumber, '#####', atom)
         found = self.find_bonded_fluorine(atom)
         for i in found:
             print('Deleting ' + i[0] + '_' + i[7] + ' from '+atom)
         self.delete_bound_fluorine(found)
         fatoms = self.make_afix(afixnum=afix, linenumber=atomline[0])
         self.do_refine_cycle(self.rl, self.reslist)
+        # this is the bond around the CF3 group rotates
         Y, Z = self.lf.get_bondvector(atom)
         Y = remove_partsymbol(Y)
         Z = remove_partsymbol(Z)
@@ -184,7 +198,54 @@ class CF3(object):
             self.reslist[line] = ' '.join(self.reslist[line].split()[1:-1])+'\n'
         self.rl.write_resfile(self.reslist, '.res')
         return fatoms
-    
+
+    def cf9(self):
+        '''
+        create disorderd CF3 group on three positions.
+        either define atom at startup or let dsrparser get the atom name.
+        
+        :param atom: central atom of the group
+        :type atom: string
+        '''
+        print('Generating twofold disordered CF3-Group at {}.'.format(self.dsr_dict['target'][0]))
+        atom = self.dsr_dict['target'][0]
+        if self.dsr_dict['dfix']:
+            restr = dfixr_cf9
+        else:
+            restr = sadir_cf9 
+        if self.resi.get_residue_class:
+            restr = self.resi.format_restraints(restr)
+            restr = [i+'\n' for i in restr]
+        atom = self.dsr_dict['target'][0]
+        if len(self.dsr_dict['target']) > 1:
+            print('Using only first target atom {}.'.format(self.dsr_dict['target'][0]))
+        atomline = self.fa.get_atom_line_numbers([atom])
+        found = self.find_bonded_fluorine(atom)
+        for i in found:
+            print('Deleting ' + i[0] + '_' + i[7] + ' from '+atom)
+        self.delete_bound_fluorine(found)
+        fatoms = self.make_afix(afixnum=130, linenumber=atomline[0])
+        self.do_refine_cycle(self.rl, self.reslist)
+        # this is the bond around the CF3 group rotates
+        Y, Z = self.lf.get_bondvector(atom)
+        Y = remove_partsymbol(Y)
+        Z = remove_partsymbol(Z)
+        numberedatoms = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9']
+        nums = NumberScheme(self.reslist, numberedatoms, False)
+        F1, F2, F3, F4, F5, F6, F7, F8, F9  = nums.get_fragment_number_scheme()
+        replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3),
+                            ('F4', F4), ('F5', F5), ('F6', F6), ('F7', F7), ('F8', F8), ('F9', F9))
+        for old, new in (replacelist):
+            restr = [i.replace(old, new) for i in restr]
+        # add restraints to reslist:
+        self.reslist[atomline[0]] = self.reslist[atomline[0]]+self.startm+''.join(restr)
+        regex = r'.*{}'.format(self.rand_id)
+        id_lines = find_multi_lines(self.reslist, regex)
+        for line in id_lines:
+            self.reslist[line] = ' '.join(self.reslist[line].split()[1:-1])+'\n'
+        self.rl.write_resfile(self.reslist, '.res')
+        return fatoms
+
 
     def make_afix(self, afixnum, linenumber):
         '''
@@ -210,8 +271,9 @@ class CF3(object):
             numberscheme_130 = ['F1', 'F2', 'F3']
             numberscheme_120 = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6']
         sfac = self.e2s.elem_2_sfac('F')
+        # CF3:
         afix_130 = ['\n'+resistr,
-                    'AFIX {0}',
+                    'AFIX {0}', # AFIX 120 or 130
                     #'REM AFIX made by DSR: {3}',    
                     numberscheme_130[0]+' {1} 0 0 0 {2}  0.04',
                     numberscheme_130[1]+' {1} 0 0 0 {2}  0.04',
@@ -219,7 +281,7 @@ class CF3(object):
                     #'REM end of AFIX by DSR {3}', # insert ID and later change it to the PART usw.
                     'AFIX 0',
                     resi0+'\n']
-        # TODO: set the occupancy coorectly
+        # CF6:
         afix_120 = ['\n'+resistr,
                     'AFIX {0}',
                     '\nREM PART 1 !{3}', 
@@ -249,39 +311,17 @@ class CF3(object):
             self.reslist[linenumber] = '{:5.4s}{:4.2s}{:>10.8s} {:>10.8s} {:>10.8s}  {:8.6s}  0.04'.format(*atomline)
             self.reslist[linenumber+1] = '' 
         # insert the afix:
-        self.reslist[linenumber] = self.reslist[linenumber]+afix.format(afixnum, 
-                                                                        sfac, 
-                                                                        occ, 
-                                                                        #this ID is to recognize this line later
-                                                                        self.rand_id ) 
+        self.reslist[linenumber] = self.reslist[linenumber]\
+                                        +afix.format(afixnum, sfac, occ, 
+                                            #this ID is to recognize this line later:
+                                            self.rand_id ) 
         if str(afixnum) == '120':
             return numberscheme_120
         if str(afixnum) == '130':
             return numberscheme_130
 
         
-    def cf6(self, atom=None):
-        '''
-        Thi methos is obsolete!
-        
-        create disorderd CF3 group on two positions.
-        either define atom at startup or let dsrparser get the atom name.
-        
-        :param atom: central atom of the group
-        :type atom: string
-        '''
-        print('Generating disordered CF3-Group')
-        if not atom:
-            atom = self.dsr_dict['target'][0]
-        atomlinenumber = self.fa.get_atom_line_numbers([atom])
-        #print(atomlinenumber, '#####', atom)
-        found = self.find_bonded_fluorine(atom)
-        for i in found:
-            print('Deleting ' + i[0] + '_' + i[7] + ' from '+atom)
-        self.delete_bound_fluorine(found)
-        fatoms = self.make_afix(afixnum='120', linenumber=atomlinenumber[0])
-        self.do_refine_cycle(rl, reslist)
-        return fatoms
+
     
     def make_cf3_thorus(self, atom=None):
         '''
@@ -476,11 +516,11 @@ if __name__ == '__main__':
     
     cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, basefilename, dsr_dict, resi)
     
-    #if fragment == 'cf3':
-    #    cf3.cf3('130')
-    #if fragment == 'cf6':
-    #    cf3.cf3('120')
-    cf3.make_cf3_thorus()
+    if fragment == 'cf3':
+        cf3.cf9()
+    if fragment == 'cf6':
+        cf3.cf3('120')
+    #cf3.make_cf3_thorus()
 
 
    
