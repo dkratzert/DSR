@@ -572,7 +572,7 @@ class SfacTable():
     SFAC table for the new res file.
     '''
 
-    def __init__(self, reslist, fragment_atom_types):
+    def __init__(self, reslist, dbatoms):
         '''
 
         :param reslist:  SHELXL .res file as list
@@ -580,7 +580,7 @@ class SfacTable():
         :param res_file_name: str file name like 'p21c.res'
         '''
         self._reslist = reslist
-        self._db_atom_types = fragment_atom_types
+        self._db_atom_types = get_atomtypes(dbatoms) 
         self.elements = [x.upper() for x in atoms]
 
 

@@ -323,26 +323,33 @@ class DSR():
         if dsrp.occupancy:
             rle.set_free_variables(dsrp.occupancy)
         fragment = dsrp.fragment.lower()
-        fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
-        dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
-        dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
-        db_residue_string = gdb.get_resi_from_fragment(fragment)
-        db_atom_types = get_atomtypes(dbatoms)                 # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
-        resi = Resi(reslist, dsr_dict, dbhead, db_residue_string, find_atoms)
-        sf = SfacTable(reslist, db_atom_types)
-        sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
-
         if fragment in ['cf3', 'cf6', 'cf9']:
-            cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, basefilename, dsr_dict, resi)
+            dbhead = 'RESI CF3'
+            db_residue_string = 'CF3'
+            dbatoms = [['C1', '-6'], ['F1', '-9']]
+        else:
+            dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
+            db_residue_string = gdb.get_resi_from_fragment(fragment)
+            dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
+        sf = SfacTable(reslist, dbatoms)
+        sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
+        resi = Resi(reslist, dsr_dict, dbhead, db_residue_string, find_atoms)
+        # line where the dsr command is found in the resfile:
+        dsr_line_number = dsrp.find_dsr_command(line=False)
+        if fragment in ['cf3', 'cf6', 'cf9']:
+            cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, 
+                      basefilename, dsr_dict, resi, self.res_file)
             if fragment == 'cf3':
                 cf3.cf3()
             if fragment == 'cf6':
                 cf3.cf3('120')
             if fragment == 'cf9':
                 cf3.cf3()
-
+            sys.exit()
+        fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
         dbhead = resi.remove_resi(dbhead)
-
+        # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
+        db_atom_types = get_atomtypes(dbatoms)                 
         ### corrects the atom type according to the previous defined global sfac table:
         dbatoms = set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table)
 
@@ -372,14 +379,12 @@ class DSR():
                           sfac_table, find_atoms, fragment_numberscheme, dfix_head)
         afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfix',
                                            resi)
-        # line where the dsr command is found in the resfile:
-        dsr_line_number = dsrp.find_dsr_command(line=False)
         if dsr_line_number < fvarlines[-1]:
             print('\nWarning! The DSR command line MUST not appear before FVAR or the first atom in the .res file!')
             print('Can not proceed...\n')
             sys.exit()
-        reslist[dsr_line_number] = reslist[dsr_line_number]+'\n'
-        reslist.insert(dsr_line_number+1, afix_entry)
+        reslist[dsr_line_number] = reslist[dsr_line_number]+'\n'+afix_entry
+        #reslist.insert(dsr_line_number+1, afix_entry)
         # write to file:
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
         acta_lines = shx.remove_acta_card()
@@ -414,7 +419,8 @@ class DSR():
 if __name__ == '__main__':
     '''main function'''
     #dsr = DSR(list_db=True)
-    #dsr = DSR(res_file_name='p21c.res', external_restr=True)
+    dsr = DSR(res_file_name='p21n_cf3.res')
+    sys.exit()
     #import cProfile
     try:
         #cProfile.run('dsr = DSR(res_file_name="p21c.res")', 'foo.profile')
