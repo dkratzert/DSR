@@ -277,7 +277,7 @@ class CF3(object):
                                     +'\n'.join(atoms_cf9).format(self.e2s.elem_2_sfac('F'),
                                         fcount+1, fcount+2, fcount+3, *coords)   
         self.reslist[self.rle.find_fvarlines()[0]] = fvar
-        shx = ShelxlRefine(self.reslist, self.basefilename, find_atoms)
+        shx = ShelxlRefine(self.reslist, self.basefilename, self.fa)
         shx.set_refinement_cycles('8')
         self.rl.write_resfile(self.reslist, '.res')
         return fatoms
@@ -302,11 +302,11 @@ class CF3(object):
         '''
         resistr = ''
         resi0 = ''
-        occ = 11
         if self.dsr_dict['occupancy']:
             occ = self.dsr_dict['occupancy']
         else:
             occ = str((self.rle.get_fvar_count()+1)*10+1)
+        self.rle.set_free_variables(occ, '0.5')
         num_130 = NumberScheme(self.reslist, ['F1', 'F2', 'F3'], False)
         num_120 = NumberScheme(self.reslist, ['F1', 'F2', 'F3', 'F4', 'F5', 'F6'], False)
         # returns also the atom names if residue is active

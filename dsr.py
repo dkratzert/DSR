@@ -31,7 +31,7 @@ from refine import ShelxlRefine
 import resfile
 from cf3fit import CF3
 
-VERSION = '1.6.4'
+VERSION = '1.7.0'
 # dont forget to change version in Innoscript file, spec file and deb file.
 program_name = '\n-----------------------------'\
            ' D S R - v{}' \
@@ -82,8 +82,6 @@ class DSR():
         self.options = OptionsParser()
         # vars() retrieves the options as dict, values() the values and any()
         # decides if any option is set.
-        if not any(vars(self.options.all_options).values()):
-            self.options.error()
         self.external = False
         if not res_file_name:
             self.res_file = self.options.res_file
@@ -155,7 +153,8 @@ class DSR():
         ## Import a GRADE fragment
         if self.import_grade:
             self.import_from_grade()
-
+        if not any(vars(self.options.all_options).values()+[self.res_file]):
+            self.options.error()
         import time
         time1 = time.clock()
         self.main()
@@ -320,8 +319,6 @@ class DSR():
         dsrp = DSR_Parser(reslist, rle)
         dsr_dict = dsrp.get_dsr_dict
         fvarlines = rle.find_fvarlines()
-        if dsrp.occupancy:
-            rle.set_free_variables(dsrp.occupancy)
         fragment = dsrp.fragment.lower()
         if fragment in ['cf3', 'cf6', 'cf9']:
             dbhead = 'RESI CF3'
@@ -335,7 +332,6 @@ class DSR():
         sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
         resi = Resi(reslist, dsr_dict, dbhead, db_residue_string, find_atoms)
         # line where the dsr command is found in the resfile:
-        dsr_line_number = dsrp.find_dsr_command(line=False)
         if fragment in ['cf3', 'cf6', 'cf9']:
             cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, 
                       basefilename, dsr_dict, resi, self.res_file)
@@ -344,8 +340,12 @@ class DSR():
             if fragment == 'cf6':
                 cf3.cf3('120')
             if fragment == 'cf9':
-                cf3.cf3()
+                cf3.cf9()
+            print('\nFinised...')
             sys.exit()
+        if dsrp.occupancy:
+            rle.set_free_variables(dsrp.occupancy)
+        dsr_line_number = dsrp.find_dsr_command(line=False)
         fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
         dbhead = resi.remove_resi(dbhead)
         # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
