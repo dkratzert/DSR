@@ -29,6 +29,7 @@ from afix import InsertAfix
 from terminalsize import get_terminal_size
 from refine import ShelxlRefine
 import resfile
+from cf3fit import CF3
 
 VERSION = '1.6.4'
 # dont forget to change version in Innoscript file, spec file and deb file.
@@ -322,18 +323,25 @@ class DSR():
         if dsrp.occupancy:
             rle.set_free_variables(dsrp.occupancy)
         fragment = dsrp.fragment.lower()
-        if fragment == 'cf3':
-            # start_routine_to_make_cf3_group()
-            pass
         fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
         dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
         dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
         db_residue_string = gdb.get_resi_from_fragment(fragment)
         db_atom_types = get_atomtypes(dbatoms)                 # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
         resi = Resi(reslist, dsr_dict, dbhead, db_residue_string, find_atoms)
-        dbhead = resi.remove_resi(dbhead)
         sf = SfacTable(reslist, db_atom_types)
         sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
+
+        if fragment in ['cf3', 'cf6', 'cf9']:
+            cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, basefilename, dsr_dict, resi)
+            if fragment == 'cf3':
+                cf3.cf3()
+            if fragment == 'cf6':
+                cf3.cf3('120')
+            if fragment == 'cf9':
+                cf3.cf3()
+
+        dbhead = resi.remove_resi(dbhead)
 
         ### corrects the atom type according to the previous defined global sfac table:
         dbatoms = set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table)

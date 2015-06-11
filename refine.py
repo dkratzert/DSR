@@ -230,6 +230,7 @@ class ShelxlRefine():
         '''
         resfile = str(self.resfile_name+'.res')
         try:
+            print('Restoring backup res file.')
             shutil.copyfile(self.backup_file, resfile)
         except(IOError):
             print('Unable to make restore res file from {}.'.format(self.backup_file))
@@ -314,16 +315,16 @@ class ShelxlRefine():
         status = checkFileExist(resfile) # status is False if shelx was unsecessful
         if not status: # fail
             print('-----------------------------------------------------------------')
-            print('\nError: SHELXL terminated unexpectedly. Restoring original file.')
+            print('\nError: SHELXL terminated unexpectedly.')
             print('Check for errors in your SHELX input file!\n')
             self.restore_shx_file()
             sys.exit()
-        else:          # sucess
-            print('-----------------------------------------------------------------')
-            try:
-                misc.remove_file(self.backup_file)
-            except(IOError):
-                print('Unable to delete backup file {}.'.format(self.backup_file))
+        #else:          # sucess
+        #    print('-----------------------------------------------------------------')
+        #    try:
+        #        misc.remove_file(self.backup_file)
+        #    except(IOError):
+        #        print('Unable to delete backup file {}.'.format(self.backup_file))
 
 
     def check_refinement_results(self, list_file):
@@ -336,9 +337,19 @@ class ShelxlRefine():
         is_resfile_there = misc.checkFileExist(self.resfile_name+'.res')
         if is_resfile_there and is_resfile_there == 'zero':
             print('Something failed in SHELXL. Please check your .ins and .lst file!')
+            self.restore_shx_file()
+            try:
+                misc.remove_file(self.backup_file)
+            except(IOError):
+                print('Unable to delete backup file {}.'.format(self.backup_file))
             sys.exit()
         if not is_resfile_there:
             print('Something failed in SHELXL. Please check your .ins and .lst file!')
+            self.restore_shx_file()
+            try:
+                misc.remove_file(self.backup_file)
+            except(IOError):
+                print('Unable to delete backup file {}.'.format(self.backup_file))            
             sys.exit()
         regex_final = r' Final Structure Factor Calculation.*\n'
         final_results = find_line(list_file, regex_final)

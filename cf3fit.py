@@ -15,8 +15,6 @@ Created on 13.05.2015
 - force name tags to be longer than three characters?
   Maybe better to reserve CF3, CF6 anf CFx for CF3 groups.  
 
-- revert changes if SHELXL fails
-
 '''
 import resfile
 from dbfile import global_DB
@@ -564,6 +562,9 @@ if __name__ == '__main__':
         cf3.cf3()
     if fragment == 'cf6':
         cf3.cf3('120')
+    if fragment == 'cf9':
+        cf3.cf3()
+
     #cf3.make_cf3_thorus()
 
 

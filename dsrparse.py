@@ -176,7 +176,7 @@ class DSR_Parser():
         '''
         cf3 = False
         source = None
-        if self._dsr_list[3].upper() in ['CF3', 'CF6', 'CFTHORUS']:
+        if self._dsr_list[3].upper() in ['CF3', 'CF6', 'CF9']:
             cf3 = True
         else:
             self.minimal_requirements()
