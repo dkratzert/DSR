@@ -102,7 +102,7 @@ class DSR_Parser():
             dsr_list = dsr_str.split()
             txt = ' '.join(dsr_list)
             # wrap the line after 75 chars:
-            dsrlines = textwrap.wrap(txt, 75, initial_indent='rem ', subsequent_indent = 'rem ')
+            dsrlines = textwrap.wrap(txt, 75, initial_indent='REM ', subsequent_indent = 'REM ')
             if len(dsrlines) > 1:
                 dsrlines[0] = dsrlines[0]+' ='
             dsrlines = '\n'.join(dsrlines)

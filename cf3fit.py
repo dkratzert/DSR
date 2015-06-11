@@ -72,7 +72,7 @@ class CF3(object):
     a class to create cf3 groups at terminal atoms
     '''
 
-    def __init__(self, rle, fa, reslist, fragment, sfac_table, basefilename, dsr_dict, resi):
+    def __init__(self, rle, fa, reslist, fragment, sfac_table, basefilename, dsr_dict, resi, res_file):
         '''
         Constructor
         '''
@@ -83,7 +83,8 @@ class CF3(object):
         self.dsr_dict = dsr_dict
         self.fragment = fragment
         self.reslist = reslist
-        self.rl = resfile.ResList(res_file)
+        self.res_file = res_file
+        self.rl = ResList(res_file)
         self.e2s = Elem_2_Sfac(sfac_table)
         atoms = fa.atoms_as_residues
         self.basefilename = basefilename
@@ -191,7 +192,7 @@ class CF3(object):
         id_lines = find_multi_lines(self.reslist, regex)
         for line in id_lines:
             self.reslist[line] = ' '.join(self.reslist[line].split()[1:-1])+'\n'
-        shx = ShelxlRefine(self.reslist, self.basefilename, find_atoms)
+        shx = ShelxlRefine(self.reslist, self.basefilename, self.fa)
         shx.set_refinement_cycles('8')
         self.rl.write_resfile(self.reslist, '.res')
         return fatoms
@@ -364,84 +365,8 @@ class CF3(object):
             return numberscheme_130
 
         
-
-    
-    def make_cf3_thorus(self, atom=None):
-        '''
-        Creates a thorus of isotropic fluorine atoms around the central
-        atom of a cf3 group. The occupancy is estimated from the 
-        residual density values in the lst file.
-        
-        :param atom: central atom of the cf3 group
-        :type atom: string
-        '''
-        coords = []
-        if not atom:
-            atom = self.dsr_dict['target'][0]
-        # returns the atom names of the fluorine atoms:
-        fluorine_names = self.cf3() 
-        #self.do_refine_cycle(self.rl, self.reslist)
-        print(fluorine_names[0])
-        ratom = self.lf.get_single_coordinate(fluorine_names[0])
-        print('ratom:', ratom)
-        #ratom = self.get_coordinates_of_first_atom(fluorine_names)
-        self.lf.read_lst_file()
-        bondvec = self.lf.get_bondvector()
-        print('bondvec:', bondvec)
-        at1 = self.lf.get_single_coordinate(bondvec[0].upper())
-        at2 = self.lf.get_single_coordinate(bondvec[1].upper())
-        names = ['F{}'.format(i) for i in range(1, 25)]
-        num_thor = NumberScheme(self.reslist, names, False)
-        names = num_thor.get_fragment_number_scheme()
-        for delta in range(0, 360, 15):
-            coord = self.rotate_atom_around_bond(ratom, at1, at2, delta)
-            coords.append(coord)
-        #print('PART 0')
-        diffden = self.lf.get_difference_density(averaged=False)
-        print(diffden)
-        rotation = self.lf.get_degree_of_highest_peak()
-        print(rotation)
-        n = (rotation/15)+4 #+1
-        diffden = shift(diffden, n)
-        print(len(diffden))
-        print('\n')
-        print
-        print('AFIX 6')
-        # make restraints:
-        sad12 = []
-        sad13 = []
-        ff = []
-        flast = False
-        for i, num, co, dif in zip(names, [i for i in range(1, 25)], coords, diffden):
-            #print('PART {}'.format(num))
-            if not flast:
-                flast = 'F24'
-            ff.append((flast, i))
-            flast = i
-            sad12.append(('C22', i))
-            sad13.append(('C19', i))
-            print('{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  {:<8.6}  -1.2\
-            '.format(i, co[0], co[1], co[2], 10.0+(dif/2760.0)))
-            # with free variables:
-            #print('{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  {:<8.6}  261\
-            #'.format(i, co[0], co[1], co[2], 10.0*num+1+10))
-        from misc import flatten
-        print('SADI '+' '.join(flatten(sad12)))
-        print('SADI '+' '.join(flatten(sad13)))
-        print('SADI '+' '.join(flatten(ff)))
-        d = 0
-        for dif in diffden:
-            d += dif/2760.0
-        #print('PART 0')
-        print('AFIX 0')
-        print
-        print(d)
-
-        
-        
-
     def do_refine_cycle(self, rl, reslist):
-        shx = ShelxlRefine(reslist, self.basefilename, find_atoms)
+        shx = ShelxlRefine(reslist, self.basefilename, self.fa)
         acta_lines = shx.remove_acta_card()
         shx.set_refinement_cycles('0')
         rl.write_resfile(reslist, '.ins')
@@ -450,7 +375,7 @@ class CF3(object):
         self.lf = ListFile(self.basefilename)
         lst_file = self.lf.read_lst_file()
         shx.check_refinement_results(lst_file)
-        rl = ResList(res_file)
+        rl = ResList(self.res_file)
         reslist = rl.get_res_list()
         shx.restore_acta_card(acta_lines)
         shx.set_refinement_cycles('8')
@@ -525,6 +450,80 @@ class CF3(object):
         v = [round(i, 6) for i in v]
         return v 
     
+    
+    def make_cf3_thorus(self, atom=None):
+        '''
+        This method was just an experiment. The CF9 method is sufficient.
+        
+        Creates a thorus of isotropic fluorine atoms around the central
+        atom of a cf3 group. The occupancy is estimated from the 
+        residual density values in the lst file.
+        
+        :param atom: central atom of the cf3 group
+        :type atom: string
+        '''
+        coords = []
+        if not atom:
+            atom = self.dsr_dict['target'][0]
+        # returns the atom names of the fluorine atoms:
+        fluorine_names = self.cf3() 
+        #self.do_refine_cycle(self.rl, self.reslist)
+        print(fluorine_names[0])
+        ratom = self.lf.get_single_coordinate(fluorine_names[0])
+        print('ratom:', ratom)
+        #ratom = self.get_coordinates_of_first_atom(fluorine_names)
+        self.lf.read_lst_file()
+        bondvec = self.lf.get_bondvector()
+        print('bondvec:', bondvec)
+        at1 = self.lf.get_single_coordinate(bondvec[0].upper())
+        at2 = self.lf.get_single_coordinate(bondvec[1].upper())
+        names = ['F{}'.format(i) for i in range(1, 25)]
+        num_thor = NumberScheme(self.reslist, names, False)
+        names = num_thor.get_fragment_number_scheme()
+        for delta in range(0, 360, 15):
+            coord = self.rotate_atom_around_bond(ratom, at1, at2, delta)
+            coords.append(coord)
+        #print('PART 0')
+        diffden = self.lf.get_difference_density(averaged=False)
+        print(diffden)
+        rotation = self.lf.get_degree_of_highest_peak()
+        print(rotation)
+        n = (rotation/15)+4 #+1
+        diffden = shift(diffden, n)
+        print(len(diffden))
+        print('\n')
+        print
+        print('AFIX 6')
+        # make restraints:
+        sad12 = []
+        sad13 = []
+        ff = []
+        flast = False
+        for i, num, co, dif in zip(names, [i for i in range(1, 25)], coords, diffden):
+            #print('PART {}'.format(num))
+            if not flast:
+                flast = 'F24'
+            ff.append((flast, i))
+            flast = i
+            sad12.append(('C22', i))
+            sad13.append(('C19', i))
+            print('{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  {:<8.6}  -1.2\
+            '.format(i, co[0], co[1], co[2], 10.0+(dif/2760.0)))
+            # with free variables:
+            #print('{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  {:<8.6}  261\
+            #'.format(i, co[0], co[1], co[2], 10.0*num+1+10))
+        from misc import flatten
+        print('SADI '+' '.join(flatten(sad12)))
+        print('SADI '+' '.join(flatten(sad13)))
+        print('SADI '+' '.join(flatten(ff)))
+        d = 0
+        for dif in diffden:
+            d += dif/2760.0
+        #print('PART 0')
+        print('AFIX 0')
+        print
+        print(d)
+    
 if __name__ == '__main__':
     from resi import Resi
     options = OptionsParser()
@@ -547,7 +546,7 @@ if __name__ == '__main__':
     if dsrp.occupancy:
         rle.set_free_variables(dsrp.occupancy)
     fragment = dsrp.fragment.lower()
-    sf = SfacTable(reslist, ['C', 'F', 'F', 'F'])
+    sf = SfacTable(reslist, [['C', '1'], ['F', '1']])
     sfac_table = sf.set_sfac_table() 
 
     resi = Resi(reslist, dsr_dict, dbhead='RESI CF3', db_residue_string='CF3', find_atoms=find_atoms)
@@ -556,7 +555,7 @@ if __name__ == '__main__':
     ####################################################
     
     
-    cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, basefilename, dsr_dict, resi)
+    cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, basefilename, dsr_dict, resi, res_file)
     
     if fragment == 'cf3':
         cf3.cf3()
