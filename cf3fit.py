@@ -15,7 +15,7 @@ Created on 13.05.2015
 - force name tags to be longer than three characters?
   Maybe better to reserve CF3, CF6 anf CFx for CF3 groups.  
 
-- wrap restraints after 79 characters
+- revert changes if SHELXL fails
 
 '''
 import resfile
@@ -46,13 +46,10 @@ dfixr_120 = ['DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n',
              'EADP F6 F3 \n',
              'EADP F2 F5 ']
 dfixr_cf9 = ['SUMP 1 0.0001 1 {0} 1 {1} 1 {2}', 
-             'DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n', 
-             'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 \n',
-             'SADI 0.1 Y F1 Y F2 Y F3  Z F4 Z F5 Z F6 \n',
-             'RIGU Y Z F1 F2 F3 \n',
-             'EADP F1 F4 \n',
-             'EADP F6 F3 \n',
-             'EADP F2 F5 ']
+             'DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 \n', 
+             'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4  F7 F8 F8 F9 F9 F7 \n',
+             'SADI 0.1 Y F1 Y F2 Y F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 \n',
+             'RIGU Y Z F1 > F9  \n']
 
 sadir_130 = ['SADI 0.02 Z F1 Z F2 Z F3 \n',
              'SADI 0.04 F1 F2 F2 F3 F3 F1 \n',
@@ -130,7 +127,7 @@ class CF3(object):
         '''
         for i in bound_atoms:
             i = int(i[2])
-            rle.remove_line(i, rem=False, remove=False, frontspace=True)
+            self.rle.remove_line(i, rem=False, remove=False, frontspace=True)
     
     def cf3(self, afix=130):
         '''
@@ -162,13 +159,16 @@ class CF3(object):
         atom = self.dsr_dict['target'][0]
         if len(self.dsr_dict['target']) > 1:
             print('Using only first target atom {}.'.format(self.dsr_dict['target'][0]))
-        atomline = self.fa.get_atom_line_numbers([atom])
+        atomline = self.fa.get_atom_line_numbers([atom])[0]
+        self.make_pivot_isotropic(atomline)
         found = self.find_bonded_fluorine(atom)
         for i in found:
             print('Deleting ' + i[0] + '_' + i[7] + ' from '+atom)
         self.delete_bound_fluorine(found)
-        fatoms = self.make_afix(afixnum=afix, linenumber=atomline[0])
+        fatoms = self.make_afix(afixnum=afix, linenumber=atomline)
         self.do_refine_cycle(self.rl, self.reslist)
+        # this is essential
+        self.reslist = self.rl.get_res_list()
         # this is the bond around the CF3 group rotates
         Y, Z = self.lf.get_bondvector(atom)
         Y = remove_partsymbol(Y)
@@ -180,18 +180,21 @@ class CF3(object):
             F1, F2, F3, F4, F5, F6 = fatoms
             replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3),
                             ('F4', F4), ('F5', F5), ('F6', F6))
+        # replace dummy atoms in restraint list with real atom names:
         for old, new in (replacelist):
             restr = [i.replace(old, new) for i in restr]
         restr = wrap_headlines(restr, 77)
-        self.reslist = self.rl.get_res_list()
+        #self.reslist = self.rl.get_res_list()
         # get position for the fluorine atoms:
-        atomline = self.fa.get_atom_line_numbers([atom])
+        atomline = self.fa.get_atom_line_numbers([atom])[0]
         # add restraints to reslist:
-        self.reslist[atomline[0]] = self.reslist[atomline[0]]+self.startm+''.join(restr)
+        self.reslist[atomline] = self.reslist[atomline]+self.startm+''.join(restr)
         regex = r'.*{}'.format(self.rand_id)
         id_lines = find_multi_lines(self.reslist, regex)
         for line in id_lines:
             self.reslist[line] = ' '.join(self.reslist[line].split()[1:-1])+'\n'
+        shx = ShelxlRefine(self.reslist, self.basefilename, find_atoms)
+        shx.set_refinement_cycles('8')
         self.rl.write_resfile(self.reslist, '.res')
         return fatoms
 
@@ -214,13 +217,15 @@ class CF3(object):
             restr = [i+'\n' for i in restr]
         if len(self.dsr_dict['target']) > 1:
             print('Using only first target atom {}.'.format(self.dsr_dict['target'][0]))
-        atomline = self.fa.get_atom_line_numbers([atom])
+        atomline = self.fa.get_atom_line_numbers([atom])[0]
         found = self.find_bonded_fluorine(atom)
         for i in found:
             print('Deleting ' + i[0] + '_' + i[7] + ' from '+atom)
         self.delete_bound_fluorine(found)
+        # make a copy to find out fluorine positions:
         reslist_copy = self.reslist[:]
-        fatoms = self.make_afix(afixnum=130, linenumber=atomline[0])
+        self.make_pivot_isotropic(atomline)
+        fatoms = self.make_afix(afixnum=130, linenumber=atomline)
         self.do_refine_cycle(self.rl, self.reslist)
         #self.reslist = self.rl.get_res_list()
         # this is the bond around the CF3 group rotates
@@ -237,26 +242,28 @@ class CF3(object):
         for old, new in (replacelist):
             restr = [i.replace(old, new) for i in restr]
         # add restraints to reslist:
+        # all fluorines are set, so we can get back to the original res file:
         self.reslist = reslist_copy
         if self.dsr_dict['occupancy']:
             occ = self.dsr_dict['occupancy']
         else:
             occ = str((self.rle.get_fvar_count())*10+1+30)
         fcount = self.rle.get_fvar_count()
-        fvar = self.rle.set_free_variables(occ) 
+        fvar = self.rle.set_free_variables(occ, '0.3') 
         atomline = self.fa.get_atom_line_numbers([atom])[0]
+        self.make_pivot_isotropic(atomline)
         atoms_cf9 = ['PART 1 {1}1', 
-                    F1+' {0}   {4}   11.0  0.04',
-                    F2+' {0}   {5}   11.0  0.04',
-                    F3+' {0}   {6}   11.0  0.04',
+                    F1+'   {0}   {4}    11.00000    0.04',
+                    F2+'   {0}   {5}    11.00000    0.04',
+                    F3+'   {0}   {6}    11.00000    0.04',
                     'PART 2 {2}1',
-                    F4+' {0}   {7}   11.0  0.04',
-                    F5+' {0}   {8}   11.0  0.04',
-                    F6+' {0}   {9}   11.0  0.04',
+                    F4+'   {0}   {7}    11.00000    0.04',
+                    F5+'   {0}   {8}    11.00000    0.04',
+                    F6+'   {0}   {9}    11.00000    0.04',
                     'PART 3 {3}1',
-                    F7+' {0}   {10}   11.0  0.04',
-                    F8+' {0}   {11}   11.0  0.04',
-                    F9+' {0}   {12}   11.0  0.04',                    
+                    F7+'   {0}   {10}    11.00000    0.04',
+                    F8+'   {0}   {11}    11.00000    0.04',
+                    F9+'   {0}   {12}    11.00000    0.04',                    
                     'PART 0\n\n']
         restr = wrap_headlines(restr, 77)
         restr = ''.join(restr).format(fcount+1, fcount+2, fcount+3)
@@ -264,16 +271,28 @@ class CF3(object):
         at1 = self.lf.get_single_coordinate(Y)
         at2 = self.lf.get_single_coordinate(Z)
         coords = []
-        for delta in range(0, 360, 36):
+        for delta in [0, 120, 240,   40, 160, 280,   80, 200, 320]:
             coord = self.rotate_atom_around_bond(start_f_coord, at1, at2, delta)
-            coords.append('{}  {}  {}'.format(*coord))        
+            coords.append('{:>10.6f} {:>10.6f} {:>10.6f}'.format(*coord))
         self.reslist[atomline] = self.reslist[atomline]\
-                                        + '\n'.join(atoms_cf9).format(self.e2s.elem_2_sfac('F'),
-                                                           fcount+1, fcount+2, fcount+3,
-                                                           *coords)   
+                                    +'\n'.join(atoms_cf9).format(self.e2s.elem_2_sfac('F'),
+                                        fcount+1, fcount+2, fcount+3, *coords)   
         self.reslist[self.rle.find_fvarlines()[0]] = fvar
+        shx = ShelxlRefine(self.reslist, self.basefilename, find_atoms)
+        shx.set_refinement_cycles('8')
         self.rl.write_resfile(self.reslist, '.res')
         return fatoms
+
+    def make_pivot_isotropic(self, linenumber):
+        '''
+        make sure the pivot atom of a cf3 group is isotropic
+        :param linenumber: line number (index) in self.reslist of the pivot atom
+        :type linenumber: integer
+        '''
+        atomline = self.reslist[linenumber].split()
+        if atomline[-1] == '=':
+            self.reslist[linenumber] = '{:5.4s}{:4.2s}{:>10.8s} {:>10.8s} {:>10.8s}  {:8.6s}  0.04'.format(*atomline)
+            self.reslist[linenumber+1] = '' 
 
 
     def make_afix(self, afixnum, linenumber):
@@ -336,11 +355,6 @@ class CF3(object):
         else:
             print('Only CF3 groups implemented yet.')
             return False
-        atomline = self.reslist[linenumber].split()
-        # make shure the pivot atom is isotropic:
-        if atomline[-1] == '=':
-            self.reslist[linenumber] = '{:5.4s}{:4.2s}{:>10.8s} {:>10.8s} {:>10.8s}  {:8.6s}  0.04'.format(*atomline)
-            self.reslist[linenumber+1] = '' 
         # insert the afix:
         self.reslist[linenumber] = self.reslist[linenumber]\
                                         + afix.format(afixnum, sfac, occ, 
@@ -547,7 +561,7 @@ if __name__ == '__main__':
     cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, basefilename, dsr_dict, resi)
     
     if fragment == 'cf3':
-        cf3.cf9()
+        cf3.cf3()
     if fragment == 'cf6':
         cf3.cf3('120')
     #cf3.make_cf3_thorus()

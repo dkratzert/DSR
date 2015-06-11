@@ -220,7 +220,7 @@ class ResListEdit():
             fvar_list.extend(fvar)
         return fvar_list
 
-    def set_free_variables(self, occupancynumber):
+    def set_free_variables(self, occupancynumber, fvalue='0.5'):
         '''
         Inserts additional free variables according to the occ parameter
         This function starts at the end of parse_dsr_line() so we don't have
@@ -243,7 +243,7 @@ class ResListEdit():
         difference = (fvar - varlen)
         if difference > 0:
             for i in range(difference):
-                fvar_list.append('0.5')   # if an fvar is missing, add a new one
+                fvar_list.append(fvalue)   # if an fvar is missing, add a new one
         line_length = 7
         lines = []
         for i in range(0, len(fvar_list), line_length):
