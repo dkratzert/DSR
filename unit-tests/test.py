@@ -135,12 +135,12 @@ class collect_residuesTest(unittest.TestCase):
 
     def testrun_collect_residues(self):
         #print(self.fa.collect_residues())
-        collected_resi = {'0': [['FE1', ['0.100001', '0.200002', '0.300003'], 19, None, '0']],
-                          '1': [['O1', ['0.584527', '0.749093', '0.406892'], 34, 'CCF3', 1],
-                                ['H2', ['0.2', '0.3', '0.4'], 36, 'CCF3', 1],
-                                ['C1', ['0.462797', '0.766414', '0.415951'], 37, 'CCF3', 1],
-                                ['H1', ['0.2', '0.3', '0.4'], 40, 'CCF3', 1]]}
-        resi_null = [['FE1', ['0.100001', '0.200002', '0.300003'], 19, None, '0']]
+        collected_resi = {'0': [['FE1', [0.100001, 0.200002, 0.300003], 19, None, '0', 'FE', '5']],
+                          '1': [['O1', [0.584527, 0.749093, 0.406892], 34, 'CCF3', 1, 'F', '3'],
+                                ['H2', [0.2, 0.3, 0.4], 36, 'CCF3', 1, 'H', '6'],
+                                ['C1', [0.462797, 0.766414, 0.415951], 37, 'CCF3', 1, 'C', '1'],
+                                ['H1', [0.2, 0.3, 0.4], 40, 'CCF3', 1, 'H', '6']]}
+        resi_null = [['FE1', [0.100001, 0.200002, 0.300003], 19, None, '0', 'FE', '5']]
         resi_fe = 'FE1'
         self.assertEqual(self.fa.collect_residues(), collected_resi)
         self.assertEqual(self.fa.collect_residues()['0'], resi_null)
@@ -151,15 +151,15 @@ class collect_residuesTest(unittest.TestCase):
         atoms_fe_0 = ['Fe1_0']
         atoms = ['Fe1', 'C1_1', 'O1_1']
         fe_upper = 'FE1'
-        fe = {'FE1': ['0.100001', '0.200002', '0.300003']}
-        fe_float = {'FE1': [0.100001, 0.200002, 0.300003]}
-        coords = ['0.100001', '0.200002', '0.300003']
-        atoms_coords = {'C1_1': ['0.462797', '0.766414', '0.415951'],
-                        'O1_1': ['0.584527', '0.749093', '0.406892'],
-                        'FE1': ['0.100001', '0.200002', '0.300003']}
+        fe = {'FE1': [0.100001, 0.200002, 0.300003]}
+        fe_str = {'FE1': ['0.100001', '0.200002', '0.300003']}
+        coords = [0.100001, 0.200002, 0.300003]
+        atoms_coords = {'C1_1': [0.462797, 0.766414, 0.415951],
+                        'O1_1': [0.584527, 0.749093, 0.406892],
+                        'FE1': [0.100001, 0.200002, 0.300003]}
 
         self.assertEqual(self.fa.get_atomcoordinates(atoms_fe), fe)
-        self.assertNotEqual(self.fa.get_atomcoordinates(atoms_fe), fe_float)
+        self.assertNotEqual(self.fa.get_atomcoordinates(atoms_fe), fe_str)
         self.assertEqual(list(self.fa.get_atomcoordinates(atoms_fe).keys())[0], fe_upper)
         self.assertEqual(self.fa.get_atomcoordinates(atoms_fe_0)['FE1_0'], coords)
         self.assertEqual(self.fa.get_atomcoordinates(atoms), atoms_coords)
@@ -783,9 +783,8 @@ class ExportTest(unittest.TestCase):
                      'DANG 2.3909  C3     C5     \n',
                      'DANG 2.3961  C4     C6     \n',
                      'DANG 2.3967  C5     C7     \n', 
-                     'FLAT C2 C7 C6 C5\n',
-                     'FLAT C6 C5 C4 C3\n',
-                     'FLAT C2 C7 C6 C1\n'],
+                     'FLAT C2 C7 C6 C5\n', 
+                     'FLAT C6 C5 C4 C3\n'],
                      'rem end of restraints\n',
                       '\n', 
                    ['C1   1     0.34810   0.50619   0.44851   11.0   0.04\n',
@@ -1166,7 +1165,8 @@ class MiscTest(unittest.TestCase):
         cellf = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
         cart = (-2.741505423999065, 5.909586678000002, 10.775200700893734)
         N1 = misc.frac_to_cart(coord1, cellf)
-        self.assertAlmostEqual(cart, N1, 8)
+        for x, y in zip(cart, N1):
+            self.assertAlmostEqual(x, y, 8)
 
     def testrun_determinante(self):
         m1 = [[2, 0, 0], [0, 2, 0], [0, 0, 2]]
