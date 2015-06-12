@@ -422,7 +422,6 @@ install -m 644 mpmath/ctx_mp_python.py              %{buildroot}%{prefix}/DSR/mp
 install -m 644 mpmath/function_docs.py              %{buildroot}%{prefix}/DSR/mpmath/function_docs.py           
 install -m 644 mpmath/identification.py             %{buildroot}%{prefix}/DSR/mpmath/identification.py          
 install -m 644 mpmath/math2.py                      %{buildroot}%{prefix}/DSR/mpmath/math2.py                   
-install -m 644 mpmath/matrices                      %{buildroot}%{prefix}/DSR/mpmath/matrices                   
 install -m 644 mpmath/rational.py                   %{buildroot}%{prefix}/DSR/mpmath/rational.py                
 install -m 644 mpmath/usertools.py                  %{buildroot}%{prefix}/DSR/mpmath/usertools.py               
 install -m 644 mpmath/visualization.py              %{buildroot}%{prefix}/DSR/mpmath/visualization.py           
