@@ -424,7 +424,7 @@ class FindAtoms():
         return lines
 
 
-    def remove_adjacent_hydrogens(self, atoms, sfac_table, type='H'):
+    def remove_adjacent_hydrogens(self, atoms, sfac_table, atype='H'):
         '''
         if an atom is replaced, its hydrogen atoms are deleted
         this method searches for the first afix behind the atom,
@@ -436,9 +436,9 @@ class FindAtoms():
         :param sfac_table: list of atom types ['C', 'H', 'N', ...]
         '''
         delcount = []
-        if type == 'H':
+        if atype == 'H':
             name = "hydrogen"
-        if type == 'F':
+        if atype == 'F':
             name = "fluorine"
         lines = self.get_atom_line_numbers(atoms)
         try:
@@ -777,7 +777,6 @@ if __name__ == '__main__':
     from resfile import ResList
     from dbfile import global_DB
     from resfile import ResListEdit
-    import misc
     res_file = 'p21c.res'
     res_list = ResList(res_file)
     reslist =  res_list.get_res_list()
@@ -803,14 +802,14 @@ if __name__ == '__main__':
     print('#######################')
     print(numbers)
     print('#######################')
-  #  dbtypes = get_atomtypes(dbatoms)
+    #  dbtypes = get_atomtypes(dbatoms)
 
 
     print('\n')
 
- #   misc.wrap_headlines(dbhead)
+    #   misc.wrap_headlines(dbhead)
 
-  #  newnames = rename_dbhead_atoms(numbers, dbatoms, dbhead)
+    #  newnames = rename_dbhead_atoms(numbers, dbatoms, dbhead)
 
     #print(newnames)
     #for i in dbhead:

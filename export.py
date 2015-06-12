@@ -262,7 +262,7 @@ class Export():
         self.make_image()
 
 
-    def make_image(self, debug=False):
+    def make_image(self):
         from shutil import copyfile
         import time
         import misc

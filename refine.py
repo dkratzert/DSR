@@ -26,7 +26,7 @@ class ShelxlRefine():
     A class to do a shelxl refinement. It is only for shelxl 2013 and above!
     The resfilename should be without ending.
     '''
-    def __init__(self, reslist, resfile_name, find_atoms, list_file=False):
+    def __init__(self, reslist, resfile_name, find_atoms):
         '''
         :param reslist: SHELXL .res file as list
         :param resfile_name: SHELXL res file name
@@ -396,8 +396,8 @@ if __name__ == '__main__':
     rl = ResList(res_file)
     res_list = rl.get_res_list()
     find_atoms = FindAtoms(res_list)
-    #lf = ListFile('p21c')
-    #lst_file = lf.read_lst_file()
+    lf = ListFile('p21c')
+    lst_file = lf.read_lst_file()
     shx = ShelxlRefine(res_list, 'testfile', find_atoms)
 
 

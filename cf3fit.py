@@ -27,7 +27,7 @@ from misc import atomic_distance, frac_to_cart, cart_to_frac,\
 from math import sin, cos, radians, sqrt
 import sys
 from resfile import ResList, ResListEdit
-import mpmath as mp 
+import mpmath as mpm
 
 
 dfixr_130 = ['DFIX 1.328 Z F1 Z F2 Z F3 \n', 
@@ -383,56 +383,56 @@ class CF3(object):
         at1 = frac_to_cart(at1, self.cell)
         at2 = frac_to_cart(at2, self.cell)
                 
-        ratom = mp.matrix(list(ratom)+[1.0])
+        ratom = mpm.matrix(list(ratom)+[1.0])
         delta = radians(delta)
         x0, y0, z0 = at1
-        T = mp.matrix(((1, 0, 0, -x0),
+        T = mpm.matrix(((1, 0, 0, -x0),
                        (0, 1, 0, -y0),
                        (0, 0, 1, -z0),
                        (0, 0, 0,   1)))
-        T1 = mp.inverse(T)
+        T1 = mpm.inverse(T)
 
         vx = at2[0]-at1[0] 
         vy = at2[1]-at1[1]  # P2 - P1
         vz = at2[2]-at1[2]
         vnorm = sqrt(vx**2+vy**2+vz**2)
         a, b, c = vx/vnorm, vy/vnorm, vz/vnorm
-        d = mp.sqrt(b**2+c**2)
+        d = mpm.sqrt(b**2+c**2)
         
         sina = b/d # For rotation around alpha
         cosa = c/d #
 
-        Rxa = mp.matrix(((         1,          0,          0,  0),
+        Rxa = mpm.matrix(((         1,          0,          0,  0),
                          (         0,       cosa,       sina,  0),
                          (         0,      -sina,       cosa,  0),
                          (         0,          0,          0,  1)))
         '''
-        Rya = mp.matrix(((      cosa,          0,      -sina,  0),
+        Rya = mpm.matrix(((      cosa,          0,      -sina,  0),
                          (         0,          1,          0,  0),
                          (      sina,          0,       cosa,  0),
                          (         0,          0,          0,  1)))
         ''' '''
-        Rza = mp.matrix(((      cosa,       sina,          0,  0),
+        Rza = mpm.matrix(((      cosa,       sina,          0,  0),
                          (     -sina,       cosa,          0,  0),
                          (         0,          0,          1,  0),
                          (         0,          0,          0,  1)))
         '''
-        Rxa1 = mp.inverse((Rxa))
+        Rxa1 = mpm.inverse((Rxa))
         
         cosb = d  #
         sinb = -a # rotation around beta
 
-        Ryb = mp.matrix(((      cosb,          0,      -sinb,  0),
+        Ryb = mpm.matrix(((      cosb,          0,      -sinb,  0),
                          (         0,          1,          0,  0),
                          (      sinb,          0,       cosb,  0),
                          (         0,          0,          0,  1)))
 
-        Ryb1 = mp.inverse((Ryb))
+        Ryb1 = mpm.inverse((Ryb))
                 
-        sind = mp.sin(delta)
-        cosd = mp.cos(delta)
+        sind = mpm.sin(delta)
+        cosd = mpm.cos(delta)
 
-        Rzd = mp.matrix(((      cosd,       sind,          0,  0),
+        Rzd = mpm.matrix(((      cosd,       sind,          0,  0),
                          (     -sind,       cosd,          0,  0),
                          (         0,          0,          1,  0),
                          (         0,          0,          0,  1)))
@@ -539,7 +539,7 @@ if __name__ == '__main__':
     if dsrp.occupancy:
         rle.set_free_variables(dsrp.occupancy)
     fragment = dsrp.fragment.lower()
-    sf = SfacTable(reslist, [['C', '1'], ['F', '1']])
+    sf = SfacTable(reslist, ['C', 'F'])
     sfac_table = sf.set_sfac_table() 
 
     resi = Resi(reslist, dsr_dict, dbhead='RESI CF3', db_residue_string='CF3', find_atoms=find_atoms)
