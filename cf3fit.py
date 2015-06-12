@@ -12,8 +12,6 @@ Created on 13.05.2015
 # ----------------------------------------------------------------------------
 #
 
-- force name tags to be longer than three characters?
-  Maybe better to reserve CF3, CF6 anf CFx for CF3 groups.  
 
 '''
 import resfile
@@ -39,15 +37,12 @@ dfixr_130 = ['DFIX 1.328 Z F1 Z F2 Z F3 \n',
 dfixr_120 = ['DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n', 
              'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 \n',
              'SADI 0.1 Y F1 Y F2 Y F3  Z F4 Z F5 Z F6 \n',
-             'RIGU Y Z F1 F2 F3 \n',
-             'EADP F1 F4 \n',
-             'EADP F6 F3 \n',
-             'EADP F2 F5 ']
+             'RIGU Y Z F1 > F6']
 dfixr_cf9 = ['SUMP 1 0.0001 1 {0} 1 {1} 1 {2}', 
              'DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 \n', 
              'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4  F7 F8 F8 F9 F9 F7 \n',
              'SADI 0.1 Y F1 Y F2 Y F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 \n',
-             'RIGU Y Z F1 > F9  \n']
+             'RIGU Y Z F1 > F9']
 
 sadir_130 = ['SADI 0.02 Z F1 Z F2 Z F3 \n',
              'SADI 0.04 F1 F2 F2 F3 F3 F1 \n',
@@ -56,15 +51,12 @@ sadir_130 = ['SADI 0.02 Z F1 Z F2 Z F3 \n',
 sadir_120 = ['SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n',
              'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 \n',
              'SADI 0.1 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n',
-             'RIGU Y Z F1 F2 F3 F4 F5 F6 \n',
-             'EADP F1 F4 \n',
-             'EADP F6 F3 \n',
-             'EADP F2 F5 ']
+             'RIGU Y Z F1 > F6']
 sadir_cf9 = ['SUMP 1 0.0001 1 {0} 1 {1} 1 {2}',
              'SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9\n',
              'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4  F7 F8 F8 F9 F9 F7 \n',
              'SADI 0.1 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 \n',
-             'RIGU Y Z F1 > F9 \n']
+             'RIGU Y Z F1 > F9']
 
 
 class CF3(object):
@@ -126,7 +118,7 @@ class CF3(object):
         '''
         for i in bound_atoms:
             i = int(i[2])
-            self.rle.remove_line(i, rem=False, remove=False, frontspace=True)
+            self.rle.remove_line(i, rem=False, remove=True, frontspace=False)
     
     def cf3(self, afix=130):
         '''
@@ -263,7 +255,8 @@ class CF3(object):
                     F7+'   {0}   {10}    11.00000    0.04',
                     F8+'   {0}   {11}    11.00000    0.04',
                     F9+'   {0}   {12}    11.00000    0.04',                    
-                    'PART 0\n\n']
+                    'PART 0 \n\n',
+                    self.endm]
         restr = wrap_headlines(restr, 77)
         restr = ''.join(restr).format(fcount+1, fcount+2, fcount+3)
         self.reslist[atomline] = self.reslist[atomline]+self.startm+restr
@@ -306,7 +299,8 @@ class CF3(object):
             occ = self.dsr_dict['occupancy']
         else:
             occ = str((self.rle.get_fvar_count()+1)*10+1)
-        self.rle.set_free_variables(occ, '0.5')
+        if int(afixnum) == 120:
+            self.rle.set_free_variables(occ, '0.5')
         num_130 = NumberScheme(self.reslist, ['F1', 'F2', 'F3'], False)
         num_120 = NumberScheme(self.reslist, ['F1', 'F2', 'F3', 'F4', 'F5', 'F6'], False)
         # returns also the atom names if residue is active
@@ -370,7 +364,6 @@ class CF3(object):
         acta_lines = shx.remove_acta_card()
         shx.set_refinement_cycles('0')
         rl.write_resfile(reslist, '.ins')
-        #sys.exit()
         shx.run_shelxl()
         self.lf = ListFile(self.basefilename)
         lst_file = self.lf.read_lst_file()
@@ -379,6 +372,7 @@ class CF3(object):
         reslist = rl.get_res_list()
         shx.restore_acta_card(acta_lines)
         shx.set_refinement_cycles('8')
+        shx.restore_acta_card(acta_lines)
         rl.write_resfile(reslist, '.res')
     
     
@@ -562,7 +556,7 @@ if __name__ == '__main__':
     if fragment == 'cf6':
         cf3.cf3('120')
     if fragment == 'cf9':
-        cf3.cf3()
+        cf3.cf9()
 
     #cf3.make_cf3_thorus()
 
