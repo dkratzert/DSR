@@ -491,6 +491,7 @@ dos2unix -q %{buildroot}%{prefix}/*
 %{prefix}/DSR/restraints.py
 %{prefix}/DSR/resi.py
 %{prefix}/DSR/refine.py
+%{prefix}/DSR/cf3fit.py
 %{prefix}/DSR/pyperclip.py
 %{prefix}/DSR/dsr_db.txt
 %{prefix}/DSR/dsr_user_db.txt
