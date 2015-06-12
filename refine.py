@@ -230,7 +230,7 @@ class ShelxlRefine():
         '''
         resfile = str(self.resfile_name+'.res')
         try:
-            print('Restoring backup res file.')
+            print('Restoring previous res file.')
             shutil.copyfile(self.backup_file, resfile)
         except(IOError):
             print('Unable to make restore res file from {}.'.format(self.backup_file))
@@ -382,10 +382,10 @@ class ShelxlRefine():
         if centro == False and data_to_parameter_ratio < 7.5:
             print('Warning! The data / parameter ratio is getting low (ratio = {:.1f})! \
                     '.format(data_to_parameter_ratio))
-            try:
-                misc.remove_file(self.backup_file)
-            except(IOError):
-                print('Unable to delete backup file {}.'.format(self.backup_file))
+        try:
+            misc.remove_file(self.backup_file)
+        except(IOError):
+            print('Unable to delete backup file {}.'.format(self.backup_file))
 
 
 

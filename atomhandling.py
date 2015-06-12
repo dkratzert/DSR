@@ -584,8 +584,6 @@ class SfacTable():
         self.elements = [x.upper() for x in atoms]
 
 
-
-
     def set_sfac_table(self):
         '''
         sets the new global sfac table in the res file

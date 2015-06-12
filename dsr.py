@@ -332,6 +332,7 @@ class DSR():
         sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
         resi = Resi(reslist, dsr_dict, dbhead, db_residue_string, find_atoms)
         # line where the dsr command is found in the resfile:
+        dsr_line_number = dsrp.find_dsr_command(line=False)
         if fragment in ['cf3', 'cf6', 'cf9']:
             cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, 
                       basefilename, dsr_dict, resi, self.res_file)
@@ -345,7 +346,6 @@ class DSR():
             sys.exit()
         if dsrp.occupancy:
             rle.set_free_variables(dsrp.occupancy)
-        dsr_line_number = dsrp.find_dsr_command(line=False)
         fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
         dbhead = resi.remove_resi(dbhead)
         # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
