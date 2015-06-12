@@ -372,7 +372,6 @@ class CF3(object):
         reslist = rl.get_res_list()
         shx.restore_acta_card(acta_lines)
         shx.set_refinement_cycles('8')
-        shx.restore_acta_card(acta_lines)
         rl.write_resfile(reslist, '.res')
     
     
