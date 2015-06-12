@@ -321,7 +321,7 @@ class Restraints():
 #                    print('flatchunk:', chunk)
             if not flats:
                 return False
-            for chunk in chunks:
+            for chunk in flats:
                 for i in neighbors:
                     for at in chunk:
                         if self.binds_to(at, i):
@@ -343,7 +343,7 @@ class Restraints():
         '''
         returns True if atom a binds to atoms b
         '''
-        if (a, b) in self._connectivity_table:
+        if [a, b] in self._connectivity_table:
             return True
         else:
             return False

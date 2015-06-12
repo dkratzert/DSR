@@ -36,11 +36,13 @@
 # </name>                          <- End tag. Same as start tag but with /
 #
 # - Anything not being an atom after FRAG is ignored.
+# - fragment names CF3, CF6 and CF9 are reserved by DSR. Do not attempt to used them in database 
+    entrys. 
 # - Only lines beginning with valid SHELXL instructions are allowed in the header.
 # - Anything behind the 5th column in the atom list is ignored.
 # - Long lines can be wrapped with an equal sign (=) and a space character in the next line
-#   like in SHELXL, but the can also be of any length. All lines will be wrapped to fit
-#   in the SHELXL file.
+#   like in SHELXL, but they can also be of any length. All lines will be wrapped to fit
+#   in the SHELXL file automatically.
 ########################################################################################
 
 <PFCY>
