@@ -135,12 +135,12 @@ class CF3(object):
         '''
         afix=str(afix)
         if afix == '130':
-            print('Generating CF3-Group at {}.'.format(self.dsr_dict['target'][0]))
+            print(('Generating CF3-Group at {}.'.format(self.dsr_dict['target'][0])))
             restr = sadir_130
             if self.dsr_dict['dfix']:
                 restr = dfixr_130
         if afix == '120':
-            print('Generating twofold disordered CF3-Group at {}.'.format(self.dsr_dict['target'][0]))
+            print(('Generating twofold disordered CF3-Group at {}.'.format(self.dsr_dict['target'][0])))
             restr = sadir_120
             if self.dsr_dict['dfix']:
                 restr = dfixr_120
@@ -149,12 +149,12 @@ class CF3(object):
             restr = [i+'\n' for i in restr]
         atom = self.dsr_dict['target'][0]
         if len(self.dsr_dict['target']) > 1:
-            print('Using only first target atom {}.'.format(self.dsr_dict['target'][0]))
+            print(('Using only first target atom {}.'.format(self.dsr_dict['target'][0])))
         atomline = self.fa.get_atom_line_numbers([atom])[0]
         self.make_pivot_isotropic(atomline)
         found = self.find_bonded_fluorine(atom)
         for i in found:
-            print('Deleting ' + i[0] + '_' + i[7] + ' from '+atom)
+            print(('Deleting ' + i[0] + '_' + i[7] + ' from '+atom))
         self.delete_bound_fluorine(found)
         fatoms = self.make_afix(afixnum=afix, linenumber=atomline)
         self.do_refine_cycle(self.rl, self.reslist)
@@ -197,7 +197,7 @@ class CF3(object):
         :param atom: central atom of the group
         :type atom: string
         '''
-        print('Generating threefold disordered CF3-Group at {}.'.format(self.dsr_dict['target'][0]))
+        print(('Generating threefold disordered CF3-Group at {}.'.format(self.dsr_dict['target'][0])))
         atom = self.dsr_dict['target'][0]
         if self.dsr_dict['dfix']:
             restr = dfixr_cf9
@@ -211,7 +211,7 @@ class CF3(object):
         atomline = self.fa.get_atom_line_numbers([atom])[0]
         found = self.find_bonded_fluorine(atom)
         for i in found:
-            print('Deleting ' + i[0] + '_' + i[7] + ' from '+atom)
+            print(('Deleting ' + i[0] + '_' + i[7] + ' from '+atom))
         self.delete_bound_fluorine(found)
         # make a copy to find out fluorine positions:
         reslist_copy = self.reslist[:]
