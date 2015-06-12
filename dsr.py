@@ -419,8 +419,9 @@ class DSR():
 if __name__ == '__main__':
     '''main function'''
     #dsr = DSR(list_db=True)
-    dsr = DSR(res_file_name='p21n_cf3.res')
-    sys.exit()
+    #dsr = DSR(export_fragment='toluene')
+    #dsr = DSR(res_file_name='p21n_cf3.res')
+    #sys.exit()
     #import cProfile
     try:
         #cProfile.run('dsr = DSR(res_file_name="p21c.res")', 'foo.profile')

@@ -106,6 +106,9 @@ class ReadDB():
             for num, line in enumerate(self._databases[db]):
                 if re.match(regex, line):
                     frag = [str(line.strip('<> \n\r')).upper(), num + 1, db]  # stripping spaces is important here!
+                    if frag[0] in ['CF3', 'CF6', 'CF9']:
+                        print('\nWarning, {} is a reserved fragment name. Ignoring database entry {}.'.format(frag[0], frag[0]))
+                        continue
                     dbnames.append(frag)
         nameset = []
         for i in dbnames:

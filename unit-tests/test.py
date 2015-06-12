@@ -783,7 +783,7 @@ class ExportTest(unittest.TestCase):
                      'DANG 2.3909  C3     C5     \n',
                      'DANG 2.3961  C4     C6     \n',
                      'DANG 2.3967  C5     C7     \n', 
-                     'FLAT C2 C7 C6 C5\n', 
+                     'FLAT C2 C7 C6 C1\n', 
                      'FLAT C6 C5 C4 C3\n'],
                      'rem end of restraints\n',
                       '\n', 
