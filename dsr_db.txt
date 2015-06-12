@@ -30,14 +30,14 @@
 # FRAG 17 a b c alpha beta gamma   <- FRAG card with afix number and cell parameters.
 #      Atom  number  coordinates   <- One isotropic atom per line. 
 # e.g.  O1     1       x  y  z     <- Either the atom type is recognized by the atom name for 
-                                      positive numbers.
+#                                     positive numbers.
 # e.g.  O1    -8       x  y  z     <- Or the atom type is defined by the negative atomic     
-                                      number.
+#                                     number.
 # </name>                          <- End tag. Same as start tag but with /
 #
 # - Anything not being an atom after FRAG is ignored.
-# - Fragment names CF3, CF6 and CF9 are reserved by DSR. Do not attempt to use them in any database 
-#   entry. 
+# - Fragment names CF3, CF6 and CF9 are reserved by DSR. Do not attempt to use them in any 
+#   database entry. 
 # - Only lines beginning with valid SHELXL instructions are allowed in the header.
 # - Anything behind the 5th column in the atom list is ignored.
 # - Long lines can be wrapped with an equal sign (=) and a space character in the next line

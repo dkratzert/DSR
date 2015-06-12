@@ -14,7 +14,6 @@ import string
 import re
 import os
 from constants import atomregex, SHX_CARDS
-import math
 from math import cos, sqrt, radians, sin
 import shutil
 import random
@@ -375,7 +374,6 @@ def atomic_distance(p1, p2, cell):
     cell are the cell parameters as list: ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
     returns the distance between the two points.
     '''
-    from math import cos, sqrt, radians
     cell = [float(y) for y in cell]
     a , b, c =  cell[:3]
     al = radians(cell[3])

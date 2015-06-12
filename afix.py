@@ -325,7 +325,6 @@ class InsertAfix(object):
 
 
 if __name__ == '__main__':
-    from resi import Resi
     res_file = 'p21c.res'
     invert = True
     rl = ResList(res_file)
