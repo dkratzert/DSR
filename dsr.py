@@ -323,12 +323,14 @@ class DSR():
         if fragment in ['cf3', 'cf6', 'cf9']:
             dbhead = 'RESI CF3'
             db_residue_string = 'CF3'
-            dbatoms = [['C1', '-6'], ['F1', '-9']]
+            db_atom_types = ['C', 'F']
         else:
             dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
             db_residue_string = gdb.get_resi_from_fragment(fragment)
             dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
-        sf = SfacTable(reslist, dbatoms)
+            # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
+            db_atom_types = get_atomtypes(dbatoms)                 
+        sf = SfacTable(reslist, db_atom_types)
         sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
         resi = Resi(reslist, dsr_dict, dbhead, db_residue_string, find_atoms)
         # line where the dsr command is found in the resfile:
@@ -348,8 +350,6 @@ class DSR():
             rle.set_free_variables(dsrp.occupancy)
         fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
         dbhead = resi.remove_resi(dbhead)
-        # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
-        db_atom_types = get_atomtypes(dbatoms)                 
         ### corrects the atom type according to the previous defined global sfac table:
         dbatoms = set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table)
 
