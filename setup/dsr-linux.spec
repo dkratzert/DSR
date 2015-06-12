@@ -90,6 +90,7 @@ install -m 644 misc.py %{buildroot}%{prefix}/DSR/misc.py
 install -m 644 options.py %{buildroot}%{prefix}/DSR/options.py
 install -m 644 terminalsize.py %{buildroot}%{prefix}/DSR/terminalsize.py
 install -m 644 resfile.py %{buildroot}%{prefix}/DSR/resfile.py
+install -m 644 cf3fit.py %{buildroot}%{prefix}/DSR/cf3fit.py
 install -m 644 elements.py %{buildroot}%{prefix}/DSR/elements.py
 install -m 644 restraints.py %{buildroot}%{prefix}/DSR/restraints.py
 install -m 644 resi.py %{buildroot}%{prefix}/DSR/resi.py
