@@ -37,30 +37,30 @@ dfixr_130 = ['DFIX 1.328 Z F1 Z F2 Z F3 ',
 
 dfixr_120 = ['DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 ', 
              'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 ',
-             'SADI 0.1 Y F1 Y F2 Y F3  Z F4 Z F5 Z F6 ',
+             'SADI 0.1 Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
              'RIGU Y Z F1 > F6']
 
 dfixr_cf9 = ['SUMP 1 0.0001 1 {0} 1 {1} 1 {2}', 
              'DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 ', 
              'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4  F7 F8 F8 F9 F9 F7 ',
-             'SADI 0.1 Y F1 Y F2 Y F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 ',
+             'SADI 0.1 Y F1 Y F2 Y F3  Y F4 Y F5 Y F6  Y F7 Y F8 Y F9 ',
              'RIGU Y Z F1 > F9']
 
 
 sadir_130 = ['SADI 0.02 Z F1 Z F2 Z F3 ',
              'SADI 0.04 F1 F2 F2 F3 F3 F1 ',
-             'SADI 0.1 Z F1 Z F2 Z F3 ',
+             'SADI 0.1 Y F1 Y F2 Y F3 ',
              'RIGU Y Z F1 F2 F3 ']
 
 sadir_120 = ['SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 ',
              'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 ',
-             'SADI 0.1 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 ',
+             'SADI 0.1 Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
              'RIGU Y Z F1 > F6']
 
 sadir_cf9 = ['SUMP 1 0.0001 1 {0} 1 {1} 1 {2}',
              'SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 ',
              'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4  F7 F8 F8 F9 F9 F7 ',
-             'SADI 0.1 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 ',
+             'SADI 0.1 Y F1 Y F2 Y F3  Y F4 Y F5 Y F6  Y F7 Y F8 Y F9 ',
              'RIGU Y Z F1 > F9']
 
 
@@ -233,34 +233,34 @@ class CF3(object):
         for i in found:
             print(('Deleting ' + i[0] + '_' + i[7] + ' from '+atom))
         self.delete_bound_fluorine(found)
-        # make a copy to find out fluorine positions:
+        # make a copy to find fluorine positions:
+        ####################################################
         reslist_copy = self.reslist[:]
         self.make_pivot_isotropic(atomline)
-        fatoms = self.make_afix(afixnum=130, linenumber=atomline)
+        fatoms = self.make_afix(afixnum=130, linenumber=atomline, resioff=True)
+        fatom = fatoms[0]
         self.do_refine_cycle(self.rl, self.reslist)
-        #self.reslist = self.rl.get_res_list()
         # this is the bond around the CF3 group rotates
         Y, Z = self.lf.get_bondvector(atom)
         Y = remove_partsymbol(Y)
         Z = remove_partsymbol(Z)
         numberedatoms = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9']
-        nums = NumberScheme(self.reslist, numberedatoms, False)
-        F1, F2, F3, F4, F5, F6, F7, F8, F9  = nums.get_fragment_number_scheme()
-        #start_f_coord = self.fa.get_atomcoordinates([fatoms[0]]).values()[0]
         if self.resi.get_residue_class:
+            F1, F2, F3, F4, F5, F6, F7, F8, F9  = numberedatoms
             resiclass = self.resi.get_residue_class
             resinum = self.resi.get_resinumber
-            fatom = fatoms[0]+'_'+str(resinum)
             resistr = 'RESI '+resiclass+' '+resinum
             resi0 = 'RESI 0\n'
         else:
-            fatom = fatoms[0]
+            nums = NumberScheme(self.reslist, numberedatoms, False)
+            F1, F2, F3, F4, F5, F6, F7, F8, F9  = nums.get_fragment_number_scheme()            
         start_f_coord = self.lf.get_single_coordinate(fatom)
         replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3),
                             ('F4', F4), ('F5', F5), ('F6', F6), ('F7', F7), 
                             ('F8', F8), ('F9', F9))
         for old, new in (replacelist):
             restr = [i.replace(old, new) for i in restr]
+        ########################################################
         # add restraints to reslist:
         # all fluorines are set, so we can get back to the original res file:
         self.reslist = reslist_copy
@@ -326,7 +326,7 @@ class CF3(object):
             pass
 
 
-    def make_afix(self, afixnum, linenumber):
+    def make_afix(self, afixnum, linenumber, resioff=False):
         '''
         create an afix to build a CF3 or CH3 group
         :param afixnum: afix number
@@ -345,7 +345,7 @@ class CF3(object):
         # returns also the atom names if residue is active
         numberscheme_120 = num_120.get_fragment_number_scheme()
         numberscheme_130 = num_130.get_fragment_number_scheme()
-        if self.resi.get_residue_class:
+        if self.resi.get_residue_class and not resioff:
             resiclass = self.resi.get_residue_class
             resinum = self.resi.get_resinumber
             resistr = '\nRESI '+resiclass+' '+resinum
