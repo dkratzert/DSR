@@ -12,7 +12,7 @@ Created on 13.05.2015
 # ----------------------------------------------------------------------------
 #
 
-
+- create "split" option to split the pivot atom
 '''
 import resfile
 from dbfile import global_DB
@@ -30,32 +30,37 @@ from resfile import ResList, ResListEdit
 import mpmath as mpm
 
 
-dfixr_130 = ['DFIX 1.328 Z F1 Z F2 Z F3 \n', 
-             'DFIX 2.125 F1 F2 F2 F3 F3 F1 \n',
-             'SADI 0.1 Y F1 Y F2 Y F3 \n',
+dfixr_130 = ['DFIX 1.328 Z F1 Z F2 Z F3 ', 
+             'DFIX 2.125 F1 F2 F2 F3 F3 F1 ',
+             'SADI 0.1 Y F1 Y F2 Y F3 ',
              'RIGU Y Z F1 F2 F3 ']
-dfixr_120 = ['DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n', 
-             'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 \n',
-             'SADI 0.1 Y F1 Y F2 Y F3  Z F4 Z F5 Z F6 \n',
+
+dfixr_120 = ['DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 ', 
+             'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 ',
+             'SADI 0.1 Y F1 Y F2 Y F3  Z F4 Z F5 Z F6 ',
              'RIGU Y Z F1 > F6']
+
 dfixr_cf9 = ['SUMP 1 0.0001 1 {0} 1 {1} 1 {2}', 
-             'DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 \n', 
-             'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4  F7 F8 F8 F9 F9 F7 \n',
-             'SADI 0.1 Y F1 Y F2 Y F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 \n',
+             'DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 ', 
+             'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4  F7 F8 F8 F9 F9 F7 ',
+             'SADI 0.1 Y F1 Y F2 Y F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 ',
              'RIGU Y Z F1 > F9']
 
-sadir_130 = ['SADI 0.02 Z F1 Z F2 Z F3 \n',
-             'SADI 0.04 F1 F2 F2 F3 F3 F1 \n',
-             'SADI 0.1 Z F1 Z F2 Z F3 \n',
+
+sadir_130 = ['SADI 0.02 Z F1 Z F2 Z F3 ',
+             'SADI 0.04 F1 F2 F2 F3 F3 F1 ',
+             'SADI 0.1 Z F1 Z F2 Z F3 ',
              'RIGU Y Z F1 F2 F3 ']
-sadir_120 = ['SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n',
-             'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 \n',
-             'SADI 0.1 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 \n',
+
+sadir_120 = ['SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 ',
+             'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 ',
+             'SADI 0.1 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 ',
              'RIGU Y Z F1 > F6']
+
 sadir_cf9 = ['SUMP 1 0.0001 1 {0} 1 {1} 1 {2}',
-             'SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9\n',
-             'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4  F7 F8 F8 F9 F9 F7 \n',
-             'SADI 0.1 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 \n',
+             'SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 ',
+             'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4  F7 F8 F8 F9 F9 F7 ',
+             'SADI 0.1 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 ',
              'RIGU Y Z F1 > F9']
 
 
@@ -81,7 +86,8 @@ class CF3(object):
         atoms = fa.atoms_as_residues
         self.basefilename = basefilename
         atomlist = []
-        # atomlist: ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number, residue_num]
+        # atomlist: ['C1', ['x', 'y', 'z'], linenumber, class, part, element, 
+        #                                           sfac_number, residue_num]
         for i in atoms:
             for y in atoms[i]:
                 if y[0][0] == 'Q':
@@ -89,8 +95,8 @@ class CF3(object):
                 atomlist.append(y+[i])
         self.atomlist = atomlist
         self.cell = rle.get_cell()
-        self.startm = '\nREM CF3 group made by DSR:\n'
-        self.endm = 'REM End of CF3 group made by DSR\n\n'
+        self.startm = '\n\nREM CF3 group made by DSR:\n'
+        self.endm = 'REM End of CF3 group made by DSR\n'
     
     
     def find_bonded_fluorine(self, atom, extra_param=0.16, element='F'):
@@ -120,6 +126,29 @@ class CF3(object):
             i = int(i[2])
             self.rle.remove_line(i, rem=False, remove=True, frontspace=False)
     
+    def format_cf3_restraints(self, afix, restr, atom, fatoms):
+        '''
+        replaces the dummy atom names in the restraint lists with the real names
+        :param afix: string of the afix number
+        :param restr: restraints
+        :param atom: pivot atom
+        :param fatoms: fluorine atoms
+        '''
+        Y, Z = self.lf.get_bondvector(atom)
+        Y = remove_partsymbol(Y)
+        Z = remove_partsymbol(Z)
+        if afix == '130':
+            F1, F2, F3 = fatoms
+            replacelist = ('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3)
+        if afix == '120':
+            F1, F2, F3, F4, F5, F6 = fatoms
+            replacelist = ('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3), ('F4', F4), ('F5', F5), ('F6', F6)
+        # replace dummy atoms in restraint list with real atom names:
+        for old, new in replacelist:
+            restr = [i.replace(old, new) for i in restr]
+        restr = wrap_headlines(restr, 77)
+        return restr
+
     def cf3(self, afix=130):
         '''
         create CF3 group on atom.
@@ -140,16 +169,18 @@ class CF3(object):
             if self.dsr_dict['dfix']:
                 restr = dfixr_130
         if afix == '120':
-            print(('Generating twofold disordered CF3-Group at {}.'.format(self.dsr_dict['target'][0])))
+            print(('Generating twofold disordered CF3-Group at {}.'\
+                            .format(self.dsr_dict['target'][0])))
             restr = sadir_120
             if self.dsr_dict['dfix']:
                 restr = dfixr_120
         if self.resi.get_residue_class:
             restr = self.resi.format_restraints(restr)
-            restr = [i+'\n' for i in restr]
+            #restr = [i+'\n' for i in restr]
         atom = self.dsr_dict['target'][0]
         if len(self.dsr_dict['target']) > 1:
-            print(('Using only first target atom {}.'.format(self.dsr_dict['target'][0])))
+            print(('Using only first target atom {}.'\
+                            .format(self.dsr_dict['target'][0])))
         atomline = self.fa.get_atom_line_numbers([atom])[0]
         self.make_pivot_isotropic(atomline)
         found = self.find_bonded_fluorine(atom)
@@ -161,29 +192,18 @@ class CF3(object):
         # this is essential
         self.reslist = self.rl.get_res_list()
         # this is the bond around the CF3 group rotates
-        Y, Z = self.lf.get_bondvector(atom)
-        Y = remove_partsymbol(Y)
-        Z = remove_partsymbol(Z)
-        if afix == '130':
-            F1, F2, F3 = fatoms
-            replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3))
-        if afix == '120':
-            F1, F2, F3, F4, F5, F6 = fatoms
-            replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3),
-                            ('F4', F4), ('F5', F5), ('F6', F6))
-        # replace dummy atoms in restraint list with real atom names:
-        for old, new in (replacelist):
-            restr = [i.replace(old, new) for i in restr]
-        restr = wrap_headlines(restr, 77)
-        #self.reslist = self.rl.get_res_list()
+        restr = self.format_cf3_restraints(afix, restr, atom, fatoms)
         # get position for the fluorine atoms:
         atomline = self.fa.get_atom_line_numbers([atom])[0]
         # add restraints to reslist:
-        self.reslist[atomline] = self.reslist[atomline]+self.startm+''.join(restr)
+        restr = ''.join(restr)
+        self.reslist[atomline] = self.reslist[atomline]+self.startm+restr
         regex = r'.*{}'.format(self.rand_id)
         id_lines = find_multi_lines(self.reslist, regex)
+        # replace dummy PART with real part definition
         for line in id_lines:
             self.reslist[line] = ' '.join(self.reslist[line].split()[1:-1])+'\n'
+        # set refinement cycles back to 8
         shx = ShelxlRefine(self.reslist, self.basefilename, self.fa)
         shx.set_refinement_cycles('8')
         self.rl.write_resfile(self.reslist, '.res')
@@ -227,9 +247,18 @@ class CF3(object):
         nums = NumberScheme(self.reslist, numberedatoms, False)
         F1, F2, F3, F4, F5, F6, F7, F8, F9  = nums.get_fragment_number_scheme()
         #start_f_coord = self.fa.get_atomcoordinates([fatoms[0]]).values()[0]
-        start_f_coord = self.lf.get_single_coordinate(fatoms[0])
+        if self.resi.get_residue_class:
+            resiclass = self.resi.get_residue_class
+            resinum = self.resi.get_resinumber
+            fatom = fatoms[0]+'_'+str(resinum)
+            resistr = 'RESI '+resiclass+' '+resinum
+            resi0 = 'RESI 0\n'
+        else:
+            fatom = fatoms[0]
+        start_f_coord = self.lf.get_single_coordinate(fatom)
         replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3),
-                            ('F4', F4), ('F5', F5), ('F6', F6), ('F7', F7), ('F8', F8), ('F9', F9))
+                            ('F4', F4), ('F5', F5), ('F6', F6), ('F7', F7), 
+                            ('F8', F8), ('F9', F9))
         for old, new in (replacelist):
             restr = [i.replace(old, new) for i in restr]
         # add restraints to reslist:
@@ -255,20 +284,27 @@ class CF3(object):
                     F7+'   {0}   {10}    11.00000    0.04',
                     F8+'   {0}   {11}    11.00000    0.04',
                     F9+'   {0}   {12}    11.00000    0.04',                    
-                    'PART 0 \n\n',
+                    'PART 0 ',
                     self.endm]
         restr = wrap_headlines(restr, 77)
         restr = ''.join(restr).format(fcount+1, fcount+2, fcount+3)
-        self.reslist[atomline] = self.reslist[atomline]+self.startm+restr
+        # place the restraints:
+        self.reslist[atomline] = (self.reslist[atomline]
+                                    +self.startm
+                                    +restr)
         at1 = self.lf.get_single_coordinate(Y)
         at2 = self.lf.get_single_coordinate(Z)
         coords = []
+        # rotate the fluorine coordinate around at1, at2 to get three triples:
         for delta in [0, 120, 240,   40, 160, 280,   80, 200, 320]:
             coord = self.rotate_atom_around_bond(start_f_coord, at1, at2, delta)
             coords.append('{:>10.6f} {:>10.6f} {:>10.6f}'.format(*coord))
-        self.reslist[atomline] = self.reslist[atomline]\
-                                    +'\n'.join(atoms_cf9).format(self.e2s.elem_2_sfac('F'),
-                                        fcount+1, fcount+2, fcount+3, *coords)   
+        if self.resi.get_residue_class:
+            atoms_cf9 = [resistr]+atoms_cf9+[resi0]
+        # join all together:
+        atoms_cf9 = '\n'.join(atoms_cf9).format(self.e2s.elem_2_sfac('F'),
+                                        fcount+1, fcount+2, fcount+3, *coords)
+        self.reslist[atomline] = self.reslist[atomline]+atoms_cf9   
         self.reslist[self.rle.find_fvarlines()[0]] = fvar
         shx = ShelxlRefine(self.reslist, self.basefilename, self.fa)
         shx.set_refinement_cycles('8')
@@ -285,6 +321,9 @@ class CF3(object):
         if atomline[-1] == '=':
             self.reslist[linenumber] = '{:5.4s}{:4.2s}{:>10.8s} {:>10.8s} {:>10.8s}  {:8.6s}  0.04'.format(*atomline)
             self.reslist[linenumber+1] = '' 
+        else:
+            # atom is already isotropic, nothing to do...
+            pass
 
 
     def make_afix(self, afixnum, linenumber):
@@ -309,13 +348,13 @@ class CF3(object):
         if self.resi.get_residue_class:
             resiclass = self.resi.get_residue_class
             resinum = self.resi.get_resinumber
-            resistr = 'RESI '+resiclass+' '+resinum
-            resi0 = 'RESI 0'
+            resistr = '\nRESI '+resiclass+' '+resinum
+            resi0 = 'RESI 0\n'
             numberscheme_130 = ['F1', 'F2', 'F3']
             numberscheme_120 = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6']
         sfac = self.e2s.elem_2_sfac('F')
         # CF3:
-        afix_130 = ['\n'+resistr,
+        afix_130 = [resistr,
                     'AFIX {0}', # AFIX 120 or 130
                     #'REM AFIX made by DSR: {3}',    
                     numberscheme_130[0]+' {1} 0 0 0 11.0  0.04',
@@ -323,9 +362,9 @@ class CF3(object):
                     numberscheme_130[2]+' {1} 0 0 0 11.0  0.04',
                     #'REM end of AFIX by DSR {3}', # insert ID and later change it to the PART usw.
                     'AFIX 0',
-                    resi0+'\n']
+                    resi0]
         # CF6:
-        afix_120 = ['\n'+resistr,
+        afix_120 = [resistr,
                     'AFIX {0}',
                     '\nREM PART 1 !{3}', 
                     numberscheme_120[0]+' {1} 0 0 0   {2}  0.04',
