@@ -1,21 +1,22 @@
 Recent changes
--1.7.0  New feature: Ability to model disordered CF3 groups (1, 2 and 3 positions). Fixed CF6 restraints. 
+-1.7.1  Fixed typos in CF3 restraints. Improved residue handling with CF3 groups.
+-1.7.0  New feature: Ability to model disordered CF3 groups (1, 2 and 3 positions). Fixed CF6 restraints.
 -1.6.4  removed dependency of DFIX and PART in DSR, better warning for unsuccessful shelxl runs.
 -1.6.3  Improved FLAT restraints. Fixed Pyridine and Acetonitrile restraints. Perfluoro adamantole added.
 -1.6.2  Improved atom deleter in replace mode.
         Finally, a brand new dmg image for Mac OS X.
 -1.6.1  New feature: replace mode will replace all atoms in PART 0 that are 1.2 A near the fitting fragment.
         Please tell me if 1.2 A is too far.
-        New fragment 18-Crown-6 (thanks to Dejan Premu�ic), New fragment Mesitylene. Bug fixed that introduced 
+        New fragment 18-Crown-6 (thanks to Dejan Premu�ic), New fragment Mesitylene. Bug fixed that introduced
         restraints again, even if they were already there (thanks to Olaf Petersen).
-        Better warning for bad residues. Several small fixes. ACTA card is restored as it was before now. 
+        Better warning for bad residues. Several small fixes. ACTA card is restored as it was before now.
         Triphenylphosphane added to database. Fixed replacing of residues.
 -1.6.0  Completely changed DFIX/DANG/FLAT routines. Connectivity list is now calculated by DSR and not from .lst file (SHELXL).
         FLAT also includes neighbouring ring atoms. Exported res files now include DFIX/DANG/FLAT restraints.
         Please report bugs in this release.
 -1.5.15 Database updates, Fixed missing U values in exported res files, during import the name comes from the pdb file now.
 -1.5.14 Bug fixes, nicer export, warning about missing database, database updates, manual updates.
--1.5.13 Improved error logging. Implemented Support for negative atomic number for atom type. 
+-1.5.13 Improved error logging. Implemented Support for negative atomic number for atom type.
         Fixed some typos in the database.
 -1.5.12 Fixed bug in replace mode.
 -1.5.11 Ignore lines starting with # in the DB. Python3 compatible again. Lower case resi fixed. Exceptions get logged.
@@ -23,7 +24,7 @@ Recent changes
 -1.5.10 External restraints without residues are now supported. Small fixes.
 -1.5.9  DSR now warns if data to paramter ratio is getting bad. small fixes.
 -1.5.8  Support for both types of SFAC. Search result of -s also with line number. More tests.
--1.5.7  DSR now creates a backup file before fragment fit in a separate directory. 
+-1.5.7  DSR now creates a backup file before fragment fit in a separate directory.
         Exported fragment res files now include database restraints.
 -1.5.6  Program renamed to "Disordered Structure Refinement (DSR)" Small fixes. Warning about inacurate restraints.
 -1.5.5  Unit tests. Small fixes.
@@ -39,53 +40,53 @@ Recent changes
 -1.4.3  very long lines of restraints were not correctly wrapped.
 -1.4.2  serious bug with wrong naming scheme of fragment atoms fixed.
 -1.4.1  serious bug with wrapped lines in the database header fixed.
--1.4.0  Big database update (Many thanks to Ilia A. Guzei providing molecular fragments). The automatic generation 
-        of DFIX/DANG and FLAT restraints with the "DFIX" DSR-command is now implemented. 
+-1.4.0  Big database update (Many thanks to Ilia A. Guzei providing molecular fragments). The automatic generation
+        of DFIX/DANG and FLAT restraints with the "DFIX" DSR-command is now implemented.
         Success and fail reports about the restraint generation would be highly appreciated!
-        Separate files with restraints e.g. in a +FILENAME.dfx file are now implemented (system 
+        Separate files with restraints e.g. in a +FILENAME.dfx file are now implemented (system
         command line option -re). Full fragment names are now listed with "dsr -l". The output of -l
         now automatically fits to the command line width.
-        More meaningful comments about the import from a GRADE fragment are now included during the import 
-        and export. Multiple lines of REM in the database are now supported. 
+        More meaningful comments about the import from a GRADE fragment are now included during the import
+        and export. Multiple lines of REM in the database are now supported.
         The molecules of the paper about "X-ray analysis on the nanogram to microgram scale using porous complexes"
         from Inokuma, Y. et al. Nature 495, 461�466 (2013) are included!
--1.3.2  FRAG in the database entrys was accidentally case sensitive. A missing residue in the database 
+-1.3.2  FRAG in the database entrys was accidentally case sensitive. A missing residue in the database
         entry was not properly checked.
--1.3.1  A lot of improvements: DFIX command now possible without RESI command. line wrap of long command 
-        lines and lines of restraints now fully working. Export to clipboard of experimental coordinates now 
+-1.3.1  A lot of improvements: DFIX command now possible without RESI command. line wrap of long command
+        lines and lines of restraints now fully working. Export to clipboard of experimental coordinates now
         working correctly. Networkx added to distribution.
 -1.3.0  First implementation of automatic generated DFIX restraints.
 -1.2.13 Restraints for same residue classes are now inserted only once. Port to Python-3.3
 -1.2.12 Small fixes and new Linux packages.
--1.2.11 Supports now multiple lines of FVAR. DSR command line in res file is now correctly wrapped 
+-1.2.11 Supports now multiple lines of FVAR. DSR command line in res file is now correctly wrapped
         during processing with DSR bevor exceeding 80 characters.
--1.2.10	Much improved error handling for shelxl. In case of shelx errors the original 
-        res file is restored now. The B array size is now set according to the number of atoms.	
--1.2.9	Minor improvement in export. Better esds in the database.	
--1.2.8	Fixed bug where sometimes atom names were case sensitive.	
--1.2.7	A few improvements in the database. Small bugfixes.	
--1.2.6	Olex2 macro was not working. Export inside Olex2 still does not work in 64bit windows. 
-        Will be fixed later.	
--1.2.5	Fixed bug where db content was printed to screen instead of the db name when no restraints 
-        are in a db entry.	
--1.2.4	export of a fragment now copies also to the clipboard. This can be used with the "match" 
-        functionality of Olex2.	
--1.2.3	better GRADE import directly from the .tgz file. Lots of small imporovements.	
--1.2.2	small fixes	
--1.2.1	nicer output	
--1.2.0	Support for Grade import, more fragments, better output listing from "dsr -l", better error 
-        handling. Please uninstall the previous version (<= 1.1.3 ) completely bevore installing 
-        Version > 1.2.0	
--1.1.2	fix for lowercase atom names	
--1.1.1	Small corrections in the Windows setup process.	
--1.1.0	Step by step example in the manual and example files in the package.	
--1.0.6	files with no AFIX are now handled correctly	
--1.0.5	small fix to handle the AFIX 9 after an AFIX mn correctly.	
--1.0.4	DSR was not able to find xl.exe.	
--1.0.3	Linux package now with unix line endings.	
--1.0.2	new dsr makros for Olex2 (custom.xld)	
--1.0.1	better OlexDSR.py for Olex2	
--1.0.0	full support for residues in target atom notation e.g. C12_1. DSR finds a unique residue 
-        number if no number is given, warns if residue number already in use und finds a uniq. 
-        Adjacent hydrogen atoms are deleted in replace mode.	
+-1.2.10	Much improved error handling for shelxl. In case of shelx errors the original
+        res file is restored now. The B array size is now set according to the number of atoms.
+-1.2.9	Minor improvement in export. Better esds in the database.
+-1.2.8	Fixed bug where sometimes atom names were case sensitive.
+-1.2.7	A few improvements in the database. Small bugfixes.
+-1.2.6	Olex2 macro was not working. Export inside Olex2 still does not work in 64bit windows.
+        Will be fixed later.
+-1.2.5	Fixed bug where db content was printed to screen instead of the db name when no restraints
+        are in a db entry.
+-1.2.4	export of a fragment now copies also to the clipboard. This can be used with the "match"
+        functionality of Olex2.
+-1.2.3	better GRADE import directly from the .tgz file. Lots of small imporovements.
+-1.2.2	small fixes
+-1.2.1	nicer output
+-1.2.0	Support for Grade import, more fragments, better output listing from "dsr -l", better error
+        handling. Please uninstall the previous version (<= 1.1.3 ) completely bevore installing
+        Version > 1.2.0
+-1.1.2	fix for lowercase atom names
+-1.1.1	Small corrections in the Windows setup process.
+-1.1.0	Step by step example in the manual and example files in the package.
+-1.0.6	files with no AFIX are now handled correctly
+-1.0.5	small fix to handle the AFIX 9 after an AFIX mn correctly.
+-1.0.4	DSR was not able to find xl.exe.
+-1.0.3	Linux package now with unix line endings.
+-1.0.2	new dsr makros for Olex2 (custom.xld)
+-1.0.1	better OlexDSR.py for Olex2
+-1.0.0	full support for residues in target atom notation e.g. C12_1. DSR finds a unique residue
+        number if no number is given, warns if residue number already in use und finds a uniq.
+        Adjacent hydrogen atoms are deleted in replace mode.
 

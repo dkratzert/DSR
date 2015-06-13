@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "DSR - Disordered Structure Refinement"
-#define MyAppVersion "1.7.0"
+#define MyAppVersion "1.7.1"
 #define MyAppPublisher "Daniel Kratzert"
 
 [Setup]
@@ -110,13 +110,13 @@ Name: "{app}\example"; Permissions: authusers-full
 Name: "{app}\manual"
 
 [Code]
-const 
-    ModPathName = 'modifypath'; 
-    ModPathType = 'system'; 
+const
+    ModPathName = 'modifypath';
+    ModPathType = 'system';
 
-function ModPathDir(): TArrayOfString; 
-begin 
-    setArrayLength(Result, 1) 
-    Result[0] := ExpandConstant('{app}'); 
-end; 
+function ModPathDir(): TArrayOfString;
+begin
+    setArrayLength(Result, 1)
+    Result[0] := ExpandConstant('{app}');
+end;
 #include "modpath.iss"

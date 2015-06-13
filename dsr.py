@@ -31,7 +31,7 @@ from refine import ShelxlRefine
 import resfile
 from cf3fit import CF3
 
-VERSION = '1.7.0'
+VERSION = '1.7.1'
 # dont forget to change version in Innoscript file, spec file and deb file.
 program_name = '\n-----------------------------'\
            ' D S R - v{}' \
@@ -329,14 +329,14 @@ class DSR():
             db_residue_string = gdb.get_resi_from_fragment(fragment)
             dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
             # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
-            db_atom_types = get_atomtypes(dbatoms)                 
+            db_atom_types = get_atomtypes(dbatoms)
         sf = SfacTable(reslist, db_atom_types)
         sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
         resi = Resi(reslist, dsr_dict, dbhead, db_residue_string, find_atoms)
         # line where the dsr command is found in the resfile:
         dsr_line_number = dsrp.find_dsr_command(line=False)
         if fragment in ['cf3', 'cf6', 'cf9']:
-            cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, 
+            cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table,
                       basefilename, dsr_dict, resi, self.res_file)
             if fragment == 'cf3':
                 cf3.cf3()
