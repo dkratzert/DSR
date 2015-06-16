@@ -91,7 +91,7 @@ class ResListEdit():
         '''
         self._reslist = reslist
         self._find_atoms = find_atoms
-        self.fvarlines = misc.find_multi_lines(self._reslist, r'^FVAR.+[0-9]+')
+        self.fvarlines = self.find_fvarlines()
     
     def get_cell(self):
         '''
@@ -173,7 +173,8 @@ class ResListEdit():
         returns a list of FVAR occurences
         sys.exit() if no atom or FVAR found
         '''
-        if not self.fvarlines:   # There is no FVAR in the res file after SHELXS!
+        fvarlines = misc.find_multi_lines(self._reslist, r'^FVAR.+[0-9]+')
+        if not fvarlines:   # There is no FVAR in the res file after SHELXS!
             for num, i in enumerate(self._reslist):
                 if self._find_atoms.is_atom(i):
                     first_atom = num
@@ -182,12 +183,11 @@ class ResListEdit():
                 print('\nNo atom or Q-peak found! Can not proceed...\n')
                 sys.exit()
             fvarlines = []
-            fvarlines.append(first_atom-1)
-            self._reslist.insert(first_atom-1, ' \n')
+            fvarlines.append(first_atom)
+            self._reslist.insert(first_atom, ' \n')
             return fvarlines
         else:
-            return self.fvarlines
-
+            return fvarlines
 
     def insert_frag_fend_entry(self, dbatoms, fragline, fvarlines):
         '''
@@ -210,7 +210,6 @@ class ResListEdit():
         #dblines = misc.ll_to_string(db)+'\n'
         self._reslist.insert(fvarlines[-1]+1, dblines)   # insert the db entry right after FVAR
 
-
     def get_fvarlist(self):
         fvar_list = []
         for line in self.fvarlines:
@@ -231,12 +230,9 @@ class ResListEdit():
                                       in the res file
         '''
         fvar_list = self.get_fvarlist()
+        varlen = self.get_fvar_count()
         occupancynumber = occupancynumber.strip('-')
-        if len(fvar_list) != 0:
-            for line in self.fvarlines:
-                self._reslist[line] = ' \n' # removes the old FVAR
         # how many numbers do we have?:
-        varlen = len(fvar_list) 
         # the occupancynumber is split in the fvar part and the occupancy part:
         num = occupancynumber.split('.')   
         fvar = int(num[0])//10       # e.g. 20.5 is fvar 2 and occupancy 0.5
@@ -246,7 +242,13 @@ class ResListEdit():
                 fvar_list.append(fvalue)   # if an fvar is missing, add a new one
         line_length = 7
         lines = []
-        for i in range(0, len(fvar_list), line_length):
+        if varlen == 0:
+            varlen = difference
+        sumvarlen = varlen+difference
+        if len(fvar_list) != 0:
+            for line in self.fvarlines:
+                self._reslist[line] = ' ' # removes the old FVAR
+        for i in range(0, sumvarlen, line_length):
             l = 'FVAR  '+'  '.join( "{:<8}".format(x[:6].ljust(6, '0')) for x in fvar_list[i:i+line_length] )
             lines.append(l)
             fvars = '\n'.join(lines)
@@ -258,7 +260,10 @@ class ResListEdit():
         '''
         returns the last used free variable defined with FVAR
         '''
-        return len(self.get_fvarlist())
+        fvars = len(self.get_fvarlist())
+        if not fvars:
+            fvars = 0
+        return fvars
 
 # for testing
 if __name__ == '__main__':
