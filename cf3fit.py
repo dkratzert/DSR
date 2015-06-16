@@ -267,7 +267,7 @@ class CF3(object):
         if self.dsr_dict['occupancy']:
             occ = self.dsr_dict['occupancy']
         else:
-            occ = str((self.rle.get_fvar_count())*10+1+30)
+            occ = str((self.rle.get_fvar_count()+1)*10+1+20)
         fcount = self.rle.get_fvar_count()
         fvar = self.rle.set_free_variables(occ, '0.3') 
         atomline = self.fa.get_atom_line_numbers([atom])[0]
