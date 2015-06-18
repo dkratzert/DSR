@@ -721,6 +721,38 @@ def distance(x1, y1, z1, x2, y2, z2, round_out=False):
 
 if __name__ == '__main__':
     import sys
+    '''
+    F = ... * exp ( -2π²[ h²(a*)²U11 + k²(b*)²U22 + ... + 2hka*b*U12 ] )
+    
+    F3    4    0.210835   0.104067   0.437922  21.00000   0.07243   0.03058 =
+      0.03216  -0.01057  -0.01708   0.03014
+      
+    U11 U22 U33 U23 U13 U12
+    '''
+    import mpmath as mpm
+    cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
+    x = 0.210835
+    y = 0.104067
+    z = 0.437922
+    U11, U22, U33, U23, U13, U12 = 0.07243, 0.03058, 0.03216, -0.01057, -0.01708, 0.03014
+    U21 = U12
+    U32 = U23
+    U31 = U13
+    Uij = mpm.matrix([[U11, U12, U13], [U21, U22, U23], [U31, U32, U33]])
+    E, ER = mpm.eig(Uij)
+    print('#### eigenvalues of Uij:')
+    print(E)
+    print('Right eigenvectors of Uij:')
+    print(mpm.matrix(ER))
+    print('###################')
+    print(ER*mpm.matrix([U11, U22, U33]))
+    
+    
+    
+    
+    
+    
+    sys.exit()
     v = vol_unitcell(2, 2, 2, 90, 90, 90)
     print(v)
     
@@ -760,7 +792,7 @@ if __name__ == '__main__':
 
 
 
-    cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
+    
     # CF3:
     a = (0.281319, 0.368769, 0.575106)
     b = (0.352077, 0.314955, 0.582945)
