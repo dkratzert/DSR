@@ -739,13 +739,13 @@ if __name__ == '__main__':
     U32 = U23
     U31 = U13
     Uij = mpm.matrix([[U11, U12, U13], [U21, U22, U23], [U31, U32, U33]])
-    E, ER = mpm.eig(Uij)
+    E, Q = mpm.eigsy(Uij)
     print('#### eigenvalues of Uij:')
     print(E)
     print('Right eigenvectors of Uij:')
-    print(mpm.matrix(ER))
+    print(mpm.matrix(Q))
     print('###################')
-    print(ER*mpm.matrix([U11, U22, U33]))
+    print(Q*mpm.matrix([U11, U22, U33]))
     
     
     
