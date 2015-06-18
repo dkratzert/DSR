@@ -417,6 +417,18 @@ class CF3(object):
     def rotate_atom_around_bond(self, ratom, at1, at2, delta=10):
         '''
         R = T**-1*Rx**-1*Ry**-1*Rz*Ry*Rx*T
+        
+        
+        1 translate object to origin
+        2 rotate around x in xz plane
+        3 rotate around y in z axis
+        4 rotate aound z with delta angle
+        5 transform back with inverse of 1-3
+        
+        v = P2 - P1
+        |v| = sqrt(vx**2+vy**2+vz**2)
+        u = v/|v| = (a, b, c), |u| = 1
+        a = (x2-x1)/|v| b = (x2-y1)/|v| c = ...
         '''
         ratom = frac_to_cart(ratom, self.cell)
         at1 = frac_to_cart(at1, self.cell)
