@@ -17,12 +17,14 @@ from constants import atomregex, SHX_CARDS
 from math import cos, sqrt, radians, sin
 import shutil
 import random
+import mpmath as mpm
 
 alphabet = string.ascii_uppercase
 
 __metaclass__ = type  # use new-style classes
 
 reportlog = 'dsr_bug_report.log'
+
 
 def checkFileExist(filename):
     '''
@@ -392,7 +394,6 @@ def atomic_distance(p1, p2, cell):
           2*dx*dy*a*b*cos(ga)
     return(sqrt(dsq))
 
-
 def frac_to_cart(frac_coord, cell):
     '''
     Converts fractional coordinates to cartesian coodinates
@@ -412,6 +413,27 @@ def frac_to_cart(frac_coord, cell):
     Zc = 0   +  0               + (c*sin(beta)*sinastar)*z
     return (round(Xc, 8), round(Yc, 8), round(Zc, 8))
 
+
+def frac_to_cart2(frac_coord, cell):
+    '''
+    Converts fractional coordinates to cartesian coodinates
+    :param frac_coord: [float, float, float]
+    :param cell:       [float, float, float, float, float, float]
+    '''
+    #from math import cos, sin, sqrt, radians
+    a, b, c, alpha, beta, gamma = cell
+    x, y, z = frac_coord
+    alpha = radians(alpha)
+    beta  = radians(beta)
+    gamma = radians(gamma)
+    V = vol_unitcell(a, b, c, alpha, beta, gamma)
+    astar = ((abs(b)*abs(c))*sin(alpha))/V
+    cstar = ((abs(a)*abs(b))*sin(gamma))/V
+    A = mpm.matrix([ [a, b*cos(gamma), c*cos(beta)            ], 
+                     [0, b*sin(gamma), -c*sin(beta)*cos(astar)], 
+                     [0, 0           , 1/cstar                ] ])
+    xc, yc, zc = A*mpm.matrix((x, y, z))
+    return (round(float(xc), 8), round(float(yc), 8), round(float(zc), 8))
 
 def cart_to_frac(cart_coord, cell):
     '''
@@ -446,6 +468,8 @@ def matrix_mult(matrix1,matrix2):
     Multiplies matrix1 with matrix2.
     Independent from numpy, but slow.
     [[x1, y1, z1], [x2, y2, z2], [x3, y3, z3]]
+    
+    deprecated, use mpmath instead.
     '''
     if len(matrix1[0]) != len(matrix2):
         # Check matrix dimensions
@@ -467,6 +491,8 @@ def matrix_mult_vector(A, v):
     | 00 01 02 | |0|
     | 10 11 12 |*|1|
     | 20 21 22 | |2|
+    
+    deprecated, use mpmath instead.
     '''
     if len(A[0]) != len(v):
         print('Size of matrix and vector not equal.')
@@ -487,6 +513,8 @@ def translate_coords(coords):
 def determinante(a):
     '''
     return determinant of 3x3 matrix
+    
+    deprecated, use mpmath instead.
     '''
     return (a[0][0] * (a[1][1] * a[2][2] - a[2][1] * a[1][2])
            -a[1][0] * (a[0][1] * a[2][2] - a[2][1] * a[0][2])
@@ -496,6 +524,8 @@ def determinante(a):
 def cross_vec(a, b):
     '''
     Cross product of two 3D vectors
+    
+    deprecated, use mpmath instead.
     '''
     assert len(a) == len(b) == 3, 'For 3D vectors only'
     a1, a2, a3 = a
@@ -738,14 +768,41 @@ if __name__ == '__main__':
     U21 = U12
     U32 = U23
     U31 = U13
+    
     Uij = mpm.matrix([[U11, U12, U13], [U21, U22, U23], [U31, U32, U33]])
-    E, Q = mpm.eigsy(Uij)
+    
+    a, b, c, alpha, beta, gamma = cell
+    alpha = radians(alpha)
+    beta  = radians(beta)
+    gamma = radians(gamma)
+    V = vol_unitcell(a, b, c, alpha, beta, gamma)
+    astar = ((abs(b)*abs(c))*sin(alpha))/V
+    bstar = ((abs(c)*abs(a))*sin(beta))/V
+    cstar = ((abs(a)*abs(b))*sin(gamma))/V
+    A = mpm.matrix([ [a, b*cos(gamma), c*cos(beta)            ], 
+                     [0, b*sin(gamma), -c*sin(beta)*cos(astar)], 
+                     [0, 0           , 1/cstar                ] ])
+    
+    N = mpm.matrix([[astar, 0, 0], [0 ,bstar, 0], [0, 0, cstar]])
+    Ucart = A*N*Uij*N.T*A.T
+    print(Ucart)
+    
+
+    
+    E, Q = mpm.eigsy(Ucart)
     print('#### eigenvalues of Uij:')
     print(E)
-    print('Right eigenvectors of Uij:')
+
+    print('Eigenvectors of Uij:')
     print(mpm.matrix(Q))
     print('###################')
-    print(Q*mpm.matrix([U11, U22, U33]))
+    
+    test = mpm.matrix(Q[1])
+    #*Q[0][1]+Q[1][0]*Q[1][1]+Q[2][0]*Q[2][1]
+    print(test, '###')
+    
+    r = Q*mpm.matrix([U11, U22, U33])+mpm.matrix([x, y, z])
+    print(r[0], r[1], r[2])
     
     
     
@@ -762,7 +819,7 @@ if __name__ == '__main__':
     v = (2, 2, 2)
     c = matrix_mult_vector(A, v)
     print(c)
-    sys.exit()
+    #sys.exit()
     
     from resfile import ResList, ResListEdit
     from atomhandling import FindAtoms
@@ -839,9 +896,10 @@ if __name__ == '__main__':
     # 1.573 A                                      -2.520   5.533  12.289
 
     N1 = frac_to_cart(coord1, cell)
-    N2 = frac_to_cart(coord2, cell)
+    N2 = frac_to_cart2(coord2, cell)
     print(N1, '-2.741   5.912  10.774 must be same')
     print(N2, '-2.520   5.533  12.289')
+
     x1 = float(N1[0])
     y1 = float(N1[1])
     z1 = float(N1[2])
