@@ -423,15 +423,13 @@ def frac_to_cart2(frac_coord, cell):
     #from math import cos, sin, sqrt, radians
     a, b, c, alpha, beta, gamma = cell
     x, y, z = frac_coord
+    V = vol_unitcell(a, b, c, alpha, beta, gamma)
     alpha = radians(alpha)
     beta  = radians(beta)
     gamma = radians(gamma)
-    V = vol_unitcell(a, b, c, alpha, beta, gamma)
-    astar = ((abs(b)*abs(c))*sin(alpha))/V
-    cstar = ((abs(a)*abs(b))*sin(gamma))/V
-    A = mpm.matrix([ [a, b*cos(gamma), c*cos(beta)            ], 
-                     [0, b*sin(gamma), -c*sin(beta)*cos(astar)], 
-                     [0, 0           , 1/cstar                ] ])
+    A = mpm.matrix([ [a, b*cos(gamma),  c*cos(beta)            ], 
+                     [0, b*sin(gamma), (c*(cos(alpha)-cos(beta)*cos(gamma))/sin(gamma))], 
+                     [0, 0           ,  V/(a*b*sin(gamma))               ] ])
     xc, yc, zc = A*mpm.matrix((x, y, z))
     return (round(float(xc), 8), round(float(yc), 8), round(float(zc), 8))
 
@@ -772,34 +770,45 @@ if __name__ == '__main__':
     Uij = mpm.matrix([[U11, U12, U13], [U21, U22, U23], [U31, U32, U33]])
     
     a, b, c, alpha, beta, gamma = cell
+    V = vol_unitcell(a, b, c, alpha, beta, gamma)
     alpha = radians(alpha)
     beta  = radians(beta)
     gamma = radians(gamma)
-    V = vol_unitcell(a, b, c, alpha, beta, gamma)
-    astar = ((abs(b)*abs(c))*sin(alpha))/V
-    bstar = ((abs(c)*abs(a))*sin(beta))/V
-    cstar = ((abs(a)*abs(b))*sin(gamma))/V
-    A = mpm.matrix([ [a, b*cos(gamma), c*cos(beta)            ], 
-                     [0, b*sin(gamma), -c*sin(beta)*cos(astar)], 
+    astar = (b*c*sin(alpha))/V
+    bstar = (c*a*sin(beta ))/V
+    cstar = (a*b*sin(gamma))/V
+    castar = (cos(beta)*cos(gamma)-cos(alpha))/(sin(beta)*sin(gamma))
+    # both are equivalent:
+    A = mpm.matrix([ [a, b*cos(gamma),  c*cos(beta)            ], 
+                     [0, b*sin(gamma), (c*(cos(alpha)-cos(beta)*cos(gamma))/sin(gamma))], 
+                     [0, 0           ,  V/(a*b*sin(gamma))               ] ])
+    Al = mpm.matrix([[a, b*cos(gamma), c*cos(beta)            ], 
+                     [0, b*sin(gamma), -c*sin(beta)*castar    ], 
                      [0, 0           , 1/cstar                ] ])
-    
-    N = mpm.matrix([[astar, 0, 0], [0 ,bstar, 0], [0, 0, cstar]])
+    N = mpm.matrix([[astar, 0, 0], 
+                    [0 ,bstar, 0], 
+                    [0, 0, cstar]])
     Ucart = A*N*Uij*N.T*A.T
+    Ucart2 = Al*N*Uij*N.T*Al.T
+    print('Ucart:')
     print(Ucart)
-    
+    #print(Ucart2)
+    uiso = 0.33333*(Ucart[0, 0]+Ucart[1, 1]+Ucart[2, 2])
+    print('U(iso) von F3_1 0.0461: ', round(uiso, 4))
 
     
-    E, Q = mpm.eigsy(Ucart)
+    E, Q = mpm.eigsy(Ucart) 
     print('#### eigenvalues of Uij:')
     print(E)
+    print(sum(E)*0.333333333)
 
     print('Eigenvectors of Uij:')
     print(mpm.matrix(Q))
     print('###################')
     
-    test = mpm.matrix(Q[1])
+    #test = mpm.matrix(Q[1])
     #*Q[0][1]+Q[1][0]*Q[1][1]+Q[2][0]*Q[2][1]
-    print(test, '###')
+    #print(test, '###')
     
     r = Q*mpm.matrix([U11, U22, U33])+mpm.matrix([x, y, z])
     print(r[0], r[1], r[2])
@@ -813,43 +822,12 @@ if __name__ == '__main__':
     v = vol_unitcell(2, 2, 2, 90, 90, 90)
     print(v)
     
-    A = ((1, 0, 0),
-         (1, 1, 0),
-         (0, 0, 1))
-    v = (2, 2, 2)
-    c = matrix_mult_vector(A, v)
-    print(c)
-    #sys.exit()
-    
     from resfile import ResList, ResListEdit
     from atomhandling import FindAtoms
     from dsrparse import DSR_Parser
     import math as m
     
-    from dbfile import global_DB
-    res_file = 'p21c.res'
-    res_list = ResList(res_file)
-    reslist = res_list.get_res_list()
-    find_atoms = FindAtoms(reslist)
-    rle = ResListEdit(reslist, find_atoms)
-    dsrp = DSR_Parser(reslist, rle)
-    invert = True
-    gdb = global_DB(invert)
-    db = gdb.build_db_dict()
-    fragment = 'PFAnion'
-    fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
-    #dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
-    dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
-    resi = True #gdb.get_resi_from_fragment(fragment)
-    print(dbhead)
-    #uhead = unwrap_head_lines(dbhead)
-    #print(uhead)
-    # sys.exit()
-
-
-
-
-    
+   
     # CF3:
     a = (0.281319, 0.368769, 0.575106)
     b = (0.352077, 0.314955, 0.582945)
@@ -868,24 +846,6 @@ if __name__ == '__main__':
 
     head = ['FLAT C C1 C10 C11 C12 C13 C2 C3', 'FLAT C C1 C10 C11 C12 C13 C2 C3 C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL  C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CLx']
 
-    whead = wrap_headlines(head)
-    #print(whead)
-    uhead = unwrap_head_lines(whead)
-    #print(uhead)
-    # sys.exit()
-    dsr_string = dsrp.find_dsr_command(line=True).lower()
-
-    regex = 'Q2.*'
-    print('found regex in line', find_line(reslist, regex))
-    regex2 = '^H[0-9]+\s+'
-    multi = find_multi_lines(reslist, regex2)
-    print('found multiline in lines', multi)
-    if not multi:
-        print('nix gefunbden!!!!!!!!')
-    print('#'+reslist[123].strip('\n')+'#')
-    print('multiline?', multiline_test(reslist[123]))
-    print('#'+reslist[24].strip('\n')+'#')
-    print('multiline?', multiline_test(reslist[24]))
 
 
     cell90 = (1, 1, 1, 90, 90, 90)
