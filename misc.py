@@ -800,7 +800,8 @@ if __name__ == '__main__':
     E, Q = mpm.eigsy(Ucart) 
     print('#### eigenvalues of Uij:')
     print(E)
-    print(sum(E)*0.333333333)
+    # 1/3 sum of eigenvalues = Uiso:
+    print('Uiso from eigenvalues:', round(sum(E)*0.333333333, 4))
 
     print('Eigenvectors of Uij:')
     print(mpm.matrix(Q))
@@ -809,13 +810,16 @@ if __name__ == '__main__':
     #test = mpm.matrix(Q[1])
     #*Q[0][1]+Q[1][0]*Q[1][1]+Q[2][0]*Q[2][1]
     #print(test, '###')
-    
+   
     r = Q*mpm.matrix([U11, U22, U33])+mpm.matrix([x, y, z])
     print(r[0], r[1], r[2])
     
-    
-    
-    
+  #make cosine of eigenvector of Ucart
+    vx = Q[0, 0]
+    vy = Q[0, 1]
+    vz = Q[0, 2]
+    vnorm = sqrt(vx**2+vy**2+vz**2)
+    print(vnorm)
     
     
     sys.exit()
