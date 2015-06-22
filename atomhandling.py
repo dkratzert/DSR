@@ -412,10 +412,12 @@ class FindAtoms():
         :type atoms: list
         :type lines: list of integers
         '''
+        # this is to make sure the atomlines are correct: 
+        residues = self.collect_residues()
         lines = []
         for at in atoms:
             resinum = self.get_atoms_resinumber(at.upper())
-            for x in self._residues[resinum]:
+            for x in residues[resinum]:
                 atom1 = x[0].upper()
                 atom2 = at.split('_')[0].upper()
                 if atom1 == atom2:
