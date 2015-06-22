@@ -198,30 +198,29 @@ class collect_residuesTest(unittest.TestCase):
 
 
 class remove_hydrogenTest(unittest.TestCase):
-    #def setUp(self):
-        #self.res_file = 'unit-tests/collect_resi.res'
-        #self.res_list = ResList(self.res_file)
-        #self.reslist =  self.res_list.get_res_list()
-        #self.fa = FindAtoms(self.reslist)
-
-    def notworking_testrun_remove_adjacent_hydrogens(self):
-        self.res_file = 'unit-tests/collect_resi.res'
+    def setUp(self):
+        self.res_file = './collect_resi.res'
         self.res_list = ResList(self.res_file)
         self.reslist =  self.res_list.get_res_list()
         self.fa = FindAtoms(self.reslist)
-        #line1 = 'C1    1    0.462797    0.766414    0.415951    21.00000    0.01038    0.01899 =\n'
-        #line2 = '\n'
+
+    def notworking_testrun_remove_adjacent_hydrogens(self):
+        #self.res_list = ResList(self.res_file)
+        #self.reslist =  self.res_list.get_res_list()
+        #self.fa = FindAtoms(self.reslist)
+        line1 = 'C1    1    0.462797    0.766414    0.415951    21.00000    0.01038    0.01899 =\n'
+        line2 = '\n'
         sfac_table = ['C', 'O', 'F', 'AL', 'F', 'H']
         #print(self.reslist[37])
-        def showline(line):
-            for num, i in enumerate(self.reslist):
-                if num == line:
-                    print((i.strip('\n')))
+        #def showline(line):
+        #    for num, i in enumerate(self.reslist):
+        #        if num == line:
+        #            print((i.strip('\n')))
         self.fa.remove_adjacent_hydrogens(['O1_1', 'C1_1'], sfac_table)
         #self.fa = FindAtoms(self.reslist)
-        showline(39)
-        #self.assertEqual(self.reslist[36], line1)
-        #self.assertEqual(self.reslist[39], line2)
+        #showline(39)
+        self.assertEqual(self.reslist[40], line1)
+        self.assertEqual(self.reslist[41], line2)
 
 
 class rename_DBHeadatomsTest(unittest.TestCase):

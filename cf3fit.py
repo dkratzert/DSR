@@ -95,7 +95,7 @@ class CF3(object):
                 atomlist.append(y+[i])
         self.atomlist = atomlist
         self.cell = rle.get_cell()
-        self.startm = '\n\nREM CF3 group made by DSR:\n'
+        self.startm = '\nREM CF3 group made by DSR:\n'
         self.endm = 'REM End of CF3 group made by DSR\n'
     
     
@@ -193,7 +193,8 @@ class CF3(object):
         self.reslist = self.rl.get_res_list()
         # this is the bond around the CF3 group rotates
         restr = self.format_cf3_restraints(afix, restr, atom, fatoms)
-        # get position for the fluorine atoms:
+        # get position for the fluorine atoms and make sure the reslist is the newest:
+        self.fa._reslist = self.reslist
         atomline = self.fa.get_atom_line_numbers([atom])[0]
         # add restraints to reslist:
         restr = ''.join(restr)
@@ -202,7 +203,8 @@ class CF3(object):
         id_lines = find_multi_lines(self.reslist, regex)
         # replace dummy PART with real part definition
         for line in id_lines:
-            self.reslist[line] = ' '.join(self.reslist[line].split()[1:-1])+'\n'
+            # restraints should never be placed in this reslist[line]:
+            self.reslist[line] = ' '.join(self.reslist[line].split()[1:3])+'\n'
         # set refinement cycles back to 8
         shx = ShelxlRefine(self.reslist, self.basefilename, self.fa)
         shx.set_refinement_cycles('8')
