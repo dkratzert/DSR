@@ -31,7 +31,7 @@ from refine import ShelxlRefine
 import resfile
 from cf3fit import CF3
 
-VERSION = '1.7.1'
+VERSION = '1.7.2'
 # dont forget to change version in Innoscript file, spec file and deb file.
 program_name = '\n-----------------------------'\
            ' D S R - v{}' \
