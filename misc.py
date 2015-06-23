@@ -797,6 +797,7 @@ if __name__ == '__main__':
     uiso = 0.33333*(Ucart[0, 0]+Ucart[1, 1]+Ucart[2, 2])
     print('U(iso) von F3_1 0.0461: ', round(uiso, 4))
 
+
     
     E, Q = mpm.eigsy(Ucart) 
     
@@ -819,7 +820,7 @@ if __name__ == '__main__':
     
     r1 = r1+mpm.matrix(cart_coords)
     r1 = cart_to_frac(r1, cell)
-    print(r1)
+    print(r1[0], r1[1], r1[2])
     
     
     
