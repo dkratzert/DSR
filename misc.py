@@ -812,10 +812,12 @@ if __name__ == '__main__':
    
     
 
-    r1 =(1/mpm.sqrt(E[0]))*mpm.matrix([Q[0,0], Q[0,1], Q[0,2]])
-    print(r1, '#')
-    
-    r1= Q**-1*r1 
+    r1 =(1/mpm.sqrt(E[0]))#*mpm.matrix([Q[0,0], Q[0,1], Q[0,2]])
+    r1 = r1+mpm.matrix(cart_coords)
+    r1 = cart_to_frac(r1, cell)
+    print(r1[0], r1[1], r1[2], '#')
+    sys.exit()
+    #r1= Q**-1*r1 
     print(r1, '##')
     
     r1 = r1+mpm.matrix(cart_coords)
