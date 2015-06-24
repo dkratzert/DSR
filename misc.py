@@ -760,9 +760,12 @@ if __name__ == '__main__':
     '''
     import mpmath as mpm
     cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
+    #cell = (1, 1, 1, 90, 90, 90)
     x, y, z = 0.210835,   0.104067,   0.437922
+    #x, y, z = 0.2,   0.5,   0.8
     #cart_coords = frac_to_cart([x, z, z], cell)
     U11, U22, U33, U23, U13, U12 = 0.07243,   0.03058,  0.03216,  -0.01057,  -0.01708,   0.03014
+    #U11, U22, U33, U23, U13, U12 = 0.1, 0.5, 0.1, 0, 0, 0
     U21 = U12
     U32 = U23
     U31 = U13
@@ -794,7 +797,7 @@ if __name__ == '__main__':
     print(Ucart)
 
 
-    E, Q = mpm.eig(Ucart) 
+    E, Q = mpm.eigsy(Ucart) 
     
     print('#### eigenvalues of Uij:')
     print(E)
@@ -803,9 +806,9 @@ if __name__ == '__main__':
     print('###################')
     
 
-    v1 = mpm.matrix([Q[0,0], Q[0,1], Q[0,2]])#*sqrt(E[0])
-    v2 = mpm.matrix([Q[1,0], Q[1,1], Q[1,2]])#*sqrt(E[1])
-    v3 = mpm.matrix([Q[2,0], Q[2,1], Q[2,2]])#*sqrt(E[2])
+    v1 = mpm.matrix([Q[0,0], Q[0,1], Q[0,2]])/sqrt(E[0])
+    v2 = mpm.matrix([Q[1,0], Q[1,1], Q[1,2]])/sqrt(E[1])
+    v3 = mpm.matrix([Q[2,0], Q[2,1], Q[2,2]])/sqrt(E[2])
 
     
     atom = mpm.matrix([x, y, z])
