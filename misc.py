@@ -18,6 +18,7 @@ from math import cos, sqrt, radians, sin
 import shutil
 import random
 import mpmath as mpm
+import math
 
 alphabet = string.ascii_uppercase
 
@@ -759,11 +760,9 @@ if __name__ == '__main__':
     '''
     import mpmath as mpm
     cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
-    x = 0.210835
-    y = 0.104067
-    z = 0.437922
-    cart_coords = frac_to_cart([x, z, z], cell)
-    U11, U22, U33, U23, U13, U12 = 0.07243, 0.03058, 0.03216, -0.01057, -0.01708, 0.03014
+    x, y, z = 0.210835,   0.104067,   0.437922
+    #cart_coords = frac_to_cart([x, z, z], cell)
+    U11, U22, U33, U23, U13, U12 = 0.07243,   0.03058,  0.03216,  -0.01057,  -0.01708,   0.03014
     U21 = U12
     U32 = U23
     U31 = U13
@@ -778,56 +777,52 @@ if __name__ == '__main__':
     astar = (b*c*sin(alpha))/V
     bstar = (c*a*sin(beta ))/V
     cstar = (a*b*sin(gamma))/V
-    castar = (cos(beta)*cos(gamma)-cos(alpha))/(sin(beta)*sin(gamma))
-    # both are equivalent:
+
     A = mpm.matrix([ [a, b*cos(gamma),  c*cos(beta)            ], 
                      [0, b*sin(gamma), (c*(cos(alpha)-cos(beta)*cos(gamma))/sin(gamma))], 
                      [0, 0           ,  V/(a*b*sin(gamma))               ] ])
-    Al = mpm.matrix([[a, b*cos(gamma), c*cos(beta)            ], 
-                     [0, b*sin(gamma), -c*sin(beta)*castar    ], 
-                     [0, 0           , 1/cstar                ] ])
+
     N = mpm.matrix([[astar, 0, 0], 
                     [0 ,bstar, 0], 
                     [0, 0, cstar]])
-    Ucart = A*N*Uij*N.T*A.T
-    Ucart2 = Al*N*Uij*N.T*Al.T
+    
+    Ucart = A*N*Uij*N.T*A.T/mpm.det(N)
+    Ucart = Ucart/mpm.det(A)
+
+
     print('Ucart:')
     print(Ucart)
-    #print(Ucart2)
-    uiso = 0.33333*(Ucart[0, 0]+Ucart[1, 1]+Ucart[2, 2])
-    print('U(iso) von F3_1 0.0461: ', round(uiso, 4))
 
 
-    
-    E, Q = mpm.eigsy(Ucart) 
+    E, Q = mpm.eig(Ucart) 
     
     print('#### eigenvalues of Uij:')
     print(E)
-    print('Uiso from eigenvalues:', round(sum(E)*0.333333333, 4))
-
     print('Eigenvectors of Uij:')
     print(mpm.matrix(Q))
     print('###################')
     
-   
+    v1 = mpm.matrix([Q[0,0], Q[0,1], Q[0,2]])#*sqrt(E[0])
+    v2 = mpm.matrix([Q[1,0], Q[1,1], Q[1,2]])#*sqrt(E[1])
+    v3 = mpm.matrix([Q[2,0], Q[2,1], Q[2,2]])#*sqrt(E[2])
+    
+    atom = mpm.matrix([x, y, z])
+    
+    atom = mpm.matrix(frac_to_cart(atom, cell))
+    v1=v1+atom
+    v2=v2+atom
+    v3=v3+atom
+    
+  
+    a1 = cart_to_frac(v1, cell)
+    a2 = cart_to_frac(v2, cell)
+    a3 = cart_to_frac(v3, cell)
+    print('c2 1', a1[0], a1[1], a1[2], ' 11 0.001')
+    print('c3 1', a2[0], a2[1], a2[2], ' 11 0.001')
+    print('c4 1', a3[0], a3[1], a3[2], ' 11 0.001')
+    
     
 
-    r1 =(1/mpm.sqrt(E[0]))*mpm.matrix([Q[0,0], Q[0,1], Q[0,2]])
-    print(r1, '#')
-    
-    r1= Q**-1*r1 
-    print(r1, '##')
-    
-    r1 = r1+mpm.matrix(cart_coords)
-    r1 = cart_to_frac(r1, cell)
-    print(r1[0], r1[1], r1[2])
-    
-    
-    
-    
-    
-    
-    
     
     
     
