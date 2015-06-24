@@ -18,7 +18,7 @@ from math import cos, sqrt, radians, sin
 import shutil
 import random
 import mpmath as mpm
-import math
+
 
 alphabet = string.ascii_uppercase
 
@@ -802,9 +802,11 @@ if __name__ == '__main__':
     print(mpm.matrix(Q))
     print('###################')
     
+
     v1 = mpm.matrix([Q[0,0], Q[0,1], Q[0,2]])#*sqrt(E[0])
     v2 = mpm.matrix([Q[1,0], Q[1,1], Q[1,2]])#*sqrt(E[1])
     v3 = mpm.matrix([Q[2,0], Q[2,1], Q[2,2]])#*sqrt(E[2])
+
     
     atom = mpm.matrix([x, y, z])
     
