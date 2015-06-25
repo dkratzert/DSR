@@ -785,10 +785,15 @@ if __name__ == '__main__':
     astar = (b*c*sin(alpha))/V
     bstar = (c*a*sin(beta ))/V
     cstar = (a*b*sin(gamma))/V
-
-    A = mpm.matrix([ [a, b*cos(gamma),  c*cos(beta)                                    ], 
-                     [0, b*sin(gamma),  c*(cos(alpha)-cos(beta)*cos(gamma))/sin(gamma) ], 
-                     [0, 0           ,  V/(a*b*sin(gamma))                             ] ])
+    phi = sqrt(1-(cos(alpha)*cos(alpha))-\
+               (cos(beta)*cos(beta))-(cos(gamma)*cos(gamma))+2*cos(alpha)*cos(beta)*cos(gamma));
+    #A = mpm.matrix([ [a, b*cos(gamma),  c*cos(beta)                                    ], 
+    #                 [0.0, b*sin(gamma),  c*(cos(alpha)-cos(beta)*cos(gamma))/sin(gamma) ], 
+    #                 [0.0, 0.0           ,  V/(a*b*sin(gamma))                             ] ])
+ 
+    A = mpm.matrix([ [a,           0.0,           0.0],
+                     [b*cos(gamma),b*sin(gamma), 0.0 ],
+                     [c*cos(beta), c*((cos(alpha)- cos(beta)*cos(gamma))/sin(gamma)), c*phi/sin(gamma) ] ])
  
     N = mpm.matrix([[astar, 0, 0], 
                     [0 ,bstar, 0], 
