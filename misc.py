@@ -413,7 +413,7 @@ def frac_to_cart(frac_coord, cell):
     Xc = a*x + (b*cos(gamma))*y + (c*cos(beta))*z
     Yc = 0   + (b*sin(gamma))*y + (-c*sin(beta)*cosastar)*z
     Zc = 0   +  0               + (c*sin(beta)*sinastar)*z
-    return (round(Xc, 8), round(Yc, 8), round(Zc, 8))
+    return (Xc, Yc, Zc)
 
 
 def frac_to_cart2(frac_coord, cell):
@@ -433,7 +433,7 @@ def frac_to_cart2(frac_coord, cell):
                      [0, b*sin(gamma), (c*(cos(alpha)-cos(beta)*cos(gamma))/sin(gamma))], 
                      [0, 0           ,  V/(a*b*sin(gamma))               ] ])
     xc, yc, zc = A*mpm.matrix((x, y, z))
-    return (round(float(xc), 8), round(float(yc), 8), round(float(zc), 8))
+    return (float(xc), float(yc), float(zc))
 
 def cart_to_frac(cart_coord, cell):
     '''
@@ -767,7 +767,8 @@ if __name__ == '__main__':
     #x, y, z = 0.2,   0.5,   0.8
     #x, y, z = (0.5, 0.5, 0.5) 
     #cart_coords = frac_to_cart([x, z, z], cell)
-    U11, U22, U33, U23, U13, U12 = 0.07243,   0.03058,  0.03216,  -0.01057,  -0.01708,   0.03014
+    # U11 U22 U33 U23 U13 U12 
+    U11, U22, U33, U23, U13, U12 = 0.07243,   0.03058,   0.03216,  -0.01057/2,  -0.01708/2,   0.03014/2
     #U11, U22, U33, U23, U13, U12 = 0.2, 0.5, 0.1, 0, 0, 0 
     U21 = U12
     U32 = U23
@@ -775,10 +776,9 @@ if __name__ == '__main__':
     
     Uij = mpm.matrix([[U11, U12, U13], [U21, U22, U23], [U31, U32, U33]])
     
-
-    
     a, b, c, alpha, beta, gamma = cell
     V = vol_unitcell(a, b, c, alpha, beta, gamma)
+
     alpha = radians(alpha)
     beta  = radians(beta)
     gamma = radians(gamma)
@@ -787,46 +787,49 @@ if __name__ == '__main__':
     cstar = (a*b*sin(gamma))/V
 
     A = mpm.matrix([ [a, b*cos(gamma),  c*cos(beta)                                    ], 
-                     [0, b*sin(gamma), (c*(cos(alpha)-cos(beta)*cos(gamma))/sin(gamma))], 
+                     [0, b*sin(gamma),  c*(cos(alpha)-cos(beta)*cos(gamma))/sin(gamma) ], 
                      [0, 0           ,  V/(a*b*sin(gamma))                             ] ])
-
+ 
     N = mpm.matrix([[astar, 0, 0], 
                     [0 ,bstar, 0], 
                     [0, 0, cstar]])
     
     Ucart = A*N*Uij*N.T*A.T
-    #/mpm.det(N)
-    #Ucart = Ucart/mpm.det(A)
-
 
     print('Ucart:')
     print(Ucart)
 
-
-    E, Q = mpm.eig(Ucart) 
+  #  (array([ 0.08203103,  0.02994006,  0.02498074]), 
+  #   matrix([[ 0.92413273,  0.32034469, -0.20822579],
+  #           [ 0.30224525, -0.27956001,  0.91131444],
+  #           [-0.23372314,  0.90511075,  0.35517322]]))
+    E, Q = mpm.eig(Ucart)
+    E = mpm.matrix(E)
+    Q = mpm.matrix(Q)
     
     print('#### eigenvalues of Uij:')
     print(E)
     print('Eigenvectors of Uij:')
-    print(mpm.matrix(Q))
-    print('###################')
+    print(Q)
+    print('###################\n')
     
-    v1 = mpm.matrix([Q[0,0], Q[0,1], Q[0,2]])*sqrt(E[0])
-    v2 = mpm.matrix([Q[1,0], Q[1,1], Q[1,2]])*sqrt(E[1])
-    v3 = mpm.matrix([Q[2,0], Q[2,1], Q[2,2]])*sqrt(E[2])
+    v1 = mpm.matrix([ Q[0,0], Q[0,1], Q[0,2] ])*sqrt(E[0])
+    v2 = mpm.matrix([ Q[1,0], Q[1,1], Q[1,2] ])*sqrt(E[1])
+    v3 = mpm.matrix([ Q[2,0], Q[2,1], Q[2,2] ])*sqrt(E[2])
 
-    
     atom = mpm.matrix([x, y, z])
-    
+
     atom = mpm.matrix(frac_to_cart(atom, cell))
+    
     v1=v1*1.5+atom
     v2=v2*1.5+atom
     v3=v3*1.5+atom
-    
   
     a1 = cart_to_frac(v1, cell)
     a2 = cart_to_frac(v2, cell)
     a3 = cart_to_frac(v3, cell)
+
+
     print('c2 1', a1[0], a1[1], a1[2], ' 11 0.001')
     print('c3 1', a2[0], a2[1], a2[2], ' 11 0.001')
     print('c4 1', a3[0], a3[1], a3[2], ' 11 0.001')
