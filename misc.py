@@ -18,6 +18,7 @@ from math import cos, sqrt, radians, sin
 import shutil
 import random
 import mpmath as mpm
+import math
 
 
 alphabet = string.ascii_uppercase
@@ -761,16 +762,20 @@ if __name__ == '__main__':
     import mpmath as mpm
     cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     #cell = (1, 1, 1, 90, 90, 90)
+    
     x, y, z = 0.210835,   0.104067,   0.437922
     #x, y, z = 0.2,   0.5,   0.8
+    #x, y, z = (0.5, 0.5, 0.5) 
     #cart_coords = frac_to_cart([x, z, z], cell)
     U11, U22, U33, U23, U13, U12 = 0.07243,   0.03058,  0.03216,  -0.01057,  -0.01708,   0.03014
-    #U11, U22, U33, U23, U13, U12 = 0.1, 0.5, 0.1, 0, 0, 0
+    #U11, U22, U33, U23, U13, U12 = 0.2, 0.5, 0.1, 0, 0, 0 
     U21 = U12
     U32 = U23
     U31 = U13
     
     Uij = mpm.matrix([[U11, U12, U13], [U21, U22, U23], [U31, U32, U33]])
+    
+
     
     a, b, c, alpha, beta, gamma = cell
     V = vol_unitcell(a, b, c, alpha, beta, gamma)
@@ -781,23 +786,24 @@ if __name__ == '__main__':
     bstar = (c*a*sin(beta ))/V
     cstar = (a*b*sin(gamma))/V
 
-    A = mpm.matrix([ [a, b*cos(gamma),  c*cos(beta)            ], 
+    A = mpm.matrix([ [a, b*cos(gamma),  c*cos(beta)                                    ], 
                      [0, b*sin(gamma), (c*(cos(alpha)-cos(beta)*cos(gamma))/sin(gamma))], 
-                     [0, 0           ,  V/(a*b*sin(gamma))               ] ])
+                     [0, 0           ,  V/(a*b*sin(gamma))                             ] ])
 
     N = mpm.matrix([[astar, 0, 0], 
                     [0 ,bstar, 0], 
                     [0, 0, cstar]])
     
-    Ucart = A*N*Uij*N.T*A.T/mpm.det(N)
-    Ucart = Ucart/mpm.det(A)
+    Ucart = A*N*Uij*N.T*A.T
+    #/mpm.det(N)
+    #Ucart = Ucart/mpm.det(A)
 
 
     print('Ucart:')
     print(Ucart)
 
 
-    E, Q = mpm.eigsy(Ucart) 
+    E, Q = mpm.eig(Ucart) 
     
     print('#### eigenvalues of Uij:')
     print(E)
@@ -805,18 +811,17 @@ if __name__ == '__main__':
     print(mpm.matrix(Q))
     print('###################')
     
-
-    v1 = mpm.matrix([Q[0,0], Q[0,1], Q[0,2]])/sqrt(E[0])
-    v2 = mpm.matrix([Q[1,0], Q[1,1], Q[1,2]])/sqrt(E[1])
-    v3 = mpm.matrix([Q[2,0], Q[2,1], Q[2,2]])/sqrt(E[2])
+    v1 = mpm.matrix([Q[0,0], Q[0,1], Q[0,2]])*sqrt(E[0])
+    v2 = mpm.matrix([Q[1,0], Q[1,1], Q[1,2]])*sqrt(E[1])
+    v3 = mpm.matrix([Q[2,0], Q[2,1], Q[2,2]])*sqrt(E[2])
 
     
     atom = mpm.matrix([x, y, z])
     
     atom = mpm.matrix(frac_to_cart(atom, cell))
-    v1=v1+atom
-    v2=v2+atom
-    v3=v3+atom
+    v1=v1*1.5+atom
+    v2=v2*1.5+atom
+    v3=v3*1.5+atom
     
   
     a1 = cart_to_frac(v1, cell)
