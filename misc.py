@@ -19,6 +19,7 @@ import shutil
 import random
 import mpmath as mpm
 import math
+import mpmath as mpm
 
 
 alphabet = string.ascii_uppercase
@@ -778,9 +779,9 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     # orthogonalization matrix that transforms the fractional coordinates
     # with respect to a crystallographic basis system to coordinates
     # with respect to a Cartesian basis:
-    A = mpm.matrix([ [a, b*cos(gamma),  c*cos(beta)                                    ], 
-                     [0.0, b*sin(gamma),  c*(cos(alpha)-cos(beta)*cos(gamma))/sin(gamma) ], 
-                     [0.0, 0.0           ,  V/(a*b*sin(gamma))                             ] ])
+    A = mpm.matrix([[a, b*cos(gamma),  c*cos(beta)                                      ], 
+                    [0.0, b*sin(gamma),  c*(cos(alpha)-cos(beta)*cos(gamma))/sin(gamma) ], 
+                    [0.0, 0.0           ,  V/(a*b*sin(gamma))                           ]])
     # matrix with the reciprocal lattice vectors:        
     N = mpm.matrix([[astar, 0, 0], 
                     [0 ,bstar, 0], 
@@ -790,9 +791,9 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     # E => eigenvalues, Q => eigenvectors:
     E, Q = mpm.eig(Ucart)
     # calculate vectors of ellipsoid axes  
-    v1 = mpm.matrix([ Q[0,0], Q[1,0], Q[2,0] ])*sqrt(E[0])*probability
-    v2 = mpm.matrix([ Q[0,1], Q[1,1], Q[2,1] ])*sqrt(E[1])*probability
-    v3 = mpm.matrix([ Q[0,2], Q[1,2], Q[2,2] ])*sqrt(E[2])*probability
+    v1 = mpm.matrix([Q[0,0], Q[1,0], Q[2,0]])*sqrt(E[0])*probability
+    v2 = mpm.matrix([Q[0,1], Q[1,1], Q[2,1]])*sqrt(E[1])*probability
+    v3 = mpm.matrix([Q[0,2], Q[1,2], Q[2,2]])*sqrt(E[2])*probability
     # find out which vector is the longest:
     length = mpm.norm(v1)
     v = 0
@@ -817,7 +818,7 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
 
 if __name__ == '__main__':
     import sys
-    import mpmath as mpm
+
      
     
 
