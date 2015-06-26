@@ -721,134 +721,118 @@ def distance(x1, y1, z1, x2, y2, z2, round_out=False):
     else:
         return d
 
-#def bond_angle(dx1, dx2, cell):
-#    pass
-#    # cos(phi) = {a**2*dxr*dxs + b**2*dyr*dys + c**2 * dzr*dzs + b*c*cos(alpha)(dyr*dzs + dys*dzr) +
-#   #      c*a*cos(beta)(dzr*dxs + dzs*xr) + a*b*cos(gamma)*(dxr*dys + dxs*dyr) } / r s
-#    vector1 = (2,3,5)
-#    vector2 = (3,4,6)
-#    def dot():
-#        sum(p*q for p,q in zip(vector1, vector2))
-#    def normalize(v):
-#        vmag = magnitude(v)
-#        return [ v[i]/vmag  for i in range(len(v)) ]
-#    def magnitude(v):
-#        return math.sqrt(sum(v[i]*v[i] for i in range(len(v))))
-#    def get_angle(self, list):
-#        """Get angle formed by three atoms.
-#
-#        calculate angle between the vectors list[1]->list[0] and
-#        list[1]->list[2], where list contains the atomic indexes in
-#        question."""
-#        # normalized vector 1->0, 1->2:
-#        v10 = self.positions[list[0]] - self.positions[list[1]]
-#        v12 = self.positions[list[2]] - self.positions[list[1]]
-#        v10 /= np.linalg.norm(v10)
-#        v12 /= np.linalg.norm(v12)
-#        angle = np.vdot(v10, v12)
-#        angle = np.arccos(angle)
-#        return angle
-
-if __name__ == '__main__':
-    import sys
+def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     '''
-    F = ... * exp ( -2π²[ h²(a*)²U11 + k²(b*)²U22 + ... + 2hka*b*U12 ] )
+    This method calculates the principal axes of an ellipsoid. Many thanks to
+    R. W. Grosse-Kunstleve and P. D. Adams 
+    for their great publication on the handling of atomic anisotropic displacement
+    parameters:  
+    R. W. Grosse-Kunstleve, P. D. Adams, J Appl Crystallogr 2002, 35, 477–480.
     
+    F = ... * exp ( -2π²[ h²(a*)²U11 + k²(b*)²U22 + ... + 2hka*b*U12 ] )
+
     F3    4    0.210835   0.104067   0.437922  21.00000   0.07243   0.03058 =
       0.03216  -0.01057  -0.01708   0.03014
-      
-    U11 U22 U33 U23 U13 U12
-    '''
-    import mpmath as mpm
-    cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
-    #cell = (1, 1, 1, 90, 90, 90)
     
-    x, y, z = 0.210835,   0.104067,   0.437922
-    #x, y, z = 0.2,   0.5,   0.8
-    #x, y, z = (0.5, 0.5, 0.5) 
-    #cart_coords = frac_to_cart([x, z, z], cell)
-    # U11 U22 U33 U23 U13 U12 
-    U11, U22, U33, U23, U13, U12 = 0.07243,   0.03058,   0.03216,  -0.01057/2,  -0.01708/2,   0.03014/2
-    #U11, U22, U33, U23, U13, U12 = 0.2, 0.5, 0.1, 0, 0, 0 
+    Name type x      y      z    occ          U11 U22 U33 U23 U13 U12
+    
+    :param coords: coordinates of the respective atom in fractional coordinates
+    :type coords: list
+    :param uvals: Uij valiues of the respective ellipsoid on fractional 
+                  basis like in cif and SHELXL format
+    :type uvals: list
+    :param cell: unit cell of the structure: a, b, c, alpha, beta, gamma
+    :type cell:  list 
+    :param probability: thermal probability of the ellipsoid 
+    :type probability: float or int
+    :param longest: not always the length is important. make to False to 
+                    get all three coordiantes of the ellipsoid axes. 
+    :type longest: boolean
+    
+    >>> #In:
+    >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
+    >>> coords = [0.210835,   0.104067,   0.437922]
+    >>> uvals = [0.07243, 0.03058, 0.03216, -0.01057, -0.01708, 0.03014]
+    >>> #Out:
+    >>> l = calc_ellipsoid_axes(coords, uvals, cell, longest=True)
+    >>> print(l)
+    (0.24765096, 0.11383281, 0.43064756)
+
+    '''
+    probability = probability+1
+    # Uij is symmetric:
+    U11, U22, U33, U23, U13, U12 = uvals 
     U21 = U12
     U32 = U23
     U31 = U13
-    
     Uij = mpm.matrix([[U11, U12, U13], [U21, U22, U23], [U31, U32, U33]])
-    
     a, b, c, alpha, beta, gamma = cell
     V = vol_unitcell(a, b, c, alpha, beta, gamma)
-
     alpha = radians(alpha)
     beta  = radians(beta)
     gamma = radians(gamma)
     astar = (b*c*sin(alpha))/V
     bstar = (c*a*sin(beta ))/V
     cstar = (a*b*sin(gamma))/V
-    phi = sqrt(1-(cos(alpha)*cos(alpha))-\
-               (cos(beta)*cos(beta))-(cos(gamma)*cos(gamma))+2*cos(alpha)*cos(beta)*cos(gamma));
-    #A = mpm.matrix([ [a, b*cos(gamma),  c*cos(beta)                                    ], 
-    #                 [0.0, b*sin(gamma),  c*(cos(alpha)-cos(beta)*cos(gamma))/sin(gamma) ], 
-    #                 [0.0, 0.0           ,  V/(a*b*sin(gamma))                             ] ])
- 
-    A = mpm.matrix([ [a,           0.0,           0.0],
-                     [b*cos(gamma),b*sin(gamma), 0.0 ],
-                     [c*cos(beta), c*((cos(alpha)- cos(beta)*cos(gamma))/sin(gamma)), c*phi/sin(gamma) ] ])
- 
+    atom = mpm.matrix(frac_to_cart(mpm.matrix(coords), cell))
+    # orthogonalization matrix that transforms the fractional coordinates
+    # with respect to a crystallographic basis system to coordinates
+    # with respect to a Cartesian basis:
+    A = mpm.matrix([ [a, b*cos(gamma),  c*cos(beta)                                    ], 
+                     [0.0, b*sin(gamma),  c*(cos(alpha)-cos(beta)*cos(gamma))/sin(gamma) ], 
+                     [0.0, 0.0           ,  V/(a*b*sin(gamma))                             ] ])
+    # matrix with the reciprocal lattice vectors:        
     N = mpm.matrix([[astar, 0, 0], 
                     [0 ,bstar, 0], 
                     [0, 0, cstar]])
-    
+    # Finally transform Uij values from fractional to cartesian axis system: 
     Ucart = A*N*Uij*N.T*A.T
-
-    print('Ucart:')
-    print(Ucart)
-
-  #  (array([ 0.08203103,  0.02994006,  0.02498074]), 
-  #   matrix([[ 0.92413273,  0.32034469, -0.20822579],
-  #           [ 0.30224525, -0.27956001,  0.91131444],
-  #           [-0.23372314,  0.90511075,  0.35517322]]))
+    # E => eigenvalues, Q => eigenvectors:
     E, Q = mpm.eig(Ucart)
-    E = mpm.matrix(E)
-    Q = mpm.matrix(Q)
-    
-    print('#### eigenvalues of Uij:')
-    print(E)
-    print('Eigenvectors of Uij:')
-    print(Q)
-    print('###################\n')
-    
-    v1 = mpm.matrix([ Q[0,0], Q[0,1], Q[0,2] ])*sqrt(E[0])
-    v2 = mpm.matrix([ Q[1,0], Q[1,1], Q[1,2] ])*sqrt(E[1])
-    v3 = mpm.matrix([ Q[2,0], Q[2,1], Q[2,2] ])*sqrt(E[2])
-
-    atom = mpm.matrix([x, y, z])
-
-    atom = mpm.matrix(frac_to_cart(atom, cell))
-    
-    v1=v1*1.5+atom
-    v2=v2*1.5+atom
-    v3=v3*1.5+atom
-  
+    # calculate vectors of ellipsoid axes  
+    v1 = mpm.matrix([ Q[0,0], Q[1,0], Q[2,0] ])*sqrt(E[0])*probability
+    v2 = mpm.matrix([ Q[0,1], Q[1,1], Q[2,1] ])*sqrt(E[1])*probability
+    v3 = mpm.matrix([ Q[0,2], Q[1,2], Q[2,2] ])*sqrt(E[2])*probability
+    # find out which vector is the longest:
+    length = mpm.norm(v1)
+    v = 0
+    if mpm.norm(v2) > length:
+        length = mpm.norm(v2)
+        v = 1
+    elif mpm.norm(v3) > length:
+        length = mpm.norm(v3)
+        v = 2
+    v1=v1+atom
+    v2=v2+atom
+    v3=v3+atom
+    # go back into fractional coordinates:
     a1 = cart_to_frac(v1, cell)
     a2 = cart_to_frac(v2, cell)
     a3 = cart_to_frac(v3, cell)
+    allvec = [a1, a2, a3]
+    if longest:
+        return allvec[v]
+    else:
+        return allvec 
+
+if __name__ == '__main__':
+    import sys
+    import mpmath as mpm
+     
+    
+
+    
+    
+
+    
 
 
-    print('c2 1', a1[0], a1[1], a1[2], ' 11 0.001')
-    print('c3 1', a2[0], a2[1], a2[2], ' 11 0.001')
-    print('c4 1', a3[0], a3[1], a3[2], ' 11 0.001')
     
     
-
-    
-    
-    
-    
-    
-    
-    
-    
+    import doctest
+    failed, attempted = doctest.testmod()
+    if failed == 0:
+        print('passed all tests!')
     
     
     
