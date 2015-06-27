@@ -430,24 +430,46 @@ def frac_to_cart(frac_coord, cell):
     return (Xc, Yc, Zc)
 
 
-def frac_to_cart2(frac_coord, cell):
+class A(object):
     '''
-    Converts fractional coordinates to cartesian coodinates
-    :param frac_coord: [float, float, float]
-    :param cell:       [float, float, float, float, float, float]
+    orthogonalization matrix
+    e.g. converts fractional coordinates to cartesian coodinates
+    
+    >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
+    >>> coord = (-0.186843,   0.282708,   0.526803)
+    >>> Am = A(cell)
+    >>> Am.matrix*mpm.matrix(coord)
+    matrix(
+    [['-2.74150542399907'],
+     ['5.909586678'],
+     ['10.7752007008937']])
+     
+    >>> cartcoord = mpm.matrix([['-2.74150542399907'], ['5.909586678'], ['10.7752007008937']])
+    >>> Am.matrix**-1*cartcoord
+    matrix(
+    [['-0.186843000000001'],
+     ['0.282708'],
+     ['0.526802999999998']])
+    
     '''
-    #from math import cos, sin, sqrt, radians
-    a, b, c, alpha, beta, gamma = cell
-    x, y, z = frac_coord
-    V = vol_unitcell(a, b, c, alpha, beta, gamma)
-    alpha = radians(alpha)
-    beta  = radians(beta)
-    gamma = radians(gamma)
-    A = mpm.matrix([ [a, b*cos(gamma),  c*cos(beta)            ], 
-                     [0, b*sin(gamma), (c*(cos(alpha)-cos(beta)*cos(gamma))/sin(gamma))], 
-                     [0, 0           ,  V/(a*b*sin(gamma))               ] ])
-    xc, yc, zc = A*mpm.matrix((x, y, z))
-    return (float(xc), float(yc), float(zc))
+    def __init__(self, cell):        
+        self.a, self.b, self.c, alpha, beta, gamma = cell
+        self.V = vol_unitcell(self.a, self.b, self.c, alpha, beta, gamma)
+        self.alpha = radians(alpha)
+        self.beta  = radians(beta)
+        self.gamma = radians(gamma)
+    
+    @property
+    def matrix(self):
+        '''
+        Converts von fractional to cartesian.
+        Invert the matrix to do the opposite.
+        '''
+        Am = mpm.matrix([ [self.a, self.b*cos(self.gamma),  self.c*cos(self.beta) ], 
+                     [0, self.b*sin(self.gamma), 
+                        (self.c*(cos(self.alpha)-cos(self.beta)*cos(self.gamma))/sin(self.gamma))], 
+                     [0, 0,  self.V/(self.a*self.b*sin(self.gamma))               ] ])
+        return Am
 
 def cart_to_frac(cart_coord, cell):
     '''
@@ -851,7 +873,7 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
 if __name__ == '__main__':
     import sys
     import doctest
-    failed, attempted = doctest.testmod()
+    failed, attempted = doctest.testmod()#verbose=True)
     if failed == 0:
         print('passed all {} tests!'.format(attempted))
     
