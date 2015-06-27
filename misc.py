@@ -378,6 +378,13 @@ def atomic_distance(p1, p2, cell):
     p1 and p2 are x, y , z coordinates as list ['x', 'y', 'z']
     cell are the cell parameters as list: ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
     returns the distance between the two points.
+    
+    >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
+    >>> coord1 = (-0.186843,   0.282708,   0.526803) 
+    >>> coord2 = (-0.155278,   0.264593,   0.600644) 
+    >>> atomic_distance(coord1, coord2, cell)
+    1.5729229943265979
+    
     '''
     cell = [float(y) for y in cell]
     a , b, c =  cell[:3]
@@ -402,6 +409,12 @@ def frac_to_cart(frac_coord, cell):
     Converts fractional coordinates to cartesian coodinates
     :param frac_coord: [float, float, float]
     :param cell:       [float, float, float, float, float, float]
+    
+    >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
+    >>> coord1 = (-0.186843,   0.282708,   0.526803)
+    >>> print(frac_to_cart(coord1, cell))
+    (-2.741505423999065, 5.909586678000002, 10.775200700893734)
+    
     '''
     #from math import cos, sin, sqrt, radians
     a, b, c, alpha, beta, gamma = cell
@@ -485,32 +498,6 @@ def matrix_mult(matrix1,matrix2):
                     new_matrix[i][j] += matrix1[i][k]*matrix2[k][j]
     return new_matrix
 
-
-def matrix_mult_vector(A, v):
-    '''
-    multiplies a matrix with a vector
-    | 00 01 02 | |0|
-    | 10 11 12 |*|1|
-    | 20 21 22 | |2|
-    
-    deprecated, use mpmath instead.
-    '''
-    if len(A[0]) != len(v):
-        print('Size of matrix and vector not equal.')
-        raise Exception
-    vect = ([0 for i in range(len(A))])
-    for i in range(len(A)):
-        for k in range(len(A)):
-            vect[i] += A[i][k]*v[k]
-    return vect
-
-def translate_coords(coords):
-    '''
-    translate coordinates in 3D
-    '''
-    pass
-
-
 def determinante(a):
     '''
     return determinant of 3x3 matrix
@@ -520,19 +507,6 @@ def determinante(a):
     return (a[0][0] * (a[1][1] * a[2][2] - a[2][1] * a[1][2])
            -a[1][0] * (a[0][1] * a[2][2] - a[2][1] * a[0][2])
            +a[2][0] * (a[0][1] * a[1][2] - a[1][1] * a[0][2]))
-
-
-def cross_vec(a, b):
-    '''
-    Cross product of two 3D vectors
-    
-    deprecated, use mpmath instead.
-    '''
-    assert len(a) == len(b) == 3, 'For 3D vectors only'
-    a1, a2, a3 = a
-    b1, b2, b3 = b
-    return (a2*b3 - a3*b2, a3*b1 - a1*b3, a1*b2 - a2*b1)
-
 
 def subtract_vect(a, b):
     '''
@@ -579,6 +553,17 @@ def vol_tetrahedron(a, b, c, d, cell=None):
               |-2, -1, 6|
 
     V = 1/6*5
+    
+    >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
+    >>> a = (0.838817,   0.484526,   0.190081) # a ist um 0.01 ausgelenkt
+    >>> b = (0.875251,   0.478410,   0.256955)
+    >>> c = (0.789290,   0.456520,   0.301616)
+    >>> d = (0.674054,   0.430194,   0.280727)
+    >>> print('volume of Benzene ring atoms:')
+    volume of Benzene ring atoms:
+    >>> print(vol_tetrahedron(a, b, c, d, cell))
+    0.0633528183217
+    
     '''
     A = [float(i) for i in a]
     B = [float(i) for i in b]
@@ -599,6 +584,11 @@ def vol_tetrahedron(a, b, c, d, cell=None):
 def vol_unitcell(a, b, c, al, be, ga):
     '''
     calculates the volume of a unit cell
+    
+    >>> v = vol_unitcell(2, 2, 2, 90, 90, 90)
+    >>> print(v)
+    8.0
+    
     '''
     ca, cb, cg = cos(radians(al)), cos(radians(be)), cos(radians(ga))
     v = a*b*c*sqrt(1+2*ca*cb*cg-ca**2-cb**2-cg**2)
@@ -611,21 +601,24 @@ def dice_coefficient(a, b):
     Compares the similarity of a and b
     :param a: string
     :param b: string
+    >>> print(dice_coefficient('hallo', 'holla'))
+    0.75
+    
+    >>> print(dice_coefficient('Banze', 'Benzene'))
+    0.555556
+    
     '''
     a = a.lower()
     b = b.lower()
     if not len(a) or not len(b): return 0.0
     if len(a) == 1:  a=a+'.'
     if len(b) == 1:  b=b+'.'
-
     a_bigram_list=[]
     for i in range(len(a)-1):
         a_bigram_list.append(a[i:i+2])
-
     b_bigram_list=[]
     for i in range(len(b)-1):
         b_bigram_list.append(b[i:i+2])
-
     a_bigrams = set(a_bigram_list)
     b_bigrams = set(b_bigram_list)
     overlap = len(a_bigrams & b_bigrams)
@@ -642,20 +635,16 @@ def dice_coefficient2(a,b):
     (per discussion), otherwise 'AA' and 'AAAA' would have a
     dice coefficient of 1...
     """
-
     if not len(a) or not len(b): return 0.0
     """ quick case for true duplicates """
     if a == b: return 1.0
     """ if a != b, and a or b are single chars, then they can't possibly match """
     if len(a) == 1 or len(b) == 1: return 0.0
-
     """ use python list comprehension, preferred over list.append() """
     a_bigram_list = [a[i:i+2] for i in range(len(a)-1)]
     b_bigram_list = [b[i:i+2] for i in range(len(b)-1)]
-
     a_bigram_list.sort()
     b_bigram_list.sort()
-
     # assignments to save function calls
     lena = len(a_bigram_list)
     lenb = len(b_bigram_list)
@@ -670,7 +659,6 @@ def dice_coefficient2(a,b):
             i += 1
         else:
             j += 1
-
     score = 1-(float(matches)/float(lena + lenb))
     if score < 0.7:
         score = 0.0
@@ -693,6 +681,13 @@ def longest_common_substring(s1, s2):
 
 
 def levenshtein(s1, s2):
+    '''
+    >>> print(levenshtein('hallo', 'holla'))
+    2
+    >>> print(dice_coefficient('hallo', 'holla'))
+    0.75
+    
+    '''
     s1 = s1.lower()
     s2 = s2.lower()
     if len(s1) < len(s2):
@@ -737,6 +732,29 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     
     Name type x      y      z    occ          U11 U22 U33 U23 U13 U12
     
+    #Doctest:
+    >>> #In:
+    >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
+    >>> coords = [0.210835,   0.104067,   0.437922]
+    >>> uvals = [0.07243, 0.03058, 0.03216, -0.01057, -0.01708, 0.03014]
+    >>> #Out:
+    >>> l = calc_ellipsoid_axes(coords, uvals, cell, longest=True)
+    >>> print(l)
+    [(0.24765096, 0.11383281, 0.43064756), (0.17401904, 0.09430119, 0.44519644)]
+    >>> l = calc_ellipsoid_axes(coords, uvals, cell, longest=False)
+    >>> print(l)
+    [[(0.24765096, 0.11383281, 0.43064756), (0.218406, 0.09626142, 0.43746127), (0.21924358, 0.10514684, 0.44886868)], [(0.17401904, 0.09430119, 0.44519644), (0.203264, 0.11187258, 0.43838273), (0.20242642, 0.10298716, 0.42697532)]]
+    
+    >>> #In:
+    >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
+    >>> coords = [0.210835,   0.104067,   0.437922]
+    >>> uvals = [0.07243, -0.03058, 0.03216, -0.01057, -0.01708, 0.03014]
+    >>> #Out:
+    >>> l = calc_ellipsoid_axes(coords, uvals, cell, longest=True)
+    <BLANKLINE>
+    Ellipsoid is non positive definite!
+    <BLANKLINE>
+    
     :param coords: coordinates of the respective atom in fractional coordinates
     :type coords: list
     :param uvals: Uij valiues of the respective ellipsoid on fractional 
@@ -749,15 +767,6 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     :param longest: not always the length is important. make to False to 
                     get all three coordiantes of the ellipsoid axes. 
     :type longest: boolean
-    
-    >>> #In:
-    >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
-    >>> coords = [0.210835,   0.104067,   0.437922]
-    >>> uvals = [0.07243, 0.03058, 0.03216, -0.01057, -0.01708, 0.03014]
-    >>> #Out:
-    >>> l = calc_ellipsoid_axes(coords, uvals, cell, longest=True)
-    >>> print(l)
-    (0.24765096, 0.11383281, 0.43064756)
 
     '''
     probability = probability+1
@@ -779,9 +788,10 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     # orthogonalization matrix that transforms the fractional coordinates
     # with respect to a crystallographic basis system to coordinates
     # with respect to a Cartesian basis:
-    A = mpm.matrix([[a, b*cos(gamma),  c*cos(beta)                                      ], 
-                    [0.0, b*sin(gamma),  c*(cos(alpha)-cos(beta)*cos(gamma))/sin(gamma) ], 
-                    [0.0, 0.0           ,  V/(a*b*sin(gamma))                           ]])
+    A = mpm.matrix([
+            [a,   b*cos(gamma), c*cos(beta)                                  ], 
+            [0.0, b*sin(gamma), c*(cos(alpha)-cos(beta)*cos(gamma))/sin(gamma)], 
+            [0.0, 0.0,          V/(a*b*sin(gamma))                            ]])
     # matrix with the reciprocal lattice vectors:        
     N = mpm.matrix([[astar, 0, 0], 
                     [0 ,bstar, 0], 
@@ -791,121 +801,61 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     # E => eigenvalues, Q => eigenvectors:
     E, Q = mpm.eig(Ucart)
     # calculate vectors of ellipsoid axes  
-    v1 = mpm.matrix([Q[0,0], Q[1,0], Q[2,0]])*sqrt(E[0])*probability
-    v2 = mpm.matrix([Q[0,1], Q[1,1], Q[2,1]])*sqrt(E[1])*probability
-    v3 = mpm.matrix([Q[0,2], Q[1,2], Q[2,2]])*sqrt(E[2])*probability
+    try:
+        sqrt(E[0])
+        sqrt(E[1])
+        sqrt(E[2])
+    except ValueError:
+        print('\nEllipsoid is non positive definite!\n')
+        return False
+    v1 = mpm.matrix([Q[0,0], Q[1,0], Q[2,0]])
+    v2 = mpm.matrix([Q[0,1], Q[1,1], Q[2,1]])
+    v3 = mpm.matrix([Q[0,2], Q[1,2], Q[2,2]])
+    v1i = v1*(-1)
+    v2i = v2*(-1)
+    v3i = v3*(-1)
+    l1 = sqrt(E[0])*probability
+    l2 = sqrt(E[1])*probability
+    l3 = sqrt(E[2])*probability
+    v1, v2, v3, v1i, v2i, v3i = v1*l1, v2*l2, v3*l3, v1i*l1, v2i*l2, v3i*l3  
     # find out which vector is the longest:
     length = mpm.norm(v1)
     v = 0
     if mpm.norm(v2) > length:
         length = mpm.norm(v2)
         v = 1
+        print('v2')
     elif mpm.norm(v3) > length:
         length = mpm.norm(v3)
         v = 2
-    v1=v1+atom
-    v2=v2+atom
-    v3=v3+atom
+        print('v3')
+    v1, v1i = v1+atom, v1i+atom
+    v2, v2i = v2+atom, v2i+atom
+    v3, v3i = v3+atom, v3i+atom
     # go back into fractional coordinates:
     a1 = cart_to_frac(v1, cell)
     a2 = cart_to_frac(v2, cell)
     a3 = cart_to_frac(v3, cell)
-    allvec = [a1, a2, a3]
+    a1i = cart_to_frac(v1i, cell)
+    a2i = cart_to_frac(v2i, cell)
+    a3i = cart_to_frac(v3i, cell)
+    allvec = [[a1, a2, a3], [a1i, a2i, a3i]]
     if longest:
-        return allvec[v]
+        # only the longest vector
+        return [allvec[0][v], allvec[1][v]]
     else:
-        return allvec 
+        # all vectors:
+        return allvec
+    
 
 if __name__ == '__main__':
     import sys
-
-     
-    
-
-    
-    
-
-    
-
-
-    
-    
     import doctest
     failed, attempted = doctest.testmod()
     if failed == 0:
-        print('passed all tests!')
+        print('passed all {} tests!'.format(attempted))
     
-    
-    
-    
-    
-    
-    
-    sys.exit()
-    v = vol_unitcell(2, 2, 2, 90, 90, 90)
-    print(v)
-    
-    from resfile import ResList, ResListEdit
-    from atomhandling import FindAtoms
-    from dsrparse import DSR_Parser
     import math as m
-    
-   
-    # CF3:
-    a = (0.281319, 0.368769, 0.575106)
-    b = (0.352077, 0.314955, 0.582945)
-    c = (0.191896, 0.365437, 0.617058)
-    d = (0.358359, 0.417667, 0.594043)
-    print('volume of CF3-group:')
-    print(vol_tetrahedron(a, b, c, d, cell))
-    # Benzene:
-    # orig: a = (0.838817,   0.474526,   0.190081)
-    a = (0.838817,   0.484526,   0.190081) # a ist um 0.01 ausgelenkt
-    b = (0.875251,   0.478410,   0.256955)
-    c = (0.789290,   0.456520,   0.301616)
-    d = (0.674054,   0.430194,   0.280727)
-    print('volume of Benzene ring atoms:')
-    print(vol_tetrahedron(a, b, c, d, cell))
 
-    head = ['FLAT C C1 C10 C11 C12 C13 C2 C3', 'FLAT C C1 C10 C11 C12 C13 C2 C3 C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL  C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CL C8 C9 CL C4 C5 C6 C7 C8 C9 CL C4 C5 C6 C7 C8 C9 CLx']
-
-
-
-    cell90 = (1, 1, 1, 90, 90, 90)
-    cell90 = [ float(i) for i in cell90 ]
-    coord1 = (-0.186843,   0.282708,   0.526803) # C5
-    #                                              -2.741   5.912  10.774
-    coord2 = (-0.155278,   0.264593,   0.600644) # C7
-    # 1.573 A                                      -2.520   5.533  12.289
-
-    N1 = frac_to_cart(coord1, cell)
-    N2 = frac_to_cart2(coord2, cell)
-    print(N1, '-2.741   5.912  10.774 must be same')
-    print(N2, '-2.520   5.533  12.289')
-
-    x1 = float(N1[0])
-    y1 = float(N1[1])
-    z1 = float(N1[2])
-
-    x2 = float(N2[0])
-    y2 = float(N2[1])
-    z2 = float(N2[2])
-
-    d = m.sqrt((x1-x2)**2+(y1-y2)**2+(z1-z2)**2)
-
-    print('\ndist_frac_to_cart           : {:.3f}'.format(d))
-    print('dist_frac_to_cart_atomicdist: {:.3f}'.format(atomic_distance(N1, N2, cell90)))
-    print('atomicdist_direct:          : {:.3f}'.format(atomic_distance(coord1, coord2, cell)))
-    print('korrekte dist:              : 1.573 A\n')
-
-    coo = frac_to_cart((0.312, 0.37, 0.754), (10.5086, 20.9035, 20.5072, 90, 94.13, 90))
-    #print coo
-    print('{:8.6} {:8.6} {:8.6}'.format(*coo), 'neue koordianten')
-
-    print('\n\n')
-    print(levenshtein('hallo', 'holla'))
-    print(dice_coefficient('hallo', 'holla'))
-    print(dice_coefficient2('hallo', 'holla'))
-    print(which('help'))
 
     
