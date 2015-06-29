@@ -18,9 +18,6 @@ from math import cos, sqrt, radians, sin
 import shutil
 import random
 import mpmath as mpm
-import math
-import mpmath as mpm
-
 
 alphabet = string.ascii_uppercase
 
@@ -222,7 +219,6 @@ def copy_file(source, target):
     listcopy = False
     if isinstance(source, (list, tuple)):
         listcopy = True
-        #print('can not copy a list.') 
     if not os.path.exists(target_path) and target_path != '':
         try:
             os.makedirs(target_path)
@@ -415,6 +411,12 @@ def frac_to_cart(frac_coord, cell):
     >>> print(frac_to_cart(coord1, cell))
     (-2.741505423999065, 5.909586678000002, 10.775200700893734)
     
+    >>> A = A(cell).orthogonal_matrix
+    >>> print(mpm.nstr(A*mpm.matrix(coord1)))
+    [-2.74151]
+    [ 5.90959]
+    [ 10.7752]
+    
     '''
     #from math import cos, sin, sqrt, radians
     a, b, c, alpha, beta, gamma = cell
@@ -437,19 +439,17 @@ class A(object):
     
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     >>> coord = (-0.186843,   0.282708,   0.526803)
-    >>> Am = A(cell)
-    >>> Am.matrix*mpm.matrix(coord)
-    matrix(
-    [['-2.74150542399907'],
-     ['5.909586678'],
-     ['10.7752007008937']])
+    >>> A = A(cell).orthogonal_matrix
+    >>> print(mpm.nstr(A*mpm.matrix(coord)))
+    [-2.74151]
+    [ 5.90959]
+    [ 10.7752]
      
-    >>> cartcoord = mpm.matrix([['-2.74150542399907'], ['5.909586678'], ['10.7752007008937']])
-    >>> Am.matrix**-1*cartcoord
-    matrix(
-    [['-0.186843000000001'],
-     ['0.282708'],
-     ['0.526802999999998']])
+    >>> cartcoord = mpm.matrix([['-2.74150542399906'], ['5.909586678'], ['10.7752007008937']])
+    >>> print(mpm.nstr(A**-1*cartcoord))
+    [-0.186843]
+    [ 0.282708]
+    [ 0.526803]
     
     '''
     def __init__(self, cell):        
@@ -460,7 +460,7 @@ class A(object):
         self.gamma = radians(gamma)
     
     @property
-    def matrix(self):
+    def orthogonal_matrix(self):
         '''
         Converts von fractional to cartesian.
         Invert the matrix to do the opposite.
@@ -476,6 +476,14 @@ def cart_to_frac(cart_coord, cell):
     converts cartesian coordinates to fractional coordinates
     :param frac_coord: [float, float, float]
     :param cell:       [float, float, float, float, float, float]
+    
+    >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
+    >>> A = A(cell).orthogonal_matrix
+    >>> coords = [-2.74150542399906, 5.909586678, 10.7752007008937]
+    >>> print(mpm.nstr(A**-1*mpm.matrix(coords)))
+    [-0.186843]
+    [ 0.282708]
+    [ 0.526803]
     '''
     a, b, c, alpha, beta, gamma = cell
     X, Y, Z = cart_coord
@@ -749,33 +757,42 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     
     F = ... * exp ( -2π²[ h²(a*)²U11 + k²(b*)²U22 + ... + 2hka*b*U12 ] )
 
+    SHELXL atom:
+    Name type x      y      z    occ          U11 U22 U33 U23 U13 U12
     F3    4    0.210835   0.104067   0.437922  21.00000   0.07243   0.03058 =
       0.03216  -0.01057  -0.01708   0.03014
     
-    Name type x      y      z    occ          U11 U22 U33 U23 U13 U12
-    
-    #Doctest:
-    >>> #In:
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     >>> coords = [0.210835,   0.104067,   0.437922]
     >>> uvals = [0.07243, 0.03058, 0.03216, -0.01057, -0.01708, 0.03014]
-    >>> #Out:
     >>> l = calc_ellipsoid_axes(coords, uvals, cell, longest=True)
-    >>> print(l)
+    >>> print(mpm.nstr(l))
     [(0.24765096, 0.11383281, 0.43064756), (0.17401904, 0.09430119, 0.44519644)]
-    >>> l = calc_ellipsoid_axes(coords, uvals, cell, longest=False)
-    >>> print(l)
+    >>> calc_ellipsoid_axes(coords, uvals, cell, longest=False)
     [[(0.24765096, 0.11383281, 0.43064756), (0.218406, 0.09626142, 0.43746127), (0.21924358, 0.10514684, 0.44886868)], [(0.17401904, 0.09430119, 0.44519644), (0.203264, 0.11187258, 0.43838273), (0.20242642, 0.10298716, 0.42697532)]]
     
-    >>> #In:
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     >>> coords = [0.210835,   0.104067,   0.437922]
     >>> uvals = [0.07243, -0.03058, 0.03216, -0.01057, -0.01708, 0.03014]
-    >>> #Out:
-    >>> l = calc_ellipsoid_axes(coords, uvals, cell, longest=True)
+    >>> calc_ellipsoid_axes(coords, uvals, cell, longest=True)
     <BLANKLINE>
     Ellipsoid is non positive definite!
     <BLANKLINE>
+    False
+    
+    >>> uvals = [0.07243, 0.03058, 0.03216, -0.01057, -0.01708]
+    >>> calc_ellipsoid_axes(coords, uvals, cell, longest=False)
+    Traceback (most recent call last):
+    ...
+    Exception: 6 Uij values have to be supplied!
+    
+    >>> cell = (10.5086, 20.9035, 90, 94.13, 90)
+    >>> coords = [0.210835,   0.104067,   0.437922]
+    >>> uvals = [0.07243, 0.03058, 0.03216, -0.01057, -0.01708, 0.03014]
+    >>> calc_ellipsoid_axes(coords, uvals, cell, longest=True)
+    Traceback (most recent call last):
+    ...
+    Exception: cell needs six parameters!
     
     :param coords: coordinates of the respective atom in fractional coordinates
     :type coords: list
@@ -791,29 +808,28 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     :type longest: boolean
 
     '''
+    from misc import A
     probability = probability+1
     # Uij is symmetric:
+    if len(uvals) != 6:
+        raise Exception('6 Uij values have to be supplied!')
+    if len(cell) != 6:
+        raise Exception('cell needs six parameters!')
     U11, U22, U33, U23, U13, U12 = uvals 
     U21 = U12
     U32 = U23
     U31 = U13
     Uij = mpm.matrix([[U11, U12, U13], [U21, U22, U23], [U31, U32, U33]])
     a, b, c, alpha, beta, gamma = cell
-    V = vol_unitcell(a, b, c, alpha, beta, gamma)
-    alpha = radians(alpha)
-    beta  = radians(beta)
-    gamma = radians(gamma)
-    astar = (b*c*sin(alpha))/V
-    bstar = (c*a*sin(beta ))/V
-    cstar = (a*b*sin(gamma))/V
-    atom = mpm.matrix(frac_to_cart(mpm.matrix(coords), cell))
+    V = vol_unitcell(*cell)
+    # calculate reciprocal lattice vectors:
+    astar = (b*c*sin(radians(alpha)))/V
+    bstar = (c*a*sin(radians(beta)))/V
+    cstar = (a*b*sin(radians(gamma)))/V
     # orthogonalization matrix that transforms the fractional coordinates
     # with respect to a crystallographic basis system to coordinates
     # with respect to a Cartesian basis:
-    A = mpm.matrix([
-            [a,   b*cos(gamma), c*cos(beta)                                  ], 
-            [0.0, b*sin(gamma), c*(cos(alpha)-cos(beta)*cos(gamma))/sin(gamma)], 
-            [0.0, 0.0,          V/(a*b*sin(gamma))                            ]])
+    A = A(cell).orthogonal_matrix
     # matrix with the reciprocal lattice vectors:        
     N = mpm.matrix([[astar, 0, 0], 
                     [0 ,bstar, 0], 
@@ -836,21 +852,23 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     v1i = v1*(-1)
     v2i = v2*(-1)
     v3i = v3*(-1)
-    l1 = sqrt(E[0])*probability
-    l2 = sqrt(E[1])*probability
-    l3 = sqrt(E[2])*probability
-    v1, v2, v3, v1i, v2i, v3i = v1*l1, v2*l2, v3*l3, v1i*l1, v2i*l2, v3i*l3  
+    # multiply probability (usually 50%)
+    e1 = sqrt(E[0])*probability
+    e2 = sqrt(E[1])*probability
+    e3 = sqrt(E[2])*probability
+    # scale axis vectors to eigenvalues 
+    v1, v2, v3, v1i, v2i, v3i = v1*e1, v2*e2, v3*e3, v1i*e1, v2i*e2, v3i*e3  
     # find out which vector is the longest:
     length = mpm.norm(v1)
     v = 0
     if mpm.norm(v2) > length:
         length = mpm.norm(v2)
         v = 1
-        print('v2')
     elif mpm.norm(v3) > length:
         length = mpm.norm(v3)
         v = 2
-        print('v3')
+    # move vectors back to atomic position
+    atom = A*mpm.matrix(coords)
     v1, v1i = v1+atom, v1i+atom
     v2, v2i = v2+atom, v2i+atom
     v3, v3i = v3+atom, v3i+atom
