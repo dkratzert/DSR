@@ -23,11 +23,12 @@ from restraints import ListFile
 from elements import ELEMENTS
 from misc import atomic_distance, frac_to_cart, cart_to_frac,\
     id_generator, shift, remove_partsymbol, find_multi_lines, wrap_headlines,\
-    calc_ellipsoid_axes
+    calc_ellipsoid_axes, flatten
 from math import radians, sqrt
 import sys
 from resfile import ResList, ResListEdit
 import mpmath as mpm
+import string
 
 # Y-Z-F1/F2/F3
 
@@ -195,6 +196,17 @@ class CF3(object):
             self.dsr_dict['split'] = False
             [[], []]
 
+    def add_chars(self, atom, alphabet):
+        '''
+        add chars to an atom name until the name is uniq
+        :param atom:
+        '''
+        for char in alphabet:
+            if not atom+char in [i[0] for i in self.atomlist]:
+                del alphabet[0]
+                return atom+char
+        
+    
     def cf3(self, afix=130):
         '''
         create CF3 group on atom.
@@ -238,9 +250,17 @@ class CF3(object):
         uval_coords = self.make_pivot_isotropic(atomline)
         if afix == '120' and self.dsr_dict['split'] and uval_coords:
             num = NumberScheme(self.reslist, [atom], False)
-            splitat1 = num.get_fragment_number_scheme()[0]
-            splitat2 = num.get_fragment_number_scheme(extranames=[splitat1])[0]
+            if len(atom) < 4:
+                alphabet = [i for i in string.ascii_uppercase]
+                splitat1 = self.add_chars(atom, alphabet)
+                splitat2 = self.add_chars(atom, alphabet)
+            else:
+                splitat1 = num.get_fragment_number_scheme()[0]
+                splitat2 = num.get_fragment_number_scheme(extranames=[splitat1])[0]
+            splitatoms = [splitat1, splitat2]
             axes = calc_ellipsoid_axes(uval_coords[1], uval_coords[0], self.cell)        
+        else:
+            splitatoms = False
         found = self.find_bonded_fluorine(atom)
         for i in found:
             print(('Deleting ' + i[0] + '_' + i[7] + ' from '+atom))
@@ -250,8 +270,7 @@ class CF3(object):
         # this is essential
         self.reslist = self.rl.get_res_list()
         # this is the bond around the CF3 group rotates
-        restr = self.format_cf3_restraints(afix, restr, atom, fatoms, 
-                                           splitatoms=[splitat1, splitat2])
+        restr = self.format_cf3_restraints(afix, restr, atom, fatoms, splitatoms)
         # get position for the fluorine atoms and make sure the reslist is the newest:
         self.fa._reslist = self.reslist
         atomline = self.fa.get_atom_line_numbers([atom])[0]
