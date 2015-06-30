@@ -198,7 +198,7 @@ class CF3(object):
         for i in found:
             print(('Deleting ' + i[0] + '_' + i[7] + ' from '+atom))
         self.delete_bound_fluorine(found)
-        fatoms = self.make_afix(afixnum=afix, linenumber=atomline)
+        fatoms = self.make_afix(afixnum=afix, linenumber=atomline, splitcoords=axes)
         self.do_refine_cycle(self.rl, self.reslist)
         # this is essential
         self.reslist = self.rl.get_res_list()
@@ -349,7 +349,9 @@ class CF3(object):
             # atom is already isotropic, nothing to do...
             [[], []]
 
-
+    # TODO: 
+    #- use new coodinates to build a new 120er afix and add option "split"
+    #- delete old pivot atom (maybe just overwrite the line in res file with the new afix) 
     def make_afix(self, afixnum, linenumber, 
                   splitcoords=[[0, 0, 0], [0, 0, 0]], resioff=False):
         '''
