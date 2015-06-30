@@ -12,7 +12,6 @@ Created on 13.05.2015
 # ----------------------------------------------------------------------------
 #
 
-- create "split" option to split the pivot atom
 '''
 import resfile
 from dbfile import global_DB
@@ -23,8 +22,9 @@ from refine import ShelxlRefine
 from restraints import ListFile
 from elements import ELEMENTS
 from misc import atomic_distance, frac_to_cart, cart_to_frac,\
-    id_generator, shift, remove_partsymbol, find_multi_lines, wrap_headlines
-from math import sin, cos, radians, sqrt
+    id_generator, shift, remove_partsymbol, find_multi_lines, wrap_headlines,\
+    calc_ellipsoid_axes
+from math import radians, sqrt
 import sys
 from resfile import ResList, ResListEdit
 import mpmath as mpm
@@ -97,7 +97,6 @@ class CF3(object):
         self.cell = rle.get_cell()
         self.startm = '\nREM CF3 group made by DSR:\n'
         self.endm = 'REM End of CF3 group made by DSR\n'
-    
     
     def find_bonded_fluorine(self, atom, extra_param=0.16, element='F'):
         '''
@@ -177,12 +176,18 @@ class CF3(object):
         if self.resi.get_residue_class:
             restr = self.resi.format_restraints(restr)
             #restr = [i+'\n' for i in restr]
+        # the pivot atom of the CF3 group:
         atom = self.dsr_dict['target'][0]
         if len(self.dsr_dict['target']) > 1:
             print(('Using only first target atom {}.'\
                             .format(self.dsr_dict['target'][0])))
         atomline = self.fa.get_atom_line_numbers([atom])[0]
-        self.make_pivot_isotropic(atomline)
+        uvals, coords = self.make_pivot_isotropic(atomline)
+        if afix == '120':
+            num = NumberScheme(self.reslist, [atom], False)
+            splitat1 = num.get_fragment_number_scheme()
+            splitat2 = num.get_fragment_number_scheme(extranames=[splitat1])
+            axes = calc_ellipsoid_axes(uvals, coords, self.cell)        
         found = self.find_bonded_fluorine(atom)
         for i in found:
             print(('Deleting ' + i[0] + '_' + i[7] + ' from '+atom))
@@ -318,14 +323,25 @@ class CF3(object):
         make sure the pivot atom of a cf3 group is isotropic
         :param linenumber: line number (index) in self.reslist of the pivot atom
         :type linenumber: integer
+        :return Uij values, coordinates: U and xyz values of the atom as lists
         '''
         atomline = self.reslist[linenumber].split()
+         
         if atomline[-1] == '=':
+            nextline = self.reslist[linenumber+1].split()
+            try:
+                coords = [atomline[2], atomline[3], atomline[4]]
+                U11, U22 = atomline[-3], atomline[-2]
+                U33, U23, U13, U12 = nextline[0], nextline[1], nextline[2], nextline[3]
+            except:
+                # In this case we have a U value missing
+                return False
             self.reslist[linenumber] = '{:5.4s}{:4.2s}{:>10.8s} {:>10.8s} {:>10.8s}  {:8.6s}  0.04'.format(*atomline)
             self.reslist[linenumber+1] = '' 
+            return [U11, U22, U33, U23, U13, U12], coords
         else:
             # atom is already isotropic, nothing to do...
-            pass
+            False
 
 
     def make_afix(self, afixnum, linenumber, resioff=False):
@@ -342,11 +358,14 @@ class CF3(object):
             occ = str((self.rle.get_fvar_count()+1)*10+1)
         if int(afixnum) == 120:
             self.rle.set_free_variables(occ, '0.5')
-        num_130 = NumberScheme(self.reslist, ['F1', 'F2', 'F3'], False)
-        num_120 = NumberScheme(self.reslist, ['F1', 'F2', 'F3', 'F4', 'F5', 'F6'], False)
-        # returns also the atom names if residue is active
-        numberscheme_120 = num_120.get_fragment_number_scheme()
-        numberscheme_130 = num_130.get_fragment_number_scheme()
+        if str(afixnum) == '130':
+            num_130 = NumberScheme(self.reslist, ['F1', 'F2', 'F3'], False)
+            # returns also the atom names if residue is active
+            numberscheme_130 = num_130.get_fragment_number_scheme()
+        if str(afixnum) == '120':    
+            num_120 = NumberScheme(self.reslist, ['F1', 'F2', 'F3', 'F4', 'F5', 'F6'], False)
+            # returns also the atom names if residue is active
+            numberscheme_120 = num_120.get_fragment_number_scheme()            
         if self.resi.get_residue_class and not resioff:
             resiclass = self.resi.get_residue_class
             resinum = self.resi.get_resinumber
