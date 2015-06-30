@@ -688,7 +688,13 @@ class NumberScheme():
     over the names until the names are unique.
     '''
 
-    def __init__(self, reslist, dbatome, resi):
+    def __init__(self, reslist, dbatome, resi=False):
+        '''
+        
+        :param reslist: resfile as list
+        :param dbatome: list of atoms as list
+        :param resi: residue True or false
+        '''
         self.__resi = resi
         self._reslist = reslist
         self.__rlist = []
@@ -734,10 +740,15 @@ class NumberScheme():
             return True
 
 
-    def get_fragment_number_scheme(self):
-        ''' returns a list of atoms of length len(self.__dbatome) whith a
-            naming scheme which fits into the resfile.
+    def get_fragment_number_scheme(self, extranames=[]):
         '''
+        returns a list of atoms of length len(self.__dbatome) whith a
+        naming scheme which fits into the resfile. extraname is a list of atoms 
+        which should be also excluded from the new names.
+        :param extranames: list of excluding atoms e.g. ['O1A']
+        :type extranems: list
+        '''
+        self.__rlist.extend(extranames)
         if self.__resi:
             print('RESI instruction is enabled. Leaving atom numbers as they are.')
             return [i[0].upper() for i in self.__dbatome]
@@ -800,7 +811,7 @@ if __name__ == '__main__':
     dsr_dict = dsrp.get_dsr_dict
     num = NumberScheme(reslist, dbatoms, resiopt)
     # das printet auch auf bilschirm:
-    numbers = num.get_fragment_number_scheme()
+    numbers = num.get_fragment_number_scheme(extranames=['O1A'])
     print('#######################')
     print(numbers)
     print('#######################')
@@ -834,11 +845,11 @@ if __name__ == '__main__':
     #sys.exit()
 
     fa = FindAtoms(reslist)
-    
-    atoms = fa.atoms_as_residues
-    for i in atoms:
-        for y in atoms[i]:
-            print(y)
+ #   
+  #  atoms = fa.atoms_as_residues
+   # for i in atoms:
+    #    for y in atoms[i]:
+     #       print(y)
     #sys.exit()
 
     # this might be used to find nearest atoms in same class to make eadp
@@ -879,6 +890,7 @@ if __name__ == '__main__':
     #print dbatoms
     num = NumberScheme(reslist, dbatoms, dsr_dict['resi'])
     num.get_fragment_number_scheme()
+
     dbtypes = get_atomtypes(dbatoms)
  #   print('#############', dbtypes, '########dbtypes###################')
     sfac = SfacTable(reslist, dbtypes)
@@ -887,4 +899,4 @@ if __name__ == '__main__':
     print('######')
     bad_dbatoms = [['lO1', 3, '-0.01453', '1.66590', '1.66590'], ['C1', 1, '-0.00146', '0.26814', '0.06351']]
     print('test')
-    get_atomtypes(bad_dbatoms)
+    #get_atomtypes(bad_dbatoms)
