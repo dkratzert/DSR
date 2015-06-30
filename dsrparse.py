@@ -178,7 +178,9 @@ class DSR_Parser():
         source = None
         if self._dsr_list[3].upper() in ['CF3', 'CF6', 'CF9']:
             cf3 = True
+            splitatom = True
         else:
+            splitatom = False
             self.minimal_requirements()
         # syntax:
         # rem dsr put|add|replace fragment with source on target part xx AFIX 17x occ occupancy
@@ -245,7 +247,8 @@ class DSR_Parser():
             'part': part,
             'dfix': dfix,
             'occupancy': occupancy,
-            'resi': residue
+            'resi': residue,
+            'split': splitatom
             };
         return dsr_dict
 

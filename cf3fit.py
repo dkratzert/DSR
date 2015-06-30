@@ -41,6 +41,13 @@ dfixr_120 = ['DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 ',
              'SADI 0.1 Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
              'RIGU Y Z F1 > F6']
 
+dfixr_120_split = ['DFIX 1.328 ZA F1 ZA F2 ZA F3  ZB F4 ZB F5 ZB F6 ', 
+                   'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 ',
+                   'SADI 0.1 Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
+                   'SADI Y ZA Y ZB',
+                   'EADP ZA ZB',
+                   'RIGU Y ZA ZB F1 > F6']
+
 dfixr_cf9 = ['SUMP 1 0.0001 1 {0} 1 {1} 1 {2}', 
              'DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 ', 
              'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4  F7 F8 F8 F9 F9 F7 ',
@@ -58,10 +65,12 @@ sadir_120 = ['SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 ',
              'SADI 0.1 Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
              'RIGU Y Z F1 > F6']
 
-sadir_120_split = ['SADI 0.02 Za F1 Za F2 Za F3  Zb F4 Zb F5 Zb F6 ',
+sadir_120_split = ['SADI 0.02 ZA F1 ZA F2 ZA F3  ZB F4 ZB F5 ZB F6 ',
                    'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 ',
                    'SADI 0.1 Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
-                   'RIGU Y Z F1 > F6']
+                   'SADI Y ZA Y ZB',
+                   'EADP ZA ZB',
+                   'RIGU Y ZA ZB F1 > F6']
 
 sadir_cf9 = ['SUMP 1 0.0001 1 {0} 1 {1} 1 {2}',
              'SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 ',
@@ -131,7 +140,7 @@ class CF3(object):
             i = int(i[2])
             self.rle.remove_line(i, rem=False, remove=True, frontspace=False)
     
-    def format_cf3_restraints(self, afix, restr, atom, fatoms):
+    def format_cf3_restraints(self, afix, restr, atom, fatoms, splitatoms=False):
         '''
         replaces the dummy atom names in the restraint lists with the real names
         :param afix: string of the afix number
@@ -145,7 +154,11 @@ class CF3(object):
         if afix == '130':
             F1, F2, F3 = fatoms
             replacelist = ('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3)
-        if afix == '120':
+        if afix == '120' and splitatoms:
+            F1, F2, F3, F4, F5, F6 = fatoms
+            ZA, ZB = splitatoms
+            replacelist = ('ZA', ZA), ('ZB', ZB), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3), ('F4', F4), ('F5', F5), ('F6', F6)        
+        if afix == '120' and not splitatoms:
             F1, F2, F3, F4, F5, F6 = fatoms
             replacelist = ('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3), ('F4', F4), ('F5', F5), ('F6', F6)
         # replace dummy atoms in restraint list with real atom names:
@@ -153,6 +166,34 @@ class CF3(object):
             restr = [i.replace(old, new) for i in restr]
         restr = wrap_headlines(restr, 77)
         return restr
+
+    def make_pivot_isotropic(self, linenumber):
+        '''
+        make sure the pivot atom of a cf3 group is isotropic
+        :param linenumber: line number (index) in self.reslist of the pivot atom
+        :type linenumber: integer
+        :return Uij values, coordinates: U and xyz values of the atom as lists
+        '''
+        atomline = self.reslist[linenumber].split()
+        if atomline[-1] == '=':
+            nextline = self.reslist[linenumber+1].split()
+            try:
+                coords = [atomline[2], atomline[3], atomline[4]]
+                U11, U22 = atomline[-3], atomline[-2]
+                U33, U23, U13, U12 = nextline[0], nextline[1], nextline[2], nextline[3]
+            except:
+                # In this case we have a U value missing
+                print('Incomplete Uij values. Atom split not possible!')
+                self.dsr_dict['split'] = False
+                return [[], []]
+            self.reslist[linenumber] = '{:5.4s}{:4.2s}{:>10.8s} {:>10.8s} {:>10.8s}  {:8.6s}  0.04'.format(*atomline) 
+            self.reslist[linenumber+1] = '' 
+            return [[U11, U22, U33, U23, U13, U12], coords]
+        else:
+            # atom is already isotropic, nothing to do...
+            print('Pivot atom is isotropic. Atom split not possible!')
+            self.dsr_dict['split'] = False
+            [[], []]
 
     def cf3(self, afix=130):
         '''
@@ -176,9 +217,15 @@ class CF3(object):
         if afix == '120':
             print(('Generating twofold disordered CF3-Group at {}.'\
                             .format(self.dsr_dict['target'][0])))
-            restr = sadir_120
+            if self.dsr_dict['split']:
+                restr = sadir_120_split
+            else:
+                restr = sadir_120
             if self.dsr_dict['dfix']:
-                restr = dfixr_120
+                if self.dsr_dict['split']:
+                    restr = dfixr_120_split
+                else:
+                    restr = dfixr_120
         if self.resi.get_residue_class:
             restr = self.resi.format_restraints(restr)
             #restr = [i+'\n' for i in restr]
@@ -189,33 +236,48 @@ class CF3(object):
                             .format(self.dsr_dict['target'][0])))
         atomline = self.fa.get_atom_line_numbers([atom])[0]
         uval_coords = self.make_pivot_isotropic(atomline)
-        if afix == '120' and self.dsr_dict['split']:
+        if afix == '120' and self.dsr_dict['split'] and uval_coords:
             num = NumberScheme(self.reslist, [atom], False)
-            splitat1 = num.get_fragment_number_scheme()
-            splitat2 = num.get_fragment_number_scheme(extranames=[splitat1])
-            axes = calc_ellipsoid_axes(uval_coords[0], uval_coords[1], self.cell)        
+            splitat1 = num.get_fragment_number_scheme()[0]
+            splitat2 = num.get_fragment_number_scheme(extranames=[splitat1])[0]
+            axes = calc_ellipsoid_axes(uval_coords[1], uval_coords[0], self.cell)        
         found = self.find_bonded_fluorine(atom)
         for i in found:
             print(('Deleting ' + i[0] + '_' + i[7] + ' from '+atom))
         self.delete_bound_fluorine(found)
-        fatoms = self.make_afix(afixnum=afix, linenumber=atomline, splitcoords=axes)
+        fatoms = self.make_afix(afixnum=afix, linenumber=atomline)
         self.do_refine_cycle(self.rl, self.reslist)
         # this is essential
         self.reslist = self.rl.get_res_list()
         # this is the bond around the CF3 group rotates
-        restr = self.format_cf3_restraints(afix, restr, atom, fatoms)
+        restr = self.format_cf3_restraints(afix, restr, atom, fatoms, 
+                                           splitatoms=[splitat1, splitat2])
         # get position for the fluorine atoms and make sure the reslist is the newest:
         self.fa._reslist = self.reslist
         atomline = self.fa.get_atom_line_numbers([atom])[0]
         # add restraints to reslist:
         restr = ''.join(restr)
-        self.reslist[atomline] = self.reslist[atomline]+self.startm+restr
+        self.reslist[atomline] = ''
+        self.reslist[atomline+1] = self.reslist[atomline]+self.startm+restr
         regex = r'.*{}'.format(self.rand_id)
         id_lines = find_multi_lines(self.reslist, regex)
         # replace dummy PART with real part definition
-        for line in id_lines:
-            # restraints should never be placed in this reslist[line]:
-            self.reslist[line] = ' '.join(self.reslist[line].split()[1:3])+'\n'
+        if self.dsr_dict['split']:
+            at1 = '{:<5s} {:<3} {:>9.6f}   {:>9.6f}   {:>9.6f}   {:>8.4f}     0.04\n'\
+                    .format(splitat1, self.e2s.elem_2_sfac('C'), axes[0][0], 
+                            axes[0][1], axes[0][2], float(self.dsr_dict['occupancy']))
+            at2 = '{:<5s} {:<3} {:>9.6f}   {:>9.6f}   {:>9.6f}   {:>8.4f}     0.04\n'\
+                    .format(splitat2, self.e2s.elem_2_sfac('C'), axes[1][0], 
+                            axes[1][1], axes[1][2], -float(self.dsr_dict['occupancy']))
+            dummy = ''
+            for line, splatom in zip(id_lines, [at1, at2, dummy]):
+                # restraints should never be placed in this reslist[line]:
+                self.reslist[line] = ' '.join(self.reslist[line].split()[1:3])+'\n'
+                self.reslist[line] = self.reslist[line]+splatom 
+        else:
+            for line in id_lines:
+                # restraints should never be placed in this reslist[line]:
+                self.reslist[line] = ' '.join(self.reslist[line].split()[1:3])+'\n'
         # set refinement cycles back to 8
         shx = ShelxlRefine(self.reslist, self.basefilename, self.fa)
         shx.set_refinement_cycles('8')
@@ -323,37 +385,8 @@ class CF3(object):
         shx.set_refinement_cycles('8')
         self.rl.write_resfile(self.reslist, '.res')
         return fatoms
-
-    def make_pivot_isotropic(self, linenumber):
-        '''
-        make sure the pivot atom of a cf3 group is isotropic
-        :param linenumber: line number (index) in self.reslist of the pivot atom
-        :type linenumber: integer
-        :return Uij values, coordinates: U and xyz values of the atom as lists
-        '''
-        atomline = self.reslist[linenumber].split()
-         
-        if atomline[-1] == '=':
-            nextline = self.reslist[linenumber+1].split()
-            try:
-                coords = [atomline[2], atomline[3], atomline[4]]
-                U11, U22 = atomline[-3], atomline[-2]
-                U33, U23, U13, U12 = nextline[0], nextline[1], nextline[2], nextline[3]
-            except:
-                # In this case we have a U value missing
-                return [[], []]
-            self.reslist[linenumber] = '{:5.4s}{:4.2s}{:>10.8s} {:>10.8s} {:>10.8s}  {:8.6s}  0.04'.format(*atomline)
-            self.reslist[linenumber+1] = '' 
-            return [[U11, U22, U33, U23, U13, U12], coords]
-        else:
-            # atom is already isotropic, nothing to do...
-            [[], []]
-
-    # TODO: 
-    #- use new coodinates to build a new 120er afix and add option "split"
-    #- delete old pivot atom (maybe just overwrite the line in res file with the new afix) 
-    def make_afix(self, afixnum, linenumber, 
-                  splitcoords=[[0, 0, 0], [0, 0, 0]], resioff=False):
+ 
+    def make_afix(self, afixnum, linenumber, resioff=False):
         '''
         create an afix to build a CF3 or CH3 group
         :param afixnum: afix number
@@ -365,6 +398,7 @@ class CF3(object):
             occ = self.dsr_dict['occupancy']
         else:
             occ = str((self.rle.get_fvar_count()+1)*10+1)
+            self.dsr_dict['occupancy'] = occ
         if int(afixnum) == 120:
             self.rle.set_free_variables(occ, '0.5')
         if str(afixnum) == '130':
