@@ -29,6 +29,7 @@ import sys
 from resfile import ResList, ResListEdit
 import mpmath as mpm
 
+# Y-Z-F1/F2/F3
 
 dfixr_130 = ['DFIX 1.328 Z F1 Z F2 Z F3 ', 
              'DFIX 2.125 F1 F2 F2 F3 F3 F1 ',
@@ -56,6 +57,11 @@ sadir_120 = ['SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 ',
              'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 ',
              'SADI 0.1 Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
              'RIGU Y Z F1 > F6']
+
+sadir_120_split = ['SADI 0.02 Za F1 Za F2 Za F3  Zb F4 Zb F5 Zb F6 ',
+                   'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 ',
+                   'SADI 0.1 Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
+                   'RIGU Y Z F1 > F6']
 
 sadir_cf9 = ['SUMP 1 0.0001 1 {0} 1 {1} 1 {2}',
              'SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 ',
@@ -182,12 +188,12 @@ class CF3(object):
             print(('Using only first target atom {}.'\
                             .format(self.dsr_dict['target'][0])))
         atomline = self.fa.get_atom_line_numbers([atom])[0]
-        uvals, coords = self.make_pivot_isotropic(atomline)
-        if afix == '120':
+        uval_coords = self.make_pivot_isotropic(atomline)
+        if afix == '120' and self.dsr_dict['split']:
             num = NumberScheme(self.reslist, [atom], False)
             splitat1 = num.get_fragment_number_scheme()
             splitat2 = num.get_fragment_number_scheme(extranames=[splitat1])
-            axes = calc_ellipsoid_axes(uvals, coords, self.cell)        
+            axes = calc_ellipsoid_axes(uval_coords[0], uval_coords[1], self.cell)        
         found = self.find_bonded_fluorine(atom)
         for i in found:
             print(('Deleting ' + i[0] + '_' + i[7] + ' from '+atom))
@@ -335,16 +341,17 @@ class CF3(object):
                 U33, U23, U13, U12 = nextline[0], nextline[1], nextline[2], nextline[3]
             except:
                 # In this case we have a U value missing
-                return False
+                return [[], []]
             self.reslist[linenumber] = '{:5.4s}{:4.2s}{:>10.8s} {:>10.8s} {:>10.8s}  {:8.6s}  0.04'.format(*atomline)
             self.reslist[linenumber+1] = '' 
-            return [U11, U22, U33, U23, U13, U12], coords
+            return [[U11, U22, U33, U23, U13, U12], coords]
         else:
             # atom is already isotropic, nothing to do...
-            False
+            [[], []]
 
 
-    def make_afix(self, afixnum, linenumber, resioff=False):
+    def make_afix(self, afixnum, linenumber, 
+                  splitcoords=[[0, 0, 0], [0, 0, 0]], resioff=False):
         '''
         create an afix to build a CF3 or CH3 group
         :param afixnum: afix number
@@ -374,36 +381,36 @@ class CF3(object):
             numberscheme_130 = ['F1', 'F2', 'F3']
             numberscheme_120 = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6']
         sfac = self.e2s.elem_2_sfac('F')
-        # CF3:
-        afix_130 = [resistr,
-                    'AFIX {0}', # AFIX 120 or 130
-                    #'REM AFIX made by DSR: {3}',    
-                    numberscheme_130[0]+' {1} 0 0 0 11.0  0.04',
-                    numberscheme_130[1]+' {1} 0 0 0 11.0  0.04',
-                    numberscheme_130[2]+' {1} 0 0 0 11.0  0.04',
-                    #'REM end of AFIX by DSR {3}', # insert ID and later change it to the PART usw.
-                    'AFIX 0',
-                    resi0]
-        # CF6:
-        afix_120 = [resistr,
-                    'AFIX {0}',
-                    '\nREM PART 1 !{3}', 
-                    numberscheme_120[0]+' {1} 0 0 0   {2}  0.04',
-                    numberscheme_120[1]+' {1} 0 0 0   {2}  0.04',
-                    numberscheme_120[2]+' {1} 0 0 0   {2}  0.04',
-                    'REM PART 2 !{3}',
-                    numberscheme_120[3]+' {1} 0 0 0  -{2}  0.04',
-                    numberscheme_120[4]+' {1} 0 0 0  -{2}  0.04',
-                    numberscheme_120[5]+' {1} 0 0 0  -{2}  0.04',
-                    'REM PART 0 !{3}',
-                    'AFIX 0',
-                    resi0,
-                    self.endm]
-        afix_130 = '\n'.join(afix_130)
-        afix_120 = '\n'.join(afix_120)
         if str(afixnum) == '130':
+            # CF3:
+            afix_130 = [resistr,
+                        'AFIX {0}', # AFIX 120 or 130
+                        #'REM AFIX made by DSR: {3}',    
+                        numberscheme_130[0]+' {1} 0 0 0 11.0  0.04',
+                        numberscheme_130[1]+' {1} 0 0 0 11.0  0.04',
+                        numberscheme_130[2]+' {1} 0 0 0 11.0  0.04',
+                        #'REM end of AFIX by DSR {3}', # insert ID and later change it to the PART usw.
+                        'AFIX 0',
+                        resi0]
+            afix_130 = '\n'.join(afix_130)
             afix = afix_130
-        elif str(afixnum) == '120':
+        if str(afixnum) == '120':    
+            # CF6:
+            afix_120 = [resistr,
+                        'AFIX {0}',
+                        '\nREM PART 1 !{3}', 
+                        numberscheme_120[0]+' {1} 0 0 0   {2}  0.04',
+                        numberscheme_120[1]+' {1} 0 0 0   {2}  0.04',
+                        numberscheme_120[2]+' {1} 0 0 0   {2}  0.04',
+                        'REM PART 2 !{3}',
+                        numberscheme_120[3]+' {1} 0 0 0  -{2}  0.04',
+                        numberscheme_120[4]+' {1} 0 0 0  -{2}  0.04',
+                        numberscheme_120[5]+' {1} 0 0 0  -{2}  0.04',
+                        'REM PART 0 !{3}',
+                        'AFIX 0',
+                        resi0,
+                        self.endm]
+            afix_120 = '\n'.join(afix_120)
             afix = afix_120
         else:
             print('Only CF3 groups implemented yet.')
