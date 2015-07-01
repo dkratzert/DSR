@@ -16,7 +16,8 @@ import os
 import logging
 from dsrparse import DSR_Parser
 from options import OptionsParser
-from dbfile import global_DB, ImportGRADE
+from dbfile import global_DB, ImportGRADE, search_fragment_name,\
+    print_search_results
 from atomhandling import SfacTable, get_atomtypes, check_source_target,\
     set_final_db_sfac_types, replace_after_fit
 from atomhandling import FindAtoms, NumberScheme
@@ -133,8 +134,8 @@ class DSR():
         if self.list_db:
             self.list_dbentries()
         if self.search_string:
-            result = self.search_fragment_name()
-            self.print_search_results(result)
+            result = search_fragment_name(self.search_string)
+            print_search_results(result)
             sys.exit()
         ## Export !all! fragments
         if self.export_all:
@@ -235,45 +236,6 @@ class DSR():
             gdb.check_db_atom_consistency(db[fragment]['atoms'], fragment)
             gdb.check_db_header_consistency(db[fragment]['head'], db[fragment]['atoms'], fragment)
         sys.exit()
-
-
-    def search_fragment_name(self):
-        '''
-        searches the Name: comments in the database for a given name
-        '''
-        from misc import dice_coefficient
-        gdb = global_DB()
-        db = gdb.build_db_dict()
-        frags = sorted(db.keys())
-        names_list = []
-        for i in frags:
-            fragname = gdb.get_comment_from_fragment(i)
-            line_number = gdb.get_line_number_from_fragment(i)
-            names_list.append([i, fragname, line_number])
-        search_results = {}
-        for i in names_list:
-            db_entry = i[1]
-            #Levenshtein gibt bei kurzen Suchstrings zu schlechte Ergebnisse:
-            #coefficient = levenshtein(self.search_string, db_entry)
-            coefficient = dice_coefficient(self.search_string, db_entry)
-            search_results[coefficient] = i
-        # select the best 5 results:
-        selected_results = [search_results[i] for i in sorted(search_results)[0:5]]
-        return selected_results
-
-
-    def print_search_results(self, results):
-        '''
-        prints the results of a database search to screen and exit.
-        results are
-        '''
-        print('\n\n Found following database entries:\n')
-        print(' Fragment          | Full name, Comments                      | Line number')
-        print(' ---------------------------------------------------------------------------')
-        for line in results:
-            print(' {:15s}   | {:40s} | {}'.format(line[0], line[1], line[2]))
-        sys.exit()
-
 
     def import_from_grade(self):
         '''
