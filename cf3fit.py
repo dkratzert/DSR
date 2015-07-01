@@ -266,6 +266,8 @@ class CF3(object):
             print(('Deleting ' + i[0] + '_' + i[7] + ' from '+atom))
         self.delete_bound_fluorine(found)
         fatoms = self.make_afix(afixnum=afix, linenumber=atomline)
+        if not fatoms:
+            return False
         self.do_refine_cycle(self.rl, self.reslist)
         # this is essential
         self.reslist = self.rl.get_res_list()
@@ -276,12 +278,15 @@ class CF3(object):
         atomline = self.fa.get_atom_line_numbers([atom])[0]
         # add restraints to reslist:
         restr = ''.join(restr)
-        self.reslist[atomline] = ''
-        self.reslist[atomline+1] = self.reslist[atomline]+self.startm+restr
+        if not self.dsr_dict['split']:
+            self.reslist[atomline] = self.reslist[atomline]+self.startm+restr
+        else:
+            self.reslist[atomline] = ''
+            self.reslist[atomline+1] = self.reslist[atomline]+self.startm+restr
         regex = r'.*{}'.format(self.rand_id)
         id_lines = find_multi_lines(self.reslist, regex)
         # replace dummy PART with real part definition
-        if self.dsr_dict['split']:
+        if self.dsr_dict['split'] and afix == '120':
             at1 = '{:<5s} {:<3} {:>9.6f}   {:>9.6f}   {:>9.6f}   {:>8.4f}     0.04\n'\
                     .format(splitat1, self.e2s.elem_2_sfac('C'), axes[0][0], 
                             axes[0][1], axes[0][2], float(self.dsr_dict['occupancy']))
@@ -449,7 +454,7 @@ class CF3(object):
                         resi0]
             afix_130 = '\n'.join(afix_130)
             afix = afix_130
-        if str(afixnum) == '120':    
+        elif str(afixnum) == '120':    
             # CF6:
             afix_120 = [resistr,
                         'AFIX {0}',
@@ -468,7 +473,7 @@ class CF3(object):
             afix_120 = '\n'.join(afix_120)
             afix = afix_120
         else:
-            print('Only CF3 groups implemented yet.')
+            print('Only AFIX 130 and 120 are implemented yet.')
             return False
         # insert the afix:
         self.reslist[linenumber] = self.reslist[linenumber]\

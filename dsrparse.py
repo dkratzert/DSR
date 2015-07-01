@@ -51,8 +51,9 @@ class DSR_Parser():
         try:
             self.dsr_dict
             return self.dsr_dict
-        except AttributeError:
-            print('No DSR command line found.')
+        except AttributeError as e:
+            #print(e)
+            print('No valid DSR command line found.')
             sys.exit()
     
     def find_dsr_command(self, line=False):
@@ -176,9 +177,11 @@ class DSR_Parser():
         '''
         cf3 = False
         source = None
-        if self._dsr_list[3].upper() in ['CF3', 'CF6', 'CF9']:
+        if self._dsr_list[3] in ['CF3', 'CF6', 'CF9']:
             cf3 = True
-            splitatom = True
+            splitatom = False
+            if 'SPLIT' in self._dsr_list:
+                splitatom = True
         else:
             splitatom = False
             self.minimal_requirements()
@@ -187,6 +190,9 @@ class DSR_Parser():
         command = self._dsr_list[2]
         # get the fragment:
         fragment = self._dsr_list[3]
+        if fragment in ['CF3', 'CF9'] and 'SPLIT' in self._dsr_list:
+            print('Illegal combination of CF3 or CF9 with SPLIT! \nOnly CF6 with SPLIT is alowed!')
+            sys.exit()
         # make sure the command is correct:
         command_list = ('PUT', 'REPLACE', 'ADD')
         if command not in command_list:
@@ -197,7 +203,7 @@ class DSR_Parser():
         if not cf3:
             # we need no soure atoms for cf3 groups
             source = self.find_atoms('WITH', 'ON')
-        target = self.find_atoms('ON', 'PART', 'OCC', 'RESI', 'DFIX', '')
+        target = self.find_atoms('ON', 'PART', 'OCC', 'RESI', 'DFIX', 'SPLIT', '')
         if 'RESI' in self._dsr_list:
             residue = self.find_atoms('RESI', 'PART', 'OCC', 'RESI', 'DFIX', '')
             # RESI is in dsr_list but no residue returns -> only RESI in command line:
@@ -289,6 +295,10 @@ class DSR_Parser():
     @property
     def target(self):
         return self.dsr_dict['target']
+    
+    @property
+    def split(self):
+        return self.dsr_dict['split']
 
     @property
     def resi(self):

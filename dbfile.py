@@ -39,6 +39,45 @@ def invert_dbatoms_coordinates(atoms):
     return atoms
 
 
+def search_fragment_name(search_string):
+    '''
+    searches the Name: comments in the database for a given name
+    '''
+    from misc import dice_coefficient
+    gdb = global_DB()
+    db = gdb.build_db_dict()
+    frags = sorted(db.keys())
+    names_list = []
+    for i in frags:
+        fragname = gdb.get_comment_from_fragment(i)
+        line_number = gdb.get_line_number_from_fragment(i)
+        names_list.append([i, fragname, line_number])
+    search_results = {}
+    for i in names_list:
+        db_entry = i[1]
+        #Levenshtein gibt bei kurzen Suchstrings zu schlechte Ergebnisse:
+        #coefficient = levenshtein(self.search_string, db_entry)
+        coefficient = dice_coefficient(search_string, db_entry)
+        search_results[coefficient] = i
+    # select the best 5 results:
+    selected_results = [search_results[i] for i in sorted(search_results)[0:5]]
+    return selected_results
+
+
+def print_search_results(results):
+    '''
+    prints the results of a database search to screen and exit.
+    results are
+    '''
+    print('\n\n Found following database entries:\n')
+    print(' Fragment          | Full name, Comments                      | Line number')
+    print(' ---------------------------------------------------------------------------')
+    for line in results:
+        print(' {:15s}   | {:40s} | {}'.format(line[0], line[1], line[2]))
+    sys.exit()
+
+
+
 __metaclass__ = type  # use new-style classes
 
 # hardwired names of the database files:
@@ -430,7 +469,16 @@ class global_DB():
             print('Please add these parameters!')
             sys.exit(False)
         return (nhead, fragline, comment)
-
+    
+    def search_for_error_response(self, fragment):
+        '''
+        searches for a fragment name in the db as response to an invalid fragment name.
+        :param fragment: the fragment
+        :type fragment: string
+        '''
+        result = search_fragment_name(fragment)
+        print('Do you mean one of these?:')
+        print_search_results(result)
 
     def get_atoms_from_fragment(self, fragment):
         '''
@@ -440,8 +488,12 @@ class global_DB():
         :param fragment: fragment name
         :type fragment: string
         '''
-        return self._dbentry_dict[fragment.lower()]['atoms']
-
+        try:
+            return self._dbentry_dict[fragment.lower()]['atoms']
+        except KeyError:
+            print('could not find {} in database.'.format(fragment))
+            self.search_for_error_response(fragment)
+            sys.exit()
 
     def get_fragline_from_fragment(self, fragment):
         '''
@@ -451,7 +503,7 @@ class global_DB():
             fragline = self._dbentry_dict[fragment.lower()]['fragline']
         except(KeyError):
             print('Fragment "{}" not found in database!'.format(fragment))
-            sys.exit()
+            self.search_for_error_response(fragment)
         return fragline
 
     def get_unit_cell(self, fragment):
@@ -475,7 +527,11 @@ class global_DB():
         returns the header of the dbentry of fragment.
         This header does not include comments, only the restraints.
         '''
-        head = self._dbentry_dict[fragment.lower()]['head']
+        try:
+            head = self._dbentry_dict[fragment.lower()]['head']
+        except KeyError:
+            print('could not find {} in database.'.format(fragment))
+            self.search_for_error_response(fragment)
         atoms = self.get_atoms_from_fragment(fragment)
         self.check_db_header_consistency(head, atoms, fragment)
         return head
