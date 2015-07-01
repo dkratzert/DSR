@@ -1,7 +1,10 @@
 Recent changes
 -1.7.2  Added [2.2.2]-cryptand to database. Tanks to Dejan Premuzic! Added Ability to compute
-        principal axes vectors of an ellipsoid.
+        principal axes vectors of an ellipsoid. Added "split" option to split CF6 group. 
+        Several other fixes.
+-1.7.1-1 Fixed missing cf3fit.py in Windows installer.
 -1.7.1  Fixed typos in CF3 restraints. Improved residue handling with CF3 groups.
+        Known bugs: res files without FVAR (e.g. after shelxs or shelxt) cause a crash.
 -1.7.0  New feature: Ability to model disordered CF3 groups (1, 2 and 3 positions). Fixed CF6 restraints.
 -1.6.4  removed dependency of DFIX and PART in DSR, better warning for unsuccessful shelxl runs.
 -1.6.3  Improved FLAT restraints. Fixed Pyridine and Acetonitrile restraints. Perfluoro adamantole added.
