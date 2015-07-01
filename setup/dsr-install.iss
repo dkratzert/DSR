@@ -107,6 +107,7 @@ Type: files; Name: "{app}\*.pyc"
 Type: filesandordirs; Name: "{app}\python27"
 Type: filesandordirs; Name: "{app}\networkx"
 Type: filesandordirs; Name: "{app}\mpmath"
+Type: filesandordirs; Name: "{app}\example"
 
 [Dirs]
 Name: "{app}\example"; Permissions: authusers-full
