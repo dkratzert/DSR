@@ -158,12 +158,14 @@ class CF3(object):
         if afix == '120' and splitatoms:
             F1, F2, F3, F4, F5, F6 = fatoms
             ZA, ZB = splitatoms
-            replacelist = ('ZA', ZA), ('ZB', ZB), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3), ('F4', F4), ('F5', F5), ('F6', F6)        
+            replacelist = (('ZA', ZA), ('ZB', ZB), ('Y', Y), ('F1', F1), ('F2', F2), 
+                            ('F3', F3), ('F4', F4), ('F5', F5), ('F6', F6))        
         if afix == '120' and not splitatoms:
             F1, F2, F3, F4, F5, F6 = fatoms
-            replacelist = ('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3), ('F4', F4), ('F5', F5), ('F6', F6)
+            replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3), 
+                           ('F4', F4), ('F5', F5), ('F6', F6))
         # replace dummy atoms in restraint list with real atom names:
-        for old, new in replacelist:
+        for old, new in (replacelist):
             restr = [i.replace(old, new) for i in restr]
         restr = wrap_headlines(restr, 77)
         return restr
@@ -420,8 +422,8 @@ class CF3(object):
             occ = self.dsr_dict['occupancy']
         else:
             occ = str((self.rle.get_fvar_count()+1)*10+1)
-            self.dsr_dict['occupancy'] = occ
         if int(afixnum) == 120:
+            self.dsr_dict['occupancy'] = occ
             self.rle.set_free_variables(occ, '0.5')
         if str(afixnum) == '130':
             num_130 = NumberScheme(self.reslist, ['F1', 'F2', 'F3'], False)
@@ -485,6 +487,11 @@ class CF3(object):
 
         
     def do_refine_cycle(self, rl, reslist):
+        '''
+        runs a shelxl cycle with L.S. 0 
+        :param rl: reslist object
+        :param reslist: res file as list
+        '''
         shx = ShelxlRefine(reslist, self.basefilename, self.fa)
         acta_lines = shx.remove_acta_card()
         shx.set_refinement_cycles('0')
@@ -503,7 +510,6 @@ class CF3(object):
     def rotate_atom_around_bond(self, ratom, at1, at2, delta=10):
         '''
         R = T**-1*Rx**-1*Ry**-1*Rz*Ry*Rx*T
-        
         
         1 translate object to origin
         2 rotate around x in xz plane
