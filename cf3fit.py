@@ -180,7 +180,7 @@ class CF3(object):
             nextline = self.reslist[linenumber+1].split()
             try:
                 coords = [atomline[2], atomline[3], atomline[4]]
-                U11, U22 = atomline[-3], atomline[-2]
+                U11, U22 = atomline[6], atomline[7]
                 U33, U23, U13, U12 = nextline[0], nextline[1], nextline[2], nextline[3]
             except:
                 # In this case we have a U value missing
@@ -229,18 +229,15 @@ class CF3(object):
         if afix == '120':
             print(('Generating twofold disordered CF3-Group at {}.'\
                             .format(self.dsr_dict['target'][0])))
+            restr = sadir_120
             if self.dsr_dict['split']:
                 restr = sadir_120_split
-            else:
-                restr = sadir_120
             if self.dsr_dict['dfix']:
+                restr = dfixr_120
                 if self.dsr_dict['split']:
                     restr = dfixr_120_split
-                else:
-                    restr = dfixr_120
         if self.resi.get_residue_class:
             restr = self.resi.format_restraints(restr)
-            #restr = [i+'\n' for i in restr]
         # the pivot atom of the CF3 group:
         atom = self.dsr_dict['target'][0]
         if len(self.dsr_dict['target']) > 1:
@@ -251,6 +248,7 @@ class CF3(object):
         if afix == '120' and self.dsr_dict['split'] and uval_coords:
             num = NumberScheme(self.reslist, [atom], False)
             if len(atom) < 4:
+                # in this case it is possible to add a character
                 alphabet = [i for i in string.ascii_uppercase]
                 splitat1 = self.add_chars(atom, alphabet)
                 splitat2 = self.add_chars(atom, alphabet)
