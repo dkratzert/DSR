@@ -425,14 +425,13 @@ class CF3(object):
         if int(afixnum) == 120:
             self.dsr_dict['occupancy'] = occ
             self.rle.set_free_variables(occ, '0.5')
-        if str(afixnum) == '130':
+            num_120 = NumberScheme(self.reslist, ['F1', 'F2', 'F3', 'F4', 'F5', 'F6'], False)
+            # returns also the atom names if residue is active
+            numberscheme_120 = num_120.get_fragment_number_scheme()  
+        if int(afixnum) == 130:
             num_130 = NumberScheme(self.reslist, ['F1', 'F2', 'F3'], False)
             # returns also the atom names if residue is active
             numberscheme_130 = num_130.get_fragment_number_scheme()
-        if str(afixnum) == '120':    
-            num_120 = NumberScheme(self.reslist, ['F1', 'F2', 'F3', 'F4', 'F5', 'F6'], False)
-            # returns also the atom names if residue is active
-            numberscheme_120 = num_120.get_fragment_number_scheme()            
         if self.resi.get_residue_class and not resioff:
             resiclass = self.resi.get_residue_class
             resinum = self.resi.get_resinumber
@@ -441,7 +440,7 @@ class CF3(object):
             numberscheme_130 = ['F1', 'F2', 'F3']
             numberscheme_120 = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6']
         sfac = self.e2s.elem_2_sfac('F')
-        if str(afixnum) == '130':
+        if int(afixnum) == 130:
             # CF3:
             afix_130 = [resistr,
                         'AFIX {0}', # AFIX 120 or 130
@@ -454,7 +453,7 @@ class CF3(object):
                         resi0]
             afix_130 = '\n'.join(afix_130)
             afix = afix_130
-        elif str(afixnum) == '120':    
+        elif int(afixnum) == 120:    
             # CF6:
             afix_120 = [resistr,
                         'AFIX {0}',

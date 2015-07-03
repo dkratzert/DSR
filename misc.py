@@ -708,6 +708,28 @@ def longest_common_substring(s1, s2):
     return s1[x_longest - longest: x_longest]
 
 
+def fft(x):
+    '''
+    fft implementation from rosettacode.
+    The purpose of this task is to calculate the FFT (Fast Fourier Transform) of an input sequence. 
+    The most general case allows for complex numbers at the input and results in a sequence of 
+    equal length, again of complex numbers. If you need to restrict yourself to real numbers, 
+    the output should be the magnitude (i.e. sqrt(re²+im²)) of the complex result.
+    :param x:
+    :type x:
+    '''
+    from cmath import exp, pi
+    N = len(x)
+    if N <= 1: return x
+    even = fft(x[0::2])
+    odd =  fft(x[1::2])
+    T= [exp(-2j*pi*k/N)*odd[k] for k in xrange(N/2)]
+    return [even[k] + T[k] for k in xrange(N/2)] + \
+           [even[k] - T[k] for k in xrange(N/2)]
+    #print( ' '.join("%5.3f" % abs(f) 
+    #            for f in fft([1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0])) )
+
+
 def levenshtein(s1, s2):
     '''
     >>> print(levenshtein('hallo', 'holla'))
@@ -806,7 +828,7 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     :type longest: boolean
 
     '''
-    from misc import A
+    from misc import A  # @UnresolvedImport
     probability = probability+1
     # Uij is symmetric:
     if len(uvals) != 6:
