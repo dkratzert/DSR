@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+#-*- encoding: utf-8 -*-
+#möp
 import os
 import shlex
 import struct

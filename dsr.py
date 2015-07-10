@@ -32,7 +32,7 @@ from refine import ShelxlRefine
 import resfile
 from cf3fit import CF3
 
-VERSION = '1.7.2'
+VERSION = '1.7.3'
 # dont forget to change version in Innoscript file, spec file and deb file.
 program_name = '\n-----------------------------'\
            ' D S R - v{}' \
@@ -40,10 +40,8 @@ program_name = '\n-----------------------------'\
 
 # TODO and ideas:
 '''
--debian package: /usr/src/packages/BUILD # dpkg-deb --build dsr
--inspect behavior of replace mode. Are atoms correctly deleted? No false deletions?
--finish CF3 and CF6 first.
--then look at CF3 thorus
+- try pure-python fft to make fourier maps and q-peaks.
+- fit fragment without user interaction
 '''
 
 
