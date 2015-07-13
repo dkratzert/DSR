@@ -12,6 +12,7 @@
 from __future__ import print_function
 import sys
 import re
+from constants import sep_line
 try:
     from argparse import RawTextHelpFormatter
 except(ImportError):
@@ -96,16 +97,14 @@ class OptionsParser():
         '''parses the command line options and returns
            the command line options as dict'''
         # Options parser for the command line:
-        sep_line = '\n------------------------------------------------'\
-                    '--------------------------------\n'
         self.parser = ArgumentParser(prog='dsr', formatter_class=RawTextHelpFormatter,
         description='Disordered Structure Refinement (DSR)\n'
         +'\nExample DSR .res file command line:\n'
         +'\nREM DSR PUT/REPLACE "Fragment" WITH C1 C2 C3 ON Q1 Q2 Q3 PART 1 OCC -21 ='
         +'\n  RESI DFIX\n'
-        +sep_line
+        +sep_line+'\n'
         +'   PUT:     Just put the fragment source atoms here.\n'
-        +'   REPLACE: Replace atoms of PART 0 in 1.2 A distance around target atoms.'
+        +'   REPLACE: Replace atoms of PART 0 in 1.2 A distance around target atoms.\n'
         +sep_line
         )
         self.parser.add_argument("-r", dest="res_file", metavar='"res file"', \

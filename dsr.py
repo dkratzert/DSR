@@ -31,12 +31,14 @@ from terminalsize import get_terminal_size
 from refine import ShelxlRefine
 import resfile
 from cf3fit import CF3
+from constants import width, sep_line
 
 VERSION = '1.7.3'
 # dont forget to change version in Innoscript file, spec file and deb file.
-program_name = '\n-----------------------------'\
-           ' D S R - v{}' \
-           ' ----------------------------------'.format(VERSION)
+
+program_name = '\n'+((width/2)-9)*'-'+\
+           ' D S R - v{} '.format(VERSION)+\
+           ((width/2)-8)*'-'
 
 # TODO and ideas:
 '''
@@ -209,8 +211,7 @@ class DSR():
         db = gdb.build_db_dict()
         print('\n Entries found in the databases:\n')
         print(' Fragment         | Line | DB Name    | Full name, Comments ')
-        print(' ----------------------------------------'
-                '-----------------------------------')
+        print(sep_line)
         frags = sorted(db.keys())
         names_list = []
         num = 0
