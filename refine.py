@@ -16,6 +16,7 @@ import shutil
 from resfile import ResList
 import misc
 from misc import find_line, checkFileExist
+from constants import sep_line
 
 
 
@@ -297,7 +298,7 @@ class ShelxlRefine():
             sys.exit()
         command_line='{} -b{} {}'.format(self._shelx_command, self.b_array, self.resfile_name).split()
         self.backup_shx_file()
-        print('-----------------------------------------------------------------')
+        print(sep_line)
         print(' refining with "{}" and "L.S. 0"'.format(' '.join(command_line)))
         p = subprocess.Popen(command_line, stdin = subprocess.PIPE,
                             stdout = subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -314,17 +315,12 @@ class ShelxlRefine():
         self.pretty_shx_output(output)
         status = checkFileExist(resfile) # status is False if shelx was unsecessful
         if not status: # fail
-            print('-----------------------------------------------------------------')
+            print(sep_line)
             print('\nError: SHELXL terminated unexpectedly.')
             print('Check for errors in your SHELX input file!\n')
             self.restore_shx_file()
             sys.exit()
-        #else:          # sucess
-        #    print('-----------------------------------------------------------------')
-        #    try:
-        #        misc.remove_file(self.backup_file)
-        #    except(IOError):
-        #        print('Unable to delete backup file {}.'.format(self.backup_file))
+
 
 
     def check_refinement_results(self, list_file):

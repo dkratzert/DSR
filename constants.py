@@ -10,6 +10,7 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
+from terminalsize import get_terminal_size
 
 
 SHX_CARDS = ('TITL', 'CELL', 'ZERR', 'LATT', 'SYMM', 'SFAC', 'UNIT', 'LIST', 'L.S.', 'CGLS',
@@ -37,4 +38,8 @@ DIST_RESTRAINT_CARDS = ('SAME', 'SADI', 'FREE', 'DFIX', 'BUMP', 'CHIV', 'FLAT', 
 
 atomregex = r'^(([A-Za-z]{1,4})[0-9]{0,3}[A-Za-z\'\"]{0,2}\d{0,1})\s+[-]?[0-9]{1,2}\s+[-+]?[0-9]*\.?[0-9]+\s+[-+]?[0-9]*\.?[0-9]+\s+[-+]?[0-9]*\.?[0-9]+'
 
-
+try:
+    (width, height) = get_terminal_size()  # @UnusedVariable
+except():
+    width = 80
+sep_line = (width-1)*'-'

@@ -16,10 +16,11 @@ import os, sys
 import re
 import tarfile
 
-from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS
+from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
 import misc
 from atoms import Element
 from atomhandling import get_atomtypes
+
 
 
 def invert_dbatoms_coordinates(atoms):
@@ -71,7 +72,7 @@ def print_search_results(results):
     '''
     print('\n\n Found following database entries:\n')
     print(' Fragment          | Full name, Comments                      | Line number')
-    print(' ---------------------------------------------------------------------------')
+    print(sep_line)
     for line in results:
         print(' {:15s}   | {:40s} | {}'.format(line[0], line[1], line[2]))
     sys.exit()
