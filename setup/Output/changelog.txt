@@ -1,4 +1,5 @@
 Recent changes
+-1.7.3  Small fix regarding FVAR with CF6 fragment. 
 -1.7.2  Added [2.2.2]-cryptand to database. Tanks to Dejan Premuzic! Added Ability to compute
         principal axes vectors of an ellipsoid. Added "split" option to split CF6 group. 
         Several other fixes.
