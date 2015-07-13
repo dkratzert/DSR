@@ -447,16 +447,16 @@ class ListFile():
         for i in connections_list:
             atom = i.pop(0)
             for connected_atom in i:
-                if '$' in connected_atom:
-                    symmeq = True
-                    continue
+                #if '$' in connected_atom:
+                #    symmeq = True
+                #    continue
                 # uppper case for case insensitivity:
                 atom = atom.upper()
                 connected_atom = connected_atom.upper()
                 connpairs.append((atom, connected_atom))
-        if symmeq:
-            print('\nConnections to symmetry equivalent atoms found.'\
-                    ' \nGenerated DFIX restraints might be nonsense!!')
+        #if symmeq:
+        #    print('\nConnections to symmetry equivalent atoms found.'\
+        #            ' \nGenerated DFIX restraints might be nonsense!!')
         return connpairs
 
 
