@@ -37,8 +37,9 @@ def checkFileExist(filename):
     >>> checkFileExist('foo.bar')
     File "foo.bar" not found!
     False
-    >>> checkFileExist('dsr_user_db.txt')
-    'zero'
+    
+    #>>> checkFileExist('unit-tests/empty.txt')
+    #'zero'
     '''
     filesize = False
     status = False
@@ -275,6 +276,11 @@ def wrap_headlines(dbhead, width=77):
     start of the next line
     :param dbhead: header with restraints
     :param width: wrap after width characters
+    >>> line = ['foo bar this is text to wrap. blah bub']
+    >>> wrap_headlines(line, 15)
+    ['foo bar this is =\\n   text to wrap. =\\n   blah bub\\n']
+    >>> wrap_headlines(['SADI C1 C2 C3 C4'], 10)
+    ['SADI C1 C2 =\\n   C3 C4\\n']
     '''
     import textwrap
     for num, line in enumerate(dbhead):
@@ -291,15 +297,15 @@ def wrap_headlines(dbhead, width=77):
         dbhead[num] = line+'\n'
     return dbhead
 
-
-
 def unwrap_head_lines(headlines):
     '''
     if a line is wrapped like "SADI C1 C2 =\n", "  C3 C4" or "SADI C1 C2=\n", "  C3 C4"
     this function returns "SADI C1 C2 C3 C4"
     
-    #>>> unwrap_head_lines(["SADI C1 C2 =\n", "  C3 C4"])
-    
+    >>> unwrap_head_lines(["SADI C1 C2 =\\n", "  C3 C4"])
+    ['SADI C1 C2 C3 C4']
+    >>> unwrap_head_lines(['foo bar this is =\\n   text to wrap. =\\n   blah bub\\n'])
+    ['foo bar this is text to wrap. blah bub']
     '''
     import constants
     tmp = ''
