@@ -1192,4 +1192,22 @@ class MiscTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    import sys
+    import doctest
+    import elements
+    failed, attempted = doctest.testmod(misc)#verbose=True)
+    if failed == 0:
+        print('passed all {} tests in misc!'.format(attempted))
+    
+    failed, attempted = doctest.testmod(elements)#verbose=True)
+    if failed == 0:
+        print('passed all {} tests in elements!'.format(attempted))
+    
+    import networkx    
+    failed, attempted = doctest.testmod(networkx)#verbose=True)
+    if failed == 0:
+        print('passed all {} tests in networkx!'.format(attempted))
+    failed, attempted = doctest.testmod(networkx.classes.graph)#verbose=True)
+    if failed == 0:
+        print('passed all {} tests in networkx.classes.graph!'.format(attempted))
     unittest.main()
