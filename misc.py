@@ -32,6 +32,13 @@ def checkFileExist(filename):
     A file zize above 0 returns True.
     A non-existing file returns False.
     A file size of 0 retrurns 'zero'.
+    >>> checkFileExist('p21c.res')
+    True
+    >>> checkFileExist('foo.bar')
+    File "foo.bar" not found!
+    False
+    >>> checkFileExist('dsr_user_db.txt')
+    'zero'
     '''
     filesize = False
     status = False
@@ -39,7 +46,7 @@ def checkFileExist(filename):
         filesize = int(os.stat(str(filename)).st_size)
     except:
         print('File "{}" not found!'.format(filename))
-        status = False
+        return False
     if isinstance(filesize, int) and filesize > 0:
         status = True
     if isinstance(filesize, int) and filesize == 0:
@@ -54,6 +61,9 @@ def get_atoms(atlist):
     ['F8    4    0.349210   0.073474   0.519443 -21.00000   0.03106', '...']
     output:
     [['O1', '3', '-0.01453', '1.66590', '0.10966'], ['C1', '1', '-0.00146', '0.26814', '0.06351'], ...
+    
+    >>> get_atoms(['F8    4    0.349210   0.073474   0.519443 -21.00000   0.03106', 'foo'])
+    [['F8', '4', '0.349210', '0.073474', '0.519443']]
     '''
     atoms = []
     try:
@@ -75,6 +85,9 @@ def get_atoms(atlist):
 def flatten(nested):
     '''
     flattens a nested list
+    
+    >>> flatten([['wer', 234, 'brdt5'], ['dfg'], [[21, 34,5], ['fhg', 4]]])
+    ['wer', 234, 'brdt5', 'dfg', 21, 34, 5, 'fhg', 4]
     '''
     result = []
     try:
@@ -114,6 +127,8 @@ def find_line_of_residue(reslist, resinumber):
     :type resinumber: string
     :return n: integer
     :return line: string
+    >>> find_line_of_residue(['REM TEST', 'C1 1 -0.00146 0.26814 0.06351 11.00 0.05', 'RESI 4 BENZ', 'C2 1 -1.13341 -0.23247 -0.90730 11.00 0.05'], 4)
+    [2, 'RESI 4 BENZ']
     '''
     for n, line in enumerate(reslist):
         if line.upper().startswith('RESI'):
@@ -122,13 +137,16 @@ def find_line_of_residue(reslist, resinumber):
 
 
 def ll_to_string(inputlist):
-    '''converts list of list to string with four whitespaces between each list element'''
+    '''
+    converts list of list to string with four whitespaces between each list element
+    >>> ll_to_string([['REM', 'TEST', 'C1'], ['1', '-0.00146', '0.26814', '0.06351']])
+    'REM   TEST   C1\\n1   -0.00146   0.26814   0.06351'
+    '''
     inputlist = [list(map(str, i)) for i in inputlist]
     newlist = []
     for i in inputlist:
         newlist.append('   '.join(i).rstrip())
     string = '\n'.join(newlist)
-    #string = '\n'.join('\t'.join(map(str, l)).rstrip() for l in inputlist).expandtabs(6).rstrip()
     return string
 
 
@@ -137,6 +155,12 @@ def multiline_test(line):
     test if the current line is a multiline with "=" at the end
     :param line: 'O1 3 -0.01453 1.66590 0.10966 11.00 0.05 ='
     :type line: string
+    >>> line = 'C1    1    0.278062    0.552051    0.832431    11.00000    0.02895    0.02285 ='
+    >>> multiline_test(line)
+    True
+    >>> line = 'C1    1    0.278062    0.552051    0.832431    11.00000    0.05 '
+    >>> multiline_test(line)
+    False
     '''
     line = line.rpartition('=')  # partition the line in before, sep, after
     line = ''.join(line[0:2])    # use all including separator
@@ -211,9 +235,7 @@ def copy_file(source, target):
     a directory. Target can be a single file or a directory. 
     :param source: list or string
     :param target: string
-    TODO: implement list as source
     '''
-    #target_file = os.path.basename(target)
     target_path = os.path.dirname(target)
     source_file = os.path.basename(source)
     listcopy = False
@@ -243,8 +265,8 @@ def make_directory(dirpath):
         os.makedirs(dirpath)
     except(IOError, OSError):
         print('Unable to create directory {}.'.format(dirpath))
-        #sys.exit(False)
-
+        return False
+    return True
 
 def wrap_headlines(dbhead, width=77):
     '''
