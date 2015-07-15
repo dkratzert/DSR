@@ -275,6 +275,9 @@ def unwrap_head_lines(headlines):
     '''
     if a line is wrapped like "SADI C1 C2 =\n", "  C3 C4" or "SADI C1 C2=\n", "  C3 C4"
     this function returns "SADI C1 C2 C3 C4"
+    
+    #>>> unwrap_head_lines(["SADI C1 C2 =\n", "  C3 C4"])
+    
     '''
     import constants
     tmp = ''
@@ -302,6 +305,8 @@ def unwrap_head_lines(headlines):
 def makelist(string):
     '''
     returns an upper-case list from a text string
+    >>> makelist('hello world!')
+    ['HELLO', 'WORLD!']
     '''
     stringlist = [i.upper() for i in string.split()]
     return stringlist
@@ -313,6 +318,7 @@ def which(name, flags=os.X_OK):
 
     On MS-Windows the only flag that has any meaning is os.F_OK. Any other
     flags will be ignored.
+    #>>> which('shelxl')
     '''
     result = []
     #exts = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))
@@ -336,6 +342,13 @@ def remove_partsymbol(atom):
     strips the part symbol like C1_4b from an atom name
     :param atom: 'C1_4b'
     :type atom: string
+    
+    >>> remove_partsymbol('C2_4b')
+    'C2_4'
+    >>> remove_partsymbol('C22_b')
+    'C22'
+    >>> remove_partsymbol('C_5')
+    'C_5'
     '''
     if '_' in atom:
         prefix = atom.split('_')[0]
@@ -351,18 +364,31 @@ def remove_partsymbol(atom):
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     '''
-        returns a randim ID like 'L5J74W'
+    returns a random ID like 'L5J74W'
     :param size: length of the string
     :type size: integer
     :param chars: characters used for the ID
     :type chars: string
+    
+    >>> id_generator(1, 'a')
+    'a'
     '''
     return ''.join(random.choice(chars) for _ in range(size))
 
 
 def shift(seq, n):
     '''
-    shift a list by n
+    shift a sliceable object by n
+
+    :param seq: sequence to shift
+    :type seq: string or list
+    :param n: shift length
+    :type n: int
+    
+    >>> shift('hello world', 3)
+    'lo worldhel'
+    >>> shift(['sdfg', 'dsfg', '111', '222'], 1)
+    ['dsfg', '111', '222', 'sdfg']
     '''
     n = n % len(seq)
     return seq[n:] + seq[:n]
@@ -378,7 +404,6 @@ def atomic_distance(p1, p2, cell):
     >>> coord2 = (-0.155278,   0.264593,   0.600644) 
     >>> atomic_distance(coord1, coord2, cell)
     1.5729229943265979
-    
     '''
     cell = [float(y) for y in cell]
     a , b, c =  cell[:3]
@@ -500,37 +525,22 @@ def zero(m,n):
     Create zero matrix of dimension m,n
     :param m: integer
     :param n: integer
+    
+    >>> zero(5, 3)
+    [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]
     '''
     new_matrix = [[0 for row in range(n)] for col in range(m)]  # @UnusedVariable
     return new_matrix
 
 
-def matrix_mult(matrix1,matrix2):
-    '''
-    Multiplies matrix1 with matrix2.
-    Independent from numpy, but slow.
-    [[x1, y1, z1], [x2, y2, z2], [x3, y3, z3]]
-    
-    deprecated, use mpmath instead.
-    '''
-    if len(matrix1[0]) != len(matrix2):
-        # Check matrix dimensions
-        print('Matrices must be m*n and n*p to multiply!')
-        return False
-    else:
-        # Multiply if correct dimensions
-        new_matrix = zero(len(matrix1),len(matrix2[0]))
-        for i in range(len(matrix1)):
-            for j in range(len(matrix2[0])):
-                for k in range(len(matrix2)):
-                    new_matrix[i][j] += matrix1[i][k]*matrix2[k][j]
-    return new_matrix
-
 def determinante(a):
     '''
     return determinant of 3x3 matrix
+    Deprecated, use mpmath instead!!!
     
-    deprecated, use mpmath instead.
+    >>> m1 = [[2, 0, 0], [0, 2, 0], [0, 0, 2]]
+    >>> determinante(m1)
+    8
     '''
     return (a[0][0] * (a[1][1] * a[2][2] - a[2][1] * a[1][2])
            -a[1][0] * (a[0][1] * a[2][2] - a[2][1] * a[0][2])
@@ -539,8 +549,12 @@ def determinante(a):
 def subtract_vect(a, b):
     '''
     subtract vector b from vector a
+    Deprecated, use mpmath instead!!!
     :param a: [float, float, float]
     :param b: [float, float, float]
+    
+    >>> subtract_vect([1, 2, 3], [3, 2, 2])
+    (-2, 0, 1)
     '''
     return (a[0] - b[0],
             a[1] - b[1],
@@ -550,12 +564,19 @@ def subtract_vect(a, b):
 def transpose(a):
     '''
     transposes a matrix
+    
+    >>> m = [[1, 2, 3], [1, 2, 3], [1, 2, 3]]
+    >>> transpose(m)
+    [(1, 1, 1), (2, 2, 2), (3, 3, 3)]
     '''
     return zip(*a)
 
 def norm_vec(a):
     '''
     returns a normalized vector
+    
+    >>> norm_vec([1, 2, 1])
+    (0.4082482904638631, 0.8164965809277261, 0.4082482904638631)
     '''
     l = sqrt(a[0]**2 + a[1]**2 + a[2]**2)
     return (a[0]/l, a[1]/l, a[2]/l)
@@ -591,7 +612,6 @@ def vol_tetrahedron(a, b, c, d, cell=None):
     volume of Benzene ring atoms:
     >>> print(vol_tetrahedron(a, b, c, d, cell))
     0.0633528183217
-    
     '''
     A = [float(i) for i in a]
     B = [float(i) for i in b]
@@ -612,11 +632,9 @@ def vol_tetrahedron(a, b, c, d, cell=None):
 def vol_unitcell(a, b, c, al, be, ga):
     '''
     calculates the volume of a unit cell
-    
     >>> v = vol_unitcell(2, 2, 2, 90, 90, 90)
     >>> print(v)
     8.0
-    
     '''
     ca, cb, cg = cos(radians(al)), cos(radians(be)), cos(radians(ga))
     v = a*b*c*sqrt(1+2*ca*cb*cg-ca**2-cb**2-cg**2)
@@ -631,10 +649,8 @@ def dice_coefficient(a, b):
     :param b: string
     >>> print(dice_coefficient('hallo', 'holla'))
     0.75
-    
     >>> print(dice_coefficient('Banze', 'Benzene'))
     0.555556
-    
     '''
     a = a.lower()
     b = b.lower()
@@ -694,6 +710,17 @@ def dice_coefficient2(a,b):
 
 
 def longest_common_substring(s1, s2):
+    '''
+    returns the longest common substring of two strings
+    :param s1: a string
+    :type s1: str
+    :param s2: a second string
+    :type s2: str
+    
+    >>> longest_common_substring('hello world how is foo bar?', 'hello daniel how is foo in the world?')
+    ' how is foo '
+    
+    '''
     m = [[0] * (1 + len(s2)) for i in range(1 + len(s1))]  # @UnusedVariable
     longest, x_longest = 0, 0
     for x in range(1, 1 + len(s1)):
@@ -717,6 +744,9 @@ def fft(x):
     the output should be the magnitude (i.e. sqrt(re²+im²)) of the complex result.
     :param x:
     :type x:
+    
+    >>> print( ' '.join("%5.3f" % abs(f) for f in fft([1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0])) )
+    4.000 2.613 0.000 1.082 0.000 1.082 0.000 2.613
     '''
     from cmath import exp, pi
     N = len(x)
@@ -736,7 +766,6 @@ def levenshtein(s1, s2):
     2
     >>> print(dice_coefficient('hallo', 'holla'))
     0.75
-    
     '''
     s1 = s1.lower()
     s2 = s2.lower()
@@ -759,6 +788,10 @@ def levenshtein(s1, s2):
 def distance(x1, y1, z1, x2, y2, z2, round_out=False):
     '''
     distance between two points in space
+    >>> distance(1, 1, 1, 2, 2, 2, 4)
+    1.7321
+    >>> distance(1, 0, 0, 2, 0, 0, 4)
+    1.0
     '''
     import math as m
     d = m.sqrt((x1-x2)**2+(y1-y2)**2+(z1-z2)**2)
@@ -906,6 +939,27 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     else:
         # all vectors:
         return allvec
+
+def almost_equal(a, b, places=3):
+    '''
+    Returns True or False if the number a and b are are equal inside the 
+    decimal places "places".
+    :param a: a real number
+    :type a: int/float
+    :param b: a real number
+    :type b: int/float
+    :param places: number of decimal places
+    :type places: int
+    
+    >>> almost_equal(1.0001, 1.0005)
+    True
+    >>> almost_equal(1.1, 1.0005)
+    False
+    >>> almost_equal(2, 1)
+    False
+    
+    '''
+    return round(abs(a-b), places) == 0
     
 
 if __name__ == '__main__':

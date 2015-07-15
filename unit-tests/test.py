@@ -1113,18 +1113,6 @@ class MiscTest(unittest.TestCase):
         self.assertListEqual(zero, zer0)
 
 
-    def testrun_matrixmult(self):
-        m1 = [[2, 0, 0], [0, 2, 0], [0, 0, 2]]
-        m2 = [[2.01, 0, 0], [0, 2, 0], [0, 0, 2]]
-        m3 = [[1.000001, 1.0, 1.0], [1.0, 2, 1.0], [1.01, 1.00, 2]]
-        m4 = [[4.02, 0, 0], [0, 4, 0], [0.0, 0, 4]]
-        m5 = [[2.000002, 2.0, 2.0], [2.0, 4.0, 2.0], [2.02, 2.0, 4.0]]
-        mult1 = misc.matrix_mult(m1, m2)
-        self.assertListEqual(mult1, m4)
-        mult2 = misc.matrix_mult(m1, m3)
-        self.assertListEqual(mult2, m5)
-
-
     def testrun_format_atom_names(self):
         from restraints import format_atom_names 
         names = format_atom_names(atomnames, part=2, resinum=4)
@@ -1167,10 +1155,6 @@ class MiscTest(unittest.TestCase):
         for x, y in zip(cart, N1):
             self.assertAlmostEqual(x, y, 8)
 
-    def testrun_determinante(self):
-        m1 = [[2, 0, 0], [0, 2, 0], [0, 0, 2]]
-        det = misc.determinante(m1)
-        self.assertEqual(det, 8)
 
     def testrun_subtract(self):
         m1 = [2, 0, 0]
