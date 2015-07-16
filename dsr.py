@@ -305,7 +305,7 @@ class DSR():
                 cf3.cf3('120')
             if fragment == 'cf9':
                 cf3.cf9()
-            print('\nFinised...')
+            print('\nFinished...')
             sys.exit()
         if dsrp.occupancy:
             rle.set_free_variables(dsrp.occupancy)
