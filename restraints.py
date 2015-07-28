@@ -359,7 +359,7 @@ class Restraints():
             tetrahedron_atoms.append(single_atom_coordinate)
         a, b, c, d = tetrahedron_atoms
         volume = (vol_tetrahedron(a, b, c, d))
-        if volume < 0.1:
+        if volume < 0.85:
             return True
         else:
             #print('volume of', chunk, 'too big:', volume)
