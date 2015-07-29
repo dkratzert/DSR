@@ -604,7 +604,7 @@ class ImportGRADE():
         except(KeyError):
             dbdir='.' 
         self._getdb = ReadDB(dbdir, dbnames=["dsr_db.txt", "dsr_user_db.txt"])
-        self._db_dir = os.environ["DSR_DB_DIR"]
+        self._db_dir = dbdir
         self._db_tags = self._getdb.find_db_tags()
         self._gdb = global_DB(invert=False)
         self._db = self._gdb.build_db_dict()
