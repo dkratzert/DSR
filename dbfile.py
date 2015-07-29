@@ -599,7 +599,11 @@ class ImportGRADE():
         '''
         self.el = Element()
         self.invert = invert
-        self._getdb = ReadDB(dbdir=os.environ["DSR_DB_DIR"],
+        try:
+            dbdir=os.environ["DSR_DB_DIR"]
+        except(KeyError):
+            dbdir='.' 
+        self._getdb = ReadDB(dbdir,
                  dbnames=["dsr_db.txt", "dsr_user_db.txt"])
         self._db_dir = os.environ["DSR_DB_DIR"]
         self._db_tags = self._getdb.find_db_tags()
