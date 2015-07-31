@@ -236,6 +236,8 @@ class ResListEdit():
         # the occupancynumber is split in the fvar part and the occupancy part:
         num = occupancynumber.split('.')   
         fvar = int(num[0])//10       # e.g. 20.5 is fvar 2 and occupancy 0.5
+        if fvar == 0:
+            fvar = 1
         difference = (fvar - varlen)
         if difference > 0:
             for i in range(difference):
