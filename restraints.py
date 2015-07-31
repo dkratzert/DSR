@@ -36,8 +36,7 @@ def remove_duplicate_bonds(bonds):
     '''
     removes duplicates from [(at1, at2, 1.324), (at2, at1, 1.324)]
     '''
-    #keys = set()
-    new_bonds = [] #(dict([(pair[0], pair) for pair in reversed(bonds)]).values())
+    new_bonds = []
     pairs = []
     for k in bonds:
         pairs.append((k[0], k[1]))
@@ -133,7 +132,6 @@ class Restraints():
         create a distance matrix for the atom coordinates
         '''
         G=nx.Graph()
-        #print(self._atoms, self.coords_dict)
         for i in self._connectivity_table:
             atom1 = i[0]
             atom2 = i[1]
@@ -150,8 +148,7 @@ class Restraints():
         returns a connectivity table from the atomic coordinates and the covalence
         radii of the atoms.
         TODO:
-        - use this for a global connectivity table
-        - use also FREE to make the table!        
+        - read FREE command from db to contro binding here.
         :param cart_coords: cartesian coordinates of the atoms
         :type cart_coords: list
         :param atom_types: Atomic elements
@@ -159,7 +156,6 @@ class Restraints():
         :param atom_names: atom name in the file like C1
         :type atom_names: list of strings
         '''
-        #extra_param = 0.16 # empirical value
         names = []
         for n, i in enumerate(atom_names, 1):
             names.append([n, i])
@@ -178,8 +174,6 @@ class Restraints():
                     conlist.append([n2[1], n1[1]])
                     if [n1[1], n2[1]] in conlist:
                         continue
-                    #print('{}--{}: {}'.format(n1, n2, d))
-        #conlist = [(i[0][1], i[1][1]) for i in conlist]
         return (conlist)
 
     def get_adjmatrix(self):
@@ -225,14 +219,12 @@ class Restraints():
             neighbors.append([at, nb])
         return(neighbors)
 
-
     def get_next_neighbors(self):
         '''
-        returns the next-neighbors of the fragment atoms
+        returns the next-neighbors of the fragments atoms
         '''
         nn = []
         nb12 = self.get_neighbors(self._atoms)
-        #print(nb12)
         for i in nb12:
             atom1 = i[0]
             bonded = i[1]
@@ -244,9 +236,7 @@ class Restraints():
                         ' Check your SHELXL listing file.')
                 sys.exit()
             for n in bonded:
-                #print(n)
                 nb = self._G.neighbors(n)
-                #print(nb, atom1)
                 if not nb:
                     continue
                 try:
@@ -257,7 +247,6 @@ class Restraints():
                 for at in nb: # nb -> neighbors of n
                     nn.append((atom1, at))
         return(nn)
-
 
     def make_13_dist(self, nn):
         '''
@@ -274,7 +263,6 @@ class Restraints():
                                                    c2[0], c2[1], c2[2])))
         return dist_13
 
-
     def get_overlapped_chunks(self, ring, size):
         '''
         returns a list of chunks of size 'size' which overlap with one field.
@@ -287,7 +275,6 @@ class Restraints():
                 chunk = ring[-size:]
             chunks.append(chunk)
         return chunks
-
 
     def make_flat_restraints(self):
         '''
@@ -324,7 +311,7 @@ class Restraints():
             for chunk in flats:
                 for i in neighbors:
                     for at in chunk:
-                        if self.binds_to(at, i):
+                        if self.binds_to(at, i) and i not in chunk:
                             if not self.binds_to(chunk[0], i):
                                 # only delete if not bounded to the beforehand added atom
                                 del chunk[0]
@@ -338,7 +325,6 @@ class Restraints():
                             flats.append(chunk)
         return flats
 
-
     def binds_to(self, a, b):
         '''
         returns True if atom a binds to atoms b
@@ -347,7 +333,6 @@ class Restraints():
             return True
         else:
             return False
-
 
     def is_flat(self, chunk):
         '''
@@ -359,7 +344,7 @@ class Restraints():
             tetrahedron_atoms.append(single_atom_coordinate)
         a, b, c, d = tetrahedron_atoms
         volume = (vol_tetrahedron(a, b, c, d))
-        if volume < 0.85:
+        if volume < 0.085:
             return True
         else:
             #print('volume of', chunk, 'too big:', volume)
@@ -403,7 +388,6 @@ class ListFile():
         '''
         return self._listfile_list
         
-
     def read_lst_file(self):
         '''
         reads the .lst file and returns it as list.
@@ -425,7 +409,6 @@ class ListFile():
         returns a list of all bonded atom pairs. Symmetry equivalent atoms
         are filtered out.
         '''
-        symmeq = False
         # find the start of the conntable
         start_line = misc.find_line(self._listfile_list, self._conntable_regex)
         if start_line:
@@ -447,18 +430,10 @@ class ListFile():
         for i in connections_list:
             atom = i.pop(0)
             for connected_atom in i:
-                #if '$' in connected_atom:
-                #    symmeq = True
-                #    continue
-                # uppper case for case insensitivity:
                 atom = atom.upper()
                 connected_atom = connected_atom.upper()
                 connpairs.append((atom, connected_atom))
-        #if symmeq:
-        #    print('\nConnections to symmetry equivalent atoms found.'\
-        #            ' \nGenerated DFIX restraints might be nonsense!!')
         return connpairs
-
 
     def coordinates(self):
         '''
@@ -482,7 +457,6 @@ class ListFile():
             atom = {str(line[0]).upper(): xyz}
             atom_coordinates.update(atom)
         return atom_coordinates
-
 
     def get_cell(self):
         '''
@@ -520,7 +494,6 @@ class ListFile():
         '''
         return self.coordinates()
 
-
     def get_single_coordinate(self, atom):
         '''
         return the coordinates of a single atom as ['x', 'y', 'z']
@@ -530,7 +503,6 @@ class ListFile():
             return coord[atom]
         except(KeyError):
             return None
-
 
     def get_afix_number_of_CF3(self):
         '''
@@ -557,7 +529,6 @@ class ListFile():
         if not line and atom:
             conn = self.read_conntable()
             G = nx.Graph(conn)
-            #A = nx.adjacency_matrix(G)
             nb = G[atom]
             for i in nb.keys():
                 if i[0] == 'C':
@@ -617,7 +588,6 @@ class Lst_Deviations():
                 line = line.split()
                 deviations[line[2]] = line[5]
         return deviations
-
 
     def print_LS_fit_deviations(self):
         '''

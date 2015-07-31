@@ -138,19 +138,12 @@ class InsertAfix(object):
         '''
         return 'rem the following was inserted by DSR:\n'
 
-
-    def remove_duplicate_restraints(self, dbhead, residue_class=''):
+    def collect_all_restraints(self):
         '''
-        removes restraints from the header which are already
-        in the res-file.
-
-        :param dbhead:         database header (list of strings)
-        :param residue_class:  SHELXL residue class
-        :type residue_class:   string
+        collects all restraints in the resfile and returns a list with them
+        [['RIGU_CF3', 'O1', '>', 'F9'], '...']
         '''
         all_restraints =[]
-        modified = False
-        newhead = dbhead[:]
         for n, resline in enumerate(self._reslist):
             resline = resline.strip(' \n\r')
             resline = resline.split()
@@ -171,7 +164,30 @@ class InsertAfix(object):
                             fourth = self._reslist[n+3].split()
                             if fourth[-1] == '=':
                                 resline = resline[:-1]+self._reslist[n+4].split()
+                                fifth = self._reslist[n+4].split()
+                                if fifth[-1] == '=':
+                                    resline = resline[:-1]+self._reslist[n+5].split()
+                                    sixth = self._reslist[n+5].split()
+                                    if sixth[-1] == '=':
+                                        resline = resline[:-1]+self._reslist[n+6].split()
+                                        seventh = self._reslist[n+6].split()
+                                        if seventh[-1] == '=':
+                                            resline = resline[:-1]+self._reslist[n+7].split()
                 all_restraints.append(resline)
+        return all_restraints
+    
+    def remove_duplicate_restraints(self, dbhead, residue_class=''):
+        '''
+        removes restraints from the header which are already
+        in the res-file.
+
+        :param dbhead:         database header (list of strings)
+        :param residue_class:  SHELXL residue class
+        :type residue_class:   string
+        '''
+        all_restraints = self.collect_all_restraints()
+        modified = False
+        newhead = dbhead[:]
         for num, headline in enumerate(dbhead):
             headline = headline.split()
             for restr in all_restraints:
@@ -183,7 +199,6 @@ class InsertAfix(object):
             print('\nAlready existing restraints for residue "{}" were not '
                     'applied again.'.format(residue_class))
         return newhead
-
 
     def distance_and_other_restraints(self, dbhead):
         '''
@@ -206,8 +221,6 @@ class InsertAfix(object):
             else:
                 others.append(' '.join(headline)+'\n')
         return [distance, others]
-
-
 
     def build_afix_entry(self, external_restraints, dfx_file_name, resi):
         '''
@@ -245,7 +258,6 @@ class InsertAfix(object):
                     self.dfix_head = add_residue_to_dfix(self.dfix_head, resi.get_resinumber)
                 dfx_file_name = write_dbhead_to_file(dfx_file_name, self.dfix_head, 
                                     resi.get_residue_class, resi.get_resinumber)
-                
             else:
                 dfx_file_name = write_dbhead_to_file(dfx_file_name, self._dbhead, 
                                     resi.get_residue_class, resi.get_resinumber)
