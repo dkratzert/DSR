@@ -199,7 +199,7 @@ class Restraints():
         dfix_restraints = self.get_12_dfixes()
         dfix_restraints = remove_duplicate_bonds(dfix_restraints)
         for n, i in enumerate(dfix_restraints, 1):  # @UnusedVariable
-            dfix_formated.append('DFIX {:.4f}  {:7}{:7}\n'.format(i[2], \
+            dfix_formated.append('DFIX {:<7.4f}{:<4s} {:<4s}\n'.format(i[2], \
                 misc.remove_partsymbol(i[0]), misc.remove_partsymbol(i[1])))
         return dfix_formated
 
@@ -368,7 +368,7 @@ class Restraints():
         dfixes_13 = self.make_13_dist(nextneighbors)
         dfix_13_format = []
         for i in dfixes_13:
-            dfix_13_format.append('DANG {:.4f}  {:7}{:7}\n'.format(i[2],
+            dfix_13_format.append('DANG {:<7.4f}{:<4s} {:<4s}\n'.format(i[2],
                 misc.remove_partsymbol(i[0]), misc.remove_partsymbol(i[1])))
         return dfix_13_format
 
