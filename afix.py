@@ -153,26 +153,14 @@ class InsertAfix(object):
                 continue
             if resline[0][:4] in RESTRAINT_CARDS:
                 # see for the next four lines if the lines continues with "=":
-                if resline[-1] == '=':
-                    resline = resline[:-1]+self._reslist[n+1].split()
-                    second = self._reslist[n+1].split()
-                    if second[-1] == '=':
-                        resline = resline[:-1]+self._reslist[n+2].split()
-                        third = self._reslist[n+2].split()
-                        if third[-1] == '=':
-                            resline = resline[:-1]+self._reslist[n+3].split()
-                            fourth = self._reslist[n+3].split()
-                            if fourth[-1] == '=':
-                                resline = resline[:-1]+self._reslist[n+4].split()
-                                fifth = self._reslist[n+4].split()
-                                if fifth[-1] == '=':
-                                    resline = resline[:-1]+self._reslist[n+5].split()
-                                    sixth = self._reslist[n+5].split()
-                                    if sixth[-1] == '=':
-                                        resline = resline[:-1]+self._reslist[n+6].split()
-                                        seventh = self._reslist[n+6].split()
-                                        if seventh[-1] == '=':
-                                            resline = resline[:-1]+self._reslist[n+7].split()
+                line = 0
+                while resline[-1] == '=':
+                    resline = resline[:-1]+self._reslist[n+line+1].split()
+                    line = line + 1
+                    if not resline[-1] == '=':
+                        break
+                    if line > 500:
+                        break
                 all_restraints.append(resline)
         return all_restraints
     
