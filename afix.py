@@ -325,6 +325,12 @@ class InsertAfix(object):
 
 
 if __name__ == '__main__':
+    import sys
+    import doctest
+    failed, attempted = doctest.testmod()#verbose=True)
+    if failed == 0:
+        print('passed all {} tests!'.format(attempted))
+###################################################################        
     res_file = 'p21c.res'
     invert = True
     rl = ResList(res_file)
