@@ -425,6 +425,8 @@ class global_DB():
         check if same distance restraints make sense
         
         '''
+        num_dict = {}
+        linedict = {}
         atnames = [i[0].upper() for i in atoms]
         pairs_dict = {}
         for num, line in enumerate(restraints):
@@ -432,7 +434,6 @@ class global_DB():
             if not line:
                 continue
             if line[0].upper() == 'SADI':
-                #print(line)
                 del line[0]
                 if not str(line[0][0]).isalpha():
                     del line[0]
@@ -440,23 +441,26 @@ class global_DB():
                     print('Inconsistent SADI restraint in line {}. Not all atoms form a pair.'.format(num))   
                 pairs = misc.pairwise(line)
                 l = []
-                for i in pairs:
+                pairlist = []
+                for npair, i in enumerate(pairs):  # @UnusedVariable
+                    pairlist.append(i)
                     a = atoms[atnames.index(i[0])][2:5]
                     b = atoms[atnames.index(i[1])][2:5]
-                    a = [float(i) for i in a]
-                    b = [float(i) for i in b]
+                    a = [float(x) for x in a]
+                    b = [float(y) for y in b]
                     dist = atomic_distance(a, b, self.get_unit_cell(fragment))
                     l.append(dist)
                 pairs_dict[num] = l
-        for i in pairs_dict:
-            s3 = 2.8*misc.std_dev(pairs_dict[i])
-            mean = sum(pairs_dict[i])/len(pairs_dict[i])
-            for num, l in enumerate(pairs_dict[i], 1):
+        for p in pairs_dict:
+            s3 = 2.8*misc.std_dev(pairs_dict[p])
+            mean = sum(pairs_dict[p])/len(pairs_dict[p])
+            for num, l in enumerate(pairs_dict[p], 1):
                 dev = round(abs(l-mean), 5)
                 if dev > s3:
                     print(fragment)
-                    print('Too much deviation in atom pair {} of restraint line {} ({}) Angstrom.'.format(num, i, dev))
-
+                    pair = ' '.join(restraints[p].split()[num*2:num*2+2])
+                    print('Too much distance deviation in atom pair "{}" of SADI line {} ({}) Angstrom.'.format(pair, p+1, dev))
+                    print()
     
     def get_head_lines(self, fragment, db, line):
         '''
