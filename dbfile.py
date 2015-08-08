@@ -23,6 +23,7 @@ from atomhandling import get_atomtypes
 import restraints
 from itertools import tee, izip
 from misc import distance, atomic_distance
+import pprint
 
 
 
@@ -420,13 +421,16 @@ class global_DB():
             print('Check database entry.\n')
         return status
     
-    def check_sadi_consistence(self, atoms, restraints, fragment):
+    def check_sadi_consistence(self, atoms, restraints, fragment, factor=3.2):
         '''
-        check if same distance restraints make sense
-        
+        check if same distance restraints make sense. Each length of an atom
+        pair is tested agains the deviation from the mean of each restraint.
+        The deviation must ly in factor times the rmsd.        
+        :param atoms: atoms list of thr fragment
+        :param restraints: restraints list
+        :param fragment: frag name
+        :param factor: factor for confidence interval
         '''
-        num_dict = {}
-        linedict = {}
         atnames = [i[0].upper() for i in atoms]
         pairs_dict = {}
         for num, line in enumerate(restraints):
@@ -437,8 +441,8 @@ class global_DB():
                 del line[0]
                 if not str(line[0][0]).isalpha():
                     del line[0]
-                if len(line)%2 < 0:
-                    print('Inconsistent SADI restraint in line {}. Not all atoms form a pair.'.format(num))   
+                if len(line)%2.0 != 0:
+                    print('Inconsistent SADI restraint line {} of "{}". Not all atoms form a pair.'.format(num, fragment))   
                 pairs = misc.pairwise(line)
                 l = []
                 pairlist = []
@@ -452,15 +456,15 @@ class global_DB():
                     l.append(dist)
                 pairs_dict[num] = l
         for p in pairs_dict:
-            s3 = 2.8*misc.std_dev(pairs_dict[p])
+            s3 = factor*misc.std_dev(pairs_dict[p])
             mean = sum(pairs_dict[p])/len(pairs_dict[p])
             for num, l in enumerate(pairs_dict[p], 1):
                 dev = round(abs(l-mean), 5)
                 if dev > s3:
-                    print(fragment)
+                    print("{}:".format(fragment))
                     pair = ' '.join(restraints[p].split()[num*2:num*2+2])
-                    print('Too much distance deviation in atom pair "{}" of SADI line {} ({}) Angstrom.'.format(pair, p+1, dev))
-                    print()
+                    print('Too much distance deviation in atom pair "{}" of SADI line {} ({}) Angstrom.'.format(pair, p, dev))
+                    
     
     def get_head_lines(self, fragment, db, line):
         '''
