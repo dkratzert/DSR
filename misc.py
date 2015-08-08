@@ -18,6 +18,7 @@ from math import cos, sqrt, radians, sin
 import shutil
 import random
 import mpmath as mpm
+from itertools import izip
 
 alphabet = string.ascii_uppercase
 
@@ -54,6 +55,40 @@ def checkFileExist(filename):
         status = 'zero'
     return status
 
+def pairwise(iterable):
+    '''
+     s -> (s0,s1), (s2,s3), (s4, s5), ...
+     '''
+    a = iter(iterable)
+    return izip(a, a)
+
+def std_dev(data, pl=8):
+    '''
+    returns standard deviation of values rounded to pl decimal places
+    S = sqrt( (sum(x-xm)^2) / n-1 )
+    xm = sum(x)/n
+    :param values: list with integer or float values
+    :type values: list  
+    :param pl: round to n places
+    :type pl: integer
+    
+    >>> std_dev([1.234, 1.222, 1.345, 1.451, 1.000, 1.234, 1.321, 1.222])
+    0.1303522
+    '''
+    if len(data) == 0:
+        return 0
+    K = data[0]
+    n = 0
+    Sum = 0
+    Sum_sqr = 0
+    for x in data:
+        n = n + 1
+        Sum += x - K
+        Sum_sqr += (x - K) * (x - K)
+    variance = (Sum_sqr - (Sum * Sum)/n)/(n - 1)
+    # use n instead of (n-1) if want to compute the exact variance of the given data
+    # use (n-1) if data are samples of a larger population
+    return round(sqrt(variance), pl)
 
 def get_atoms(atlist):
     '''

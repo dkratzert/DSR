@@ -20,6 +20,9 @@ from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
 import misc
 from atoms import Element
 from atomhandling import get_atomtypes
+import restraints
+from itertools import tee, izip
+from misc import distance, atomic_distance
 
 
 
@@ -379,7 +382,6 @@ class global_DB():
                 atoms.append(at)
                 continue
 
-
     def check_db_header_consistency(self, restraints, atoms, fragment_name):
         '''
         - Checks if the Atomnames in the restraints of the dbhead are also in
@@ -418,7 +420,44 @@ class global_DB():
             print('Check database entry.\n')
         return status
     
+    def check_sadi_consistence(self, atoms, restraints, fragment):
+        '''
+        check if same distance restraints make sense
+        
+        '''
+        atnames = [i[0].upper() for i in atoms]
+        pairs_dict = {}
+        for num, line in enumerate(restraints):
+            line=line.split()
+            if not line:
+                continue
+            if line[0].upper() == 'SADI':
+                #print(line)
+                del line[0]
+                if not str(line[0][0]).isalpha():
+                    del line[0]
+                if len(line)%2 < 0:
+                    print('Inconsistent SADI restraint in line {}. Not all atoms form a pair.'.format(num))   
+                pairs = misc.pairwise(line)
+                l = []
+                for i in pairs:
+                    a = atoms[atnames.index(i[0])][2:5]
+                    b = atoms[atnames.index(i[1])][2:5]
+                    a = [float(i) for i in a]
+                    b = [float(i) for i in b]
+                    dist = atomic_distance(a, b, self.get_unit_cell(fragment))
+                    l.append(dist)
+                pairs_dict[num] = l
+        for i in pairs_dict:
+            s3 = 2.8*misc.std_dev(pairs_dict[i])
+            mean = sum(pairs_dict[i])/len(pairs_dict[i])
+            for num, l in enumerate(pairs_dict[i], 1):
+                dev = round(abs(l-mean), 5)
+                if dev > s3:
+                    print(fragment)
+                    print('Too much deviation in atom pair {} of restraint line {} ({}) Angstrom.'.format(num, i, dev))
 
+    
     def get_head_lines(self, fragment, db, line):
         '''
         return the head of the dbentry , the FRAG line and th ecomment of the 
@@ -918,41 +957,29 @@ class ImportGRADE():
 
 if __name__ == '__main__':
 
-    gdb = ReadDB()
-    dbnames = gdb.find_db_tags()
-    # print 'dbcontent:'
-    # for i in dbnames:
-    #    print ' {:<18}| {:<6}| {:<15}'.format(i[0], i[1], i[2])
-    # no valid
-    invert = True
-    gl = global_DB(invert)
-    db = gl.build_db_dict()
-    # print db.values()[3]
-
-    # fragment = 'pfanion'
-    fragment = 'toluene'
-    # fragline = gl.get_fragline_from_fragment(fragment)  # full string of FRAG line
-    # dbatoms = gl.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
-    dbhead = gl.get_head_from_fragment(fragment)  # this is only executed once
-    dbhead = misc.unwrap_head_lines(dbhead)
-
-    # print dbatoms
-    # print('residue:', db['toluene']['resi'])
-    # print('line of db:', db['toluene']['line'])
-    # print('database:', db['toluene']['db'])
-    # print(fragline)
-
-    # for i in dbatoms:
-    #    print i
-    # head = db['toluene']['head']
-    print('### DB head:\n')
-    for i in dbhead:
-        print(i)
-    print()
-    dbhead = misc.wrap_headlines(dbhead)
-    print('### DB head:\n')
-    for i in dbhead:
-        print(i.strip('\n'))
+    gdb = global_DB(invert=False)
+    db = gdb.build_db_dict()
+    dbnames = list(db.keys())
+    
+    
+    for names in dbnames:
+        # fragment = 'pfanion'
+        fragment = names    
+        # fragline = gl.get_fragline_from_fragment(fragment)  # full string of FRAG line
+        # dbatoms = gl.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
+        dbhead = gdb.get_head_from_fragment(fragment)  # this is only executed once
+        dbhead = misc.unwrap_head_lines(dbhead)
+        dbatoms = gdb.get_atoms_from_fragment(fragment)
+        # print dbatoms
+        # print('residue:', db['toluene']['resi'])
+        # print('line of db:', db['toluene']['line'])
+        # print('database:', db['toluene']['db'])
+        # print(fragline)
+    
+        # for i in dbatoms:
+        #    print i
+        head = db[fragment]['head']
+        gdb.check_sadi_consistence(dbatoms, head, fragment)
     sys.exit()
     # mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz')
     # mog = ImportGRADE('./test-data/LIG.gradeserver_all.tgz')
