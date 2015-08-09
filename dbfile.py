@@ -467,7 +467,7 @@ class global_DB():
     
     def get_head_lines(self, fragment, db, line):
         '''
-        return the head of the dbentry , the FRAG line and th ecomment of the 
+        return the head of the dbentry , the FRAG line and the comment of the 
         fragment as list of strings
         [['RESI CBZ', 'SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1',
         'SADI Cl1 C2 Cl1 C6',
