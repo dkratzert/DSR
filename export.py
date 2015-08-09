@@ -268,9 +268,11 @@ class Export():
         import misc
         import subprocess
         '''
-        ellipsoid plot of the molecule. This method depend on PLATON from Ton Spek.
-        The windows version of Platon needs some special care because of its nasty output
-        window.
+        Draws an ellipsoid plot of the molecule. This method depends on PLATON 
+        from Ton Spek. The windows version of Platon needs some special care 
+        because of its nasty output window.
+        This method tries to kill the platon process and removes all leftorver 
+        file in case something goes wrong during the image drawing process.
         '''
         resfile = str(self._fragment_name)+'.res'
         insfile = str(self._fragment_name)+'.ins'
@@ -294,7 +296,6 @@ class Export():
         except(IOError):
             print('unable to write .ins file for plotting!')
             sys.exit(-1)
-
         try:
             plat = subprocess.Popen(commandline, stdin = subprocess.PIPE,
                             stdout = subprocess.PIPE, stderr=subprocess.STDOUT, startupinfo=info)
@@ -303,6 +304,7 @@ class Export():
             while not os.path.isfile(psfile):
                 timeticks = timeticks+1
                 time.sleep(0.01)
+                # give PLATON 15s to draw the picture
                 if timeticks > 1500:
                     print('Platon run took too long to execute. Killing Platon...')
                     try:
@@ -317,6 +319,7 @@ class Export():
                 timeticks = timeticks+1
                 size2 = os.stat(psfile).st_size
                 time.sleep(0.1)
+                # give the system 3s to store the picture
                 if timeticks > 30:
                     try:
                         plat.terminate()
@@ -332,15 +335,14 @@ class Export():
             except:
                 pass
             for i in extensions:
+                # clean all the leftover files
                 misc.remove_file(self._fragment_name+i)
             sys.exit()
-
         misc.remove_file('platon.out', terminate=plat)
         extensions = ('.lis', '.eld', '.def', '.pjn', '_pl.spf')
         for i in extensions:
             misc.remove_file(self._fragment_name+i)
         misc.remove_file(insfile)
-
         # test for convert from ImageMagic
         if misc.which('montage'): # i check for montage, because windows also ha a convert.exe
             pass
@@ -368,14 +370,11 @@ class Export():
                 misc.remove_file(self._fragment_name+'.eld')
                 misc.remove_file(self._fragment_name+'_pl.spf')
         except(EnvironmentError) as e:
-            print('unable to convert file', e)
-
+            print('unable to convert postscript file', e)
         misc.remove_file(self._fragment_name+'.lis')
         misc.remove_file(self._fragment_name+'.eld')
         misc.remove_file(self._fragment_name+'_pl.spf')
         plat.terminate()
-
-
 
 
 
