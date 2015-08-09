@@ -62,7 +62,29 @@ def pairwise(iterable):
     a = iter(iterable)
     return izip(a, a)
 
-def std_dev(data, pl=8):
+def mean(distances):
+    '''
+    returns mean value of a list of numbers
+    '''
+    mean = sum(distances)/len(distances) 
+    return mean
+
+def median(nums):
+    """
+    calculates the median of a list of numbers
+    """
+    ls = sorted(nums)
+    n = len(ls)
+    if n == 0:
+        raise ValueError("Need a non-empty iterable")
+    # for uneven list length:
+    elif n % 2 == 1:
+        # // is floordiv:
+        return ls[n//2]
+    else:
+        return sum(ls[(n/2-1):(n/2+1)]) / 2.0
+
+def std_dev(data):
     '''
     returns standard deviation of values rounded to pl decimal places
     S = sqrt( (sum(x-xm)^2) / n-1 )
@@ -72,7 +94,7 @@ def std_dev(data, pl=8):
     :param pl: round to n places
     :type pl: integer
     
-    >>> std_dev([1.234, 1.222, 1.345, 1.451, 1.000, 1.234, 1.321, 1.222])
+    >>> round(std_dev([1.234, 1.222, 1.345, 1.451, 1.000, 1.234, 1.321, 1.222]), 8)
     0.1303522
     '''
     if len(data) == 0:
@@ -88,7 +110,7 @@ def std_dev(data, pl=8):
     variance = (Sum_sqr - (Sum * Sum)/n)/(n - 1)
     # use n instead of (n-1) if want to compute the exact variance of the given data
     # use (n-1) if data are samples of a larger population
-    return round(sqrt(variance), pl)
+    return sqrt(variance)
 
 def get_atoms(atlist):
     '''

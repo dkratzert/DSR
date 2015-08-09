@@ -419,7 +419,7 @@ class global_DB():
             print('Check database entry.\n')
         return status
     
-    def check_sadi_consistence(self, atoms, restraints, fragment, factor=3):
+    def check_sadi_consistence(self, atoms, restraints, fragment, factor=3.5):
         '''
         check if same distance restraints make sense. Each length of an atom
         pair is tested agains the deviation from the mean of each restraint.
@@ -438,7 +438,7 @@ class global_DB():
                 del line[0]
                 if not str(line[0][0]).isalpha():
                     del line[0]
-                if len(line)%2.0 != 0:
+                if len(line)%2 == 1:
                     print('Inconsistent SADI restraint line {} of "{}". Not all atoms form a pair.'.format(num, fragment))   
                 pairs = misc.pairwise(line)
                 distances = []
@@ -454,14 +454,17 @@ class global_DB():
                 # factor time standard deviation of the SADI distances
                 s3 = factor*misc.std_dev(distances) 
                 # mean distance
-                mean = sum(distances)/len(distances) 
+                if len(distances) > 8:
+                    mean = misc.median(distances)
+                else:
+                    mean = misc.mean(distances) 
                 for dist, pair in zip(distances, pairlist):
                     # deviation of each distance from mean 
-                    dev = round(abs(dist-mean), 5)
+                    dev = abs(dist-mean)
                     if dev > s3:
                         print("{}:".format(fragment))
                         pair = ' '.join(pair)
-                        print('More than {}sigma deviation in atom pair "{}" of SADI line {} ({}) Angstrom.'.format(factor, pair, num+1, dev))
+                        print('More than {}sigma={:.2} deviation in atom pair "{}" of SADI line {} ({:.2} A).'.format(factor, s3, pair, num+1, dev))
                         print(restraints[num][:40], '...')
                         
     
@@ -581,6 +584,8 @@ class global_DB():
             self.search_for_error_response(fragment)
         atoms = self.get_atoms_from_fragment(fragment)
         self.check_db_header_consistency(head, atoms, fragment)
+        self.check_sadi_consistence(self.get_atoms_from_fragment(fragment), 
+                                    head, fragment)
         return head
 
 
