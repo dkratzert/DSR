@@ -20,10 +20,8 @@ from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
 import misc
 from atoms import Element
 from atomhandling import get_atomtypes
-import restraints
-from itertools import tee, izip
-from misc import distance, atomic_distance
-import pprint
+from misc import atomic_distance
+
 
 
 
@@ -421,7 +419,7 @@ class global_DB():
             print('Check database entry.\n')
         return status
     
-    def check_sadi_consistence(self, atoms, restraints, fragment, factor=3.2):
+    def check_sadi_consistence(self, atoms, restraints, fragment, factor=3):
         '''
         check if same distance restraints make sense. Each length of an atom
         pair is tested agains the deviation from the mean of each restraint.
@@ -432,7 +430,6 @@ class global_DB():
         :param factor: factor for confidence interval
         '''
         atnames = [i[0].upper() for i in atoms]
-        pairs_dict = {}
         for num, line in enumerate(restraints):
             line=line.split()
             if not line:
@@ -444,27 +441,29 @@ class global_DB():
                 if len(line)%2.0 != 0:
                     print('Inconsistent SADI restraint line {} of "{}". Not all atoms form a pair.'.format(num, fragment))   
                 pairs = misc.pairwise(line)
-                l = []
+                distances = []
                 pairlist = []
-                for npair, i in enumerate(pairs):  # @UnusedVariable
+                for i in pairs:  
                     pairlist.append(i)
                     a = atoms[atnames.index(i[0])][2:5]
                     b = atoms[atnames.index(i[1])][2:5]
                     a = [float(x) for x in a]
                     b = [float(y) for y in b]
                     dist = atomic_distance(a, b, self.get_unit_cell(fragment))
-                    l.append(dist)
-                pairs_dict[num] = l
-        for p in pairs_dict:
-            s3 = factor*misc.std_dev(pairs_dict[p])
-            mean = sum(pairs_dict[p])/len(pairs_dict[p])
-            for num, l in enumerate(pairs_dict[p], 1):
-                dev = round(abs(l-mean), 5)
-                if dev > s3:
-                    print("{}:".format(fragment))
-                    pair = ' '.join(restraints[p].split()[num*2:num*2+2])
-                    print('Too much distance deviation in atom pair "{}" of SADI line {} ({}) Angstrom.'.format(pair, p, dev))
-                    
+                    distances.append(dist)
+                # factor time standard deviation of the SADI distances
+                s3 = factor*misc.std_dev(distances) 
+                # mean distance
+                mean = sum(distances)/len(distances) 
+                for dist, pair in zip(distances, pairlist):
+                    # deviation of each distance from mean 
+                    dev = round(abs(dist-mean), 5)
+                    if dev > s3:
+                        print("{}:".format(fragment))
+                        pair = ' '.join(pair)
+                        print('More than {}sigma deviation in atom pair "{}" of SADI line {} ({}) Angstrom.'.format(factor, pair, num+1, dev))
+                        print(restraints[num][:40], '...')
+                        
     
     def get_head_lines(self, fragment, db, line):
         '''
