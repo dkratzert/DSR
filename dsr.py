@@ -33,12 +33,12 @@ import resfile
 from cf3fit import CF3
 from constants import width, sep_line
 
-VERSION = '1.7.3'
+VERSION = '1.7.4'
 # dont forget to change version in Innoscript file, spec file and deb file.
 
-program_name = '\n'+((width/2)-9)*'-'+\
-           ' D S R - v{} '.format(VERSION)+\
-           ((width/2)-8)*'-'
+program_name = '\n'+((width//2)-9)*'-'+\
+                ' D S R - v{} '.format(VERSION)+\
+                    ((width//2)-8)*'-'
 
 # TODO and ideas:
 '''
@@ -154,7 +154,7 @@ class DSR():
         ## Import a GRADE fragment
         if self.import_grade:
             self.import_from_grade()
-        if not any(vars(self.options.all_options).values()+[self.res_file]):
+        if not any(list(vars(self.options.all_options).values())+[self.res_file]):
             self.options.error()
         import time
         time1 = time.clock()
@@ -234,6 +234,7 @@ class DSR():
             gdb.check_consistency(db[fragment], fragment)
             gdb.check_db_atom_consistency(db[fragment]['atoms'], fragment)
             gdb.check_db_header_consistency(db[fragment]['head'], db[fragment]['atoms'], fragment)
+            gdb.check_sadi_consistence(db[fragment]['atoms'], db[fragment]['head'], fragment)
         sys.exit()
 
     def import_from_grade(self):
