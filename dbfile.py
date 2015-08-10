@@ -437,8 +437,8 @@ class global_DB():
             if line[0].upper() == 'SADI':
                 del line[0]
                 if not str(line[0][0]).isalpha():
-                    del line[0]
-                if len(line)%2 == 1:
+                    del line[0] # delete standard deviation
+                if len(line)%2 == 1: # test for uneven atoms count
                     print('Inconsistent SADI restraint line {} of "{}". Not all atoms form a pair.'.format(num, fragment))   
                 pairs = misc.pairwise(line)
                 distances = []
@@ -454,7 +454,7 @@ class global_DB():
                 # factor time standard deviation of the SADI distances
                 s3 = factor*misc.std_dev(distances) 
                 # mean distance
-                if len(distances) > 8:
+                if len(distances) > 10:
                     mean = misc.median(distances)
                 else:
                     mean = misc.mean(distances) 
