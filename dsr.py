@@ -43,7 +43,7 @@ program_name = '\n'+((width//2)-9)*'-'+\
 # TODO and ideas:
 '''
 - try pure-python fft to make fourier maps and q-peaks.
-- fit fragment without user interaction
+- fit fragment without user interaction. mit itertools.combinations()?
 '''
 
 
