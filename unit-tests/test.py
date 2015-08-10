@@ -767,21 +767,21 @@ class ExportTest(unittest.TestCase):
                    'rem Restraints from DSR database:\n',
                    'SADI C2 C3 C3 C4 C4 C5 C5 C6 C6 C7 C7 C2\nSADI 0.04 C2 C6 C2 C4 C7 C5 C3 C7 C4 C6 C3 C5\nSADI 0.04 C1 C7 C1 C3\nFLAT C1 > C7\nSIMU C1 > C7\nRIGU C1 > C7\n',
                     'rem Restraints from atom connectivities:\n',
-                    ['DFIX 1.3922  C3     C2     \n', 
-                     'DFIX 1.3775  C3     C4     \n',
-                     'DFIX 1.5058  C2     C1     \n', 
-                     'DFIX 1.3946  C2     C7     \n',
-                     'DFIX 1.3802  C7     C6     \n',
-                     'DFIX 1.3814  C6     C5     \n',
-                     'DFIX 1.3897  C5     C4     \n',
-                     'DANG 2.5246  C1     C3     \n',
-                     'DANG 2.5243  C1     C7     \n', 
-                     'DANG 2.4183  C2     C4     \n',
-                     'DANG 2.4124  C2     C6     \n', 
-                     'DANG 2.3878  C3     C7     \n', 
-                     'DANG 2.3909  C3     C5     \n',
-                     'DANG 2.3961  C4     C6     \n',
-                     'DANG 2.3967  C5     C7     \n', 
+                    ['DFIX 1.3922 C3   C2  \n', 
+                     'DFIX 1.3775 C3   C4  \n',
+                     'DFIX 1.5058 C2   C1  \n', 
+                     'DFIX 1.3946 C2   C7  \n',
+                     'DFIX 1.3802 C7   C6  \n',
+                     'DFIX 1.3814 C6   C5  \n',
+                     'DFIX 1.3897 C5   C4  \n',
+                     'DANG 2.5246 C1   C3  \n',
+                     'DANG 2.5243 C1   C7  \n', 
+                     'DANG 2.4183 C2   C4  \n',
+                     'DANG 2.4124 C2   C6  \n', 
+                     'DANG 2.3878 C3   C7  \n', 
+                     'DANG 2.3909 C3   C5  \n',
+                     'DANG 2.3961 C4   C6  \n',
+                     'DANG 2.3967 C5   C7  \n', 
                      'FLAT C2 C7 C6 C1\n', 
                      'FLAT C6 C5 C4 C3\n'],
                      'rem end of restraints\n',
@@ -878,10 +878,10 @@ class ResidueTest(unittest.TestCase):
         #fragment = self.dsr_dict['fragment']
         fragment = 'ch2cl2'
         invert = False
-        self.head2 = ['SIMU C1 > CL2',
-                 'RIGU C1 > CL2',
-                 'DFIX 1.7602 0.002 CL1 C1 CL2 C1',
-                 'DFIX 2.9338 0.004 CL1 CL2']
+        self.head2 = ['DFIX 1.771 0.01 CL1 C1 CL2 C1',
+                 'DFIX 2.916 0.03 CL1 CL2',
+                 'SIMU CL1 > C1',
+                 'RIGU CL1 > C1']
         self.gdb = global_DB(invert)
         self.residue_class = self.gdb.get_resi_from_fragment(fragment)
         self.db = self.gdb.build_db_dict()
@@ -898,16 +898,12 @@ class ResidueTest(unittest.TestCase):
         self.assertNotEqual(self.resi.get_residue_class, 'CCF3')
 
 
-    def testrun_remove_resi(self):
-        head = self.resi.remove_resi(self.dbhead)
-        self.assertEqual(head, self.head2)
-
-
     def testrun_format_restraints(self):
         resihead1 = self.resi.format_restraints(self.head2)
-        resihead2 = ['SIMU_CF3 C1 > CL2', 'RIGU_CF3 C1 > CL2',
-                    'DFIX_CF3 1.7602 0.002 CL1 C1 CL2 C1',
-                    'DFIX_CF3 2.9338 0.004 CL1 CL2']
+        resihead2 = ['DFIX_CF3 1.771 0.01 CL1 C1 CL2 C1',
+                    'DFIX_CF3 2.916 0.03 CL1 CL2',
+                    'SIMU_CF3 CL1 > C1',
+                    'RIGU_CF3 CL1 > C1']
         self.assertEqual(resihead1, resihead2)
 
     def testrun_get_unique_resinumber(self):

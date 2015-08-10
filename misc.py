@@ -18,7 +18,7 @@ from math import cos, sqrt, radians, sin
 import shutil
 import random
 import mpmath as mpm
-from itertools import izip
+
 
 alphabet = string.ascii_uppercase
 
@@ -58,20 +58,33 @@ def checkFileExist(filename):
 def pairwise(iterable):
     '''
      s -> (s0,s1), (s2,s3), (s4, s5), ...
+     
+     >>> liste = ['C1', 'C2', 'C2', 'C3', 'C4', 'C5', 'C5', 'C6']
+     >>> pairwise(liste)
+     [('C1', 'C2'), ('C2', 'C3'), ('C4', 'C5'), ('C5', 'C6')]
      '''
     a = iter(iterable)
-    return izip(a, a)
+    return zip(a, a)
 
-def mean(distances):
+def mean(values):
     '''
     returns mean value of a list of numbers
+    
+    >>> mean([1, 2, 3, 4, 1, 2, 3, 4])
+    2.5
+    >>> round(mean([1, 2, 3, 4, 1, 2, 3, 4.1, 1000000]), 4)
+    111113.3444
     '''
-    mean = sum(distances)/len(distances) 
+    mean = sum(values)/float(len(values)) 
     return mean
 
 def median(nums):
     """
     calculates the median of a list of numbers
+    >>> median([1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4])
+    2.5
+    >>> median([1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4.1, 1000000])
+    3
     """
     ls = sorted(nums)
     n = len(ls)
