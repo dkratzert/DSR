@@ -104,7 +104,7 @@ class OptionsParser():
         +'\n  RESI DFIX\n'
         +sep_line+'\n'
         +'   PUT:     Just put the fragment source atoms here.\n'
-        +'   REPLACE: Replace atoms of PART 0 in 1.2 A distance around target atoms.\n'
+        +'   REPLACE: Replace atoms of PART 0 in 1.3 A distance around target atoms.\n'
         +sep_line
         )
         self.parser.add_argument("-r", dest="res_file", metavar='"res file"', \
