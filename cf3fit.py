@@ -246,8 +246,8 @@ class CF3(object):
             print(('Using only first target atom {}.'\
                             .format(self.dsr_dict['target'][0])))
         atomline = self.fa.get_atom_line_numbers([atom])[0]
-        uval_coords = self.make_pivot_isotropic(atomline)
-        if afix == '120' and self.dsr_dict['split'] and uval_coords:
+        [uvals, c_coords] = self.make_pivot_isotropic(atomline)
+        if afix == '120' and self.dsr_dict['split'] and uvals:
             num = NumberScheme(self.reslist, [atom], False)
             if len(atom) < 4:
                 # in this case it is possible to add a character
@@ -258,7 +258,7 @@ class CF3(object):
                 splitat1 = num.get_fragment_number_scheme()[0]
                 splitat2 = num.get_fragment_number_scheme(extranames=[splitat1])[0]
             splitatoms = [splitat1, splitat2]
-            axes = calc_ellipsoid_axes(uval_coords[1], uval_coords[0], self.cell)        
+            axes = calc_ellipsoid_axes(c_coords, uvals, self.cell)        
         else:
             splitatoms = False
         found = self.find_bonded_fluorine(atom)
@@ -285,7 +285,7 @@ class CF3(object):
             self.reslist[atomline+1] = self.reslist[atomline]+self.startm+restr
         regex = r'.*{}'.format(self.rand_id)
         id_lines = find_multi_lines(self.reslist, regex)
-        # replace dummy PART with real part definition
+        # replace dummy PART with real part definition and C-atom coords with split coords
         if self.dsr_dict['split'] and afix == '120':
             at1 = '{:<5s} {:<3} {:>9.6f}   {:>9.6f}   {:>9.6f}   {:>8.4f}     0.04\n'\
                     .format(splitat1, self.e2s.elem_2_sfac('C'), axes[0][0], 
@@ -294,10 +294,30 @@ class CF3(object):
                     .format(splitat2, self.e2s.elem_2_sfac('C'), axes[1][0], 
                             axes[1][1], axes[1][2], -float(self.dsr_dict['occupancy']))
             dummy = ''
+            splb = False
+            # put all togeter to build up the atoms:
             for line, splatom in zip(id_lines, [at1, at2, dummy]):
                 # restraints should never be placed in this reslist[line]:
                 self.reslist[line] = ' '.join(self.reslist[line].split()[1:3])+'\n'
-                self.reslist[line] = self.reslist[line]+splatom 
+                self.reslist[line] = self.reslist[line]+splatom
+                # exchange the first three Fluorine atoms with coordinates from one
+                # disorder direction and the last three with the other direction:  
+                for num, fline in enumerate(self.reslist[line+1:line+1+3]):
+                    fline = fline.split()
+                    if not splatom:
+                        continue
+                    [fsplit_a, fsplit_b] = calc_ellipsoid_axes(fline[2:5], uvals, self.cell)
+                    resline = self.reslist[line+1+num].split()
+                    resline[5] = float(resline[5])
+                    resline[2:5] = fsplit_a
+                    if splb:
+                        resline[2:5] = fsplit_b
+                    if num == 2 and not splb:
+                        # switch to fsplit_b. I can not decide on num, because that goes twon times 
+                        # from 0 to 2 
+                        splb = True
+                    self.reslist[line+1+num] = '{:<5s} {:<3} {:>9.6f}   {:>9.6f}   {:>9.6f}   {:>8.4f}     0.04\n'\
+                                                    .format(*resline)
         else:
             for line in id_lines:
                 # restraints should never be placed in this reslist[line]:
@@ -529,9 +549,9 @@ class CF3(object):
         delta = radians(delta)
         x0, y0, z0 = at1
         T = mpm.matrix(((1, 0, 0, -x0),
-                       (0, 1, 0, -y0),
-                       (0, 0, 1, -z0),
-                       (0, 0, 0,   1)))
+                        (0, 1, 0, -y0),
+                        (0, 0, 1, -z0),
+                        (0, 0, 0,   1)))
         T1 = mpm.inverse(T)
 
         vx = at2[0]-at1[0] 
@@ -544,7 +564,7 @@ class CF3(object):
         sina = b/d # For rotation around alpha
         cosa = c/d #
 
-        Rxa = mpm.matrix(((         1,          0,          0,  0),
+        Rxa = mpm.matrix(((        1,          0,          0,  0),
                          (         0,       cosa,       sina,  0),
                          (         0,      -sina,       cosa,  0),
                          (         0,          0,          0,  1)))
@@ -565,9 +585,9 @@ class CF3(object):
         sinb = -a # rotation around beta
 
         Ryb = mpm.matrix(((      cosb,          0,      -sinb,  0),
-                         (         0,          1,          0,  0),
-                         (      sinb,          0,       cosb,  0),
-                         (         0,          0,          0,  1)))
+                          (         0,          1,          0,  0),
+                          (      sinb,          0,       cosb,  0),
+                          (         0,          0,          0,  1)))
 
         Ryb1 = mpm.inverse((Ryb))
                 
@@ -575,9 +595,9 @@ class CF3(object):
         cosd = mpm.cos(delta)
 
         Rzd = mpm.matrix(((      cosd,       sind,          0,  0),
-                         (     -sind,       cosd,          0,  0),
-                         (         0,          0,          1,  0),
-                         (         0,          0,          0,  1)))
+                          (     -sind,       cosd,          0,  0),
+                          (         0,          0,          1,  0),
+                          (         0,          0,          0,  1)))
         
         R = T1*Rxa*Ryb*Rzd*Ryb1*Rxa1*T
         v = R*ratom
