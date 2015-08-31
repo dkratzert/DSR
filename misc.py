@@ -900,8 +900,9 @@ def distance(x1, y1, z1, x2, y2, z2, round_out=False):
 
 def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     '''
-    This method calculates the principal axes of an ellipsoid. Many thanks to
-    R. W. Grosse-Kunstleve and P. D. Adams 
+    This method calculates the principal axes of an ellipsoid as list of two 
+    fractional coordinate triples. 
+    Many thanks to R. W. Grosse-Kunstleve and P. D. Adams 
     for their great publication on the handling of atomic anisotropic displacement
     parameters:  
     R. W. Grosse-Kunstleve, P. D. Adams, J Appl Crystallogr 2002, 35, 477–480.
