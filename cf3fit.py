@@ -200,7 +200,7 @@ class CF3(object):
 
     def add_chars(self, atom, alphabet):
         '''
-        add chars to an atom name until the name is uniq
+        add chars to an atom name until the name is unique
         :param atom:
         '''
         for char in alphabet:

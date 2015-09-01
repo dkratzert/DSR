@@ -34,6 +34,18 @@ def get_atomtypes(dbatoms):
                       [...]
                      ]
     :type dbatoms: list
+    >>> atoms = [['O1', 3, '-0.01453', '1.66590', '0.10966'],\
+                 ['C1', 1, '-0.00146', '0.26814', '0.06351'],\
+                 ['Au15', 8, '0.00146', '0.26814', '0.06351']]
+    >>> get_atomtypes(atoms)
+    ['O', 'C', 'AU']
+    >>> atoms = [['O1', 3, '-0.01453', '1.66590', '0.10966'],\
+                 ['C1', 1, '-0.00146', '0.26814', '0.06351'],\
+                 ['Ax15', 8, '0.00146', '0.26814', '0.06351']]
+    >>> get_atomtypes(atoms)
+    Traceback (most recent call last):
+    ...
+    KeyError
     '''
     found = []
     # find lines with atoms and see if they are in the atom list
@@ -72,29 +84,6 @@ def get_atomtypes(dbatoms):
         raise KeyError
     return found
 
-def replacemode(res_target_atoms, rle, reslist, sfac_table):
-    '''
-    Target atoms are being replaced if this is executed
-    
-    obsoleted by replace_after_fit()
-    '''
-    for i in res_target_atoms:
-        if '_' in i:
-            print('\nDo you really want to REPLACE atom {} inside a residue?'.format(i))
-            print('This will very likely damage something.\n')
-            break
-    fa = FindAtoms(reslist)
-    print('Replace mode active.')
-    target_lines = fa.get_atom_line_numbers(res_target_atoms)
-    for i in target_lines:
-        i = int(i)
-        rle.remove_line(i, rem=False, remove=False, frontspace=True)
-    h_delcount = fa.remove_adjacent_hydrogens(res_target_atoms, sfac_table)
-    if h_delcount:
-        return target_lines+h_delcount
-    else:
-        return target_lines
-
 def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     '''
     deletes the atoms in replace mode that are near the fragment atoms
@@ -104,6 +93,26 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     :param resi: Resi() instance
     :param fragment_numberscheme: atom names of the fitting fragment
     :param cell: cell parameters
+    
+    >>> from resfile import ResList
+    >>> from dbfile import global_DB
+    >>> from resfile import ResListEdit
+    >>> from dsrparse import DSR_Parser
+    >>> from resi import Resi
+    >>> res_file = 'p21c.res'
+    >>> rl = ResList(res_file)
+    >>> reslist = rl.get_res_list()
+    >>> find_atoms = FindAtoms(reslist)
+    >>> rle = ResListEdit(reslist, find_atoms)
+    >>> dsrp = DSR_Parser(reslist, rle)
+    >>> dsr_dict = dsrp.get_dsr_dict
+    >>> dbhead = ['RESI CF3']
+    >>> db_residue_string='CF3'
+    >>> resi = Resi(reslist, dsr_dict, dbhead, db_residue_string, find_atoms)
+    No residue number was given. Using residue number 4.
+    >>> fragment_numberscheme = ['O1_1', 'C1_1', 'C2_1', 'F1_1', 'F2', 'F3', 'C3', 'F4', 'F5', 'F6', 'C4', 'F7', 'F8', 'F9']
+    >>> cell = rle.get_cell()
+    >>> replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell)
     '''
     remdist=1.3
     from resfile import ResListEdit
@@ -785,7 +794,12 @@ class NumberScheme():
 
 
 if __name__ == '__main__':
-    # for testing:
+    
+    import doctest
+    failed, attempted = doctest.testmod()#verbose=True)
+    if failed == 0:
+        print('passed all {} tests!'.format(attempted))
+    sys.exit()
     from dsrparse import DSR_Parser
     from resfile import ResList
     from dbfile import global_DB
