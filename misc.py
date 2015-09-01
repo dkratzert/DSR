@@ -38,9 +38,10 @@ def checkFileExist(filename):
     >>> checkFileExist('foo.bar')
     File "foo.bar" not found!
     False
-    
-    #>>> checkFileExist('unit-tests/empty.txt')
-    #'zero'
+    >>> checkFileExist('unit-tests/empty.txt')
+    'zero'
+    >>> checkFileExist('unit-tests/test.py')
+    True
     '''
     filesize = False
     status = False
@@ -253,6 +254,14 @@ def find_line(inputlist, regex, start=None):
     :param start: line number where to start the search
     :param start: start searching at line start
     :type start: string or int
+    >>> input = ['Hallo blub', 'foo bar blub', '123', '1 blub 2 3 4']
+    >>> find_line(input, '.*blub.*')
+    0
+    >>> input = [['foo'],['bar']]
+    >>> find_line(input, '.*blub.*')
+    Traceback (most recent call last):
+        ...
+    TypeError: expected string or buffer
     '''
     if start:
         start = int(start)
@@ -271,6 +280,14 @@ def find_multi_lines(inputlist, regex):
     '''
     returns the index number of all lines where regex is found in the inputlist
     ! this method is case insensitive !
+    >>> input = ['Hallo blub', 'foo bar blub', '123', '1 blub 2 3 4']
+    >>> find_multi_lines(input, '.*blub.*')
+    [0, 1, 3]
+    >>> input = [['foo'],['bar']]
+    >>> find_multi_lines(input, '.*blub.*')
+    Traceback (most recent call last):
+        ...
+    TypeError: expected string or buffer
     '''
     reg = re.compile(regex, re.IGNORECASE)
     foundlist = []
@@ -817,7 +834,6 @@ def longest_common_substring(s1, s2):
     
     >>> longest_common_substring('hello world how is foo bar?', 'hello daniel how is foo in the world?')
     ' how is foo '
-    
     '''
     m = [[0] * (1 + len(s2)) for i in range(1 + len(s1))]  # @UnusedVariable
     longest, x_longest = 0, 0
@@ -880,12 +896,11 @@ def levenshtein(s1, s2):
             substitutions = previous_row[j] + (c1 != c2)
             current_row.append(min(insertions, deletions, substitutions))
         previous_row = current_row
-
     return previous_row[-1]
 
 def distance(x1, y1, z1, x2, y2, z2, round_out=False):
     '''
-    distance between two points in space
+    distance between two points in space for orthogonal axes.
     >>> distance(1, 1, 1, 2, 2, 2, 4)
     1.7321
     >>> distance(1, 0, 0, 2, 0, 0, 4)

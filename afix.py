@@ -17,10 +17,11 @@ import os
 import sys
 import constants
 import fnmatch
-from resfile import ResList, ResListEdit
+from resfile import ResList, ResListEdit, filename_wo_ending
 from dsrparse import DSR_Parser
 from dbfile import global_DB
 from constants import RESTRAINT_CARDS
+from resi import Resi
 
 
 __metaclass__ = type  # use new-style classes
@@ -73,6 +74,10 @@ def add_residue_to_dfix(dfix_head, resinum):
     '''
     Add a residue to a list of DFIX/DANG restraints
     DFIX 1.234 C1 C2 -> DFIX 1.234 C1_4 C2_4 
+    >>> add_residue_to_dfix(['DFIX 1.456 C1 C2', 'DFIX 1.212 C3 C4'], 4)
+    ['DFIX  1.456  C1_4  C2_4\\n', 'DFIX  1.212  C3_4  C4_4\\n']
+    >>> add_residue_to_dfix(['DFIX 1.456 C1 C2', 'DFIX 1.212 C3 C4'], '5')
+    ['DFIX  1.456  C1_5  C2_5\\n', 'DFIX  1.212  C3_5  C4_5\\n']
     '''
     newhead = []
     for line in dfix_head:
@@ -115,7 +120,77 @@ class InsertAfix(object):
                                     'command': 'PUT/REPLACE'}
         :param sfac_table:   SHELXL SFAC table as list like: ['C', 'H', 'O', 'F', 'Al', 'Ga']
         :param find_atoms:   FindAtoms() object
-        :param numberscheme: atoms numbering scheme like: ['O1', 'C1', 'C2', 'F1', 'F2', 'F3', 'C3']^^
+        :param numberscheme: atoms numbering scheme like: ['O1', 'C1', 'C2', 'F1', 'F2', 'F3', 'C3']
+
+        >>> res_file = 'p21c.res'
+        >>> invert = True
+        >>> rl = ResList(res_file)
+        >>> reslist = rl.get_res_list()
+        >>> dsrp = DSR_Parser(reslist, rl)
+        >>> dsr_dict = dsrp.get_dsr_dict
+        >>> find_atoms = FindAtoms(reslist)
+        >>> rle = ResListEdit(reslist, find_atoms)
+        >>> gdb = global_DB(invert)
+        >>> db = gdb.build_db_dict()
+        >>> fragment = 'pph3'
+        >>> fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
+        >>> dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
+        >>> dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
+        >>> print(dbhead)
+        ['SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1 C7 C8 C8 C9 C9 C10 C10 C11 C11 C12 C12 C7 C13 C14 \
+C14 C15 C15 C16 C16 C17 C17 C18 C18 C13', 'SADI P1 C1 P1 C7 P1 C13', \
+'SADI 0.04 C1 C3 C1 C5 C5 C3 C4 C2 C4 C6 C2 C6 C7 C9 C7 C11 C9 C11 C10 C8 C10 C12 C8 C12 \
+C13 C15 C13 C17 C15 C17 C16 C14 C16 C18 C14 C18', 'SADI 0.04 P1 C14 P1 C18 P1 C12 P1 C8 P1 \
+C2 P1 C6', 'FLAT C1 > C6 P1', 'FLAT C7 > C12 P1', 'FLAT C13 > C18 P1', 'SIMU P1 > C18', \
+'RIGU P1 > C18']
+        >>> basefilename = filename_wo_ending(res_file)
+        >>> resi = True #gdb.get_resi_from_fragment(fragment)
+        >>> dbtypes = get_atomtypes(dbatoms)
+        >>> #resi = Resi(reslist, dsr_dict, dbhead, residue, find_atoms)
+        >>> resi = Resi(reslist, dsr_dict, dbhead='RESI CF3', db_residue_string='CF3', find_atoms=find_atoms)
+        No residue number was given. Using residue number 4.
+        >>> sf = SfacTable(reslist, dbtypes)
+        >>> sfac_table = sf.set_sfac_table()
+        >>> num = NumberScheme(reslist, dbatoms, resi)
+        >>> numberscheme = num.get_fragment_number_scheme()
+        RESI instruction is enabled. Leaving atom numbers as they are.
+        >>> dfix_head = ''
+        >>> afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, sfac_table, find_atoms, numberscheme, dfix_head)
+        >>> afix.remove_duplicate_restraints(dbhead, 'PPh3')
+        ['SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1 C7 C8 C8 C9 C9 C10 C10 C11 C11 C12 C12 C7 \
+C13 C14 C14 C15 C15 C16 C16 C17 C17 C18 C18 C13', 'SADI P1 C1 P1 C7 P1 C13', \
+'SADI 0.04 C1 C3 C1 C5 C5 C3 C4 C2 C4 C6 C2 C6 C7 C9 C7 C11 C9 C11 C10 C8 C10 C12 C8 C12 \
+C13 C15 C13 C17 C15 C17 C16 C14 C16 C18 C14 C18', 'SADI 0.04 P1 C14 P1 C18 P1 C12 P1 C8 P1 \
+C2 P1 C6', 'FLAT C1 > C6 P1', 'FLAT C7 > C12 P1', 'FLAT C13 > C18 P1', 'SIMU P1 > C18', \
+'RIGU P1 > C18']
+        >>> afix.build_afix_entry(False, basefilename+'.dfix', resi)
+        'rem the following was inserted by DSR:\\nSADI_CF3 C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 \
+C1 C7 C8 C8 C9 C9 C10 C10 C11 C11 =\\n   C12 C12 C7 C13 C14 C14 C15 C15 C16 C16 C17 C17 C18 \
+C18 C13\\nSADI_CF3 P1 C1 P1 C7 P1 C13\\nSADI_CF3 0.04 C1 C3 C1 C5 C5 C3 C4 C2 C4 C6 C2 C6 C7 \
+C9 C7 C11 C9 C11 C10 C8 =\\n   C10 C12 C8 C12 C13 C15 C13 C17 C15 C17 C16 C14 C16 C18 C14 \
+C18\\nSADI_CF3 0.04 P1 C14 P1 C18 P1 C12 P1 C8 P1 C2 P1 C6\\nFLAT_CF3 C1 > C6 P1\\nFLAT_CF3 \
+C7 > C12 P1\\nFLAT_CF3 C13 > C18 P1\\nSIMU_CF3 P1 > C18\\nRIGU_CF3 P1 > C18\\nRESI CF3 \
+4\\nPART 2 -31\\nAFIX 179\\n\
+P1   7     0.000000     0.000000     0.000000   11.000   0.04\\n\
+C1   1     0.033372     0.232537     0.337248   11.000   0.04\\n\
+C2   1     0.024600     0.306100     0.306300   11.000   0.04\\n\
+C3   1     0.122500     0.190800     0.297100   11.000   0.04\\n\
+C4   1    -0.109100     0.204000     0.333000   11.000   0.04\\n\
+C5   1     0.000000     0.000000     0.000000   11.000   0.04\\n\
+C6   1     0.000000     0.000000     0.000000   11.000   0.04\\n\
+C7   1     0.000000     0.000000     0.000000   11.000   0.04\\n\
+C8   1     0.000000     0.000000     0.000000   11.000   0.04\\n\
+C9   1     0.000000     0.000000     0.000000   11.000   0.04\\n\
+C10   1     0.000000     0.000000     0.000000   11.000   0.04\\n\
+C11   1     0.000000     0.000000     0.000000   11.000   0.04\\n\
+C12   1     0.000000     0.000000     0.000000   11.000   0.04\\n\
+C13   1     0.000000     0.000000     0.000000   11.000   0.04\\n\
+C14   1     0.000000     0.000000     0.000000   11.000   0.04\\n\
+C15   1     0.000000     0.000000     0.000000   11.000   0.04\\n\
+C16   1     0.000000     0.000000     0.000000   11.000   0.04\\n\
+C17   1     0.000000     0.000000     0.000000   11.000   0.04\\n\
+C18   1     0.000000     0.000000     0.000000   11.000   0.04\\n\
+AFIX 0\\nPART 0\\nRESI 0\\nrem The end of the DSR entry\\n\\n'
         '''
         self._reslist = reslist
         self._find_atoms = find_atoms
@@ -330,7 +405,9 @@ if __name__ == '__main__':
     failed, attempted = doctest.testmod()#verbose=True)
     if failed == 0:
         print('passed all {} tests!'.format(attempted))
+        
 ###################################################################        
+    sys.exit()
     res_file = 'p21c.res'
     invert = True
     rl = ResList(res_file)
@@ -346,11 +423,12 @@ if __name__ == '__main__':
     dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
     dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
     print(dbhead)
+
     resi = True #gdb.get_resi_from_fragment(fragment)
     dbtypes = get_atomtypes(dbatoms)
     #resi = Resi(reslist, dsr_dict, dbhead, residue, find_atoms)
     #dbhead = resi.make_resihead()
-    #resi = Resi(reslist, dsr_dict, dbhead, 'RESI PPH3', find_atoms)
+    resi = Resi(reslist, dsr_dict, dbhead, 'RESI PPH3', find_atoms)
     sf = SfacTable(reslist, dbtypes)
     sfac_table = sf.set_sfac_table()
     num = NumberScheme(reslist, dbatoms, resi)
