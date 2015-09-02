@@ -38,9 +38,9 @@ def checkFileExist(filename):
     >>> checkFileExist('foo.bar')
     File "foo.bar" not found!
     False
-    >>> checkFileExist('unit-tests/empty.txt')
+    >>> checkFileExist('empty.txt')
     'zero'
-    >>> checkFileExist('unit-tests/test.py')
+    >>> checkFileExist('test.py')
     True
     '''
     filesize = False

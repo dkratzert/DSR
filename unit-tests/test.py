@@ -1191,7 +1191,7 @@ if __name__ == "__main__":
     import sys
     import doctest
     import elements
-    failed, attempted = doctest.testmod(misc)#verbose=True)
+    failed, attempted = doctest.testmod(misc)#, verbose=True)
     if failed == 0:
         print('passed all {} tests in misc!'.format(attempted))
     
