@@ -678,7 +678,11 @@ class ImportGRADE():
         '''
         grade_base_filename = os.path.splitext(grade_tar_file)
         if grade_base_filename[1] == '.tgz':
-            gradefile = tarfile.open(grade_tar_file)#, encoding="ascii")
+            try:
+                gradefile = tarfile.open(grade_tar_file)#, encoding="ascii")
+            except(IOError):
+                print('No such file or directory: {}'.format(grade_tar_file))
+                sys.exit(0)
         else:
             print('File {} is not a valid file to import from!'.format(grade_base_filename[1]))
             sys.exit(0)
