@@ -33,7 +33,7 @@ import resfile
 from cf3fit import CF3
 from constants import width, sep_line
 
-VERSION = '1.7.4'
+VERSION = '1.7.5'
 # dont forget to change version in Innoscript file, spec file and deb file.
 
 program_name = '\n'+((width//2)-9)*'-'+\
