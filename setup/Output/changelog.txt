@@ -1,4 +1,6 @@
 Recent changes
+-1.7.5  Also move fluorine atoms in direction of principal ellipsoid axis with SPLIT option 
+        and CF6.
 -1.7.4  Added check if SADI atom pair distances are consistent with each other. 
         Added Anthracene and 9,10-Dibromoanthracene.
         Better formating of DFIX/DANG list with dfix option turned on.
