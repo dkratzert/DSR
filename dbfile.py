@@ -923,52 +923,6 @@ class ImportGRADE():
         print('User database successfully updated.')
 
 
-    # def read_mol2_file(self, filename):
-    #    '''
-    #    This methos is deprecated, because we now collect the atoms from
-    #    the pdb file!
-    #
-    #    reads the atom coordiantes from a mol2-file
-    #    '''
-    #    inputfile = []
-    #    print(filename)
-    #    try:
-    #        gfile = tarfile.open(self._gradefile)
-    #        gfile = self._gradefile.extractfile(filename)
-    #        inputfile = gfile.readlines()
-    #
-    #        #with open(filename, 'r') as f:
-    #        #    for line in f:
-    #        #        inputfile.append(line)
-    #    except(IOError) as e:
-    #        print(e)
-    #        sys.exit(-1)
-    #    return inputfile
-
-
-    def get_name_from_mol2(self):
-        '''
-        This method is deprecated, because we now collect the name from
-        the obprop file!
-
-        get the residue name
-        '''
-        mol_list = self.read_file(self._molfile)
-        regex = r'@<TRIPOS>MOLECULE'
-        found = False
-        for num, line in enumerate(mol_list):  # @UnusedVariable
-            line = line.strip('\n\r')
-            if found:
-                raw_name = line
-                break
-            if re.match(regex, line):
-                found = True
-                continue
-        raw_name = raw_name.split('.')[0]
-        return raw_name
-
-
-
 
 
 if __name__ == '__main__':
