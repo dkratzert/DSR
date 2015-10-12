@@ -39,8 +39,9 @@ def checkFileExist(filename):
     File "foo.bar" not found!
     False
     >>> checkFileExist('empty.txt')
-    'zero'
-    >>> checkFileExist('test.py')
+    File "empty.txt" not found!
+    False
+    >>> checkFileExist('misc.py')
     True
     '''
     filesize = False
@@ -427,17 +428,17 @@ def makelist(string):
     return stringlist
 
 
-def which(name, flags=os.X_OK):
+def which(name, flags=os.X_OK, exts=['.exe', '.EXE', '.bat']):
     '''
     Search PATH for executable files with the given name.
 
     On MS-Windows the only flag that has any meaning is os.F_OK. Any other
     flags will be ignored.
-    #>>> which('shelxl')
+    >>> which('dsr.bat')
+    ['D:\\\Programme\\\DSR\\\dsr.bat', 'dsr.bat']
     '''
     result = []
     #exts = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))
-    exts = ['.exe', '.EXE']
     path = os.getenv('PATH', None)
     if path is None:
         return []
