@@ -87,6 +87,10 @@ def median(nums):
     2.5
     >>> median([1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4.1, 1000000])
     3
+    >>> median([])
+    Traceback (most recent call last):
+    ...
+    ValueError: Need a non-empty iterable
     """
     ls = sorted(nums)
     n = len(ls)
