@@ -1,5 +1,5 @@
-#-*- encoding: utf-8 -*-
-#m�p
+# -*- encoding: utf-8 -*-
+# 
 #
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
@@ -77,7 +77,7 @@ def mean(values):
     >>> round(mean([1, 2, 3, 4, 1, 2, 3, 4.1, 1000000]), 4)
     111113.3444
     '''
-    mean = sum(values)/float(len(values)) 
+    mean = sum(values) / float(len(values)) 
     return mean
 
 def median(nums):
@@ -99,9 +99,9 @@ def median(nums):
     # for uneven list length:
     elif n % 2 == 1:
         # // is floordiv:
-        return ls[n//2]
+        return ls[n // 2]
     else:
-        return sum(ls[(n/2-1):(n/2+1)]) / 2.0
+        return sum(ls[(n / 2 - 1):(n / 2 + 1)]) / 2.0
 
 def std_dev(data):
     '''
@@ -126,7 +126,7 @@ def std_dev(data):
         n = n + 1
         Sum += x - K
         Sum_sqr += (x - K) * (x - K)
-    variance = (Sum_sqr - (Sum * Sum)/n)/(n - 1)
+    variance = (Sum_sqr - (Sum * Sum) / n) / (n - 1)
     # use n instead of (n-1) if want to compute the exact variance of the given data
     # use (n-1) if data are samples of a larger population
     return sqrt(variance)
@@ -152,9 +152,9 @@ def get_atoms(atlist):
             atoms.append(i[:5])
         return atoms
     for i in atlist:
-        if re.match(atomregex, str(i)):        # search atoms
-            l = i.split()[:5]              # convert to list and use only first 5 columns
-            if l[0].upper() not in SHX_CARDS:      # exclude all non-atom cards
+        if re.match(atomregex, str(i)):  # search atoms
+            l = i.split()[:5]  # convert to list and use only first 5 columns
+            if l[0].upper() not in SHX_CARDS:  # exclude all non-atom cards
                 atoms.append(l)
     return atoms
 
@@ -240,8 +240,8 @@ def multiline_test(line):
     False
     '''
     line = line.rpartition('=')  # partition the line in before, sep, after
-    line = ''.join(line[0:2])    # use all including separator
-    line = line.rstrip()         # strip spaces
+    line = ''.join(line[0:2])  # use all including separator
+    line = line.rstrip()  # strip spaces
     if line.endswith('='):
         return True
     else:
@@ -273,12 +273,12 @@ def find_line(inputlist, regex, start=None):
         inputlist_slice = inputlist[start:]
         for i, string in enumerate(inputlist_slice, start):
             if re.match(regex, string, re.IGNORECASE):
-                return i      # returns the index number if regex found
+                return i  # returns the index number if regex found
     else:
         for i, string in enumerate(inputlist):
             if re.match(regex, string, re.IGNORECASE):
-                return i      # returns the index number if regex found
-    return False          # returns False if no regex found (xt solution has no fvar)
+                return i  # returns the index number if regex found
+    return False  # returns False if no regex found (xt solution has no fvar)
 
 
 def find_multi_lines(inputlist, regex):
@@ -298,7 +298,7 @@ def find_multi_lines(inputlist, regex):
     foundlist = []
     for i, string in enumerate(inputlist):
         if reg.match(string):
-            foundlist.append(i)      # returns the index number if regex found
+            foundlist.append(i)  # returns the index number if regex found
         else:
             continue
     return foundlist
@@ -315,9 +315,9 @@ def remove_file(filename, exit_dsr=False, terminate=False):
             os.remove(filename)
         except(WindowsError, OSError):  # @UndefinedVariable
             print('can not delete {}'.format(file))
-            #print 'unable to cleanup ins {} files!'.format(file)
+            # print 'unable to cleanup ins {} files!'.format(file)
             if terminate:
-                pgrogname=terminate
+                pgrogname = terminate
                 pgrogname.terminate()
             if exit_dsr:
                 sys.exit(0)
@@ -376,17 +376,17 @@ def wrap_headlines(dbhead, width=77):
     '''
     import textwrap
     for num, line in enumerate(dbhead):
-        line = textwrap.wrap(line, width, subsequent_indent = '  ')
+        line = textwrap.wrap(line, width, subsequent_indent='  ')
         if len(line) > 1:
             newline = []
             for n, l in enumerate(line):
-                if n < len(line)-1:
-                    l = l+' =\n'
+                if n < len(line) - 1:
+                    l = l + ' =\n'
                 newline.append(l)
             dbhead[num] = ' '.join(newline)
     for num, line in enumerate(dbhead):
         line = ' '.join(line.strip().split(' '))
-        dbhead[num] = line+'\n'
+        dbhead[num] = line + '\n'
     return dbhead
 
 def unwrap_head_lines(headlines):
@@ -412,11 +412,11 @@ def unwrap_head_lines(headlines):
     for line in headlines:
         line = line.strip(' \n=')
         line = line.replace('=', ' ')
-        tmp = tmp+' '+line
+        tmp = tmp + ' ' + line
     line = tmp.split()
     for n, i in enumerate(line):
         if i[:4] in constants.SHX_CARDS:
-            line[n] = '\n'+line[n]
+            line[n] = '\n' + line[n]
     new_head = ' '.join(line).strip().split('\n')
     new_head = [i.rstrip(' ') for i in new_head]
     return new_head
@@ -442,7 +442,7 @@ def which(name, flags=os.X_OK, exts=['.exe', '.EXE', '.bat']):
     ['D:\\\Programme\\\DSR\\\dsr.bat', 'dsr.bat']
     '''
     result = []
-    #exts = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))
+    # exts = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))
     path = os.getenv('PATH', None)
     if path is None:
         return []
@@ -469,17 +469,19 @@ def remove_partsymbol(atom):
     'C22'
     >>> remove_partsymbol('C_5')
     'C_5'
+    >>> remove_partsymbol('SAME/SADI')
+    'SAME/SADI'
     '''
     if '_' in atom:
-        prefix = atom.split('_')[0]
-        suffix = atom.split('_')[-1].strip(string.ascii_letters)
+        presuff = atom.split('_')
+        prefix, suffix = presuff[0], presuff[-1].strip(string.ascii_letters)
         if not suffix:
             atom = prefix
         else:
             if suffix == '0':
                 atom = prefix
             else:
-                atom = prefix+'_'+suffix
+                atom = prefix + '_' + suffix
     return atom
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
@@ -526,21 +528,21 @@ def atomic_distance(p1, p2, cell):
     1.5729229943265979
     '''
     cell = [float(y) for y in cell]
-    a , b, c =  cell[:3]
+    a , b, c = cell[:3]
     al = radians(cell[3])
     be = radians(cell[4])
     ga = radians(cell[5])
     x1, y1, z1 = p1
     x2, y2, z2 = p2
-    dx = (x1-x2)
-    dy = (y1-y2)
-    dz = (z1-z2)
-    dsq = (a*dx)**2+\
-          (b*dy)**2+\
-          (c*dz)**2+\
-          2*b*c*cos(al)*dy*dz+\
-          2*dx*dz*a*c*cos(be)+\
-          2*dx*dy*a*b*cos(ga)
+    dx = (x1 - x2)
+    dy = (y1 - y2)
+    dz = (z1 - z2)
+    dsq = (a * dx) ** 2 + \
+          (b * dy) ** 2 + \
+          (c * dz) ** 2 + \
+          2 * b * c * cos(al) * dy * dz + \
+          2 * dx * dz * a * c * cos(be) + \
+          2 * dx * dy * a * b * cos(ga)
     return(sqrt(dsq))
 
 def frac_to_cart(frac_coord, cell):
@@ -561,17 +563,17 @@ def frac_to_cart(frac_coord, cell):
     [ 10.7752]
     
     '''
-    #from math import cos, sin, sqrt, radians
+    # from math import cos, sin, sqrt, radians
     a, b, c, alpha, beta, gamma = cell
     x, y, z = frac_coord
     alpha = radians(alpha)
-    beta  = radians(beta)
+    beta = radians(beta)
     gamma = radians(gamma)
-    cosastar = (cos(beta)*cos(gamma)-cos(alpha))/(sin(beta)*sin(gamma))
-    sinastar = sqrt(1-cosastar**2)
-    Xc = a*x + (b*cos(gamma))*y + (c*cos(beta))*z
-    Yc = 0   + (b*sin(gamma))*y + (-c*sin(beta)*cosastar)*z
-    Zc = 0   +  0               + (c*sin(beta)*sinastar)*z
+    cosastar = (cos(beta) * cos(gamma) - cos(alpha)) / (sin(beta) * sin(gamma))
+    sinastar = sqrt(1 - cosastar ** 2)
+    Xc = a * x + (b * cos(gamma)) * y + (c * cos(beta)) * z
+    Yc = 0 + (b * sin(gamma)) * y + (-c * sin(beta) * cosastar) * z
+    Zc = 0 + 0 + (c * sin(beta) * sinastar) * z
     return (Xc, Yc, Zc)
 
 
@@ -599,7 +601,7 @@ class A(object):
         self.a, self.b, self.c, alpha, beta, gamma = cell
         self.V = vol_unitcell(self.a, self.b, self.c, alpha, beta, gamma)
         self.alpha = radians(alpha)
-        self.beta  = radians(beta)
+        self.beta = radians(beta)
         self.gamma = radians(gamma)
     
     @property
@@ -608,10 +610,10 @@ class A(object):
         Converts von fractional to cartesian.
         Invert the matrix to do the opposite.
         '''
-        Am = mpm.matrix([ [self.a, self.b*cos(self.gamma),  self.c*cos(self.beta) ], 
-                     [0, self.b*sin(self.gamma), 
-                        (self.c*(cos(self.alpha)-cos(self.beta)*cos(self.gamma))/sin(self.gamma))], 
-                     [0, 0,  self.V/(self.a*self.b*sin(self.gamma))               ] ])
+        Am = mpm.matrix([ [self.a, self.b * cos(self.gamma), self.c * cos(self.beta) ],
+                     [0, self.b * sin(self.gamma),
+                        (self.c * (cos(self.alpha) - cos(self.beta) * cos(self.gamma)) / sin(self.gamma))],
+                     [0, 0, self.V / (self.a * self.b * sin(self.gamma))               ] ])
         return Am
 
 def cart_to_frac(cart_coord, cell):
@@ -631,16 +633,16 @@ def cart_to_frac(cart_coord, cell):
     a, b, c, alpha, beta, gamma = cell
     X, Y, Z = cart_coord
     alpha = radians(alpha)
-    beta  = radians(beta)
+    beta = radians(beta)
     gamma = radians(gamma)
-    cosastar = (cos(beta)*cos(gamma)-cos(alpha))/(sin(beta)*sin(gamma))
-    sinastar = sqrt(1-cosastar**2)
-    z = Z/(c*sin(beta)*sinastar) 
-    y = (Y-(-c*sin(beta)*cosastar)*z)/(b*sin(gamma))
-    x = (X-(b*cos(gamma))*y-(c*cos(beta))*z)/a
+    cosastar = (cos(beta) * cos(gamma) - cos(alpha)) / (sin(beta) * sin(gamma))
+    sinastar = sqrt(1 - cosastar ** 2)
+    z = Z / (c * sin(beta) * sinastar) 
+    y = (Y - (-c * sin(beta) * cosastar) * z) / (b * sin(gamma))
+    x = (X - (b * cos(gamma)) * y - (c * cos(beta)) * z) / a
     return (round(x, 8), round(y, 8), round(z, 8))
     
-def zero(m,n):
+def zero(m, n):
     '''
     Create zero matrix of dimension m,n
     :param m: integer
@@ -663,8 +665,8 @@ def determinante(a):
     8
     '''
     return (a[0][0] * (a[1][1] * a[2][2] - a[2][1] * a[1][2])
-           -a[1][0] * (a[0][1] * a[2][2] - a[2][1] * a[0][2])
-           +a[2][0] * (a[0][1] * a[1][2] - a[1][1] * a[0][2]))
+           - a[1][0] * (a[0][1] * a[2][2] - a[2][1] * a[0][2])
+           + a[2][0] * (a[0][1] * a[1][2] - a[1][1] * a[0][2]))
 
 def subtract_vect(a, b):
     '''
@@ -698,8 +700,8 @@ def norm_vec(a):
     >>> norm_vec([1, 2, 1])
     (0.4082482904638631, 0.8164965809277261, 0.4082482904638631)
     '''
-    l = sqrt(a[0]**2 + a[1]**2 + a[2]**2)
-    return (a[0]/l, a[1]/l, a[2]/l)
+    l = sqrt(a[0] ** 2 + a[1] ** 2 + a[2] ** 2)
+    return (a[0] / l, a[1] / l, a[2] / l)
     
 
 def vol_tetrahedron(a, b, c, d, cell=None):
@@ -746,7 +748,7 @@ def vol_tetrahedron(a, b, c, d, cell=None):
     AC = subtract_vect(A, C)
     AD = subtract_vect(A, D)
     D = determinante([AB, AC, AD])
-    volume = abs((D/6))
+    volume = abs((D / 6))
     return volume
 
 def vol_unitcell(a, b, c, al, be, ga):
@@ -757,7 +759,7 @@ def vol_unitcell(a, b, c, al, be, ga):
     8.0
     '''
     ca, cb, cg = cos(radians(al)), cos(radians(be)), cos(radians(ga))
-    v = a*b*c*sqrt(1+2*ca*cb*cg-ca**2-cb**2-cg**2)
+    v = a * b * c * sqrt(1 + 2 * ca * cb * cg - ca ** 2 - cb ** 2 - cg ** 2)
     return v
 
 
@@ -775,25 +777,25 @@ def dice_coefficient(a, b):
     a = a.lower()
     b = b.lower()
     if not len(a) or not len(b): return 0.0
-    if len(a) == 1:  a=a+'.'
-    if len(b) == 1:  b=b+'.'
-    a_bigram_list=[]
-    for i in range(len(a)-1):
-        a_bigram_list.append(a[i:i+2])
-    b_bigram_list=[]
-    for i in range(len(b)-1):
-        b_bigram_list.append(b[i:i+2])
+    if len(a) == 1:  a = a + '.'
+    if len(b) == 1:  b = b + '.'
+    a_bigram_list = []
+    for i in range(len(a) - 1):
+        a_bigram_list.append(a[i:i + 2])
+    b_bigram_list = []
+    for i in range(len(b) - 1):
+        b_bigram_list.append(b[i:i + 2])
     a_bigrams = set(a_bigram_list)
     b_bigrams = set(b_bigram_list)
     overlap = len(a_bigrams & b_bigrams)
-    dice_coeff = overlap * 2.0/(len(a_bigrams) + len(b_bigrams))
-    dice_coeff = 1-dice_coeff # invert the result
+    dice_coeff = overlap * 2.0 / (len(a_bigrams) + len(b_bigrams))
+    dice_coeff = 1 - dice_coeff  # invert the result
     if dice_coeff < 0.5:  # make a cutoff for the best matches
         return 0.0
     return round(dice_coeff, 6)
 
 
-def dice_coefficient2(a,b):
+def dice_coefficient2(a, b):
     """
     duplicate bigrams in a word should be counted distinctly
     (per discussion), otherwise 'AA' and 'AAAA' would have a
@@ -805,8 +807,8 @@ def dice_coefficient2(a,b):
     """ if a != b, and a or b are single chars, then they can't possibly match """
     if len(a) == 1 or len(b) == 1: return 0.0
     """ use python list comprehension, preferred over list.append() """
-    a_bigram_list = [a[i:i+2] for i in range(len(a)-1)]
-    b_bigram_list = [b[i:i+2] for i in range(len(b)-1)]
+    a_bigram_list = [a[i:i + 2] for i in range(len(a) - 1)]
+    b_bigram_list = [b[i:i + 2] for i in range(len(b) - 1)]
     a_bigram_list.sort()
     b_bigram_list.sort()
     # assignments to save function calls
@@ -823,7 +825,7 @@ def dice_coefficient2(a,b):
             i += 1
         else:
             j += 1
-    score = 1-(float(matches)/float(lena + lenb))
+    score = 1 - (float(matches) / float(lena + lenb))
     if score < 0.7:
         score = 0.0
     return score
@@ -871,11 +873,11 @@ def fft(x):
     N = len(x)
     if N <= 1: return x
     even = fft(x[0::2])
-    odd =  fft(x[1::2])
-    T= [exp(-2j*pi*k/N)*odd[k] for k in xrange(N/2)]
-    return [even[k] + T[k] for k in xrange(N/2)] + \
-           [even[k] - T[k] for k in xrange(N/2)]
-    #print( ' '.join("%5.3f" % abs(f) 
+    odd = fft(x[1::2])
+    T = [exp(-2j * pi * k / N) * odd[k] for k in xrange(N / 2)]
+    return [even[k] + T[k] for k in xrange(N / 2)] + \
+           [even[k] - T[k] for k in xrange(N / 2)]
+    # print( ' '.join("%5.3f" % abs(f) 
     #            for f in fft([1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0])) )
 
 
@@ -896,8 +898,8 @@ def levenshtein(s1, s2):
     for i, c1 in enumerate(s1):
         current_row = [i + 1]
         for j, c2 in enumerate(s2):
-            insertions = previous_row[j + 1] + 1 # j+1 instead of j since previous_row and current_row are one character longer
-            deletions = current_row[j] + 1       # than s2
+            insertions = previous_row[j + 1] + 1  # j+1 instead of j since previous_row and current_row are one character longer
+            deletions = current_row[j] + 1  # than s2
             substitutions = previous_row[j] + (c1 != c2)
             current_row.append(min(insertions, deletions, substitutions))
         previous_row = current_row
@@ -912,7 +914,7 @@ def distance(x1, y1, z1, x2, y2, z2, round_out=False):
     1.0
     '''
     import math as m
-    d = m.sqrt((x1-x2)**2+(y1-y2)**2+(z1-z2)**2)
+    d = m.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
     if round_out:
         return round(d, round_out)
     else:
@@ -981,7 +983,7 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
 
     '''
     from misc import A  # @UnresolvedImport
-    probability = probability+1
+    probability = probability + 1
     # Uij is symmetric:
     if len(uvals) != 6:
         raise Exception('6 Uij values have to be supplied!')
@@ -995,19 +997,19 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     a, b, c, alpha, beta, gamma = cell
     V = vol_unitcell(*cell)
     # calculate reciprocal lattice vectors:
-    astar = (b*c*sin(radians(alpha)))/V
-    bstar = (c*a*sin(radians(beta)))/V
-    cstar = (a*b*sin(radians(gamma)))/V
+    astar = (b * c * sin(radians(alpha))) / V
+    bstar = (c * a * sin(radians(beta))) / V
+    cstar = (a * b * sin(radians(gamma))) / V
     # orthogonalization matrix that transforms the fractional coordinates
     # with respect to a crystallographic basis system to coordinates
     # with respect to a Cartesian basis:
     A = A(cell).orthogonal_matrix
     # matrix with the reciprocal lattice vectors:        
-    N = mpm.matrix([[astar, 0, 0], 
-                    [0 ,bstar, 0], 
+    N = mpm.matrix([[astar, 0, 0],
+                    [0 , bstar, 0],
                     [0, 0, cstar]])
     # Finally transform Uij values from fractional to cartesian axis system: 
-    Ucart = A*N*Uij*N.T*A.T
+    Ucart = A * N * Uij * N.T * A.T
     # E => eigenvalues, Q => eigenvectors:
     E, Q = mpm.eig(Ucart)
     # calculate vectors of ellipsoid axes  
@@ -1018,18 +1020,18 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     except ValueError:
         print('\nEllipsoid is non positive definite!\n')
         return False
-    v1 = mpm.matrix([Q[0,0], Q[1,0], Q[2,0]])
-    v2 = mpm.matrix([Q[0,1], Q[1,1], Q[2,1]])
-    v3 = mpm.matrix([Q[0,2], Q[1,2], Q[2,2]])
-    v1i = v1*(-1)
-    v2i = v2*(-1)
-    v3i = v3*(-1)
+    v1 = mpm.matrix([Q[0, 0], Q[1, 0], Q[2, 0]])
+    v2 = mpm.matrix([Q[0, 1], Q[1, 1], Q[2, 1]])
+    v3 = mpm.matrix([Q[0, 2], Q[1, 2], Q[2, 2]])
+    v1i = v1 * (-1)
+    v2i = v2 * (-1)
+    v3i = v3 * (-1)
     # multiply probability (usually 50%)
-    e1 = sqrt(E[0])*probability
-    e2 = sqrt(E[1])*probability
-    e3 = sqrt(E[2])*probability
+    e1 = sqrt(E[0]) * probability
+    e2 = sqrt(E[1]) * probability
+    e3 = sqrt(E[2]) * probability
     # scale axis vectors to eigenvalues 
-    v1, v2, v3, v1i, v2i, v3i = v1*e1, v2*e2, v3*e3, v1i*e1, v2i*e2, v3i*e3  
+    v1, v2, v3, v1i, v2i, v3i = v1 * e1, v2 * e2, v3 * e3, v1i * e1, v2i * e2, v3i * e3  
     # find out which vector is the longest:
     length = mpm.norm(v1)
     v = 0
@@ -1040,10 +1042,10 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
         length = mpm.norm(v3)
         v = 2
     # move vectors back to atomic position
-    atom = A*mpm.matrix(coords)
-    v1, v1i = v1+atom, v1i+atom
-    v2, v2i = v2+atom, v2i+atom
-    v3, v3i = v3+atom, v3i+atom
+    atom = A * mpm.matrix(coords)
+    v1, v1i = v1 + atom, v1i + atom
+    v2, v2i = v2 + atom, v2i + atom
+    v3, v3i = v3 + atom, v3i + atom
     # go back into fractional coordinates:
     a1 = cart_to_frac(v1, cell)
     a2 = cart_to_frac(v2, cell)
@@ -1078,13 +1080,13 @@ def almost_equal(a, b, places=3):
     False
     
     '''
-    return round(abs(a-b), places) == 0
+    return round(abs(a - b), places) == 0
     
 
 if __name__ == '__main__':
     import sys
     import doctest
-    failed, attempted = doctest.testmod()#verbose=True)
+    failed, attempted = doctest.testmod()  # verbose=True)
     if failed == 0:
         print('passed all {} tests!'.format(attempted))
     
