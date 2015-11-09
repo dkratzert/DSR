@@ -384,7 +384,7 @@ C70   1    0.84840   0.53650   0.69796   1.00000   0.05000
 
 
 <PFADAMO>
-REM Name: Perfluoroadamanthole, C10O1F15
+REM Name: Perfluoroadamantol, C10O1F15
 REM Source: Olaf Petersen
 DFIX 1.329 O1 C1
 SADI C1 C2 C1 C3 C1 C4
