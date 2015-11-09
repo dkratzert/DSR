@@ -20,7 +20,8 @@ from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
 import misc
 from atoms import Element
 from atomhandling import get_atomtypes
-from misc import atomic_distance
+from misc import atomic_distance, nalimov_test, std_dev, median
+from copy import deepcopy
 
 
 
@@ -419,7 +420,7 @@ class global_DB():
             print('Check database entry.\n')
         return status
     
-    def check_sadi_consistence(self, atoms, restraints, fragment, factor=3.5):
+    def check_sadi_consistence(self, atoms, restr, fragment, factor=3.5):
         '''
         check if same distance restraints make sense. Each length of an atom
         pair is tested agains the deviation from the mean of each restraint.
@@ -429,6 +430,7 @@ class global_DB():
         :param fragment: frag name
         :param factor: factor for confidence interval
         '''
+        restraints = deepcopy(restr)
         atnames = [i[0].upper() for i in atoms]
         for num, line in enumerate(restraints):
             line=line.split()
@@ -448,27 +450,25 @@ class global_DB():
                 pairlist = []
                 for i in pairs:  
                     pairlist.append(i)
-                    a = atoms[atnames.index(i[0])][2:5]
-                    b = atoms[atnames.index(i[1])][2:5]
+                    try:
+                        a = atoms[atnames.index(i[0])][2:5]
+                        b = atoms[atnames.index(i[1])][2:5]
+                    except(ValueError):
+                        return
                     a = [float(x) for x in a]
                     b = [float(y) for y in b]
                     dist = atomic_distance(a, b, self.get_unit_cell(fragment))
                     distances.append(dist)
-                # factor time standard deviation of the SADI distances
-                s3 = factor*misc.std_dev(distances) 
-                # mean distance
-                if len(distances) > 10:
-                    mean = misc.median(distances)
-                else:
-                    mean = misc.mean(distances) 
-                for dist, pair in zip(distances, pairlist):
-                    # deviation of each distance from mean 
-                    dev = abs(dist-mean)
-                    if dev > s3:
-                        print("{}:".format(fragment))
-                        pair = ' '.join(pair)
-                        print('More than {}sigma={:.2} deviation in atom pair "{}" of SADI line {} ({:.2} A).'.format(factor, s3, pair, num+1, dev))
-                        print(restraints[num][:40], '...')
+                stdev = std_dev(distances)
+                # only do outlier test if standard deviation is suspiciously large:
+                if stdev > 0.08:
+                    outliers = nalimov_test(distances)
+                    if outliers:
+                        print("\n{}:".format(fragment))
+                        for x in outliers:
+                            pair = ' '.join(pairlist[x])
+                            print('Suspicious deviation in atom pair "{}" ({:4.3f} A, median: {:4.3f}) of SADI line {}.'.format(pair, distances[x], median(distances), num+1))
+                            print(restr[num][:60], '...')
                         
     
     def get_head_lines(self, fragment, db, line):
