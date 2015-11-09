@@ -420,11 +420,11 @@ class global_DB():
             print('Check database entry.\n')
         return status
     
-    def check_sadi_consistence(self, atoms, restr, fragment, factor=3.5):
+    def check_sadi_consistence(self, atoms, restr, fragment):
         '''
         check if same distance restraints make sense. Each length of an atom
-        pair is tested agains the deviation from the mean of each restraint.
-        The deviation must ly in factor times the rmsd.        
+        pair is tested agains the standard deviation of all distances.
+        For a large standard deviation, the list is tested for outliers.
         :param atoms: atoms list of thr fragment
         :param restraints: restraints list
         :param fragment: frag name
