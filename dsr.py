@@ -33,7 +33,7 @@ import resfile
 from cf3fit import CF3
 from constants import width, sep_line
 
-VERSION = '1.7.5'
+VERSION = '1.7.6'
 # dont forget to change version in Innoscript file, spec file and deb file.
 
 program_name = '\n'+((width//2)-9)*'-'+\
@@ -42,8 +42,7 @@ program_name = '\n'+((width//2)-9)*'-'+\
 
 # TODO and ideas:
 '''
-- try pure-python fft to make fourier maps and q-peaks.
-- fit fragment without user interaction. mit itertools.combinations()?
+
 '''
 
 
@@ -384,9 +383,13 @@ if __name__ == '__main__':
     #dsr = DSR(export_fragment='toluene')
     #dsr = DSR(res_file_name='p21n_cf3.res')
     #sys.exit()
-    #import cProfile
+    """
+    import cProfile
+    import pstats
+    cp = cProfile.Profile()
+    cp.enable(subcalls=True, builtins=True)
+    """
     try:
-        #cProfile.run('dsr = DSR(res_file_name="p21c.res")', 'foo.profile')
         remove_file(misc.reportlog)
         dsr = DSR()
     except Exception as e:
@@ -407,6 +410,10 @@ if __name__ == '__main__':
         print('Congratulations! You found a bug in DSR. Please send the file\n'\
               ' "report-bug.log" and the .res file (if possible) to dkratzert@gmx.de\n')
         logger.exception(e)
-
-
-
+    """
+    cp.disable()
+    pstats.Stats(cp).sort_stats('cumtime').print_stats(30)
+    pstats.Stats(cp).sort_stats('cumtime').print_callers(30)
+    pstats.Stats(cp).sort_stats('cumtime').print_callees(30)
+    """
+    
