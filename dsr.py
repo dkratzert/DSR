@@ -211,15 +211,15 @@ class DSR():
         print('\n Entries found in the databases:\n')
         print(' Fragment         | Line | DB Name    | Full name, Comments ')
         print(sep_line)
-        frags = sorted(db.keys())
+        fragments = sorted(db.keys())
         names_list = []
         num = 0
-        for num, i in enumerate(frags):
-            fragname = gdb.get_comment_from_fragment(i)
-            names_list.append([i, fragname])
+        for num, frag in enumerate(fragments):
+            fragname = gdb.get_comment_from_fragment(frag)
+            names_list.append([frag, fragname])
             line = ' {:<17}| {:<5}| {:<11}| {}'.format(
-                    i, gdb.get_line_number_from_fragment(i),
-                    gdb.get_db_name_from_fragment(i), fragname)
+                    frag, gdb.get_line_number_from_fragment(frag),
+                    gdb.get_db_name_from_fragment(frag), fragname)
             print(line[:width - 1])
         try:
             if os.environ["DSR_DB_DIR"]:
@@ -229,7 +229,7 @@ class DSR():
         print('\n {} Fragments in the database(s).'.format(num),
               '\n Feel free to add more fragments to "{}dsr_user_db.txt"' \
               '\n or mail them to dkratzert@gmx.de.'.format(dbdir + os.path.sep))
-        for fragment in list(db.keys()):
+        for fragment in fragments:
             gdb.check_consistency(db[fragment], fragment)
             gdb.check_db_atom_consistency(db[fragment]['atoms'], fragment)
             gdb.check_db_header_consistency(db[fragment]['head'], db[fragment]['atoms'], fragment)

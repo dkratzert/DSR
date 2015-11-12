@@ -33,22 +33,23 @@ def checkFileExist(filename):
     A file zize above 0 returns True.
     A non-existing file returns False.
     A file size of 0 retrurns 'zero'.
+    
+    # keep these paths for the unit tests!
     >>> checkFileExist('p21c.res')
     True
     >>> checkFileExist('foo.bar')
     File "foo.bar" not found!
     False
     >>> checkFileExist('empty.txt')
-    File "empty.txt" not found!
-    False
-    >>> checkFileExist('misc.py')
+    'zero'
+    >>> checkFileExist('../misc.py')
     True
     '''
     filesize = False
     status = False
-    try:
+    if os.path.isfile(filename):
         filesize = int(os.stat(str(filename)).st_size)
-    except:
+    else:
         print('File "{}" not found!'.format(filename))
         return False
     if isinstance(filesize, int) and filesize > 0:
