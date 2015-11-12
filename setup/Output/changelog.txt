@@ -1,4 +1,5 @@
 Recent changes
+-1.7.6  Huge improvement in SADI consistency checker. Some new fragments NBt4+ NMe4+ C20. Small fixes.
 -1.7.5  Also move fluorine atoms in direction of principal ellipsoid axis with SPLIT option 
         and CF6.
 -1.7.4  Added check if SADI atom pair distances are consistent with each other. 

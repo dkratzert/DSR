@@ -765,7 +765,7 @@ class ExportTest(unittest.TestCase):
                    'WGHT  0.1\n', 
                    'FVAR  1\n',
                    'rem Restraints from DSR database:\n',
-                   'SADI C2 C3 C3 C4 C4 C5 C5 C6 C6 C7 C7 C2\nSADI 0.04 C2 C6 C2 C4 C7 C5 C3 C7 C4 C6 C3 C5\nSADI 0.04 C1 C7 C1 C3\nFLAT C1 > C7\nSIMU C1 > C7\nRIGU C1 > C7\n',
+                   'SADI C2 C3 C3 C4 C4 C5 C5 C6 C6 C7 C7 C2\nSADI 0.04 C2 C6 C2 C4 C7 C5 C3 C7 C4 C6 C3 C5\nDFIX 1.51 C1 C2\nSADI 0.04 C1 C7 C1 C3\nFLAT C1 > C7\nSIMU C1 > C7\nRIGU C1 > C7\n',
                     'rem Restraints from atom connectivities:\n',
                     ['DFIX 1.3922 C3   C2  \n', 
                      'DFIX 1.3775 C3   C4  \n',
