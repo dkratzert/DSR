@@ -59,7 +59,7 @@ class Export():
         except(KeyError):
             print('Fragment "{}" was not found in the database!!'.format(self._fragment_name))
             sys.exit()
-        self._gdb.check_consistency(self._db, self._fragment_name)
+        self._gdb.check_consistency(self._fragment_name)
         self._head = self._gdb.get_head_from_fragment(self._fragment_name)
         self._resi = self._gdb.get_resi_from_fragment(self._fragment_name)
         self._comment = self._db['comment']

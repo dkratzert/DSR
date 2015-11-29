@@ -54,7 +54,7 @@ class DSR():
     def __init__(self, res_file_name=None, external_restr=None,
                  export_fragment=None, search_string=None,
                  export_clip=None, import_grade=None, export_all=None,
-                 list_db=None, no_refine=None, invert=None):
+                 list_db=None, no_refine=None, invert=None, list_db_csv=None):
         '''
         :param res_file_name:  name of the SHELXL res file, like 'p21c.res'
         :type res_file_name:   string
@@ -68,10 +68,12 @@ class DSR():
         :type export_clip:     string
         :param import_grade:   import grade file to user database
         :type import_grade:    string
-        :param export_all:     export all fragments at once
+        :param export_all:     hidden option, export all fragments at once
         :type export_all:      boolean
         :param list_db:        list database entries
         :type list_db:         boolean
+        :param list_db_csv:    hidden option, list database entries in machine readyble form
+        :type list_db_csv:     boolean
         :param no_refine:      turn refinement off
         :type no_refine:       boolean
         :param invert:         invert the fragment during import, export or LS-fit
@@ -113,6 +115,10 @@ class DSR():
             self.list_db = self.options.list_db
         else:
             self.list_db = list_db
+        if not list_db_csv:
+            self.list_db_csv = self.options.list_db_csv
+        else:
+            self.list_db_csv = list_db_csv
         if not no_refine:
             self.no_refine = self.options.no_refine
         else:
@@ -202,24 +208,20 @@ class DSR():
         '''
         list all entries in the db.
         '''
+        gdb = global_DB()
+        #db = gdb.db_dict
+        fraglist = gdb.list_fragments()
+        fragnames = []
         try:
             (width, height) = get_terminal_size()  # @UnusedVariable
         except():
             width = 80
-        gdb = global_DB()
-        db = gdb.build_db_dict()
         print('\n Entries found in the databases:\n')
         print(' Fragment         | Line | DB Name    | Full name, Comments ')
         print(sep_line)
-        fragments = sorted(db.keys())
-        names_list = []
-        num = 0
-        for num, frag in enumerate(fragments):
-            fragname = gdb.get_comment_from_fragment(frag)
-            names_list.append([frag, fragname])
-            line = ' {:<17}| {:<5}| {:<11}| {}'.format(
-                    frag, gdb.get_line_number_from_fragment(frag),
-                    gdb.get_db_name_from_fragment(frag), fragname)
+        for num, line in enumerate(fraglist):
+            fragnames.append(line[0])
+            line = ' {:<17}| {:<5}| {:<11}| {}'.format(*line)
             print(line[:width - 1])
         try:
             if os.environ["DSR_DB_DIR"]:
@@ -229,11 +231,11 @@ class DSR():
         print('\n {} Fragments in the database(s).'.format(num),
               '\n Feel free to add more fragments to "{}dsr_user_db.txt"' \
               '\n or mail them to dkratzert@gmx.de.'.format(dbdir + os.path.sep))
-        for fragment in fragments:
-            gdb.check_consistency(db[fragment], fragment)
-            gdb.check_db_atom_consistency(db[fragment]['atoms'], fragment)
-            gdb.check_db_header_consistency(db[fragment]['head'], db[fragment]['atoms'], fragment)
-            gdb.check_sadi_consistence(db[fragment]['atoms'], db[fragment]['head'], fragment)
+        for fragment in fragnames:
+            gdb.check_consistency(fragment)
+            gdb.check_db_atom_consistency(fragment)
+            gdb.check_db_header_consistency(fragment)
+            gdb.check_sadi_consistence(fragment)
         sys.exit()
 
     def import_from_grade(self):
@@ -272,6 +274,9 @@ class DSR():
         #print(program_name)
         # The database content:
         basefilename = resfile.filename_wo_ending(self.res_file)
+        if not basefilename:
+            print('Illegal option')
+            sys.exit()
         gdb = global_DB(self.invert)
         rl = resfile.ResList(self.res_file)
         reslist = rl.get_res_list()

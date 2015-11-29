@@ -67,6 +67,10 @@ class OptionsParser():
         return self._options.list_db
 
     @property
+    def list_db_csv(self):
+        return self._options.list_db_csv
+
+    @property
     def import_grade(self):
         return self._options.import_grade
 
@@ -120,6 +124,8 @@ class OptionsParser():
         self.parser.add_argument("-i", dest="import_grade", metavar='"tgz file"', \
                                 help="import a fragment from GRADE (needs .tgz file)", default=False)
         self.parser.add_argument("-ea", dest="export_all", action='store_true', \
+                                help=SUPPRESS, default=False)
+        self.parser.add_argument("-csv", dest="list_db_csv", action='store_true', \
                                 help=SUPPRESS, default=False)
         self.parser.add_argument("-l", dest="list_db", action="store_true", \
                                 help="list names of all database entries", default=False)
