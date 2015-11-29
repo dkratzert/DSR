@@ -65,7 +65,7 @@ class Export():
         self._comment = self._db['comment']
         self._dbatoms = self._db['atoms']
         self._clipatoms = copy.deepcopy(self._dbatoms)
-        self._gdb.check_db_atom_consistency(self._dbatoms, self._fragment_name)
+        self._gdb.check_db_atom_consistency(self._fragment_name)
         self._atomtypes = at.get_atomtypes(self._dbatoms)
         self._fragline = self._db['fragline']
         cell = self._fragline[2:]
