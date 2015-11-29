@@ -383,7 +383,7 @@ class global_DB():
         '''This method is for atoms only (without db header)!
           check the db for different types of errors:
         '''
-        dbatoms = self.db_dict[fragment]['atoms']
+        dbatoms = self.get_atoms_from_fragment(fragment)
         # check for duplicates:
         atoms = []
         for i in dbatoms:
@@ -404,7 +404,7 @@ class global_DB():
         - Checks wether restraints cards are vaid.
         '''
         restraints = self.db_dict[fragment]['head']
-        atoms = self.db_dict[fragment]['atoms']
+        atoms = self.get_atoms_from_fragment(fragment)
         status = True
         atoms = [i[0].upper() for i in atoms]
         restraint_atoms_list = set([])
@@ -604,10 +604,8 @@ class global_DB():
         except KeyError:
             print('could not find {} in database.'.format(fragment))
             self.search_for_error_response(fragment)
-        atoms = self.get_atoms_from_fragment(fragment)
-        self.check_db_header_consistency(head, atoms, fragment)
-        self.check_sadi_consistence(self.get_atoms_from_fragment(fragment), 
-                                    head, fragment)
+        self.check_db_header_consistency(fragment)
+        self.check_sadi_consistence(fragment)
         return head
 
 
