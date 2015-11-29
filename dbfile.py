@@ -229,6 +229,19 @@ class global_DB():
         self._db_plain_dict = self._getdb.getDB_files_dict()
         self._dbentry_dict = self.build_db_dict()
 
+    def list_fragments(self):
+        '''
+        list all fragments in the db as list of lists
+        [['tbu-c', 1723, 'dsr_db', 'Tert-butyl-C'], ...]
+        '''
+        fraglist = []
+        fragments = sorted(self._dbentry_dict.keys())
+        for frag in fragments:
+            comment = self.get_comment_from_fragment(frag)
+            line = [frag, self.get_line_number_from_fragment(frag), 
+                    self.get_db_name_from_fragment(frag), comment]
+            fraglist.append(line)
+        return fraglist 
 
     def build_db_dict(self):
         '''
@@ -325,14 +338,15 @@ class global_DB():
         return atoms
 
 
-    def check_consistency(self, fragment_dict, fragment):
+    def check_consistency(self, fragment):
         '''
         check if the fragline makes sense and if the fragment_dict is complete
         '''
-        for i in fragment_dict:
+        dbentry = self.db_dict[fragment]
+        for i in dbentry:
             if i == 'comment':
                 continue
-            if not fragment_dict[i]:
+            if not dbentry[i]:
                 if i == 'head':
                     print('- Restraints in the header of database entry "{}" missing!\n'\
                         ''.format(fragment))
@@ -341,7 +355,7 @@ class global_DB():
                     print('- Values for "{}" in database entry "{}" missing!'\
                         ''.format(str.upper(i), fragment))
                     return False
-        if len(fragment_dict['fragline']) != 8:
+        if len(dbentry['fragline']) != 8:
             print('- The line starting with "FRAG" in the database entry of {} is '\
                 'not correct.\n  Are the cell parameters really correct? '\
                 '"FRAG 17 a b c alpha beta gamma"\n'.format(fragment))
@@ -365,13 +379,14 @@ class global_DB():
             formula+='{}{} '.format(el, num)
         return formula
 
-    def check_db_atom_consistency(self, db, fragment):
+    def check_db_atom_consistency(self, fragment):
         '''This method is for atoms only (without db header)!
           check the db for different types of errors:
         '''
+        dbatoms = self.db_dict[fragment]['atoms']
         # check for duplicates:
         atoms = []
-        for i in db:
+        for i in dbatoms:
             line = ' '.join(i)
             at = line.split()[0]
             if at in atoms:
@@ -382,12 +397,14 @@ class global_DB():
                 atoms.append(at)
                 continue
 
-    def check_db_header_consistency(self, restraints, atoms, fragment_name):
+    def check_db_header_consistency(self, fragment):
         '''
         - Checks if the Atomnames in the restraints of the dbhead are also in
           the list of the atoms of the respective dbentry.
         - Checks wether restraints cards are vaid.
         '''
+        restraints = self.db_dict[fragment]['head']
+        atoms = self.db_dict[fragment]['atoms']
         status = True
         atoms = [i[0].upper() for i in atoms]
         restraint_atoms_list = set([])
@@ -399,7 +416,7 @@ class global_DB():
             # only the first 4 characters, because SADI_TOL would be bad:
             if line2[0] not in SHX_CARDS:  
                 status = False
-                print('Bad line in header of database entry "{}" found!'.format(n, fragment_name))
+                print('Bad line in header of database entry "{}" found!'.format(n, fragment))
                 print(line)
                 sys.exit(status)
             if line[:4] in RESTRAINT_CARDS:
@@ -415,12 +432,12 @@ class global_DB():
             atom = atom.upper()
             if not atom in atoms:
                 status = False
-                print('\nBad atom "{}" in restraints of "{}".'.format(atom, fragment_name))
+                print('\nBad atom "{}" in restraints of "{}".'.format(atom, fragment))
         if not status:
             print('Check database entry.\n')
         return status
     
-    def check_sadi_consistence(self, atoms, restr, fragment):
+    def check_sadi_consistence(self, fragment):
         '''
         check if same distance restraints make sense. Each length of an atom
         pair is tested agains the standard deviation of all distances.
@@ -430,6 +447,8 @@ class global_DB():
         :param fragment: frag name
         :param factor: factor for confidence interval
         '''
+        atoms = self.db_dict[fragment]['atoms']
+        restr = self.db_dict[fragment]['head']
         restraints = deepcopy(restr)
         atnames = [i[0].upper() for i in atoms]
         for num, line in enumerate(restraints):
