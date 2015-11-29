@@ -138,6 +138,12 @@ class DSR():
         #  List of database Fragments:
         if self.list_db:
             self.list_dbentries()
+        if self.list_db_csv:
+            gdb = global_DB()
+            frags = gdb.list_fragments()
+            for i in frags:
+                print('{}\t;\t{}\t;\t{}\t;\t{}'.format(*i))
+            sys.exit()  
         if self.search_string:
             result = search_fragment_name(self.search_string)
             print_search_results(result)

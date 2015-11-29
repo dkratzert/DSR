@@ -125,7 +125,7 @@ class OptionsParser():
                                 help="import a fragment from GRADE (needs .tgz file)", default=False)
         self.parser.add_argument("-ea", dest="export_all", action='store_true', \
                                 help=SUPPRESS, default=False)
-        self.parser.add_argument("-csv", dest="list_db_csv", action='store_true', \
+        self.parser.add_argument("-lc", dest="list_db_csv", action='store_true', \
                                 help=SUPPRESS, default=False)
         self.parser.add_argument("-l", dest="list_db", action="store_true", \
                                 help="list names of all database entries", default=False)
