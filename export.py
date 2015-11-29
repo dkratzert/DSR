@@ -75,7 +75,6 @@ class Export():
         self._comment_regex = '^REM .*$'.upper()
 
 
-
     def format_calced_coords(self, cell):
         '''
         In calculated structure the cell is 1 1 1 90 90 90. Shelxle has problems
@@ -289,7 +288,7 @@ class Export():
         if misc.which('platon'):
             pass
         else:
-            print('Could not write a .png image. No platon executable in PATH.')
+            print('Could not write a .png image. No PLATON executable in PATH.')
             sys.exit()
         try:
             copyfile(resfile, insfile)
@@ -306,7 +305,7 @@ class Export():
                 time.sleep(0.01)
                 # give PLATON 15s to draw the picture
                 if timeticks > 1500:
-                    print('Platon run took too long to execute. Killing Platon...')
+                    print('PLATON run took too long to execute. Killing Platon...')
                     try:
                         plat.terminate()
                     except:
@@ -364,7 +363,7 @@ class Export():
                 # in case of success remove the postscript file
                 misc.remove_file(psfile, terminate=plat)
             else:
-                print('Unable to write .png file. Is platon and ImageMagic installed?')
+                print('Unable to write .png file. Is PLATON and ImageMagic installed?')
                 plat.terminate()
                 misc.remove_file(self._fragment_name+'.lis')
                 misc.remove_file(self._fragment_name+'.eld')
