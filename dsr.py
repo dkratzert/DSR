@@ -139,7 +139,7 @@ class DSR():
             gdb = global_DB()
             frags = gdb.list_fragments()
             for i in frags:
-                print('{}\t;\t{}\t;\t{}\t;\t{}'.format(*i))
+                print('{:<27} {:<15} {:<31}'.format(i[0], i[2], i[3]))
             sys.exit()  
         print(program_name)
         if self.list_db:
