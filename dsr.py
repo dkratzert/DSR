@@ -33,7 +33,7 @@ import resfile
 from cf3fit import CF3
 from constants import width, sep_line
 
-VERSION = '1.7.6'
+VERSION = '1.7.7'
 # dont forget to change version in Innoscript file, spec file and deb file.
 
 program_name = '\n'+((width//2)-9)*'-'+\
@@ -79,7 +79,6 @@ class DSR():
         :param invert:         invert the fragment during import, export or LS-fit
         :type invert:          boolean
         '''
-        print(program_name)
         # options from the commandline options parser:
         self.options = OptionsParser()
         # vars() retrieves the options as dict, values() the values and any()
@@ -136,14 +135,15 @@ class DSR():
                        self.export_clip, self.export_all, self.export_fragment]):
                 self.options.error()
         #  List of database Fragments:
-        if self.list_db:
-            self.list_dbentries()
         if self.list_db_csv:
             gdb = global_DB()
             frags = gdb.list_fragments()
             for i in frags:
                 print('{}\t;\t{}\t;\t{}\t;\t{}'.format(*i))
             sys.exit()  
+        print(program_name)
+        if self.list_db:
+            self.list_dbentries()
         if self.search_string:
             result = search_fragment_name(self.search_string)
             print_search_results(result)
