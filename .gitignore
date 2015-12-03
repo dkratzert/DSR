@@ -7,7 +7,6 @@ test-data/test/*
 dsrsaves
 dsrsaves/*
 *.ps
-*.png
 /manuals/*.pdf
 /setup/*.exe
 /setup/Output/*.tar.gz
