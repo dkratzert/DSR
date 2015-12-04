@@ -73,7 +73,7 @@ def print_search_results(results):
     prints the results of a database search to screen and exit.
     results are
     '''
-    print('\n\n Found following database entries:\n')
+    print('\n Found following database entries:\n')
     print(' Fragment          | Full name, Comments                      | Line number')
     print(sep_line)
     for line in results:
