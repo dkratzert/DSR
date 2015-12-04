@@ -215,7 +215,6 @@ class DSR():
         list all entries in the db.
         '''
         gdb = global_DB()
-        #db = gdb.db_dict
         fraglist = gdb.list_fragments()
         fragnames = []
         try:
