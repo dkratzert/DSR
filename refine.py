@@ -198,7 +198,7 @@ class ShelxlRefine():
     def backup_shx_file(self):
         '''
         makes a copy of the res file
-        make backup in .dsrsaves before every fragment fit.
+        make backup in dsrsaves before every fragment fit.
         name: self.resfile_name-date-time-seconds.res
         '''
         import datetime
@@ -221,7 +221,7 @@ class ShelxlRefine():
         try:
             shutil.copyfile(resfile, bakup_dir+'/'+self.resfile_name+'_'+timestamp+'.res')
         except(IOError):
-            print('\nUnable to make backup file from {} in .dsrsaves.'.format(resfile))
+            print('\nUnable to make backup file from {} in dsrsaves.'.format(resfile))
             #sys.exit(-1)
 
 

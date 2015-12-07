@@ -12,6 +12,7 @@
 from __future__ import print_function
 import sys
 import re
+import os
 from constants import sep_line
 try:
     from argparse import RawTextHelpFormatter
@@ -40,7 +41,11 @@ class OptionsParser():
 
     @property
     def res_file(self):
-        return self._options.res_file
+        try:
+            rpath = os.path.normpath(self._options.res_file)
+        except:
+            rpath = None
+        return rpath
 
     @property
     def external_restr(self):
