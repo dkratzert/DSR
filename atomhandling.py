@@ -826,9 +826,9 @@ if __name__ == '__main__':
     num = NumberScheme(reslist, dbatoms, resiopt)
     # das printet auch auf bilschirm:
     numbers = num.get_fragment_number_scheme(extranames=['O1A'])
-    print('#######################')
+
     print(numbers)
-    print('#######################')
+
     #  dbtypes = get_atomtypes(dbatoms)
 
 
@@ -906,7 +906,6 @@ if __name__ == '__main__':
     num.get_fragment_number_scheme()
 
     dbtypes = get_atomtypes(dbatoms)
- #   print('#############', dbtypes, '########dbtypes###################')
     sfac = SfacTable(reslist, dbtypes)
     print('sfac table:')
     print(sfac.set_sfac_table())
