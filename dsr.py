@@ -52,7 +52,7 @@ class DSR():
     main class
     '''
     def __init__(self, res_file_name=None, external_restr=None,
-                 export_fragment=None, search_string=None,
+                 export_fragment=None, search_string=None, search_extern=None,
                  export_clip=None, import_grade=None, export_all=None,
                  list_db=None, no_refine=None, invert=None, list_db_csv=None):
         '''
@@ -130,6 +130,10 @@ class DSR():
             self.search_string = self.options.search_string
         else:
             self.search_string = search_string
+        if not search_extern:
+            self.search_extern = self.options.search_extern
+        else:
+            self.search_extern = search_extern
         if self.invert:
             if not any([self.res_file, self.external, self.import_grade,
                        self.export_clip, self.export_all, self.export_fragment]):
@@ -141,6 +145,10 @@ class DSR():
             for i in frags:
                 print('{};;{};;{};;{}'.format(i[0], i[2], i[3], i[1]))
             sys.exit()  
+        if self.search_extern:
+            result = search_fragment_name(self.search_extern)
+            print(result)
+            sys.exit()
         print(program_name)
         if self.list_db:
             self.list_dbentries()
