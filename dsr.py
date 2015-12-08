@@ -143,7 +143,7 @@ class DSR():
             gdb = global_DB()
             frags = gdb.list_fragments()
             for i in frags:
-                print('{};;{};;{};;{}'.format(i[0], i[2], i[3], i[1]))
+                print('{};;{};;{};;{}'.format(i[0], i[3], i[1], i[2]))
             sys.exit()  
         if self.search_extern:
             result = search_fragment_name(self.search_extern)
