@@ -97,6 +97,18 @@ class OptionsParser():
             return self._options.search_string
 
     @property
+    def search_extern(self):
+        # search characters allowed: a-z A-Z 0-9 _ - , () {} [] ' " + * | = .
+        chars = re.match(r'^[\w\-,\(\)\[\]\{\}\'\"\+\*\|\=\.]+$', 
+                         self._options.search_extern)
+        if not chars:
+            print('Characters not allowed for searching.')
+            sys.exit()
+        else:
+            print('foo')
+            return self._options.search_extern
+
+    @property
     def all_options(self):
         return self._options
 
@@ -136,6 +148,8 @@ class OptionsParser():
                                 help="list names of all database entries", default=False)
         self.parser.add_argument("-s", dest="search_string", metavar='"string"', \
                                 help="search the database for a name", default=False)
+        self.parser.add_argument("-a", dest="search_extern", action='store_true', \
+                                help=SUPPRESS, default=False)
         self.parser.add_argument("-n", dest="no_refine", action="store_true", \
                                 help="do not refine after fragment transfer", default=False)
         return self.parser.parse_args()

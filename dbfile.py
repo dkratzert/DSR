@@ -11,7 +11,7 @@
 #
 from __future__ import print_function
 
-from collections import Counter
+from collections import Counter, OrderedDict
 import os, sys
 import re
 import tarfile
@@ -73,7 +73,7 @@ def print_search_results(results):
     prints the results of a database search to screen and exit.
     results are
     '''
-    print('\n Found following database entries:\n')
+    #print(' Found following database entries:')
     print(' Fragment          | Full name, Comments                      | Line number')
     print(sep_line)
     for line in results:
@@ -235,7 +235,8 @@ class global_DB():
         [['tbu-c', 1723, 'dsr_db', 'Tert-butyl-C'], ...]
         '''
         fraglist = []
-        fragments = sorted(self._dbentry_dict.keys())
+        fragments = OrderedDict(sorted(self._dbentry_dict.items(), key=lambda t: t[0]))
+        #fragments = sorted(self._dbentry_dict.keys())
         for frag in fragments:
             comment = self.get_comment_from_fragment(frag)
             line = [frag, self.get_line_number_from_fragment(frag), 
