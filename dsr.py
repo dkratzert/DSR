@@ -147,7 +147,8 @@ class DSR():
             sys.exit()  
         if self.search_extern:
             result = search_fragment_name(self.search_extern)
-            print(result)
+            for i in result:
+                print('{};;{};;{}'.format(i[0], i[1], i[2]))
             sys.exit()
         print(program_name)
         if self.list_db:
