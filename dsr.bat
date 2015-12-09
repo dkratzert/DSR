@@ -1,8 +1,8 @@
 @ECHO OFF
 
 rem DSR startup script for windows
-rem echo %DSRDIR%
-rem set DSRDIR="C:\Program Files (x86)\DSR\"
+rem echo %DSR_DIR%
+rem set DSR_DIR="C:\Program Files (x86)\DSR\"
 
 TITLE "DSR - Disordered Structure Refinement"
 
@@ -10,15 +10,15 @@ SET args=%*
 
 rem cls
 
-IF NOT DEFINED DSRDIR (GOTO setdsrdir) ELSE (GOTO arguments)
+IF NOT DEFINED DSR_DIR (GOTO setdsrdir) ELSE (GOTO arguments)
 
 
 :setdsrdir
     echo -----------------------------------------------------------------
-    echo You should define the DSRDIR environment variable for your system
+    echo You should define the DSR_DIR environment variable for your system
     echo pointing to the DSR install directory.
     echo -----------------------------------------------------------------
-    SET DSRDIR="."
+    SET DSR_DIR="."
     goto arguments
 
 :arguments
@@ -26,11 +26,11 @@ IF NOT DEFINED DSRDIR (GOTO setdsrdir) ELSE (GOTO arguments)
     goto main
 
 :main
-    "%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py %args%
+    "%DSR_DIR%"\python27\python.exe "%DSR_DIR%"\dsr.py %args%
     GOTO end
 
 :help
-    "%DSRDIR%"\python27\python.exe "%DSRDIR%"\dsr.py -h
+    "%DSR_DIR%"\python27\python.exe "%DSR_DIR%"\dsr.py -h
     GOTO end
 
 :end
