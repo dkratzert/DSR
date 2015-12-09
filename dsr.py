@@ -51,7 +51,7 @@ class DSR():
     '''
     main class
     '''
-    def __init__(self, res_file_name=None, external_restr=None,
+    def __init__(self, res_file_name=None, external_restr=None, atom_coordinates=None,
                  export_fragment=None, search_string=None, search_extern=None,
                  export_clip=None, import_grade=None, export_all=None,
                  list_db=None, no_refine=None, invert=None, list_db_csv=None):
@@ -130,6 +130,8 @@ class DSR():
             self.search_string = self.options.search_string
         else:
             self.search_string = search_string
+        if not atom_coordinates:
+            self.atom_coordinates = self.options.atom_coordinates
         if not search_extern:
             self.search_extern = self.options.search_extern
         else:
@@ -138,6 +140,8 @@ class DSR():
             if not any([self.res_file, self.external, self.import_grade,
                        self.export_clip, self.export_all, self.export_fragment]):
                 self.options.error()
+        if self.atom_coordinates:
+            
         #  List of database Fragments:
         if self.list_db_csv:
             gdb = global_DB()
@@ -186,6 +190,16 @@ class DSR():
 
 ###############################################################################
 
+    def do_export_gui(self):
+         '''
+        Exports the current fragment tu GUI.
+        '''
+        from export import Export
+        gdb = global_DB(self.invert)
+        export = Export(self.export_fragment, gdb, self.invert)
+        export.export_to_gui()
+        sys.exit()
+    
     def do_export_fragment(self):
         '''
         Exports the current fragment.

@@ -193,9 +193,10 @@ class Export():
         return True
 
 
-    def format_atoms_for_export(self):
+    def format_atoms_for_export(self, gui=False):
         '''
         fractional coordinates are converted to cartesian
+        Atom ;; number ;; x ;; y ;; z
         '''
         from misc import frac_to_cart
         cell = self._clipcell[:]
@@ -206,8 +207,12 @@ class Export():
             coord = frac_to_cart(frac_coord, cell)
             line[2:5] = coord
         newlist = []
-        for i in atoms:
-            newlist.append('{:4.4s} {:4.2s} {:>7.4f}  {:>7.4f}  {:>7.4f}'.format(*i))
+        if not gui:
+            for i in atoms:
+                newlist.append('{:4.4s} {:4.2s} {:>7.4f}  {:>7.4f}  {:>7.4f}'.format(*i))
+        else:
+            for i in atoms:
+                newlist.append('{:4.4s} ;; {:4.2s} ;; {:>7.4f} ;; {:>7.4f} ;; {:>7.4f}'.format(*i))
         return newlist
 
 
@@ -221,6 +226,14 @@ class Export():
             return True
         else:
             return False
+
+    def export_to_gui(self):
+        '''
+        exports atoms to output for the DSRGui
+        '''
+        atoms = self.format_atoms_for_export(gui=True)
+        atoms = '\n'.join(atoms)
+        print(atoms)
 
 
     def file_is_opened(self, base, ending):
