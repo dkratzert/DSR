@@ -80,8 +80,8 @@ class OptionsParser():
         return self._options.import_grade
     
     @property
-    def atom_coordinates(self):
-        return self._options.atom_coordinates
+    def frag_for_gui(self):
+        return self._options.frag_for_gui
 
     @property
     def invert(self):
@@ -155,7 +155,7 @@ class OptionsParser():
                                 help="search the database for a name", default=False)
         self.parser.add_argument("-x", dest="search_extern", \
                                 help=SUPPRESS, default=False)
-        self.parser.add_argument("-ac", dest="atom_coordinates", \
+        self.parser.add_argument("-ac", dest="frag_for_gui", \
                                 help=SUPPRESS, default=False)
         self.parser.add_argument("-n", dest="no_refine", action="store_true", \
                                 help="do not refine after fragment transfer", default=False)

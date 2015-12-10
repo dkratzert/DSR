@@ -18,6 +18,8 @@ from dbfile import global_DB
 import copy
 import pyperclip
 from restraints import Restraints
+from atoms import Element
+from atomhandling import SfacTable
 
 
 __metaclass__ = type  # use new-style classes
@@ -196,13 +198,18 @@ class Export():
     def format_atoms_for_export(self, gui=False):
         '''
         fractional coordinates are converted to cartesian
-        Atom ;; number ;; x ;; y ;; z
+        Atom;;number;;x;;y;;z
         '''
+        el = Element()
         from misc import frac_to_cart
         cell = self._clipcell[:]
         cell = [float(x) for x in cell]
         atoms = self._clipatoms
         for line in atoms:
+            if line[1] < 0:
+                line[1] = abs(int(line[1]))
+            else:
+                line[1] = el.get_atomic_number(el.get_atomlabel(line[0]))
             frac_coord = [ float(i) for i in line[2:5] ]
             coord = frac_to_cart(frac_coord, cell)
             line[2:5] = coord
@@ -212,7 +219,7 @@ class Export():
                 newlist.append('{:4.4s} {:4.2s} {:>7.4f}  {:>7.4f}  {:>7.4f}'.format(*i))
         else:
             for i in atoms:
-                newlist.append('{:4.4s} ;; {:4.2s} ;; {:>7.4f} ;; {:>7.4f} ;; {:>7.4f}'.format(*i))
+                newlist.append('{};;{};;{};;{};;{}'.format(i[0], i[1], i[2], i[3], i[4]))
         return newlist
 
 
