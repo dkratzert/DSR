@@ -47,38 +47,19 @@ def get_atomtypes(dbatoms):
     ...
     KeyError
     '''
+    el = Element()
     found = []
     # find lines with atoms and see if they are in the atom list
-    # print get_atoms(dbatoms)
-    elements = [x.upper() for x in atoms]
     for i in dbatoms:
         sfacnum = i[1]
-        i = i[0].upper()    # i is the full atom name with number suffix like C1
+        atom_name = i[0].upper()    # i is the full atom name with number suffix like C1
         try:
             if int(sfacnum) < 0:
-                el = Element()
                 found.append(el.get_element(abs(int(sfacnum))))
                 continue
         except:
             pass
-        atom=''
-        for x in i:       # iterate over characters in i
-            if re.match(r'^[A-Za-z#]', x): # Alphabet and "#" as allowed characters in names
-                atom = atom+x      # add characters to atoms until numbers occur
-            else:                  # now we have atoms like C, Ca, but also Caaa
-                break
-        try:
-            if atom[0:2] in elements:    # fixes names like Caaa to be just Ca
-                found.append(atom[0:2])  # atoms first, search for all two-letter atoms
-                continue
-            elif atom[0] in elements:
-                found.append(atom[0])  # then for all one-letter atoms
-            else:
-                print('\n {} is not a valid atom!!\n'.format(atom))
-                raise KeyError
-        except(IndexError):
-            print('\n {} is not a valid atom!!\n'.format(atom))
-            raise KeyError
+        found.append(el.get_atomlabel(atom_name))
     if len(dbatoms) != len(found):    # do we really need this here??
         print("One of the Atoms in the database entry is not correct! Exiting...")
         raise KeyError

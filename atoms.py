@@ -1,3 +1,4 @@
+import re
 atoms = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg',
         'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe',
         'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 'Rb', 'Sr', 'Y',
@@ -154,6 +155,29 @@ class Element():
         '''
         return self.element_base[atomic_number][1]
 
+    def get_atomlabel(self, input_atom):
+        '''
+        converts an atom name like C12 to the element symbol C
+        '''
+        elements = [x.upper() for x in atoms]
+        atom=''
+        for x in input_atom:       # iterate over characters in i
+            if re.match(r'^[A-Za-z#]', x): # Alphabet and "#" as allowed characters in names
+                atom = atom+x.upper()      # add characters to atoms until numbers occur
+            else:                  # now we have atoms like C, Ca, but also Caaa
+                break
+        try:
+            if atom[0:2] in elements:    # fixes names like Caaa to be just Ca
+                return atom[0:2]  # atoms first, search for all two-letter atoms
+            elif atom[0] in elements:
+                return atom[0]  # then for all one-letter atoms
+            else:
+                print('\n {} is not a valid atom!!\n'.format(atom))
+                raise KeyError
+        except(IndexError):
+            print('\n {} is not a valid atom!!\n'.format(atom))
+            raise KeyError
+    
 
 if __name__ == '__main__':
     el = Element()

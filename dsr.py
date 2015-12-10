@@ -131,7 +131,7 @@ class DSR():
         else:
             self.search_string = search_string
         if not atom_coordinates:
-            self.atom_coordinates = self.options.atom_coordinates
+            self.frag_for_gui = self.options.frag_for_gui
         if not search_extern:
             self.search_extern = self.options.search_extern
         else:
@@ -140,8 +140,8 @@ class DSR():
             if not any([self.res_file, self.external, self.import_grade,
                        self.export_clip, self.export_all, self.export_fragment]):
                 self.options.error()
-        if self.atom_coordinates:
-            
+        if self.frag_for_gui:
+            self.export_to_gui()
         #  List of database Fragments:
         if self.list_db_csv:
             gdb = global_DB()
@@ -190,11 +190,13 @@ class DSR():
 
 ###############################################################################
 
-    def do_export_gui(self):
-         '''
+
+    def export_to_gui(self):
+        '''
         Exports the current fragment tu GUI.
         '''
         from export import Export
+        self.export_fragment = self.frag_for_gui
         gdb = global_DB(self.invert)
         export = Export(self.export_fragment, gdb, self.invert)
         export.export_to_gui()
