@@ -404,6 +404,7 @@ class global_DB():
           the list of the atoms of the respective dbentry.
         - Checks wether restraints cards are vaid.
         '''
+        fragment = fragment.lower()
         restraints = self.db_dict[fragment]['head']
         atoms = self.get_atoms_from_fragment(fragment)
         status = True
@@ -600,8 +601,9 @@ class global_DB():
         returns the header of the dbentry of fragment.
         This header does not include comments, only the restraints.
         '''
+        fragment = fragment.lower()
         try:
-            head = self._dbentry_dict[fragment.lower()]['head']
+            head = self._dbentry_dict[fragment]['head']
         except KeyError:
             print('could not find {} in database.'.format(fragment))
             self.search_for_error_response(fragment)
@@ -970,7 +972,7 @@ if __name__ == '__main__':
         # for i in dbatoms:
         #    print i
         head = db[fragment]['head']
-        gdb.check_sadi_consistence(dbatoms, head, fragment)
+        gdb.check_sadi_consistence(fragment)
     sys.exit()
     # mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz')
     # mog = ImportGRADE('./test-data/LIG.gradeserver_all.tgz')
