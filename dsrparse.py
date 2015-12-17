@@ -68,12 +68,12 @@ class DSR_Parser():
         multiline = False
         indexnum = misc.find_multi_lines(self._reslist, self._dsr_regex)
         try:
-            line_number = int(indexnum[0])
+            line_number = int(indexnum[0])+1
         except(IndexError):
             print(' no proper DSR command found! \n\n '
                     'Have you really saved your .res file?\n')
             sys.exit()
-        if int(line_number)-1 > int(self._HKLF_endline):
+        if int(line_number) > int(self._HKLF_endline):
             print('A DSR command after HKLF is not allowed! '
                     'Check line {}'.format(line_number))
             sys.exit()
