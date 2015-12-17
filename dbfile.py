@@ -388,6 +388,7 @@ class global_DB():
         # check for duplicates:
         atoms = []
         for i in dbatoms:
+            i[1] = str(i[1])
             line = ' '.join(i)
             at = line.split()[0]
             if at in atoms:
