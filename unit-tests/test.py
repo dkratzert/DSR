@@ -580,7 +580,7 @@ class globalDB(unittest.TestCase):
             fragment = 'dmel'
             head = db[fragment]['head']
             atoms = db[fragment]['atoms']
-            gdb.check_db_header_consistency(head, atoms, fragment)
+            gdb.check_db_header_consistency(fragment)
 
     def testrun_header_consistency2(self):
         self.maxDiff = None
@@ -591,7 +591,7 @@ class globalDB(unittest.TestCase):
             fragment = 'dmem'
             head = db[fragment]['head']
             atoms = db[fragment]['atoms']
-            gdb.check_db_header_consistency(head, atoms, fragment)
+            gdb.check_db_header_consistency(fragment)
 
 
     def testrun_get_comment_from_fragment1(self):
