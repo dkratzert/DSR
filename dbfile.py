@@ -141,7 +141,7 @@ class ReadDB():
 
     def find_db_tags(self):
         '''
-        This method lists all fragment names in the database
+        This method returns all fragment name tags in the database
         '''
         regex = r'^<[^/].*>'  # regular expression for db tag.
         dbnames = []
@@ -177,7 +177,7 @@ class global_DB():
     '''
     creates a final dictionary where all dbs are included
     '''
-    def __init__(self, invert=False, dbdir=False,
+    def __init__(self, invert=False, dbdir=False, fragment=None, 
                  dbnames=["dsr_db.txt", "dsr_user_db.txt"]):
         '''
         self._db_tags: ['12-DICHLOROBENZ', 590, 'dsr_db']
@@ -226,6 +226,11 @@ class global_DB():
             dbdir='./'
         self._getdb = ReadDB(dbdir, dbnames)
         self._db_tags = self._getdb.find_db_tags()
+        if fragment:
+            for num, i in enumerate(self._db_tags):
+                if i[0].lower() == fragment.lower():
+                    self._db_tags = [self._db_tags[num]] # speedup in case the fragment is known
+                    break
         self._db_plain_dict = self._getdb.getDB_files_dict()
         self._dbentry_dict = self.build_db_dict()
 
@@ -340,8 +345,13 @@ class global_DB():
 
     def get_head_for_gui(self, fragment):
         '''
+        returns header information of the specific fragment:
+        Acetone, C3H6O
+        Gaussian 03, pbe1pbe/6-311+G(d), Ilia A. Guzei
+        1;;1;;1;;90;;90;;90
+        ACE
+        SADI C1 C2 C2 C3;;FLAT O1 > C3;;SADI 0.04 C1 O1 C3 O1;;DFIX 2.6029 C1 C3;;SIMU O1 > C3;;RIGU O1 > C3
         '''
-        #print(self.db_dict[fragment]['name'])
         print(self.get_comment_from_fragment(fragment))
         print(self.get_src_from_fragment(fragment))
         print(';;'.join(self.get_unit_cell(fragment)))
