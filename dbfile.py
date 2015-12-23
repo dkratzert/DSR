@@ -55,7 +55,8 @@ def search_fragment_name(search_string):
     for i in frags:
         fragname = gdb.get_comment_from_fragment(i)
         line_number = gdb.get_line_number_from_fragment(i)
-        names_list.append([i, fragname, line_number])
+        dbname = gdb.get_db_name_from_fragment(i)
+        names_list.append([i, fragname, line_number, dbname])
     search_results = {}
     for i in names_list:
         db_entry = i[1]
