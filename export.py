@@ -216,7 +216,7 @@ class Export():
         newlist = []
         if not gui:
             for i in atoms:
-                newlist.append('{:4.4s} {:4.2s} {:>7.4f}  {:>7.4f}  {:>7.4f}'.format(*i))
+                newlist.append('{:4.4s} {:4d} {:>7.4f}  {:>7.4f}  {:>7.4f}'.format(*i))
         else:
             for i in atoms:
                 newlist.append('{};;{};;{};;{};;{}'.format(i[0], i[1], i[2], i[3], i[4]))

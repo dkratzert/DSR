@@ -56,6 +56,10 @@ class OptionsParser():
         return self._options.no_refine
 
     @property
+    def rigid_group(self):
+        return self._options.rigid_group
+
+    @property
     def export_fragment(self):
         return self._options.export_fragment
 
@@ -159,6 +163,8 @@ class OptionsParser():
                                 help=SUPPRESS, default=False)
         self.parser.add_argument("-x", dest="search_extern", \
                                 help=SUPPRESS, default=False)
+        self.parser.add_argument("-g", dest="rigid_group", help="keep group rigid (no restraints)", \
+                                action="store_true", default=False)
         self.parser.add_argument("-ac", dest="frag_for_gui", \
                                 help=SUPPRESS, default=False)
         self.parser.add_argument("-ah", dest="head_for_gui", \

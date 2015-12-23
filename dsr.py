@@ -51,8 +51,9 @@ class DSR():
     '''
     def __init__(self, res_file_name=None, external_restr=None, atom_coordinates=None,
                  export_fragment=None, search_string=None, search_extern=None,
-                 export_clip=None, import_grade=None, export_all=None,
+                 export_clip=None, import_grade=None, export_all=None, rigid=None,
                  list_db=None, no_refine=None, invert=None, list_db_csv=None, head_csv=None):
+
         '''
         :param res_file_name:  name of the SHELXL res file, like 'p21c.res'
         :type res_file_name:   string
@@ -124,6 +125,10 @@ class DSR():
             self.invert = self.options.invert
         else:
             self.invert = invert
+        if not rigid:
+            self.rigid = self.options.rigid_group
+        else:
+            self.rigid = rigid
         if not search_string:
             self.search_string = self.options.search_string
         else:
@@ -382,7 +387,7 @@ class DSR():
             flats = restr.get_formated_flats()
             dfix_head = dfix_12+dfix_13+flats
         afix = InsertAfix(reslist, dbatoms, db_atom_types, dbhead, dsr_dict,
-                          sfac_table, find_atoms, fragment_numberscheme, dfix_head)
+                          sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
         afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfix',
                                            resi)
         if dsr_line_number < fvarlines[-1]:
@@ -417,7 +422,8 @@ class DSR():
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
         shx.restore_acta_card(acta_lines)
         self.set_post_refine_cycles(shx, '8')
-        shx.remove_afix()   # removes the afix 9
+        if not self.options.rigid_group:
+            shx.remove_afix()   # removes the afix 9
         # final resfile write:
         rl.write_resfile(reslist, '.res')
 
