@@ -17,7 +17,7 @@ import os
 import sys
 import constants
 import fnmatch
-from resfile import ResList, ResListEdit, filename_wo_ending
+from resfile import ResList, ResListEdit
 from dsrparse import DSR_Parser
 from dbfile import global_DB
 from constants import RESTRAINT_CARDS
@@ -101,7 +101,7 @@ class InsertAfix(object):
     '''
 
     def __init__(self, reslist, dbatoms, fragment_atom_types, dbhead, dsr_line_dict, sfac_table,
-                find_atoms, numberscheme, dfix_head=False):
+                find_atoms, numberscheme, options, dfix_head=False):
         '''
         :param reslist:      list of the .res file
         :type reslist: list
@@ -205,6 +205,7 @@ AFIX 0\\nPART 0\\nRESI 0\\nrem The end of the DSR entry\\n\\n'
         self.source_atoms = dsr_line_dict['source']
         self.target_atoms = dsr_line_dict['target']
         self._dfix = dsr_line_dict['dfix']
+        self.options = options
 
 
     def insert_dsr_warning(self):
@@ -312,7 +313,7 @@ AFIX 0\\nPART 0\\nRESI 0\\nrem The end of the DSR entry\\n\\n'
         distance_and_other = self.distance_and_other_restraints(self._dbhead)
         distance = distance_and_other[0]
         other_head = distance_and_other[1]
-        if external_restraints:
+        if external_restraints and not self.options.rigid_group:
             # in case of dfix, write restraints to file after fragment fit
             self._dbhead = misc.wrap_headlines(distance)
             # returns the real name of the restraints file:
@@ -384,14 +385,22 @@ AFIX 0\\nPART 0\\nRESI 0\\nrem The end of the DSR entry\\n\\n'
             resinum = 'RESI 0\n'
         else:
             resinum = ''
-        if external_restraints:
+        if external_restraints and not self.options.rigid_group:
             if resi.get_residue_class:
                 self._dbhead.append('\nREM The restraints for residue {} are in this'\
                     ' file:\n+{}\n'.format(resi.get_residue_class, dfx_file_name))
             else:
                 self._dbhead.append('\nREM The restraints for this moiety are in this'\
                           ' file:\n+{}\n'.format(dfx_file_name))
-        self._dbhead = ''.join(self._dbhead)
+        if self.options.rigid_group:
+            if resi.get_residue_class:
+                self._dbhead = ''
+                self._dbhead = self._dbhead+'RESI {} {}\n'.format(
+                                        resi.get_residue_class, resi.get_resinumber)
+            else:
+                self._dbhead = ''
+        else:
+            self._dbhead = ''.join(self._dbhead)
         warn = self.insert_dsr_warning()
         afix = warn+self._dbhead+part+'AFIX '+str(afixnumber)+'\n'+atoms+(
                 '\nAFIX 0\n'+part2+resinum+'rem The end of the DSR entry\n\n')
@@ -434,10 +443,6 @@ if __name__ == '__main__':
     num = NumberScheme(reslist, dbatoms, resi)
     numberscheme = num.get_fragment_number_scheme()
 
-
-    afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, sfac_table, find_atoms, numberscheme)
-    afix.remove_duplicate_restraints(dbhead, 'PPh3')
-    #print(afix.build_afix_entry(False, res_file, '4'))
 
 
 
