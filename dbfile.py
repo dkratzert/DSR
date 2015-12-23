@@ -235,8 +235,8 @@ class global_DB():
         [['tbu-c', 1723, 'dsr_db', 'Tert-butyl-C'], ...]
         '''
         fraglist = []
-        fragments = OrderedDict(sorted(self._dbentry_dict.items(), key=lambda t: t[0]))
-        #fragments = sorted(self._dbentry_dict.keys())
+        #fragments = OrderedDict(sorted(self._dbentry_dict.items(), key=lambda t: t[0]))
+        fragments = sorted(self._dbentry_dict.keys())
         for frag in fragments:
             comment = self.get_comment_from_fragment(frag)
             line = [frag, self.get_line_number_from_fragment(frag), 
@@ -338,6 +338,16 @@ class global_DB():
             atoms = invert_dbatoms_coordinates(atoms)
         return atoms
 
+    def get_head_for_gui(self, fragment):
+        '''
+        '''
+        #print(self.db_dict[fragment]['name'])
+        print(self.get_comment_from_fragment(fragment))
+        print(self.get_src_from_fragment(fragment))
+        print(';;'.join(self.get_unit_cell(fragment)))
+        print(self.get_resi_from_fragment(fragment))
+        print(';;'.join(self.db_dict[fragment]['head']))
+            
 
     def check_consistency(self, fragment):
         '''
