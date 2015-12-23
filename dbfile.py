@@ -346,16 +346,20 @@ class global_DB():
     def get_head_for_gui(self, fragment):
         '''
         returns header information of the specific fragment:
+        Name, source, cell, resi, database_name, restraints
+        ----------------------------------------
         Acetone, C3H6O
         Gaussian 03, pbe1pbe/6-311+G(d), Ilia A. Guzei
         1;;1;;1;;90;;90;;90
         ACE
+        dsr_db
         SADI C1 C2 C2 C3;;FLAT O1 > C3;;SADI 0.04 C1 O1 C3 O1;;DFIX 2.6029 C1 C3;;SIMU O1 > C3;;RIGU O1 > C3
         '''
         print(self.get_comment_from_fragment(fragment))
         print(self.get_src_from_fragment(fragment))
         print(';;'.join(self.get_unit_cell(fragment)))
         print(self.get_resi_from_fragment(fragment))
+        print(self.get_db_name_from_fragment(fragment))
         print(';;'.join(self.db_dict[fragment]['head']))
             
 
