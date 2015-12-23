@@ -305,16 +305,14 @@ class Export():
             pass
         misc.remove_file(insfile) #platon runs faster if no ins file is present!
         misc.remove_file(self._fragment_name+'.png', exit_dsr=True)
-        if misc.which('platon'):
-            pass
-        else:
-            print('Could not write a .png image. No PLATON executable in PATH.')
-            sys.exit()
+        if not misc.which('platon'):
+            print('Could not write a .png image. No PLATON executable in PATH found.')
+            return None
         try:
             copyfile(resfile, insfile)
         except(IOError):
             print('unable to write .ins file for plotting!')
-            sys.exit(-1)
+            return None
         try:
             plat = subprocess.Popen(commandline, stdin = subprocess.PIPE,
                             stdout = subprocess.PIPE, stderr=subprocess.STDOUT, startupinfo=info)

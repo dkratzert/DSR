@@ -161,7 +161,7 @@ class DSR():
         if self.search_extern:
             result = search_fragment_name(self.search_extern)
             for i in result:
-                print('{};;{};;{}'.format(i[0], i[1], i[2]))
+                print('{};;{};;{};;{}'.format(i[0], i[1], i[2], i[3]))
             sys.exit()
         print(program_name)
         if self.list_db:
@@ -201,6 +201,7 @@ class DSR():
 
     def head_to_gui(self):
         '''
+        Exports current fragment header to the GUI
         '''
         gdb = global_DB(self.invert, fragment=self.head_csv)
         gdb.get_head_for_gui(self.head_csv)
@@ -208,7 +209,7 @@ class DSR():
 
     def export_to_gui(self):
         '''
-        Exports the current fragment tu GUI.
+        Exports the current fragment to the GUI.
         '''
         from export import Export
         self.export_fragment = self.frag_for_gui
@@ -219,7 +220,7 @@ class DSR():
     
     def do_export_fragment(self):
         '''
-        Exports the current fragment.
+        Exports the current fragment to a res file.
         '''
         from export import Export
         gdb = global_DB(self.invert)
