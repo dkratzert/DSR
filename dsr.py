@@ -45,8 +45,6 @@ program_name = '\n'+((width//2)-9)*'-'+\
 
 '''
 
-
-
 class DSR():
     '''
     main class
@@ -54,7 +52,7 @@ class DSR():
     def __init__(self, res_file_name=None, external_restr=None, atom_coordinates=None,
                  export_fragment=None, search_string=None, search_extern=None,
                  export_clip=None, import_grade=None, export_all=None,
-                 list_db=None, no_refine=None, invert=None, list_db_csv=None):
+                 list_db=None, no_refine=None, invert=None, list_db_csv=None, head_csv=None):
         '''
         :param res_file_name:  name of the SHELXL res file, like 'p21c.res'
         :type res_file_name:   string
@@ -136,12 +134,18 @@ class DSR():
             self.search_extern = self.options.search_extern
         else:
             self.search_extern = search_extern
+        if not head_csv:
+            self.head_csv = self.options.head_for_gui
+        else:
+            self.head_csv = head_csv
         if self.invert:
             if not any([self.res_file, self.external, self.import_grade,
                        self.export_clip, self.export_all, self.export_fragment]):
                 self.options.error()
         if self.frag_for_gui:
             self.export_to_gui()
+        if self.head_csv:
+            self.head_to_gui()
         #  List of database Fragments:
         if self.list_db_csv:
             gdb = global_DB()
@@ -190,6 +194,12 @@ class DSR():
 
 ###############################################################################
 
+    def head_to_gui(self):
+        '''
+        '''
+        gdb = global_DB(self.invert)
+        gdb.get_head_for_gui(self.head_csv)
+        sys.exit()
 
     def export_to_gui(self):
         '''

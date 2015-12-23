@@ -82,6 +82,10 @@ class OptionsParser():
     @property
     def frag_for_gui(self):
         return self._options.frag_for_gui
+    
+    @property
+    def head_for_gui(self):
+        return self._options.head_for_gui
 
     @property
     def invert(self):
@@ -145,17 +149,19 @@ class OptionsParser():
                                 help="inverts the current fragment", default=False)
         self.parser.add_argument("-i", dest="import_grade", metavar='"tgz file"', \
                                 help="import a fragment from GRADE (needs .tgz file)", default=False)
-        self.parser.add_argument("-ea", dest="export_all", action='store_true', \
-                                help=SUPPRESS, default=False)
-        self.parser.add_argument("-lc", dest="list_db_csv", action='store_true', \
-                                help=SUPPRESS, default=False)
         self.parser.add_argument("-l", dest="list_db", action="store_true", \
                                 help="list names of all database entries", default=False)
         self.parser.add_argument("-s", dest="search_string", metavar='"string"', \
                                 help="search the database for a name", default=False)
+        self.parser.add_argument("-ea", dest="export_all", action='store_true', \
+                                help=SUPPRESS, default=False)
+        self.parser.add_argument("-lc", dest="list_db_csv", action='store_true', \
+                                help=SUPPRESS, default=False)
         self.parser.add_argument("-x", dest="search_extern", \
                                 help=SUPPRESS, default=False)
         self.parser.add_argument("-ac", dest="frag_for_gui", \
+                                help=SUPPRESS, default=False)
+        self.parser.add_argument("-ah", dest="head_for_gui", \
                                 help=SUPPRESS, default=False)
         self.parser.add_argument("-n", dest="no_refine", action="store_true", \
                                 help="do not refine after fragment transfer", default=False)
