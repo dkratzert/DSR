@@ -202,7 +202,7 @@ class DSR():
     def head_to_gui(self):
         '''
         '''
-        gdb = global_DB(self.invert)
+        gdb = global_DB(self.invert, fragment=self.head_csv)
         gdb.get_head_for_gui(self.head_csv)
         sys.exit()
 
