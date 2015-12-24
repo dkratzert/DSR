@@ -16,15 +16,14 @@ from options import OptionsParser
 from constants import width, sep_line
 import logging
 from misc import reportlog, remove_file
-from dbfile import global_DB
+from dbfile import global_DB, search_fragment_name
 
 opts = OptionsParser()
 if not any([opts.list_db_csv, opts.search_extern, opts.frag_for_gui, \
             opts.head_for_gui, opts.export_all]):
     import os
     from dsrparse import DSR_Parser
-    from dbfile import ImportGRADE, search_fragment_name,\
-        print_search_results
+    from dbfile import ImportGRADE, print_search_results
     from atomhandling import SfacTable, get_atomtypes, check_source_target,\
         set_final_db_sfac_types, replace_after_fit
     from atomhandling import FindAtoms, NumberScheme
