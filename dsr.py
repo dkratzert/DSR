@@ -12,26 +12,31 @@
 #
 from __future__ import print_function
 import sys
-import os
-import logging
-from dsrparse import DSR_Parser
 from options import OptionsParser
-from dbfile import global_DB, ImportGRADE, search_fragment_name,\
-    print_search_results
-from atomhandling import SfacTable, get_atomtypes, check_source_target,\
-    set_final_db_sfac_types, replace_after_fit
-from atomhandling import FindAtoms, NumberScheme
-from resi import Resi
-from restraints import ListFile, Lst_Deviations
-from restraints import Restraints
-from misc import remove_file
-import misc
-from afix import InsertAfix
-from terminalsize import get_terminal_size
-from refine import ShelxlRefine
-import resfile
-from cf3fit import CF3
 from constants import width, sep_line
+import logging
+from misc import reportlog, remove_file
+from dbfile import global_DB
+
+opts = OptionsParser()
+if not any([opts.list_db_csv, opts.search_extern, opts.frag_for_gui, \
+            opts.head_for_gui, opts.export_all]):
+    import os
+    from dsrparse import DSR_Parser
+    from dbfile import ImportGRADE, search_fragment_name,\
+        print_search_results
+    from atomhandling import SfacTable, get_atomtypes, check_source_target,\
+        set_final_db_sfac_types, replace_after_fit
+    from atomhandling import FindAtoms, NumberScheme
+    from resi import Resi
+    from restraints import ListFile, Lst_Deviations
+    from restraints import Restraints
+    from afix import InsertAfix
+    from terminalsize import get_terminal_size
+    from refine import ShelxlRefine
+    import resfile
+    from cf3fit import CF3
+
 
 VERSION = '1.7.7'
 # dont forget to change version in Innoscript file, spec file and deb file.
@@ -201,10 +206,13 @@ class DSR():
 
     def head_to_gui(self):
         '''
-        Exports current fragment header to the GUI
+        Exports current fragment header and atoms to the GUI
         '''
+        from export import Export
         gdb = global_DB(self.invert, fragment=self.head_csv)
         gdb.get_head_for_gui(self.head_csv)
+        export = Export(self.head_csv, gdb, self.invert)
+        export.export_to_gui()
         sys.exit()
 
     def export_to_gui(self):
@@ -442,12 +450,12 @@ if __name__ == '__main__':
     cp.enable(subcalls=True, builtins=True)
     """
     try:
-        remove_file(misc.reportlog)
+        remove_file(reportlog)
         dsr = DSR()
     except Exception as e:
         import platform
-        logging.basicConfig(filename=misc.reportlog, filemode='w', level=logging.DEBUG)
-        remove_file(misc.reportlog)
+        logging.basicConfig(filename=reportlog, filemode='w', level=logging.DEBUG)
+        remove_file(reportlog)
         logging.info('DSR version: {}'.format(VERSION))
         logging.info('Python version: {}'.format(sys.version))
         try:
