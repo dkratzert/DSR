@@ -19,7 +19,6 @@ import copy
 import pyperclip
 from restraints import Restraints
 from atoms import Element
-from atomhandling import SfacTable
 
 
 __metaclass__ = type  # use new-style classes

@@ -11,16 +11,16 @@
 #
 from __future__ import print_function
 
-from collections import Counter, OrderedDict
+from collections import Counter
 import os, sys
 import re
 import tarfile
 
 from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
-import misc
 from atoms import Element
 from atomhandling import get_atomtypes
-from misc import atomic_distance, nalimov_test, std_dev, median
+from misc import atomic_distance, nalimov_test, std_dev, median, pairwise,\
+    unwrap_head_lines
 from copy import deepcopy
 
 
@@ -492,7 +492,7 @@ class global_DB():
                     return
                 if len(line)%2 == 1: # test for uneven atoms count
                     print('Inconsistent SADI restraint line {} of "{}". Not all atoms form a pair.'.format(num, fragment))   
-                pairs = misc.pairwise(line)
+                pairs = pairwise(line)
                 distances = []
                 pairlist = []
                 for i in pairs:  
@@ -557,7 +557,7 @@ class global_DB():
             line = line.upper()
             nhead.append(line)
         # nhead is list of strings
-        nhead = misc.unwrap_head_lines(nhead)
+        nhead = unwrap_head_lines(nhead)
         if not comment:
             comment = ['']
         try:
@@ -987,7 +987,7 @@ if __name__ == '__main__':
         # fragline = gl.get_fragline_from_fragment(fragment)  # full string of FRAG line
         # dbatoms = gl.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
         dbhead = gdb.get_head_from_fragment(fragment)  # this is only executed once
-        dbhead = misc.unwrap_head_lines(dbhead)
+        dbhead = unwrap_head_lines(dbhead)
         dbatoms = gdb.get_atoms_from_fragment(fragment)
         # print dbatoms
         # print('residue:', db['toluene']['resi'])
