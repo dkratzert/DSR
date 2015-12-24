@@ -218,7 +218,7 @@ class Export():
                 newlist.append('{:4.4s} {:4d} {:>7.4f}  {:>7.4f}  {:>7.4f}'.format(*i))
         else:
             for i in atoms:
-                newlist.append('{};;{};;{};;{};;{}'.format(i[0], i[1], i[2], i[3], i[4]))
+                newlist.append('{};;{};;{:>7.5f};;{:>7.5f};;{:>7.5f}'.format(i[0], i[1], i[2], i[3], i[4]))
         return newlist
 
 
