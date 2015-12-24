@@ -361,7 +361,7 @@ class global_DB():
         print(';;'.join(self.get_unit_cell(fragment)))
         print(self.get_resi_from_fragment(fragment))
         print(self.get_db_name_from_fragment(fragment))
-        print(';;'.join(self.db_dict[fragment]['head']))
+        print(';;'.join(self.db_dict[fragment]['head']), '\n')
             
 
     def check_consistency(self, fragment):
