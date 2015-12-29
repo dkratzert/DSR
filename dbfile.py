@@ -369,7 +369,10 @@ class global_DB():
         '''
         check if the fragline makes sense and if the fragment_dict is complete
         '''
-        dbentry = self.db_dict[fragment]
+        try:
+            dbentry = self.db_dict[fragment]
+        except KeyError:
+            print("Fragment {} not found in the database.".format(fragment))
         for i in dbentry:
             if i == 'comment':
                 continue
