@@ -60,7 +60,6 @@ class Export():
         except(KeyError):
             print('Fragment "{}" was not found in the database!!'.format(self._fragment_name))
             sys.exit()
-        self._head = self._gdb.get_head_from_fragment(self._fragment_name)
         self._resi = self._gdb.get_resi_from_fragment(self._fragment_name)
         self._comment = self._db['comment']
         self._dbatoms = self._db['atoms']
@@ -157,7 +156,7 @@ class Export():
         res_export.append('FVAR  1'+'\n')
         if not self._export_all:
             res_export.append('rem Restraints from DSR database:\n')
-            res_export.append( ''.join(wrap_headlines(self._head[:])) )
+            res_export.append( ''.join(wrap_headlines(self._gdb.get_head_from_fragment(self._fragment_name))) )
             res_export.append('rem Restraints from atom connectivities:\n')
             res_export.append(self.make_dfix())
             res_export.append('rem end of restraints\n')
