@@ -359,6 +359,7 @@ class global_DB():
         self.check_consistency(fragment)
         self.check_db_header_consistency(fragment)
         self.check_sadi_consistence(fragment)
+        self.check_db_atom_consistency(fragment)
         print(self.get_comment_from_fragment(fragment))
         print(self.get_src_from_fragment(fragment))
         print(';;'.join(self.get_unit_cell(fragment)))
@@ -414,22 +415,17 @@ class global_DB():
 
     def check_db_atom_consistency(self, fragment):
         '''This method is for atoms only (without db header)!
-          check the db for different types of errors:
+          check the db for duplicates:
         '''
-        dbatoms = self.get_atoms_from_fragment(fragment)
+        dbatoms = [i[0] for i in self.get_atoms_from_fragment(fragment)]
         # check for duplicates:
-        atoms = []
-        for i in dbatoms:
-            i[1] = str(i[1])
-            line = ' '.join(i)
-            at = line.split()[0]
-            if at in atoms:
+        while dbatoms:
+            at = dbatoms.pop()
+            if at in dbatoms:
                 print('duplicate atom {0} in database entry "{1}" '\
                     'found!'.format(at, fragment))
+                print("Check your database...")
                 sys.exit(-1)
-            else:
-                atoms.append(at)
-                continue
 
     def check_db_header_consistency(self, fragment):
         '''
@@ -454,7 +450,7 @@ class global_DB():
                 status = False
                 print('Bad line in header of database entry "{}" found! ({}.txt)'.format(fragment, db))
                 print(line)
-                sys.exit(status)
+                #sys.exit(status)
             if line[:4] in RESTRAINT_CARDS:
                 line = line[5:].split()
                 for i in line:
@@ -468,9 +464,10 @@ class global_DB():
             atom = atom.upper()
             if not atom in atoms:
                 status = False
-                print('\nBad atom "{}" in restraints of "{}".'.format(atom, fragment))
+                print('\nUnknown atom "{}" in restraints of "{}".'.format(atom, fragment))
         if not status:
             print('Check database entry.\n')
+            sys.exit(status)
         return status
     
     def check_sadi_consistence(self, fragment):
