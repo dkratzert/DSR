@@ -440,10 +440,11 @@ class global_DB():
         fragment = fragment.lower()
         restraints = self.db_dict[fragment]['head']
         atoms = self.get_atoms_from_fragment(fragment)
+        db = self.get_db_name_from_fragment(fragment)
         status = True
         atoms = [i[0].upper() for i in atoms]
         restraint_atoms_list = set([])
-        for n, line in enumerate(restraints):
+        for line in restraints:
             if not line:
                 continue
             line = line.upper()
@@ -451,7 +452,7 @@ class global_DB():
             # only the first 4 characters, because SADI_TOL would be bad:
             if line2[0] not in SHX_CARDS:  
                 status = False
-                print('Bad line in header of database entry "{}" found! '.format(n, fragment))
+                print('Bad line in header of database entry "{}" found! ({}.txt)'.format(fragment, db))
                 print(line)
                 sys.exit(status)
             if line[:4] in RESTRAINT_CARDS:
