@@ -357,6 +357,8 @@ class global_DB():
         SADI C1 C2 C2 C3;;FLAT O1 > C3;;SADI 0.04 C1 O1 C3 O1;;DFIX 2.6029 C1 C3;;SIMU O1 > C3;;RIGU O1 > C3
         '''
         self.check_consistency(fragment)
+        self.check_db_header_consistency(fragment)
+        self.check_sadi_consistence(fragment)
         print(self.get_comment_from_fragment(fragment))
         print(self.get_src_from_fragment(fragment))
         print(';;'.join(self.get_unit_cell(fragment)))
