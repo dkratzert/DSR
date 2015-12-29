@@ -373,6 +373,7 @@ class global_DB():
             dbentry = self.db_dict[fragment]
         except KeyError:
             print("Fragment {} not found in the database.".format(fragment))
+            sys.exit()
         for i in dbentry:
             if i == 'comment':
                 continue
