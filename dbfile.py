@@ -356,6 +356,7 @@ class global_DB():
         dsr_db
         SADI C1 C2 C2 C3;;FLAT O1 > C3;;SADI 0.04 C1 O1 C3 O1;;DFIX 2.6029 C1 C3;;SIMU O1 > C3;;RIGU O1 > C3
         '''
+        self.check_consistency(fragment)
         print(self.get_comment_from_fragment(fragment))
         print(self.get_src_from_fragment(fragment))
         print(';;'.join(self.get_unit_cell(fragment)))
@@ -444,7 +445,7 @@ class global_DB():
             # only the first 4 characters, because SADI_TOL would be bad:
             if line2[0] not in SHX_CARDS:  
                 status = False
-                print('Bad line in header of database entry "{}" found!'.format(n, fragment))
+                print('Bad line in header of database entry "{}" found! '.format(n, fragment))
                 print(line)
                 sys.exit(status)
             if line[:4] in RESTRAINT_CARDS:
