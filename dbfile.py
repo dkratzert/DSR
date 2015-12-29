@@ -166,7 +166,7 @@ class ReadDB():
                 # print list(set([ i for y in dbnames if y for y in i]))[0]
                 # print dbnames
                 print('\nDuplicate database entry "{}" found! Please remove/rename '\
-                    'second entry\nand/or check all end tags.\n'.format(duplicates.pop()))
+                    'second entry\nand/or check all end tags in the database.\n'.format(duplicates.pop()))
             sys.exit(False)
         # # sort lower-case:
         dbnames.sort(key=lambda x: x[0].lower())
@@ -333,12 +333,12 @@ class global_DB():
                 if l[0].upper() not in SHX_CARDS:  # exclude all non-atom cards
                     atoms.append(l)
         if not atoms:
-            print('database entry of "{}" in line {} of "{}.txt" is corrupt. No atoms found!'.format(fragment, line, db_name))
+            print('Database entry of "{}" in line {} of "{}.txt" is corrupt. No atoms found!'.format(fragment, line, db_name))
             print('Have you really followed the syntax?')
             sys.exit(False)
         if not end:
             print('Could not find end of dbentry for fragment '\
-                '"{}" in line {} of "{}.txt".  Exiting...'.format(fragment, line, db_name))
+                '"{}" in line {} of "{}.txt". Check your database.'.format(fragment, line, db_name))
             sys.exit(False)
         if self.invert:
             atoms = invert_dbatoms_coordinates(atoms)
@@ -374,11 +374,11 @@ class global_DB():
                 continue
             if not dbentry[i]:
                 if i == 'head':
-                    print('- Restraints in the header of database entry "{}" missing!\n'\
+                    print('- Restraints in the header of database entry "{}" missing!\n Check your Database!'\
                         ''.format(fragment))
                     return False
                 else:
-                    print('- Values for "{}" in database entry "{}" missing!'\
+                    print('- Values for "{}" in database entry "{}" missing! Check your Database!'\
                         ''.format(str.upper(i), fragment))
                     return False
         if len(dbentry['fragline']) != 8:
@@ -591,7 +591,7 @@ class global_DB():
         try:
             return self._dbentry_dict[fragment.lower()]['atoms']
         except KeyError:
-            print('could not find {} in database.'.format(fragment))
+            print('Could not find {} in database.'.format(fragment))
             self.search_for_error_response(fragment)
             sys.exit()
 
@@ -631,7 +631,7 @@ class global_DB():
         try:
             head = self._dbentry_dict[fragment]['head']
         except KeyError:
-            print('could not find {} in database.'.format(fragment))
+            print('Could not find {} in database.'.format(fragment))
             self.search_for_error_response(fragment)
         self.check_db_header_consistency(fragment)
         self.check_sadi_consistence(fragment)
