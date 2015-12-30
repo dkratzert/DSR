@@ -205,9 +205,12 @@ class DSR():
         '''
         from export import Export
         gdb = global_DB(self.invert, fragment=self.head_csv)
-        gdb.get_head_for_gui(self.head_csv)
         export = Export(self.head_csv, gdb, self.invert)
-        export.export_to_gui()
+        atoms = export.export_to_gui()
+        if not atoms:
+            sys.exit()
+        gdb.get_head_for_gui(self.head_csv)
+        print(atoms)
         sys.exit()
 
     def export_to_gui(self):
@@ -215,10 +218,12 @@ class DSR():
         Exports the current fragment to the GUI.
         '''
         from export import Export
-        self.export_fragment = self.frag_for_gui
         gdb = global_DB(self.invert)
         export = Export(self.export_fragment, gdb, self.invert)
-        export.export_to_gui()
+        atoms = export.export_to_gui()
+        self.export_fragment = self.frag_for_gui
+        if not atoms:
+            sys.exit()
         sys.exit()
     
     def do_export_fragment(self):

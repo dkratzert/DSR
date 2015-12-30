@@ -238,7 +238,7 @@ class Export():
         '''
         atoms = self.format_atoms_for_export(gui=True)
         atoms = '\n'.join(atoms)
-        print(atoms)
+        return atoms
 
 
     def file_is_opened(self, base, ending):
