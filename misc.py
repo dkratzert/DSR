@@ -12,7 +12,7 @@
 from __future__ import print_function
 import string
 import re
-import os
+import os, sys
 from constants import atomregex, SHX_CARDS
 from math import cos, sqrt, radians, sin
 import shutil
