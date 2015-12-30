@@ -35,7 +35,6 @@ class DSR_Parser():
         :param rle:  ResList() object
         '''
         self._reslist = reslist
-        self._HKLF_endline = misc.find_line(self._reslist, r'^HKLF\s+[1-6]')
         self._rle = rle
         self._dsr_regex = '^rem\s{1,5}DSR\s{1,5}.*'
         self._dsr_string = self.find_dsr_command(line=True).lower()
@@ -64,18 +63,19 @@ class DSR_Parser():
         default or the text string when line is set to True
         :param line: bool
         '''
+        HKLF_endline = misc.find_line(self._reslist, r'^HKLF\s+[1-6]')
         dsr_str = ''
         multiline = False
         indexnum = misc.find_multi_lines(self._reslist, self._dsr_regex)
         try:
-            line_number = int(indexnum[0])+1
+            line_number = int(indexnum[0])
         except(IndexError):
             print(' no proper DSR command found! \n\n '
                     'Have you really saved your .res file?\n')
             sys.exit()
-        if int(line_number) > int(self._HKLF_endline):
+        if int(line_number) > int(HKLF_endline):
             print('A DSR command after HKLF is not allowed! '
-                    'Check line {}'.format(line_number))
+                    'Check line {}'.format(line_number+1))
             sys.exit()
         if len(indexnum) > 1:
             print('Only one DSR command at once is allowed! Exiting...')
