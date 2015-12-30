@@ -601,8 +601,12 @@ def frac_to_cart(frac_coord, cell):
     alpha = radians(alpha)
     beta = radians(beta)
     gamma = radians(gamma)
-    cosastar = (cos(beta) * cos(gamma) - cos(alpha)) / (sin(beta) * sin(gamma))
-    sinastar = sqrt(1 - cosastar ** 2)
+    try:
+        cosastar = (cos(beta) * cos(gamma) - cos(alpha)) / (sin(beta) * sin(gamma))
+        sinastar = sqrt(1 - cosastar ** 2)
+    except ValueError:
+        print("Malformed unit cell parameters found! Please correct database entry.")
+        sys.exit()
     Xc = a * x + (b * cos(gamma)) * y + (c * cos(beta)) * z
     Yc = 0 + (b * sin(gamma)) * y + (-c * sin(beta) * cosastar) * z
     Zc = 0 + 0 + (c * sin(beta) * sinastar) * z
