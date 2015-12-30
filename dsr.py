@@ -12,29 +12,25 @@
 #
 from __future__ import print_function
 import sys
+import os
 from options import OptionsParser
 from constants import width, sep_line
 from misc import reportlog, remove_file
 from dbfile import global_DB, search_fragment_name
 
-opts = OptionsParser()
-# This prevents imports of unused modules for external GUI actions:
-if not any([opts.list_db_csv, opts.search_extern, opts.frag_for_gui, \
-            opts.head_for_gui, opts.export_all]):
-    import os
-    from dsrparse import DSR_Parser
-    from dbfile import ImportGRADE, print_search_results
-    from atomhandling import SfacTable, get_atomtypes, check_source_target,\
-        set_final_db_sfac_types, replace_after_fit
-    from atomhandling import FindAtoms, NumberScheme
-    from resi import Resi
-    from restraints import ListFile, Lst_Deviations
-    from restraints import Restraints
-    from afix import InsertAfix
-    from terminalsize import get_terminal_size
-    from refine import ShelxlRefine
-    import resfile
-    from cf3fit import CF3
+from dsrparse import DSR_Parser
+from dbfile import ImportGRADE, print_search_results
+from atomhandling import SfacTable, get_atomtypes, check_source_target,\
+    set_final_db_sfac_types, replace_after_fit
+from atomhandling import FindAtoms, NumberScheme
+from resi import Resi
+from restraints import ListFile, Lst_Deviations
+from restraints import Restraints
+from afix import InsertAfix
+from terminalsize import get_terminal_size
+from refine import ShelxlRefine
+import resfile
+from cf3fit import CF3
 
 
 VERSION = '1.7.7'
