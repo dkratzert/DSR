@@ -358,7 +358,8 @@ class global_DB():
         '''
         self.check_consistency(fragment)
         self.check_db_header_consistency(fragment)
-        self.check_sadi_consistence(fragment)
+        if not self.check_sadi_consistence(fragment):
+            sys.exit()
         self.check_db_atom_consistency(fragment)
         print(self.get_comment_from_fragment(fragment))
         print(self.get_src_from_fragment(fragment))
@@ -521,6 +522,8 @@ class global_DB():
                             pair = ' '.join(pairlist[x])
                             print('Suspicious deviation in atom pair "{}" ({:4.3f} A, median: {:4.3f}) of SADI line {}.'.format(pair, distances[x], median(distances), num+1))
                             print(restr[num][:60], '...')
+                            return False
+        return True
                         
     
     def get_head_lines(self, fragment, db, line):
