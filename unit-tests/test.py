@@ -304,10 +304,12 @@ class NumberSchemeTest(unittest.TestCase):
 class insertAfixTest(unittest.TestCase):
     def setUp(self):
         import db
+        from options import OptionsParser
         self.maxDiff = None
         self.res_file = 'p21c.res'
         testresfile = './p21c.res'
         invert = True
+        self.options = OptionsParser()
         self.rl = ResList(testresfile)
         self.reslist = self.rl.get_res_list()
         self.dsrp = DSR_Parser(self.reslist, self.rl)
@@ -334,7 +336,8 @@ class insertAfixTest(unittest.TestCase):
     def testrun_afix(self):
         self.maxDiff = None
         afix = InsertAfix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead, \
-                          self.dsr_dict, self.sfac_table, self.find_atoms, self.numberscheme)
+                          self.dsr_dict, self.sfac_table, self.find_atoms, \
+                          self.numberscheme, self.options)
         afix_extern_entry = afix.build_afix_entry(True, 'dsr_CF3_p21c.dfix', self.resi)
         #afix_intern_entry = afix.build_afix_entry(False, 'TEST', self.resi)
         #self.assertEqual(afix_intern_entry, self.intern)
@@ -344,6 +347,8 @@ class insertAfixTest(unittest.TestCase):
 class removeDublicatesAfixTest(unittest.TestCase):
     def setUp(self):
         #self.verbosity = 4
+        from options import OptionsParser
+        self.options = OptionsParser()
         self.res_file = './collect_resi.res'
         self.res_list = ResList(self.res_file)
         self.reslist =  self.res_list.get_res_list()
@@ -363,7 +368,7 @@ class removeDublicatesAfixTest(unittest.TestCase):
         self.num = NumberScheme(self.reslist, self.dbatoms, self.resi)
         self.numberscheme = self.num.get_fragment_number_scheme()
         self.afix = InsertAfix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead, \
-                          self.dsr_dict, self.sfac_table, self.find_atoms, self.numberscheme)
+                          self.dsr_dict, self.sfac_table, self.find_atoms, self.numberscheme, self.options)
         self.db_testhead = ['SADI_CCF3 C1 C2 C1 C3 C1 C4', 'SADI_CCF3 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ',
                             'REM test']
         self.db_testhead2 = ['SADI_CF3 C1 C2 C1 C3 C1 C4 ', 'SADI_CF3 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ']
