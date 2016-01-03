@@ -227,12 +227,13 @@ class DSR():
         if not atoms:
             sys.exit()
         #try:
+        # prints most of the needed info:
         gdb.get_head_for_gui(self.head_csv)
         #except:
         #    print("Could not read the database.")
         #    print(helpmsg)
         #    sys.exit()
-        print(atoms)
+        print('<atoms>\n', atoms, '\n</atoms>')
         sys.exit()
 
     def export_to_gui(self):
@@ -362,6 +363,10 @@ class DSR():
         dsr_dict = dsrp.get_dsr_dict
         fvarlines = rle.find_fvarlines()
         fragment = dsrp.fragment.lower()
+        gdb.check_consistency(fragment)
+        gdb.check_db_atom_consistency(fragment)
+        gdb.check_db_header_consistency(fragment)
+        gdb.check_sadi_consistence(fragment)
         if fragment in ['cf3', 'cf6', 'cf9']:
             dbhead = 'RESI CF3'
             db_residue_string = 'CF3'
