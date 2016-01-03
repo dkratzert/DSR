@@ -85,12 +85,16 @@ class OptionsParser():
     
     @property
     def frag_for_gui(self):
-        frag = self._options.frag_for_gui
+        frag = False
+        if self._options.frag_for_gui:
+            frag = self._options.frag_for_gui.lower()
         return frag
     
     @property
     def head_for_gui(self):
-        frag = self._options.head_for_gui.lower()
+        frag = False
+        if self._options.head_for_gui:
+            frag = self._options.head_for_gui.lower()
         return frag
 
     @property
@@ -159,14 +163,14 @@ class OptionsParser():
                                 help="list names of all database entries", default=False)
         self.parser.add_argument("-s", dest="search_string", metavar='"string"', \
                                 help="search the database for a name", default=False)
+        self.parser.add_argument("-g", dest="rigid_group", help="keep group rigid (no restraints)", \
+                                action="store_true", default=False)
         self.parser.add_argument("-ea", dest="export_all", action='store_true', \
                                 help=SUPPRESS, default=False)
         self.parser.add_argument("-lc", dest="list_db_csv", action='store_true', \
                                 help=SUPPRESS, default=False)
         self.parser.add_argument("-x", dest="search_extern", \
                                 help=SUPPRESS, default=False)
-        self.parser.add_argument("-g", dest="rigid_group", help="keep group rigid (no restraints)", \
-                                action="store_true", default=False)
         self.parser.add_argument("-ac", dest="frag_for_gui", \
                                 help=SUPPRESS, default=False)
         self.parser.add_argument("-ah", dest="head_for_gui", \
