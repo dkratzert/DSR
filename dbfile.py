@@ -357,7 +357,7 @@ class global_DB():
         SADI C1 C2 C2 C3;;FLAT O1 > C3;;SADI 0.04 C1 O1 C3 O1;;DFIX 2.6029 C1 C3;;SIMU O1 > C3;;RIGU O1 > C3
         '''
         fragment = fragment.lower()
-        self.check_consistency(fragment)
+        #self.check_consistency(fragment) # too many critical errors with GUI
         self.check_db_header_consistency(fragment)
         if not self.check_sadi_consistence(fragment):
             sys.exit()
