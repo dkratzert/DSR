@@ -85,11 +85,13 @@ class OptionsParser():
     
     @property
     def frag_for_gui(self):
-        return self._options.frag_for_gui
+        frag = self._options.frag_for_gui
+        return frag
     
     @property
     def head_for_gui(self):
-        return self._options.head_for_gui
+        frag = self._options.head_for_gui.lower()
+        return frag
 
     @property
     def invert(self):

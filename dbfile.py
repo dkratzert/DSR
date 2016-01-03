@@ -356,6 +356,7 @@ class global_DB():
         dsr_db
         SADI C1 C2 C2 C3;;FLAT O1 > C3;;SADI 0.04 C1 O1 C3 O1;;DFIX 2.6029 C1 C3;;SIMU O1 > C3;;RIGU O1 > C3
         '''
+        fragment = fragment.lower()
         self.check_consistency(fragment)
         self.check_db_header_consistency(fragment)
         if not self.check_sadi_consistence(fragment):
@@ -374,7 +375,7 @@ class global_DB():
         check if the fragline makes sense and if the fragment_dict is complete
         '''
         try:
-            dbentry = self.db_dict[fragment]
+            dbentry = self.db_dict[fragment.lower()]
         except KeyError:
             print("Fragment {} not found in the database.".format(fragment))
             sys.exit()

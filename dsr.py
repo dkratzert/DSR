@@ -208,9 +208,10 @@ class DSR():
         helpmsg = "Please ask daniel.kratzert@ac.uni-freiburg.de for help."
         try:
             gdb = global_DB(self.invert, fragment=self.head_csv)
-        except:
+        except Exception as e:  # @UnusedVariable
             print("Initializing the database failed.")
             print(helpmsg)
+            #print(e)
             sys.exit()
         try:
             export = Export(self.head_csv, gdb, self.invert)
