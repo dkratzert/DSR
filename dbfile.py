@@ -502,6 +502,8 @@ class global_DB():
                 pairs = pairwise(line)
                 distances = []
                 pairlist = []
+                if len(pairs) <= 2:
+                    return True
                 for i in pairs:  
                     pairlist.append(i)
                     try:
