@@ -166,7 +166,7 @@ class ReadDB():
                 # print list(set([ i for y in dbnames if y for y in i]))[0]
                 # print dbnames
                 print('\nDuplicate database entry "{}" found! Please remove/rename '\
-                    'second entry\nand/or check all end tags in the database.\n'.format(duplicates.pop()))
+                    'second entry\nand/or check all end tags in the database dsr_usr_db.txt or dsr_db.txt.\n'.format(duplicates.pop()))
             sys.exit(False)
         # # sort lower-case:
         dbnames.sort(key=lambda x: x[0].lower())
