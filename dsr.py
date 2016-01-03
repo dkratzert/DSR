@@ -226,12 +226,12 @@ class DSR():
             print(helpmsg)
         if not atoms:
             sys.exit()
-        try:
-            gdb.get_head_for_gui(self.head_csv)
-        except:
-            print("Could not read the database.")
-            print(helpmsg)
-            sys.exit()
+        #try:
+        gdb.get_head_for_gui(self.head_csv)
+        #except:
+        #    print("Could not read the database.")
+        #    print(helpmsg)
+        #    sys.exit()
         print(atoms)
         sys.exit()
 
