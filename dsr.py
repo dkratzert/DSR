@@ -204,24 +204,45 @@ class DSR():
         Exports current fragment header and atoms to the GUI
         '''
         from export import Export
-        gdb = global_DB(self.invert, fragment=self.head_csv)
-        export = Export(self.head_csv, gdb, self.invert)
-        atoms = export.export_to_gui()
+        atoms = []
+        helpmsg = "Please ask daniel.kratzert@ac.uni-freiburg.de for help."
+        try:
+            gdb = global_DB(self.invert, fragment=self.head_csv)
+        except:
+            print("Initializing the database failed.")
+            print(helpmsg)
+            sys.exit()
+        try:
+            export = Export(self.head_csv, gdb, self.invert)
+        except:
+            print("Unable to export informations from DSR.")
+            print(helpmsg)
+            sys.exit()
+        try:
+            atoms = export.export_to_gui()
+        except:
+            print("Could not get atom information.")
+            print(helpmsg)
         if not atoms:
             sys.exit()
-        gdb.get_head_for_gui(self.head_csv)
+        try:
+            gdb.get_head_for_gui(self.head_csv)
+        except:
+            print("Could not read the database.")
+            print(helpmsg)
+            sys.exit()
         print(atoms)
         sys.exit()
 
     def export_to_gui(self):
         '''
-        Exports the current fragment to the GUI.
+        Exports the current fragment atoms to the GUI.
         '''
         from export import Export
         gdb = global_DB(self.invert)
+        self.export_fragment = self.frag_for_gui
         export = Export(self.export_fragment, gdb, self.invert)
         atoms = export.export_to_gui()
-        self.export_fragment = self.frag_for_gui
         if not atoms:
             sys.exit()
         sys.exit()
