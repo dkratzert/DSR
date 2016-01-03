@@ -521,7 +521,7 @@ class global_DB():
                         print("\n{}:".format(fragment))
                         for x in outliers:
                             pair = ' '.join(pairlist[x])
-                            print('Suspicious deviation in atom pair "{}" ({:4.3f} A, median: {:4.3f}) of SADI line {}.'.format(pair, distances[x], median(distances), num+1))
+                            print('Suspicious deviation in atom pair "{}" ({:4.3f} A, median: {:4.3f}) of SADI line {}:'.format(pair, distances[x], median(distances), num+1))
                             print(restr[num][:60], '...')
                             return False
         return True
