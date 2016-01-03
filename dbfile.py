@@ -364,7 +364,7 @@ class global_DB():
         self.check_db_atom_consistency(fragment)
         print(self.get_comment_from_fragment(fragment))
         print(self.get_src_from_fragment(fragment))
-        print(';;'.join(self.get_unit_cell(fragment)))
+        print('1;;1;;1;;90;;90;;90') # it returns cartesian coordinates, so we need this cell here
         print(self.get_resi_from_fragment(fragment))
         print(self.get_db_name_from_fragment(fragment))
         print(';;'.join(self.db_dict[fragment]['head']), '\n')
