@@ -362,12 +362,14 @@ class global_DB():
         if not self.check_sadi_consistence(fragment):
             sys.exit()
         self.check_db_atom_consistency(fragment)
-        print(self.get_comment_from_fragment(fragment))
-        print(self.get_src_from_fragment(fragment))
-        print('1;;1;;1;;90;;90;;90') # it returns cartesian coordinates, so we need this cell here
-        print(self.get_resi_from_fragment(fragment))
-        print(self.get_db_name_from_fragment(fragment))
-        print(';;'.join(self.db_dict[fragment]['head']), '\n')
+        print("<tag>\n", fragment, "\n</tag>")
+        print("<comment>\n", self.get_comment_from_fragment(fragment), "\n</comment>")
+        print("<source>\n", self.get_src_from_fragment(fragment), "\n</source>")
+        # it returns cartesian coordinates, so we need this cell here:
+        print("<cell>\n", '1;;1;;1;;90;;90;;90', "\n</cell>") 
+        print("<residue>\n", self.get_resi_from_fragment(fragment), "\n</residue>")
+        print("<dbtype>\n", self.get_db_name_from_fragment(fragment), "\n</dbtype>")
+        print('<restr>\n', ';;'.join(self.db_dict[fragment]['head']), '\n', '</restr>')
             
 
     def check_consistency(self, fragment):
