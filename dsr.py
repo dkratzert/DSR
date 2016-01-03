@@ -216,7 +216,7 @@ class DSR():
             export = Export(self.head_csv, gdb, self.invert)
         except:
             print("Unable to export informations from DSR.")
-            print(helpmsg)
+            #print(helpmsg)
             sys.exit()
         try:
             atoms = export.export_to_gui()
