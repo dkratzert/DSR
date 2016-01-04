@@ -347,14 +347,38 @@ class global_DB():
     def get_head_for_gui(self, fragment):
         '''
         returns header information of the specific fragment:
-        Name, source, cell, resi, database_name, restraints
+        tag, Name/comment, source, cell, residue, dbtype, restr, atoms
         ----------------------------------------
-        Acetone, C3H6O
-        Gaussian 03, pbe1pbe/6-311+G(d), Ilia A. Guzei
-        1;;1;;1;;90;;90;;90
-        ACE
-        dsr_db
-        SADI C1 C2 C2 C3;;FLAT O1 > C3;;SADI 0.04 C1 O1 C3 O1;;DFIX 2.6029 C1 C3;;SIMU O1 > C3;;RIGU O1 > C3
+        <tag>
+         toluene 
+        </tag>
+        <comment>
+         Toluene, C7H8 
+        </comment>
+        <source>
+         CCDC CESLUJ 
+        </source>
+        <cell>
+         1;;1;;1;;90;;90;;90 
+        </cell>
+        <residue>
+         TOL 
+        </residue>
+        <dbtype>
+         dsr_db 
+        </dbtype>
+        <restr>
+         SADI C2 C3 C3 C4 C4 C5 C5 C6 C6 C7 C7 C2;;SADI 0.04 C2 C6 C2 C4 C7 C5 C3 C7 C4 C6 C3 C5;;DFIX 1.51 C1 C2;;SADI 0.04 C1 C7 C1 C3;;FLAT C1 > C7;;SIMU C1 > C7;;RIGU C1 > C7 
+         </restr>
+        <atoms>
+         C1;;6;;1.78099;;7.14907;;12.00423
+        C2;;6;;2.20089;;8.30676;;11.13758
+        C3;;6;;1.26895;;9.02168;;10.39032
+        C4;;6;;1.64225;;10.07768;;9.58845
+        C5;;6;;2.98081;;10.44432;;9.51725
+        C6;;6;;3.92045;;9.74974;;10.25408
+        C7;;6;;3.53891;;8.69091;;11.05301 
+        </atoms>
         '''
         fragment = fragment.lower()
         #self.check_consistency(fragment) # too many critical errors with GUI
