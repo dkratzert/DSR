@@ -204,7 +204,7 @@ class Export():
         cell = [float(x) for x in cell]
         atoms = self._clipatoms
         for line in atoms:
-            if line[1] < 0:
+            if int(line[1]) < 0:
                 line[1] = abs(int(line[1]))
             else:
                 line[1] = el.get_atomic_number(el.get_atomlabel(line[0]))
