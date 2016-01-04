@@ -224,16 +224,9 @@ class DSR():
         except:
             print("Could not get atom information.")
             print(helpmsg)
-        if not atoms:
-            sys.exit()
-        #try:
+        print('<atoms>\n', atoms, '\n</atoms>')
         # prints most of the needed info:
         gdb.get_head_for_gui(self.head_csv)
-        #except:
-        #    print("Could not read the database.")
-        #    print(helpmsg)
-        #    sys.exit()
-        print('<atoms>\n', atoms, '\n</atoms>')
         sys.exit()
 
     def export_to_gui(self):
