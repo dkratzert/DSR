@@ -217,7 +217,7 @@ class Export():
                 newlist.append('{:4.4s} {:4d} {:>7.4f}  {:>7.4f}  {:>7.4f}'.format(*i))
         else:
             for i in atoms:
-                newlist.append('{};;{};;{:>7.5f};;{:>7.5f};;{:>7.5f}'.format(i[0], i[1], i[2], i[3], i[4]))
+                newlist.append('{} {} {:>7.5f} {:>7.5f} {:>7.5f}'.format(i[0], i[1], i[2], i[3], i[4]))
         return newlist
 
 
@@ -237,7 +237,7 @@ class Export():
         exports atoms to output for the DSRGui
         '''
         atoms = self.format_atoms_for_export(gui=True)
-        atoms = '\n'.join(atoms)
+        atoms = ';;'.join(atoms)
         return atoms
 
 
