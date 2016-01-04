@@ -381,11 +381,6 @@ class global_DB():
         </atoms>
         '''
         fragment = fragment.lower()
-        #self.check_consistency(fragment) # too many critical errors with GUI
-        self.check_db_header_consistency(fragment)
-        if not self.check_sadi_consistence(fragment):
-            sys.exit()
-        self.check_db_atom_consistency(fragment)
         print("<tag>\n", fragment, "\n</tag>")
         print("<comment>\n", self.get_comment_from_fragment(fragment), "\n</comment>")
         print("<source>\n", self.get_src_from_fragment(fragment), "\n</source>")
@@ -394,7 +389,11 @@ class global_DB():
         print("<residue>\n", self.get_resi_from_fragment(fragment), "\n</residue>")
         print("<dbtype>\n", self.get_db_name_from_fragment(fragment), "\n</dbtype>")
         print('<restr>\n', ';;'.join(self.db_dict[fragment]['head']), '\n', '</restr>')
-            
+        self.check_consistency(fragment) # too many critical errors with GUI
+        self.check_db_header_consistency(fragment)
+        if not self.check_sadi_consistence(fragment):
+            sys.exit()
+        self.check_db_atom_consistency(fragment)    
 
     def check_consistency(self, fragment):
         '''
