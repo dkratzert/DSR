@@ -1,4 +1,6 @@
 Recent changes
+-1.8.0  Final export format for the ShelXle GUI. Faster start in Windows. Many small fixes.
+        Improved error messages.
 -1.7.7  New output format for DSRGui. New command line option for rigid group.
 -1.7.6  Huge improvement in SADI consistency checker. Some new fragments NBt4+ NMe4+ C20. Small fixes.
 -1.7.5  Also move fluorine atoms in direction of principal ellipsoid axis with SPLIT option 
@@ -7,7 +9,7 @@ Recent changes
         Added Anthracene and 9,10-Dibromoanthracene.
         Better formating of DFIX/DANG list with dfix option turned on.
         Fixed bug with occ=0.25
-        Addedd C60 (with restraints) and C70 (with restraints, used dfix option).
+        Addedd C60 (with restraints) and C70 (without restraints, use dfix option).
         Some more unit tests.
 -1.7.3  Small fix regarding FVAR with CF6 fragment. 
 -1.7.2  Added [2.2.2]-cryptand to database. Tanks to Dejan Premuzic! Added Ability to compute

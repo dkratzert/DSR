@@ -33,7 +33,7 @@ import resfile
 from cf3fit import CF3
 
 
-VERSION = '1.7.7'
+VERSION = '1.8.0'
 # dont forget to change version in Innoscript file, spec file and deb file.
 
 program_name = '\n'+((width//2)-9)*'-'+\
@@ -155,6 +155,7 @@ class DSR():
         if self.list_db_csv:
             gdb = global_DB()
             frags = gdb.list_fragments()
+            print('DSR version:', VERSION)
             for i in frags:
                 print('{};;{};;{};;{}'.format(i[0], i[3], i[1], i[2]))
             sys.exit()  
