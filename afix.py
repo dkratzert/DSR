@@ -401,9 +401,9 @@ AFIX 0\\nPART 0\\nRESI 0\\nrem The end of the DSR entry\\n\\n'
                 self._dbhead = ''
         else:
             self._dbhead = ''.join(self._dbhead)
-        warn = self.insert_dsr_warning()
-        afix = warn+self._dbhead+part+'AFIX '+str(afixnumber)+'\n'+atoms+(
-                '\nAFIX 0\n'+part2+resinum+'rem The end of the DSR entry\n\n')
+        #warn = self.insert_dsr_warning()
+        afix = self._dbhead+part+'AFIX '+str(afixnumber)+'\n'+atoms+(
+                '\nAFIX 0\n'+part2+resinum+'\n\n')#+'rem The end of the DSR entry\n\n')
         #print(self._dbhead)
         return afix
 
