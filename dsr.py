@@ -420,7 +420,7 @@ class DSR():
         afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfix',
                                            resi)
         if dsr_line_number < fvarlines[-1]:
-            print('\nWarning! The DSR command line MUST not appear before FVAR or the first atom in the .res file!')
+            print('\nWarning! The DSR command line MUST NOT appear before FVAR or the first atom in the .res file!')
             print('Can not proceed...\n')
             sys.exit()
         reslist[dsr_line_number] = reslist[dsr_line_number]+'\n'+afix_entry
