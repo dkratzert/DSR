@@ -196,7 +196,7 @@ class DSR():
         time2 = time.clock()
         runtime = (time2 - time1)
         print('Runtime: {:>.1f} s'.format(runtime))
-        print('\nDSR run complete.')
+        print('DSR run complete.')
 
 ###############################################################################
 
