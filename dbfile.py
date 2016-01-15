@@ -545,7 +545,7 @@ class global_DB():
                 if stdev > 0.08:
                     outliers = nalimov_test(distances)
                     if outliers:
-                        print("\n{}:".format(fragment))
+                        print("\nFragment {}:".format(fragment))
                         for x in outliers:
                             pair = ' '.join(pairlist[x])
                             print('Suspicious deviation in atom pair "{}" ({:4.3f} A, median: {:4.3f}) of SADI line {}:'.format(pair, distances[x], median(distances), num+1))
