@@ -356,10 +356,6 @@ class DSR():
         dsr_dict = dsrp.get_dsr_dict
         fvarlines = rle.find_fvarlines()
         fragment = dsrp.fragment.lower()
-        gdb.check_consistency(fragment)
-        gdb.check_db_atom_consistency(fragment)
-        gdb.check_db_header_consistency(fragment)
-        gdb.check_sadi_consistence(fragment)
         if fragment in ['cf3', 'cf6', 'cf9']:
             dbhead = 'RESI CF3'
             db_residue_string = 'CF3'
@@ -386,6 +382,11 @@ class DSR():
                 cf3.cf9()
             print('\nFinished...')
             sys.exit()
+        # checks have to be after CF3, CF6 etc.
+        gdb.check_consistency(fragment)
+        gdb.check_db_atom_consistency(fragment)
+        gdb.check_db_header_consistency(fragment)
+        gdb.check_sadi_consistence(fragment)
         if dsrp.occupancy:
             rle.set_free_variables(dsrp.occupancy)
         fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
