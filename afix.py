@@ -304,7 +304,7 @@ AFIX 0\\nPART 0\\nRESI 0\\nrem The end of the DSR entry\\n\\n'
                                                             resi.get_residue_class)
             if not external_restraints:
                 self._dbhead = self._dbhead+['RESI {} {}'.format(
-                                        resi.get_residue_class, resi.get_resinumber)]
+                                        resi.get_resinumber, resi.get_residue_class)]
         else:
             # applies new naming scheme to head:
             old_atoms = [ i[0] for i in self._dbatoms]
@@ -329,7 +329,7 @@ AFIX 0\\nPART 0\\nRESI 0\\nrem The end of the DSR entry\\n\\n'
             if self.dfix_head:
                 self._dbhead = other_head
             self._dbhead = self._dbhead+['RESI {} {}'.format(
-                                        resi.get_residue_class, resi.get_resinumber)]
+                                        resi.get_resinumber, resi.get_residue_class)]
         else:
             if self.dfix_head:
                 if resi.get_residue_class:
