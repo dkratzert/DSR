@@ -418,8 +418,7 @@ class DSR():
             dfix_head = dfix_12+dfix_13+flats
         afix = InsertAfix(reslist, dbatoms, db_atom_types, dbhead, dsr_dict,
                           sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
-        afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfix',
-                                           resi)
+        afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfix', resi)
         if dsr_line_number < fvarlines[-1]:
             print('\nWarning! The DSR command line MUST NOT appear before FVAR or the first atom in the .res file!')
             print('Can not proceed...\n')
