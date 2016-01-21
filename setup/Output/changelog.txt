@@ -1,6 +1,7 @@
 Recent changes
 -180    Moving version format to integer. Final export format for the ShelXle GUI. 
         Faster start in Windows. Many small fixes. Improved error messages.
+        In replace mode, really delete lines instead of producing blank lines. User manual updates.
 -1.7.7  New output format for DSRGui. New command line option for rigid group.
 -1.7.6  Huge improvement in SADI consistency checker. Some new fragments NBt4+ NMe4+ C20. Small fixes.
 -1.7.5  Also move fluorine atoms in direction of principal ellipsoid axis with SPLIT option 
