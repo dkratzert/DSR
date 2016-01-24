@@ -224,7 +224,10 @@ class global_DB():
             if not dbdir:
                 dbdir = os.environ["DSR_DB_DIR"]
         except(KeyError):
-            dbdir='./'
+            try:
+                dbdir = os.environ["DSR_DIR"]
+            except(KeyError):
+                dbdir='./'
         self._getdb = ReadDB(dbdir, dbnames)
         self._db_tags = self._getdb.find_db_tags()
         if fragment:
