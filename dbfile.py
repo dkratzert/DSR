@@ -544,8 +544,9 @@ class global_DB():
                     dist = atomic_distance(a, b, self.get_unit_cell(fragment))
                     distances.append(dist)
                 stdev = std_dev(distances)
+                #print(stdev, fragment, stdev*len(pairs))
                 # only do outlier test if standard deviation is suspiciously large:
-                if stdev > 0.08:
+                if stdev > 0.07:
                     outliers = nalimov_test(distances)
                     if outliers:
                         print("\nFragment {}:".format(fragment))
