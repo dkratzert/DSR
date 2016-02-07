@@ -5,8 +5,8 @@ if [ clear ]; then
 fi
 # initialize DSR_DIR to default directory if not set properly
 if [ ! $DSR_DIR ]; then 
-    DSR_DIR=/opt/DSR
-    DSR_DB_DIR=/opt/DSR
+    DSR_DIR=/Applications/DSR
+    DSR_DB_DIR=/Applications/DSR
     export DSR_DIR
     export DSR_DB_DIR
 fi
