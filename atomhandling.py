@@ -194,8 +194,9 @@ class FindAtoms():
         part = partstring.split()
         try:
             partnum = int(part[1])
-        except ValueError:
+        except(ValueError, IndexError):
             print('Wrong PART definition found! Check your PART instructions.')
+            partnum = 0
         return partnum
     
     def find_atoms_to_replace(self, frag_atoms, cell, remdist=1.2, only_this=None):
