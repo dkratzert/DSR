@@ -15,7 +15,7 @@ import sys
 import os
 from options import OptionsParser
 from constants import width, sep_line
-from misc import reportlog, remove_file
+from misc import reportlog, remove_file, find_multi_lines, find_line
 from dbfile import global_DB, search_fragment_name
 
 from dsrparse import DSR_Parser
@@ -449,6 +449,11 @@ class DSR():
         # open res file again to restore 8 refinement cycles:
         rl = resfile.ResList(self.res_file)
         reslist = rl.get_res_list()
+        # remove the "REM " instriction bevore the +dfixfile instruction
+        plusline = find_multi_lines(reslist, afix.rand_id_dfx)
+        if plusline:
+            print(plusline)
+            reslist[plusline[0]-1] = reslist[plusline[0]-1][4:] 
         if dsrp.command == 'REPLACE':
             reslist, find_atoms = replace_after_fit(rl, reslist, resi,
                                     fragment_numberscheme, cell)

@@ -320,6 +320,8 @@ def find_multi_lines(inputlist, regex):
     >>> input = ['Hallo blub', 'foo bar blub', '123', '1 blub 2 3 4']
     >>> find_multi_lines(input, '.*blub.*')
     [0, 1, 3]
+    >>> find_multi_lines(input, 'blabla')
+    []
     >>> input = [['foo'],['bar']]
     >>> find_multi_lines(input, '.*blub.*')
     Traceback (most recent call last):
