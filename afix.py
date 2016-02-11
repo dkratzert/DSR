@@ -22,6 +22,7 @@ from dsrparse import DSR_Parser
 from dbfile import global_DB
 from constants import RESTRAINT_CARDS
 from resi import Resi
+from misc import id_generator
 
 
 __metaclass__ = type  # use new-style classes
@@ -206,6 +207,7 @@ AFIX 0\\nPART 0\\nRESI 0\\nrem The end of the DSR entry\\n\\n'
         self.target_atoms = dsr_line_dict['target']
         self._dfix = dsr_line_dict['dfix']
         self.options = options
+        self.rand_id_dfx = id_generator(size=7)
 
 
     def insert_dsr_warning(self):
@@ -388,10 +390,10 @@ AFIX 0\\nPART 0\\nRESI 0\\nrem The end of the DSR entry\\n\\n'
         if external_restraints and not self.options.rigid_group:
             if resi.get_residue_class:
                 self._dbhead.append('\nREM The restraints for residue {} are in this'\
-                    ' file:\n+{}\n'.format(resi.get_residue_class, dfx_file_name))
+                    ' file:\nrem +{}\nREM {}\n'.format(resi.get_residue_class, dfx_file_name, self.rand_id_dfx))
             else:
                 self._dbhead.append('\nREM The restraints for this moiety are in this'\
-                          ' file:\n+{}\n'.format(dfx_file_name))
+                          ' file:\nrem +{}\nREM {}\n'.format(dfx_file_name, self.rand_id_dfx))
         if self.options.rigid_group:
             if resi.get_residue_class:
                 self._dbhead = ''
