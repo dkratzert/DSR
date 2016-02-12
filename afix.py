@@ -208,6 +208,7 @@ AFIX 0\\nPART 0\\nRESI 0\\nrem The end of the DSR entry\\n\\n'
         self._dfix = dsr_line_dict['dfix']
         self.options = options
         self.rand_id_dfx = id_generator(size=7)
+        self.rand_id_afix = id_generator(size=7)
 
 
     def insert_dsr_warning(self):
@@ -330,7 +331,8 @@ AFIX 0\\nPART 0\\nRESI 0\\nrem The end of the DSR entry\\n\\n'
                 self._dbhead = self._dbhead = other_head
             if self.dfix_head:
                 self._dbhead = other_head
-            self._dbhead = self._dbhead+['RESI {} {}'.format(
+            if resi.get_residue_class:
+                self._dbhead = self._dbhead+['RESI {} {}'.format(
                                         resi.get_resinumber, resi.get_residue_class)]
         else:
             if self.dfix_head:
@@ -379,14 +381,14 @@ AFIX 0\\nPART 0\\nRESI 0\\nrem The end of the DSR entry\\n\\n'
             self.occ = ''
         if self.part:
             part = 'PART '+str(self.part)+' '+str(self.occ)+'\n'
-            part2 = 'PART 0\n'
+            part2 = 'PART 0'
         else:
             part = ''
             part2 = ''
         if resi.get_residue_class:
-            resinum = 'RESI 0\n'
+            resi_end = 'RESI 0'
         else:
-            resinum = ''
+            resi_end = ''
         if external_restraints and not self.options.rigid_group:
             if resi.get_residue_class:
                 self._dbhead.append('\nREM The restraints for residue {} are in this'\
@@ -395,6 +397,7 @@ AFIX 0\\nPART 0\\nRESI 0\\nrem The end of the DSR entry\\n\\n'
                 self._dbhead.append('\nREM The restraints for this moiety are in this'\
                           ' file:\nrem +{}\nREM {}\n'.format(dfx_file_name, self.rand_id_dfx))
         if self.options.rigid_group:
+            afixtag = ''
             if resi.get_residue_class:
                 self._dbhead = ''
                 self._dbhead = self._dbhead+'RESI {} {}\n'.format(
@@ -402,16 +405,21 @@ AFIX 0\\nPART 0\\nRESI 0\\nrem The end of the DSR entry\\n\\n'
             else:
                 self._dbhead = ''
         else:
+            afixtag = '\n'+'REM '+self.rand_id_afix
             self._dbhead = ''.join(self._dbhead)
-        #warn = self.insert_dsr_warning()
-        afix = self._dbhead+part+'AFIX '+str(afixnumber)+'\n'+atoms+(
-                '\nAFIX 0\n'+part2+resinum+'\n\n')#+'rem The end of the DSR entry\n\n')
-        #print(self._dbhead)
+        afix = self._dbhead\
+                +part\
+                +'AFIX '+str(afixnumber)\
+                +afixtag\
+                +'\n'+atoms\
+                +'\nAFIX 0'\
+                +afixtag\
+                +'\n'+part2\
+                +'\n'+resi_end+'\n\n'
         return afix
 
 
 if __name__ == '__main__':
-    import sys
     import doctest
     failed, attempted = doctest.testmod()#verbose=True)
     if failed == 0:

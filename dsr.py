@@ -15,9 +15,9 @@ import sys
 import os
 from options import OptionsParser
 from constants import width, sep_line
-from misc import reportlog, remove_file, find_multi_lines, find_line
+from misc import reportlog, remove_file, find_line,\
+    remove_line
 from dbfile import global_DB, search_fragment_name
-
 from dsrparse import DSR_Parser
 from dbfile import ImportGRADE, print_search_results
 from atomhandling import SfacTable, get_atomtypes, check_source_target,\
@@ -450,10 +450,10 @@ class DSR():
         rl = resfile.ResList(self.res_file)
         reslist = rl.get_res_list()
         # remove the "REM " instriction bevore the +dfixfile instruction
-        plusline = find_multi_lines(reslist, afix.rand_id_dfx)
+        plusline = find_line(reslist, "REM "+afix.rand_id_dfx)
         if plusline:
-            print(plusline)
-            reslist[plusline[0]-1] = reslist[plusline[0]-1][4:] 
+            reslist[plusline-1] = reslist[plusline-1][4:]
+            remove_line(reslist, plusline, remove=True)
         if dsrp.command == 'REPLACE':
             reslist, find_atoms = replace_after_fit(rl, reslist, resi,
                                     fragment_numberscheme, cell)
@@ -461,7 +461,7 @@ class DSR():
         shx.restore_acta_card(acta_lines)
         self.set_post_refine_cycles(shx, '8')
         if not self.options.rigid_group:
-            shx.remove_afix()   # removes the afix 9
+            shx.remove_afix(afix.rand_id_afix)   # removes the afix 9
         # final resfile write:
         rl.write_resfile(reslist, '.res')
 
