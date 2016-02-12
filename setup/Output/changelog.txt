@@ -1,4 +1,8 @@
 Recent changes
+-181    Fixed bug where external restraints produced "illegal instruction" error
+        in SHELXL. AFIX 9 and +dfixfile is now recognized by a unique id.
+        External restraints with a rigid group produced an invalid RESI None None 
+        instruction.
 -180    Moving version format to integer. Final export format for the ShelXle GUI. 
         Faster start in Windows. Many small fixes. Improved error messages.
         In replace mode, really delete lines instead of producing blank lines. 
