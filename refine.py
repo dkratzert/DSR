@@ -15,7 +15,7 @@ import sys, os, re
 import shutil
 from resfile import ResList
 import misc
-from misc import find_line, checkFileExist
+from misc import find_line, checkFileExist, remove_line
 from constants import sep_line
 
 
@@ -171,28 +171,27 @@ class ShelxlRefine():
             return True
 
 
-    def remove_afix(self):
+    def remove_afix(self, random_num):
         '''
         removes the AFIX 9 after refinement.
         note: find_line matches case insensitive
         '''
-        afix_line = False  # @UnusedVariable
-        regex = r'^AFIX\s+9'
-        afix_line = misc.find_multi_lines(self._reslist, regex)
-        if not afix_line:
-            return # safely return, because no lines found
-        if len(afix_line) > 1:
-            print('Multiple "AFIX 9" commands were found. Please remove "AFIX 9" for fitted fragment yourselves.')
-            return
-        else:
-            afix_line = int(afix_line[0])
+        regex = 'REM '+random_num
+        afix_line = misc.find_line(self._reslist, regex)
+        if afix_line:
+            #self._reslist[afix_line-1] = self._reslist[afix_line-1][4:]
+            remove_line(self._reslist, afix_line, remove=True)
         # only delete afix if last afix before the dsr command was closed
         if self.afix_is_closed(afix_line):
             if afix_line:
-                del self._reslist[afix_line]
+                remove_line(self._reslist, afix_line-1, remove=True)
+                afix_line2 = misc.find_line(self._reslist, regex)
+                if afix_line2:
+                    remove_line(self._reslist, afix_line2, remove=True)
+                    remove_line(self._reslist, afix_line2, remove=True)
         else:
             if afix_line:
-                self._reslist[afix_line] = 'AFIX 0\n'
+                self._reslist[afix_line-1] = 'AFIX 0\n'
 
 
     def backup_shx_file(self):

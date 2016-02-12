@@ -294,6 +294,8 @@ def find_line(inputlist, regex, start=None):
     >>> input = ['Hallo blub', 'foo bar blub', '123', '1 blub 2 3 4']
     >>> find_line(input, '.*blub.*')
     0
+    >>> find_line(input, 'nonono')
+    False
     >>> input = [['foo'],['bar']]
     >>> find_line(input, '.*blub.*')
     Traceback (most recent call last):
@@ -311,6 +313,35 @@ def find_line(inputlist, regex, start=None):
             if re.match(regex, string, re.IGNORECASE):
                 return i  # returns the index number if regex found
     return False  # returns False if no regex found (xt solution has no fvar)
+
+
+def remove_line(reslist, linenum, rem=False, remove=False, frontspace=False):
+    '''
+    removes a single line from the res file with tree different methods.
+    The default is a space character in front of the line (frontspace).
+    This removes the line in the next refinement cycle. "rem" writes rem
+    in front of the line and "remove" clears the line.
+    :param linenum: integer, line number
+    :param rem:     True/False, activate comment with 'REM' in front
+    :param remove:  True/False, remove the line
+    :param frontspace: True/False, activate removing with a front space
+    '''
+    line = reslist[linenum]
+    if rem:   # comment out with 'rem ' in front
+        reslist[linenum] = 'rem '+line
+        if multiline_test(line):
+            reslist[linenum+1] = 'rem '+reslist[linenum+1]
+    elif remove:  # really delete the line "linenum"
+        if multiline_test(line):
+            reslist[linenum] = ''
+            reslist[linenum+1] = ''
+        else:
+            reslist[linenum] = ''
+    if frontspace:  # only put a space in front
+        reslist[linenum] = ' '+line
+        if multiline_test(line):
+            reslist[linenum+1] = ' '+reslist[linenum+1]
+    return reslist
 
 
 def find_multi_lines(inputlist, regex):
