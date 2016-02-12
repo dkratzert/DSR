@@ -33,7 +33,7 @@ import resfile
 from cf3fit import CF3
 
 
-VERSION = '180'
+VERSION = '181'
 # dont forget to change version in Innoscript file, spec file and deb file.
 
 program_name = '\n'+((width//2)-9)*'-'+\
