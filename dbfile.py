@@ -22,6 +22,7 @@ from atomhandling import get_atomtypes
 from misc import atomic_distance, nalimov_test, std_dev, median, pairwise,\
     unwrap_head_lines
 from copy import deepcopy
+from os.path import expanduser
 
 
 
@@ -95,13 +96,14 @@ class ReadDB():
     a dictionary of them.
     '''
 
-    def __init__(self, dbdir='./', dbnames=''):
-        self._db_file_names = dbnames
+    def __init__(self, main_dbdir='./'):
+        self._db_file_names = ["dsr_db.txt", "dsr_user_db.txt"]
+        expanduser("~")
         try:
-            self._db_dir = dbdir
+            self._db_dir = main_dbdir
         except(KeyError):
             print('\nThe environment variable DSR_DB_DIR was not found.\n'\
-                'Please set this variable to the path of the DSR database!\n')
+                'Please set this variable to the path of the DSR install directory!\n')
             self._db_dir = './'
         self._databases = self.getDB_files_dict()
 
@@ -178,8 +180,7 @@ class global_DB():
     '''
     creates a final dictionary where all dbs are included
     '''
-    def __init__(self, invert=False, dbdir=False, fragment=None, 
-                 dbnames=["dsr_db.txt", "dsr_user_db.txt"]):
+    def __init__(self, invert=False, fragment=None):
         '''
         self._db_tags: ['12-DICHLOROBENZ', 590, 'dsr_db']
         
@@ -214,21 +215,17 @@ class global_DB():
                      {'comment': ...
         :param invert: inverts the coordinates of a fragment
         :type invert:  boolean
-        :param dbdir:  directory where the database is located. Default is environment variable DSR_DB_DIR
-        :type dbdir:   string
+        :param main_dbdir:  directory where the database is located. Default is environment variable DSR_DB_DIR
+        :type main_dbdir:   string
         :param dbnames: file names of the databases
         :type dbnames:  string
         '''
         self.invert = invert
         try:
-            if not dbdir:
-                dbdir = os.environ["DSR_DB_DIR"]
+            main_dbdir = os.environ["DSR_DIR"]
         except(KeyError):
-            try:
-                dbdir = os.environ["DSR_DIR"]
-            except(KeyError):
-                dbdir='./'
-        self._getdb = ReadDB(dbdir, dbnames)
+            main_dbdir='./'
+        self._getdb = ReadDB(main_dbdir)
         self._db_tags = self._getdb.find_db_tags()
         if fragment:
             for num, i in enumerate(self._db_tags):
@@ -739,12 +736,8 @@ class ImportGRADE():
         '''
         self.el = Element()
         self.invert = invert
-        try:
-            dbdir=os.environ["DSR_DB_DIR"]
-        except(KeyError):
-            dbdir='.' 
-        self._getdb = ReadDB(dbdir, dbnames=["dsr_db.txt", "dsr_user_db.txt"])
-        self._db_dir = dbdir
+        self._getdb = ReadDB()
+        self._db_dir = expanduser("~")
         self._db_tags = self._getdb.find_db_tags()
         self._gdb = global_DB(invert=False)
         self._db = self._gdb.build_db_dict()
