@@ -14,10 +14,6 @@ IF NOT DEFINED DSR_DIR (GOTO setdsrdir) ELSE (GOTO arguments)
 
 
 :setdsrdir
-    echo -----------------------------------------------------------------
-    echo You should define the DSR_DIR environment variable for your system
-    echo pointing to the DSR install directory.
-    echo -----------------------------------------------------------------
     SET DSR_DIR="."
     goto arguments
 

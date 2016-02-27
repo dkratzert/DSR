@@ -31,6 +31,7 @@ from terminalsize import get_terminal_size
 from refine import ShelxlRefine
 import resfile
 from cf3fit import CF3
+from os.path import expanduser
 
 
 VERSION = '181'
@@ -284,6 +285,7 @@ class DSR():
         '''
         list all entries in the db.
         '''
+        dbdir = expanduser('~')
         gdb = global_DB()
         fraglist = gdb.list_fragments()
         fragnames = []
@@ -298,11 +300,6 @@ class DSR():
             fragnames.append(line[0])
             line = ' {:<17}| {:<5}| {:<11}| {}'.format(*line)
             print(line[:width - 1])
-        try:
-            if os.environ["DSR_DB_DIR"]:
-                dbdir = os.environ["DSR_DB_DIR"]
-        except(KeyError):
-            dbdir = '.'
         print('\n {} Fragments in the database(s).'.format(num),
               '\n Feel free to add more fragments to "{}dsr_user_db.txt"' \
               '\n or mail them to dkratzert@gmx.de.'.format(dbdir + os.path.sep))
