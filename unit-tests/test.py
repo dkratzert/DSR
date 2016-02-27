@@ -408,7 +408,7 @@ class dbfileTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
         self._db_file_names = ("db1.txt", "db2.txt")
-        self.rdb = ReadDB(dbdir='c:/test/')
+        self.rdb = ReadDB(main_dbdir='c:/test/')
         self.testnames = ['c:/test/db1.txt', 'c:/test/db2.txt']
         self.klein = ['\n', '<DMX>\n', 'REM test\n', 'RESI 3 TST1\n', 'SIMU C1\n','FRAG 17 1 1 1 90 90 90\n',
                       'O1  1  -1.3542148   -0.4780990   -0.5279749\n', '</DMX>']
@@ -519,7 +519,7 @@ class globalDB(unittest.TestCase):
         # raises System exit, because residue in db_resinum.TXT is badly defined.
         db_file_names = ("db1_klein.TXT", "db2_klein.TXT", 'db_resinum.TXT')
         with self.assertRaises(SystemExit):
-            gdb = global_DB(dbdir='./', dbnames = db_file_names)
+            gdb = global_DB(dbdi)
             gdb.build_db_dict()
 
     def testrun_get_fragment_atoms(self):
