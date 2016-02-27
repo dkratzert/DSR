@@ -97,47 +97,49 @@ class ReadDB():
     '''
 
     def __init__(self, main_dbdir='./'):
-        self._db_file_names = ["dsr_db.txt", "dsr_user_db.txt"]
-        expanduser("~")
-        try:
-            self._db_dir = main_dbdir
-        except(KeyError):
-            print('\nThe environment variable DSR_DB_DIR was not found.\n'\
-                'Please set this variable to the path of the DSR install directory!\n')
-            self._db_dir = './'
-        self._databases = self.getDB_files_dict()
+        self.maindb = "dsr_db.txt" 
+        self.userdb = "dsr_user_db.txt"
+        self.homedir = expanduser("~")
+        self._db_dir = main_dbdir
+        self._databases = self.getDB_files_dict(self.maindb, self.userdb)
 
+    @property
+    def get_databases(self):
+        return self._databases
 
-    def getDBpath(self, db_file_name):
+    def getDBpath(self, db_dir, db_file_name):
         '''
         returns the full db path as tuple
         '''
-        fullpath = os.path.join(self._db_dir, db_file_name)  # full path with filename
+        fullpath = os.path.join(db_dir, db_file_name)  # full path with filename
         return fullpath
 
 
-    def getDB_files_dict(self):
+    def getDB_files_dict(self, maindb='', userdb=''):
         '''
         returns the database as dictionary. Each file has its own key.
         {'dsr-db': ('line1\n', 'line2\n', '...'), 'dsr-user-db': ('line1\n', 'line2\n', '...')}
         '''
         db_dict = {}
-        for name in self._db_file_names:
-            dblist = []
-            filename = self.getDBpath(name)
+        for name in [maindb, userdb]:
+            dblist = [] 
+            if name == userdb:
+                filepath = self.getDBpath(self.homedir, name)
+            else:
+                filepath = self.getDBpath(self._db_dir, name)
             base_filename = os.path.splitext(name)[0]
             try:
-                with open(filename, 'r') as f:
+                with open(filepath, 'r') as f:
                     for line in f:
                         if line.startswith('#'):
                             line = ''
                         dblist.append(line)
             except(IOError) as e:
-                if not str(e).find('dsr_db'):
-                    print(e)
-                    sys.exit(-1)
-                else:
-                    continue
+                #if not str(e).find('dsr_db'):
+                print(e)
+                sys.exit(-1)
+                #else:
+                #    continue
             db_dict[base_filename] = dblist
         return db_dict
 
@@ -232,7 +234,7 @@ class global_DB():
                 if i[0].lower() == fragment.lower():
                     self._db_tags = [self._db_tags[num]] # speedup in case the fragment is known
                     break
-        self._db_plain_dict = self._getdb.getDB_files_dict()
+        self._db_plain_dict = self._getdb.get_databases
         self._dbentry_dict = self.build_db_dict()
 
     def list_fragments(self):
