@@ -1,4 +1,7 @@
 Recent changes
+-182    IMPORTANT! The default path for the user database is now the users home
+        directory! For example /home/username/dsr_user_db.txt in Linux and 
+        C:/users/Username in windows Vista and later.
 -181    Fixed bug where external restraints produced "illegal instruction" error
         in SHELXL. AFIX 9 and +dfixfile is now recognized by a unique id.
         External restraints with a rigid group produced an invalid RESI None None 

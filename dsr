@@ -6,9 +6,7 @@ fi
 # initialize DSR_DIR to default directory if not set properly
 if [ ! $DSR_DIR ]; then 
     DSR_DIR=/Applications/DSR
-    DSR_DB_DIR=/Applications/DSR
     export DSR_DIR
-    export DSR_DB_DIR
 fi
 
 # test if python 2.7 is available

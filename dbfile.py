@@ -22,7 +22,8 @@ from atomhandling import get_atomtypes
 from misc import atomic_distance, nalimov_test, std_dev, median, pairwise,\
     unwrap_head_lines
 from copy import deepcopy
-from os.path import expanduser
+from os.path import expanduser, pathsep
+from misc import touch
 
 
 
@@ -125,6 +126,8 @@ class ReadDB():
             dblist = [] 
             if name == userdb:
                 filepath = self.getDBpath(self.homedir, name)
+                if not os.path.isfile(filepath):
+                    touch(filepath)
             else:
                 filepath = self.getDBpath(self._db_dir, name)
             base_filename = os.path.splitext(name)[0]
@@ -135,12 +138,10 @@ class ReadDB():
                             line = ''
                         dblist.append(line)
             except(IOError) as e:
-                #if not str(e).find('dsr_db'):
                 print(e)
                 sys.exit(-1)
-                #else:
-                #    continue
             db_dict[base_filename] = dblist
+            del dblist
         return db_dict
 
 

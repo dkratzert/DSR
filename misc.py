@@ -27,6 +27,13 @@ __metaclass__ = type  # use new-style classes
 reportlog = 'dsr_bug_report.log'
 
 
+def touch(fname, times=None):
+    '''
+    creates an empty file like unix touch command
+    '''
+    with open(fname, 'a'):
+        os.utime(fname, times)
+
 def checkFileExist(filename):
     '''
     Check if a file exists and has some content.
