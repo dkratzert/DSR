@@ -22,9 +22,8 @@ from atomhandling import get_atomtypes
 from misc import atomic_distance, nalimov_test, std_dev, median, pairwise,\
     unwrap_head_lines
 from copy import deepcopy
-from os.path import expanduser, pathsep
+from os.path import expanduser
 from misc import touch
-
 
 
 
@@ -52,7 +51,7 @@ def search_fragment_name(search_string):
     from misc import dice_coefficient
     gdb = global_DB()
     db = gdb.build_db_dict()
-    frags = sorted(db.keys())
+    frags = db.keys()
     names_list = []
     for i in frags:
         fragname = gdb.get_comment_from_fragment(i)
@@ -68,6 +67,9 @@ def search_fragment_name(search_string):
         search_results[coefficient] = i
     # select the best 5 results:
     selected_results = [search_results[i] for i in sorted(search_results)[0:5]]
+    #for i in selected_results:
+    #    i.append(make_sortkey(i[1]))
+    #selected_results.sort(key=lambda x: x[4].lower())
     return selected_results
 
 
@@ -83,7 +85,32 @@ def print_search_results(results):
         print(' {:15s}   | {:40s} | {}'.format(line[0], line[1], line[2]))
     sys.exit()
 
-
+def make_sortkey(full_name):
+    """
+    Algorythm inspired by W. Sage J. Chem. Inf: Comput. Sci. 1983, 23, 186-197
+    """
+    full_name = ''.join(e for e in full_name if e not in ('{}()[]'))
+    full_name = full_name.split(',')[0]
+    if full_name.startswith('tert-'):
+        full_name = full_name[4:]
+    if full_name.startswith('sec-'):
+        full_name = full_name[3:]
+    if full_name.startswith('t-'):
+        full_name = full_name[1:]
+    if full_name.startswith('p-'):
+        full_name = full_name[2:]
+    if full_name.startswith('o-'):
+        full_name = full_name[1:]
+    if full_name.startswith('n-'):
+        full_name = full_name[1:]
+    if full_name.startswith('m-'):
+        full_name = full_name[1:]
+    if full_name.startswith('iso-'):
+        full_name = full_name[3:]
+    if full_name.startswith('i-'):
+        full_name = full_name[1:]
+    full_name = ''.join(e for e in full_name if e not in ('-_.\'1234567890, '))
+    return full_name
 
 __metaclass__ = type  # use new-style classes
 
@@ -244,14 +271,18 @@ class global_DB():
         [['tbu-c', 1723, 'dsr_db', 'Tert-butyl-C'], ...]
         '''
         fraglist = []
-        #fragments = OrderedDict(sorted(self._dbentry_dict.items(), key=lambda t: t[0]))
-        fragments = sorted(self._dbentry_dict.keys())
+        fragments = self._dbentry_dict.keys()
         for frag in fragments:
             comment = self.get_comment_from_fragment(frag)
-            line = [frag, self.get_line_number_from_fragment(frag), 
-                    self.get_db_name_from_fragment(frag), comment]
+            line = [frag, 
+                    self.get_line_number_from_fragment(frag), 
+                    self.get_db_name_from_fragment(frag), 
+                    comment, 
+                    make_sortkey(comment)]
             fraglist.append(line)
+        fraglist.sort(key=lambda x: x[4].lower())
         return fraglist 
+    
 
     def build_db_dict(self):
         '''
@@ -737,9 +768,13 @@ class ImportGRADE():
         :param invert:
         :type invert:
         '''
+        try:
+            main_dbdir = os.environ["DSR_DIR"]
+        except(KeyError):
+            main_dbdir='./'
         self.el = Element()
         self.invert = invert
-        self._getdb = ReadDB()
+        self._getdb = ReadDB(main_dbdir)
         self._db_dir = expanduser("~")
         self._db_tags = self._getdb.find_db_tags()
         self._gdb = global_DB(invert=False)
@@ -969,7 +1004,7 @@ class ImportGRADE():
         try:
             with open(filename, 'w') as f:
                 for name in grade_db_names:
-                    print('Importing {} to user database...'.format(name))
+                    print('Importing {} ({}) to user database...'.format(self._resi_name, name))
                     atomlist = imported_entry[name]['atoms']
                     comment = imported_entry[name]['comment']
                     comment = '\n'.join([' '.join(i) for i in comment if i])
