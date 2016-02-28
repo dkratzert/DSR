@@ -45,7 +45,7 @@ class ShelxlRefine():
         self.backup_file = str(self.resfile_name+'.dsr-bak')
 
         if not self._shelx_command:
-            print('\nSHELXL executable not found! No fragment fitting possible.\n')
+            print('\nSHELXL executable not found in system path! No fragment fitting possible.\n')
             print('You can download SHELXL at http://shelx.uni-ac.gwdg.de/SHELX/index.php\n')
             sys.exit()
 
@@ -391,8 +391,8 @@ if __name__ == '__main__':
     rl = ResList(res_file)
     res_list = rl.get_res_list()
     find_atoms = FindAtoms(res_list)
-    lf = ListFile('p21c')
-    lst_file = lf.read_lst_file()
+    #lf = ListFile('p21c')
+    #lst_file = lf.read_lst_file()
     shx = ShelxlRefine(res_list, 'testfile', find_atoms)
 
 
