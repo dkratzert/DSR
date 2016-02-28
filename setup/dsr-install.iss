@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "DSR - Disordered Structure Refinement"
-#define MyAppVersion "181"
+#define MyAppVersion "182"
 #define MyAppPublisher "Daniel Kratzert"
 
 [Setup]
@@ -95,7 +95,7 @@ Source: "D:\GitHub\DSR\mpmath\*"; DestDir: "{app}\mpmath"; Flags: ignoreversion 
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{group}\DSR manual"; Filename: "{app}\manual\DSR-manual.pdf"; WorkingDir: "{app}"
 Name: "{group}\DSR database"; Filename: "{app}\dsr_db.txt"; WorkingDir: "{app}"
-Name: "{group}\DSR user-database"; Filename: "{app}\dsr_user_db.txt"
+Name: "{group}\DSR user-database"; Filename: "{%USERPROFILE}\dsr_user_db.txt"
 
 [Registry]
 Root: "HKLM"; Subkey: "Software\DSR"; ValueType: string; ValueName: "dsr_directory"; ValueData: "{app}"; Flags: uninsdeletekey
