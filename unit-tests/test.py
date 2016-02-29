@@ -304,7 +304,7 @@ class NumberSchemeTest(unittest.TestCase):
     def testrun_get_numberscheme(self):
         numberscheme = self.num.get_fragment_number_scheme()
         self.assertListEqual(numberscheme, self.numbers)
-
+@disabled
 class insertAfixTest(unittest.TestCase):
     def setUp(self):
         import db
@@ -348,6 +348,7 @@ class insertAfixTest(unittest.TestCase):
         #self.assertEqual(afix_extern_entry, self.extern)
         misc.remove_file('dsr_CF3_p21c.dfix')
 
+@disabled
 class removeDublicatesAfixTest(unittest.TestCase):
     def setUp(self):
         #self.verbosity = 4
