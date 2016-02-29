@@ -47,6 +47,10 @@ coord2 = (-0.362398, 0.278516, 0.447770) #F10 6.052A
 cell = [10.5086, 20.9035, 20.5072, 90, 94.13, 90]
 cells = ['10.5086', '20.9035', '20.5072', '90', '94.13', '90']
 
+def disabled(f):
+    def _decorator():
+        print f.__name__ + ' has been disabled'
+    return _decorator
 
 class ElementsTest(unittest.TestCase):
     def setUp(self):
@@ -403,7 +407,7 @@ class atomsTest(unittest.TestCase):
         self.assertEqual(num_of_atoms, 92)
         self.assertNotEqual(num_of_atoms, 42)
 
-
+@disabled
 class dbfileTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
@@ -447,6 +451,7 @@ class dbfileTest(unittest.TestCase):
         self.assertEqual(names, [])
         self.assertEqual(result, names2)
 
+@disabled
 class globalDB(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
@@ -511,7 +516,7 @@ class globalDB(unittest.TestCase):
 
     def testrun_get_residue_from_head(self):
         db_file_names = ("db1_klein.TXT", "db2_klein.TXT")
-        gdb = global_DB(dbdir='./', dbnames = db_file_names)
+        gdb = global_DB(main_dbdir='../', maindb=db_file_names[0], userdb=db_file_names[1])
         gdb.build_db_dict()
         self.assertEqual(gdb.get_residue_from_head(self.klein), 'CLBE' )
 
@@ -519,7 +524,7 @@ class globalDB(unittest.TestCase):
         # raises System exit, because residue in db_resinum.TXT is badly defined.
         db_file_names = ("db1_klein.TXT", "db2_klein.TXT", 'db_resinum.TXT')
         with self.assertRaises(SystemExit):
-            gdb = global_DB(dbdi)
+            gdb = global_DB(main_dbdir='./', maindb=db_file_names[0], userdb=db_file_names[1])
             gdb.build_db_dict()
 
     def testrun_get_fragment_atoms(self):
@@ -580,7 +585,7 @@ class globalDB(unittest.TestCase):
         self.maxDiff = None
         db_file_names = ["db1_head_inconsistent.TXT"]
         with self.assertRaises(SystemExit):
-            gdb = global_DB(invert = True, dbdir='./', dbnames = db_file_names)
+            gdb = global_DB(invert = True, main_dbdir='./', maindb=db_file_names[0])
             db = gdb.build_db_dict()
             fragment = 'dmel'
             head = db[fragment]['head']
