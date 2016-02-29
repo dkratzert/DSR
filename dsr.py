@@ -44,6 +44,7 @@ program_name = '\n'+((width//2)-9)*'-'+\
 # TODO and ideas:
 '''
 - DB tests are broken!
+- Atoms with C1_5 for example from DSR plugin damage the db.
 - If the res file is empty, ShelXle opens the corresponding .ins file!
   This produces problems with DSR plugin. DSR then runs on an empty file and can not find the 
   needed parameters and crashes while searching for SFAC. Therefore, DSR should test for an empty 
