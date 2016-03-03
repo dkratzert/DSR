@@ -491,13 +491,16 @@ if __name__ == '__main__':
             logging.info('Platform: {} {}, {}'.format(platform.system(),
                                platform.release(), ' '.join(platform.uname())))
         except:
+            print("Can not write logfile")
             pass
         logger = logging.getLogger('dsr')
         ch = logging.StreamHandler()
         logger.addHandler(ch)
-        print('\n\n')
+        print('\n')
         print('Congratulations! You found a bug in DSR. Please send the file\n'\
-              ' "report-bug.log" and the .res file (if possible) to dkratzert@gmx.de\n')
+              ' "report-bug.log" and the .res file (if possible) to dkratzert@gmx.de\n'
+              )
+        #.format(os.path.dirname(os.path.realpath(reportlog))+os.sep ))
         logger.exception(e)
     """
     cp.disable()
