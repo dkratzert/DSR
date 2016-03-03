@@ -51,14 +51,23 @@ class ShelxlRefine():
 
 
     def get_xl_version_string(self, exe):
-        with open(exe, 'rb') as f:
-            binary = f.read()
-            position = binary.find(b'Version 201')
-            if position > 0:
-                f.seek(position+8, 0) # seek to version string
-                version = f.read(6)   # read version string
-                return version.decode('ascii')
-
+        """
+        Extracts the version string from a SHELXL executable.
+        This is fast and needs no hashes etc.
+        """
+        try:
+            with open(exe, 'rb') as f:
+                binary = f.read()
+                position = binary.find(b'Version 201')
+                if position > 0:
+                    f.seek(position+8, 0) # seek to version string
+                    version = f.read(6)   # read version string
+                    return version.decode('ascii')
+                else:
+                    return None
+        except(IOError):
+            print("Could not determine SHELXL version. DSR might fail to run.")
+            return None
 
     def find_shelxl_exe(self):
         '''
