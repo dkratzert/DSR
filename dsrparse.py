@@ -42,6 +42,7 @@ class DSR_Parser():
         try:
             self.dsr_dict = self.parse_dsr_line()
         except:
+            print("Parsing DSR line failed.")
             logging.basicConfig(filename=misc.reportlog, filemode='w', level=logging.DEBUG)
             logging.info('DSR command line: {}'.format(self._dsr_string))
 
