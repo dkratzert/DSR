@@ -30,7 +30,8 @@ class OptionsParser():
     '''
     This class uses the ArgumentParser module to parse the command line options.
     '''
-    def __init__(self):
+    def __init__(self, versionline):
+        self.versionline = versionline
         self._options = self.parse_commandline()
         return
 
@@ -138,7 +139,7 @@ class OptionsParser():
            the command line options as dict'''
         # Options parser for the command line:
         self.parser = ArgumentParser(prog='dsr', formatter_class=RawTextHelpFormatter,
-        description='Disordered Structure Refinement (DSR)\n'
+        description='{}\nDisordered Structure Refinement (DSR)\n'.format(self.versionline)
         +'\nExample DSR .res file command line:\n'
         +'\nREM DSR PUT/REPLACE "Fragment" WITH C1 C2 C3 ON Q1 Q2 Q3 PART 1 OCC -21 ='
         +'\n  RESI DFIX\n'

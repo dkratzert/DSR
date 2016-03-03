@@ -86,7 +86,7 @@ class DSR():
         :type invert:          boolean
         '''
         # options from the commandline options parser:
-        self.options = OptionsParser()
+        self.options = OptionsParser(program_name)
         # vars() retrieves the options as dict, values() the values and any()
         # decides if any option is set.
         self.external = False
