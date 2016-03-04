@@ -584,10 +584,11 @@ class global_DB():
                     del dist_minus_longest[-1]
                 if len(distances) > 5:
                     del dist_minus_longest[-1]
-                stdev = std_dev(dist_minus_longest)
+                stdev_selected = std_dev(dist_minus_longest)
+                stdev = std_dev(distances)
                 #print(stdev, fragment, stdev*len(pairs))
                 # only do outlier test if standard deviation is suspiciously large:
-                if stdev > 0.048:
+                if stdev_selected > 0.048:
                     outliers = nalimov_test(distances)
                     if outliers:
                         print("\nFragment {}:".format(fragment))
@@ -596,7 +597,7 @@ class global_DB():
                             print('Suspicious deviation in atom pair "{}" ({:4.3f} A, median: {:4.3f}) of SADI line {}:'.format(pair, distances[x], median(distances), num+1))
                             print(restr[num][:60], '...')
                             return False
-                if stdev > 3*float(dev):
+                if stdev > 2.6*float(dev):
                     print("\nFragment {}:".format(fragment))
                     print('Suspicious restraints in SADI line {} with high Stdeviation {:4.3f} (median length: {:4.3f} A).'.format(num+1, stdev, median(distances)))
                     print(' '.join(prefixes+line))
