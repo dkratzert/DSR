@@ -90,11 +90,19 @@ def make_sortkey(full_name):
     Algorythm inspired by W. Sage J. Chem. Inf: Comput. Sci. 1983, 23, 186-197
     """
     full_name = ''.join(e for e in full_name if e not in ('{}()[]'))
-    full_name = full_name.split(',')[0]
+    full_name = full_name.split(',')[0].lower()
     if full_name.startswith('tert-'):
         full_name = full_name[4:]
     if full_name.startswith('sec-'):
         full_name = full_name[3:]
+    if full_name.startswith('iso-'):
+        full_name = full_name[3:]
+    if full_name.startswith('bis-'):
+        full_name = full_name[3:]
+    if full_name.startswith('tris-'):
+        full_name = full_name[3:]
+    if full_name.startswith('mono-'):
+        full_name = full_name[4:]
     if full_name.startswith('t-'):
         full_name = full_name[1:]
     if full_name.startswith('p-'):
@@ -105,11 +113,9 @@ def make_sortkey(full_name):
         full_name = full_name[1:]
     if full_name.startswith('m-'):
         full_name = full_name[1:]
-    if full_name.startswith('iso-'):
-        full_name = full_name[3:]
     if full_name.startswith('i-'):
         full_name = full_name[1:]
-    full_name = ''.join(e for e in full_name if e not in ('-_.\'1234567890, '))
+    full_name = ''.join(e for e in full_name if e not in ('+-_.\'1234567890, '))
     return full_name
 
 __metaclass__ = type  # use new-style classes
@@ -124,51 +130,41 @@ class ReadDB():
     a dictionary of them.
     '''
 
-    def __init__(self, main_dbdir='./'):
-        self.maindb = "dsr_db.txt" 
-        self.userdb = "dsr_user_db.txt"
-        self.homedir = expanduser("~")
-        self._db_dir = main_dbdir
-        self._databases = self.getDB_files_dict(self.maindb, self.userdb)
+    def __init__(self, main_dbpath='./dsr_db.txt', user_dbpath='./dsr_usr_db.txt'):
+        self.maindb = main_dbpath
+        self.userdb = user_dbpath
+        self._databases = self.getDB_files_dict()
 
     @property
     def get_databases(self):
         return self._databases
 
-    def getDBpath(self, db_dir, db_file_name):
-        '''
-        returns the full db path as tuple
-        '''
-        fullpath = os.path.join(db_dir, db_file_name)  # full path with filename
-        return fullpath
+    def read_db_data(self, filepath):
+        """
+        reads the database files and returns them as list
+        """
+        dblist = []
+        try:
+            with open(filepath, 'r') as f:
+                for line in f:
+                    if line.startswith('#'):
+                        line = ''
+                    dblist.append(line)
+        except(IOError) as e:
+            print(e)
+        return dblist
 
-
-    def getDB_files_dict(self, maindb='', userdb=''):
+    def getDB_files_dict(self):
         '''
         returns the database as dictionary. Each file has its own key.
         {'dsr-db': ('line1\n', 'line2\n', '...'), 'dsr-user-db': ('line1\n', 'line2\n', '...')}
         '''
         db_dict = {}
-        for name in [maindb, userdb]:
-            dblist = [] 
-            if name == userdb:
-                filepath = self.getDBpath(self.homedir, name)
-                if not os.path.isfile(filepath):
-                    touch(filepath)
-            else:
-                filepath = self.getDBpath(self._db_dir, name)
-            base_filename = os.path.splitext(name)[0]
-            try:
-                with open(filepath, 'r') as f:
-                    for line in f:
-                        if line.startswith('#'):
-                            line = ''
-                        dblist.append(line)
-            except(IOError) as e:
-                print(e)
-                sys.exit(-1)
-            db_dict[base_filename] = dblist
-            del dblist
+        dblist = self.read_db_data(self.maindb)
+        db_dict['dsr_db'] = dblist
+        dblist = []
+        dblist = self.read_db_data(self.userdb)
+        db_dict['dsr_user_db'] = dblist
         return db_dict
 
 
@@ -210,7 +206,7 @@ class global_DB():
     '''
     creates a final dictionary where all dbs are included
     '''
-    def __init__(self, invert=False, fragment=None):
+    def __init__(self, invert=False, fragment=None, maindb=None, userdb=None):
         '''
         self._db_tags: ['12-DICHLOROBENZ', 590, 'dsr_db']
         
@@ -245,17 +241,37 @@ class global_DB():
                      {'comment': ...
         :param invert: inverts the coordinates of a fragment
         :type invert:  boolean
-        :param main_dbdir:  directory where the database is located. Default is environment variable DSR_DB_DIR
-        :type main_dbdir:   string
+        :param maindb:  directory where the main database is located. 
+                        Default location is environment variable DSR_DB_DIR.
+        :type maindb:   string
+        :param userdb:  directory where the user database is located. 
+                        Default is the users home directory.
+        :type userdb:   string
         :param dbnames: file names of the databases
         :type dbnames:  string
         '''
+        if userdb == None:
+            try:
+                homedir = os.environ["DSR_DB_DIR"]
+            except(KeyError):
+                homedir = expanduser("~")
+            user_db_path = os.path.join(homedir, "dsr_user_db.txt")
+            if not os.path.isfile(user_db_path):
+                touch(user_db_path)
+        else:
+            user_db_path = userdb
+        ##############################################    
+        if maindb == None:
+            try:
+                main_dbdir = os.environ["DSR_DIR"]
+            except(KeyError):
+                main_dbdir='./'
+            main_db_path = os.path.join(main_dbdir, 'dsr_db.txt')
+        else:
+            main_db_path = maindb
+        ##############################################
         self.invert = invert
-        try:
-            main_dbdir = os.environ["DSR_DIR"]
-        except(KeyError):
-            main_dbdir='./'
-        self._getdb = ReadDB(main_dbdir)
+        self._getdb = ReadDB(main_db_path, user_db_path)
         self._db_tags = self._getdb.find_db_tags()
         if fragment:
             for num, i in enumerate(self._db_tags):
@@ -775,21 +791,40 @@ class global_DB():
 
 class ImportGRADE():
 
-    def __init__(self, grade_tar_file, invert=False):
+    def __init__(self, grade_tar_file, invert=False, maindb=None, userdb=None):
         '''
         class to import fragments from GRADE of Global Phasing Ltd.
-        :param gradefile:
-        :type gradefile:
+        :param grade_tar_file:
+        :type grade_tar_file:
         :param invert:
         :type invert:
+        :type maindb:   string
+        :param userdb:  directory where the user database is located. 
+                        Default is the users home directory.
+        :type userdb:   string
+        :param dbnames: file names of the databases
+        :type dbnames:  string
         '''
-        try:
-            main_dbdir = os.environ["DSR_DIR"]
-        except(KeyError):
-            main_dbdir='./'
+        if userdb == None:
+            homedir = expanduser("~")
+            self.user_db_path = os.path.join(homedir, "dsr_user_db.txt")
+            if not os.path.isfile(self.user_db_path):
+                touch(self.user_db_path)
+        else:
+            self.user_db_path = userdb
+        ##############################################    
+        if maindb == None:
+            try:
+                main_dbdir = os.environ["DSR_DIR"]
+            except(KeyError):
+                main_dbdir='./'
+            self.main_db_path = os.path.join(main_dbdir, 'dsr_db.txt')
+        else:
+            self.main_db_path = maindb
+        ##############################################        
         self.el = Element()
         self.invert = invert
-        self._getdb = ReadDB(main_dbdir)
+        self._getdb = ReadDB(self.main_db_path, self.user_db_path)
         self._db_dir = expanduser("~")
         self._db_tags = self._getdb.find_db_tags()
         self._gdb = global_DB(invert=False)
@@ -1007,7 +1042,6 @@ class ImportGRADE():
         writes content of existing dsr_user_db.txt and the imported GRADE entry to
         the dsr_user_db.txt
         '''
-        filename = os.path.join(self._db_dir, 'dsr_user_db.txt')
         fragments = list(self._db.keys())
         imported_entry = self.bild_grade_db_entry()
         grade_db_names = list(imported_entry.keys())
@@ -1017,7 +1051,7 @@ class ImportGRADE():
                 user_db_names.append(self._db[i]['name'])
         # try to write the new dbentry:
         try:
-            with open(filename, 'w') as f:
+            with open(self.userdb_path, 'w') as f:
                 for name in grade_db_names:
                     print('Importing {} ({}) to user database...'.format(self._resi_name, name))
                     atomlist = imported_entry[name]['atoms']
@@ -1036,7 +1070,7 @@ class ImportGRADE():
             sys.exit(-1)
         # try to write existing dbentries:
         try:
-            with open(filename, 'a+') as fu:
+            with open(self.user_db_path, 'a+') as fu:
                 for i in fragments:
                     name = i
                     if self._db[i]['db'] == 'dsr_user_db':
