@@ -5,7 +5,7 @@ if [ clear ]; then
 fi
 # initialize DSR_DIR to default directory if not set properly
 if [ ! $DSR_DIR ]; then 
-    export DSR_DIR=/opt/DSR
+    export DSR_DIR=/Applications/DSR
 fi
 
 # test if python 2.7 is available
