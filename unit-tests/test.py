@@ -408,51 +408,43 @@ class atomsTest(unittest.TestCase):
         self.assertEqual(num_of_atoms, 92)
         self.assertNotEqual(num_of_atoms, 42)
 
-@disabled
+
 class dbfileTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
-        self._db_file_names = ("db1.txt", "db2.txt")
-        self.rdb = ReadDB(main_dbdir='c:/test/')
-        self.testnames = ['c:/test/db1.txt', 'c:/test/db2.txt']
+        self.rdb = ReadDB(main_dbpath='./db1.txt', user_dbpath="db2.txt")
         self.klein = ['\n', '<DMX>\n', 'REM test\n', 'RESI 3 TST1\n', 'SIMU C1\n','FRAG 17 1 1 1 90 90 90\n',
                       'O1  1  -1.3542148   -0.4780990   -0.5279749\n', '</DMX>']
 
-    def testrun_dbpath(self):
-        names = []
-        for name in self._db_file_names:
-            names.append(self.rdb.getDBpath(name))
-        self.assertListEqual(names, self.testnames)
-
     def testrun_db_files_dict(self):
-        db_file_names = ["db1_klein.TXT", "db2_klein.TXT"]
-        rdb = ReadDB(dbdir='./', dbnames = db_file_names)
-        self.assertListEqual(rdb.getDB_files_dict()['db2_klein'], self.klein)
+        main_dbpath = "./db1_klein.TXT"
+        user_dbpath = "./db2_klein.TXT"
+        rdb = ReadDB(main_dbpath, user_dbpath)
+        self.assertListEqual(rdb.getDB_files_dict()['dsr_user_db'], self.klein)
 
     def testrun_find_db_tags(self):
-        result = [['DME', 1, 'db1_klein'], ['DMX', 2, 'db2_klein']]
-        db_file_names = ("db1_klein.TXT", "db2_klein.TXT")
-        rdb = ReadDB(dbdir='./', dbnames = db_file_names)
+        result = [['DME', 1, 'dsr_db'], ['DMX', 2, 'dsr_user_db']]
+        rdb = ReadDB(main_dbpath="db1_klein.TXT", user_dbpath="db2_klein.TXT")
         tags = rdb.find_db_tags()
         self.assertListEqual(result, tags)
 
     def testrun_dublicate_tags(self):
-        db_file_names = ["db1_dublicate.TXT"]
-        rdb = ReadDB(dbdir='./', dbnames = db_file_names)
+        rdb = ReadDB(main_dbpath="db1_dublicate.TXT")
         with self.assertRaises(SystemExit):
             rdb.find_db_tags()
 
     def testrun_ReadDB(self):
-        db_file_names = ("db1_klein.TXT", "db2_klein.TXT")
-        result = [['DME', 1, 'db1_klein'], ['DMX', 2, 'db2_klein']]
+        main_dbpath = "./db1_klein.TXT"
+        user_dbpath = "./db2_klein.TXT"
+        result = [['DME', 1, 'dsr_db'], ['DMX', 2, 'dsr_user_db']]
         rdb = ReadDB()
-        rdb2 = ReadDB(dbdir='./', dbnames = db_file_names)
+        rdb2 = ReadDB(main_dbpath, user_dbpath)
         names = rdb.find_db_tags()
         names2 = rdb2.find_db_tags()
         self.assertEqual(names, [])
         self.assertEqual(result, names2)
 
-@disabled
+#@disabled
 class globalDB(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
@@ -465,7 +457,7 @@ class globalDB(unittest.TestCase):
                                'resi': 'TST1',
                                'name': 'DMX',
                                'line': 2,
-                               'db': 'db2_klein',
+                               'db': 'dsr_user_db',
                                'fragline': ['FRAG', '17', '1', '1', '1', '90', '90', '90'],
                                'atoms': [['O1', '1', '-1.3542148', '-0.4780990', '-0.5279749']]},
                        'dme': {'comment': ['test'],
@@ -473,19 +465,18 @@ class globalDB(unittest.TestCase):
                                'resi': False,
                                'name': 'DME',
                                'line': 1,
-                               'db': 'db1_klein',
+                               'db': 'dsr_db',
                                'fragline': ['FRAG', '17', '1', '1', '1', '90', '90', '90'],
                                'atoms': [['O1', '1', '-1.3542148', '-0.4780990', '-0.5279749']]}}
 
     def testrun_get_head_lines(self):
-        db_file_names = ("db1.TXT", "db2_klein.TXT")
-        getdb = ReadDB(dbdir='.', dbnames = db_file_names)
+        getdb = ReadDB("db1.TXT", "db2_klein.TXT")
         db_tags = getdb.find_db_tags()
         db_plain_dict = getdb.getDB_files_dict()
         #print(db_plain_dict)
-        self.assertLessEqual(db_tags[0], ['DME-FREE', 1, 'db1'])
-        gdb = global_DB(dbdir='.', dbnames = db_file_names)
-        headlines = gdb.get_head_lines('DMe-free', 'db1', '1')
+        self.assertLessEqual(db_tags[0], ['DME-FREE', 1, 'dsr_db'])
+        gdb = global_DB(False, "db1.TXT", "db2_klein.TXT")
+        headlines = gdb.get_head_lines('DMe-free', 'dsr_db', '1')
         #print(headlines)
         head = (['RESI DME', 'DFIX 1.409 O1 C1 O2 C4', 'DFIX 1.412 O1 C2 O2 C3',
           'DFIX 1.510 C2 C3', 'DANG 2.354 C1 C2 C3 C4', 'DANG 2.390 C2 O2 O1 C3',
@@ -504,38 +495,38 @@ class globalDB(unittest.TestCase):
 
 
     def testrun_build_db_dict(self):
-        db_file_names = ("db1_klein.TXT", "db2_klein.TXT")
-        gdb = global_DB(dbdir='.', dbnames = db_file_names)
+        gdb = global_DB(False, None, "db1_klein.TXT", "db2_klein.TXT")
         db = gdb.build_db_dict()
         self.assertEqual(db['dmx']['line'], 2)
         self.assertEqual(db['dmx']['name'], 'DMX')
-        self.assertEqual(db['dmx']['db'], 'db2_klein')
+        self.assertEqual(db['dmx']['db'], 'dsr_user_db')
         self.assertEqual(db['dmx']['head'], ['SIMU C1'])
         self.assertEqual(db['dmx']['fragline'], ['FRAG', '17', '1', '1', '1', '90', '90', '90'])
         self.assertEqual(db['dmx']['resi'], 'TST1')
         self.assertEqual(db, self.result)
 
     def testrun_get_residue_from_head(self):
-        db_file_names = ("db1_klein.TXT", "db2_klein.TXT")
-        gdb = global_DB(main_dbdir='../', maindb=db_file_names[0], userdb=db_file_names[1])
+        main_dbpath = "db1_klein.TXT"
+        user_dbpath = "db2_klein.TXT"
+        gdb = global_DB(False, None, main_dbpath, user_dbpath)
         gdb.build_db_dict()
         self.assertEqual(gdb.get_residue_from_head(self.klein), 'CLBE' )
 
     def testrun_get_residue_from_head2(self):
         # raises System exit, because residue in db_resinum.TXT is badly defined.
-        db_file_names = ("db1_klein.TXT", "db2_klein.TXT", 'db_resinum.TXT')
+        main_dbpath = "db_resinum.TXT"
+        user_dbpath = "db1.TXT"
         with self.assertRaises(SystemExit):
-            gdb = global_DB(main_dbdir='./', maindb=db_file_names[0], userdb=db_file_names[1])
+            gdb = global_DB(invert=False, maindb=main_dbpath, userdb=user_dbpath)
             gdb.build_db_dict()
 
     def testrun_get_fragment_atoms(self):
         x = '-1.154'
         z = '0.526'
         o1 = ['O1', '1', '-1.154', '-0.748', '0.526']
-        db_file_names = ("db1.TXT", "db2.TXT")
-        gdb = global_DB(dbdir='./', dbnames = db_file_names)
+        gdb = global_DB(False, None, "db1.TXT", "db2.TXT")
         gdb.build_db_dict()
-        atom = gdb.get_fragment_atoms('dme', 'db2', 1)[0]
+        atom = gdb.get_fragment_atoms('dme', 'dsr_user_db', 1)[0]
         self.assertListEqual(o1, atom)
         self.assertEqual(x, atom[2])
         self.assertEqual(z, atom[4])
@@ -543,10 +534,9 @@ class globalDB(unittest.TestCase):
         self.assertEqual('O1', atom[0])
 
     def testrun_get_fragment_atoms_shortline(self):
-        db_file_names = ["db1_shortline.TXT"]
-        gdb = global_DB(dbdir='./', dbnames = db_file_names)
+        gdb = global_DB(invert=False, fragment=None, maindb="db1_shortline.TXT")
         #db = gdb.build_db_dict()
-        atom = gdb.get_fragment_atoms('dme-free', 'db1_shortline', 1)
+        atom = gdb.get_fragment_atoms('dme-free', 'dsr_db', 1)
         self.assertEqual(len(atom), 5)
         self.assertEqual(atom[0][0], 'O2')
 
@@ -555,10 +545,9 @@ class globalDB(unittest.TestCase):
         x = '1.154'
         z = '-0.526'
         o1 = ['O1', '1', '1.154', '0.748', '-0.526']
-        db_file_names = ("db1.TXT", "db2.TXT")
-        gdb = global_DB(invert = True, dbdir='./', dbnames = db_file_names)
+        gdb = global_DB(True, None, "db1.TXT", "db2.TXT")
         gdb.build_db_dict()
-        atom = gdb.get_fragment_atoms('dme', 'db2', 1)[0]
+        atom = gdb.get_fragment_atoms('dme', 'dsr_user_db', 1)[0]
         self.assertListEqual(o1, atom)
         self.assertEqual(x, atom[2])
         self.assertEqual(z, atom[4])
@@ -567,26 +556,25 @@ class globalDB(unittest.TestCase):
 
 
     def testrun_get_fragment_atoms_noatoms(self):
-        db_file_names = ("db1_noatoms.TXT", "db2.TXT")
         with self.assertRaises(SystemExit):
-            gdb = global_DB(dbdir='./', dbnames = db_file_names)
+            gdb = global_DB(False, None, "db1_noatoms.TXT", "db2.TXT")
             gdb.build_db_dict()
-            gdb.get_fragment_atoms('dme-free', 'db1_noatoms', 1)
+            gdb.get_fragment_atoms('dme-free', 'dsr_db', 1)
 
 
     def testrun_get_fragment_atoms_noend(self):
-        db_file_names = ("db1_noend.TXT", "db2.TXT")
         with self.assertRaises(SystemExit):
-            gdb = global_DB(dbdir='./', dbnames = db_file_names)
+            gdb = global_DB(False, None, "db1_noend.TXT", "db2.TXT")
             gdb.build_db_dict()
-            gdb.get_fragment_atoms('dme-free', 'db1_noend', 1)
+            gdb.get_fragment_atoms('dme-free', 'dsr_db', 1)
 
 
     def testrun_header_consistency(self):
         self.maxDiff = None
-        db_file_names = ["db1_head_inconsistent.TXT"]
+        main_dbpath = "./db1_head_inconsistent.TXT"
+        user_dbpath = "./db2_klein.TXT"
         with self.assertRaises(SystemExit):
-            gdb = global_DB(invert = True, main_dbdir='./', maindb=db_file_names[0])
+            gdb = global_DB(invert = True, fragment=None, maindb=main_dbpath, userdb=user_dbpath)
             db = gdb.build_db_dict()
             fragment = 'dmel'
             head = db[fragment]['head']
@@ -595,9 +583,10 @@ class globalDB(unittest.TestCase):
 
     def testrun_header_consistency2(self):
         self.maxDiff = None
-        db_file_names = ["db1_head_inconsistent2.TXT"]
+        maindb = "./db1_head_inconsistent2.TXT"
+        userdb = "./db2_klein.TXT"
         with self.assertRaises(SystemExit):
-            gdb = global_DB(invert = True, dbdir='./', dbnames = db_file_names)
+            gdb = global_DB(invert = True, maindb=maindb, userdb=userdb)
             db = gdb.build_db_dict()
             fragment = 'dmem'
             head = db[fragment]['head']
@@ -607,8 +596,7 @@ class globalDB(unittest.TestCase):
 
     def testrun_get_comment_from_fragment1(self):
         self.maxDiff = None
-        db_file_names = ["comment.TXT"]
-        gdb = global_DB(invert = True, dbdir='./', dbnames = db_file_names)
+        gdb = global_DB(True, None, maindb="./comment.TXT", userdb="./db1.TXT")
         gdb.build_db_dict()
         fragment = 'com'
         comment = gdb.get_comment_from_fragment('com4')
@@ -621,12 +609,9 @@ class globalDB(unittest.TestCase):
             com = gdb.get_comment_from_fragment(fragment+str(i))
             self.assertEqual(com, names[i-1])
 
-
-
     def testrun_get_resi_from_fragment(self):
         self.maxDiff = None
-        db_file_names = ["comment.TXT"]
-        gdb = global_DB(invert = True, dbdir='./', dbnames = db_file_names)
+        gdb = global_DB(maindb="comment.TXT", userdb='db1.txt')
         gdb.build_db_dict()
         fragment = 'com1'
         resi = gdb.get_resi_from_fragment(fragment)
