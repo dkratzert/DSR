@@ -242,7 +242,7 @@ class global_DB():
         :param invert: inverts the coordinates of a fragment
         :type invert:  boolean
         :param maindb:  directory where the main database is located. 
-                        Default location is environment variable DSR_DB_DIR.
+                        Default location is the users home directory.
         :type maindb:   string
         :param userdb:  directory where the user database is located. 
                         Default is the users home directory.
@@ -251,10 +251,12 @@ class global_DB():
         :type dbnames:  string
         '''
         if userdb == None:
-            try:
-                homedir = os.environ["DSR_DB_DIR"]
-            except(KeyError):
-                homedir = expanduser("~")
+            # using the environment variable turned out to be too complicated.
+            # DSR_DB_DIR is now deprecated!
+            #try:
+            #    homedir = os.environ["DSR_DB_DIR"]
+            #except(KeyError):
+            homedir = expanduser("~")
             user_db_path = os.path.join(homedir, "dsr_user_db.txt")
             if not os.path.isfile(user_db_path):
                 touch(user_db_path)
