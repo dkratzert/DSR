@@ -316,17 +316,6 @@ class DSR():
         mog.write_user_database()
         sys.exit(1)
 
-
-    def set_post_refine_cycles(self, shx, cycles):
-        '''
-        set the number of refinement cycles
-        cycles must be a string
-        '''
-        try:
-            shx.set_refinement_cycles(cycles)
-        except(IndexError):
-            print('Unable to set refinement cycles')
-
     def go_refine(self, shx):
         '''
         actually starts the fragment fit
@@ -431,7 +420,8 @@ class DSR():
         # write to file:
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
         acta_lines = shx.remove_acta_card()
-        shx.set_refinement_cycles('0')
+        cycles = shx.get_refinement_cycles
+        shx.set_refinement_cycles('0')  # also sets shx.cycles to current value
         rl.write_resfile(reslist, '.ins')
         if self.no_refine:
             print('\nPerforming no fragment fit. Just prepared the .ins file for you.')
@@ -458,7 +448,13 @@ class DSR():
                                     fragment_numberscheme, cell)
         shx = ShelxlRefine(reslist, basefilename, find_atoms)
         shx.restore_acta_card(acta_lines)
-        self.set_post_refine_cycles(shx, '8')
+        try:
+            if cycles != None:
+                shx.set_refinement_cycles(cycles) # restores last LS value
+            else:
+                shx.set_refinement_cycles(8)
+        except(IndexError):
+            print('Unable to set refinement cycles')
         if not self.options.rigid_group:
             shx.remove_afix(afix.rand_id_afix)   # removes the afix 9
         # final resfile write:

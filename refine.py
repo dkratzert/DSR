@@ -107,12 +107,11 @@ class ShelxlRefine():
             barray = 3000
         return barray
 
-
-    def set_refinement_cycles(self, cycles='8'):
+    def set_refinement_cycles(self, cycles):
         '''
         Modifies the number of refinement cycles in the reslist.
         '''
-        status=checkFileExist(self.resfile_name+'.res')
+        status = checkFileExist(self.resfile_name + '.res')
         if not status:
             print('Error: unable to find res file!')
             sys.exit(-1)
@@ -121,8 +120,24 @@ class ShelxlRefine():
         ls_list = self._reslist[ls_line].split()
         ls_list[1] = str(cycles)+'\n'
         self._reslist[ls_line] = '  '.join(ls_list)
+        return self._reslist
 
-
+    @property
+    def get_refinement_cycles(self):
+        '''
+        Modifies the number of refinement cycles in the reslist.
+        '''
+        status = checkFileExist(self.resfile_name + '.res')
+        if not status:
+            print('Error: unable to find res file!')
+            sys.exit(-1)
+        regex = r'(^L\.S\.\s)|(^CGLS\s)'
+        ls_line = misc.find_line(self._reslist, regex)
+        try:
+            cycles = self._reslist[ls_line].split()[1]
+        except(IndexError):
+            return None
+        return cycles
 
     def remove_acta_card(self):
         '''
@@ -136,7 +151,6 @@ class ShelxlRefine():
                 commands.append(self._reslist[i])
                 self._reslist[i] = 'REM '+self._reslist[i]
         return commands
-
 
     def restore_acta_card(self, lines):
         '''
@@ -153,8 +167,6 @@ class ShelxlRefine():
         if acta_lines:
             for n, i in enumerate(acta_lines):
                 self._reslist[i] = lines[n]
-
-
 
     def afix_is_closed(self, line):
         '''
