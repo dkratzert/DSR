@@ -3,6 +3,10 @@ Recent changes
         directory! For example /home/username/dsr_user_db.txt in Linux and 
         C:/users/Username in windows Vista and later. The DSR_DB_DIr environment
         variable is now deprecated.
+        This version of DSR is not compatible with the DSR GUI in ShelXle-1.0.758
+        and below!
+        ShelXle 758 expects the user database file in the DSR directory while later
+        versions will expect it in the users home directory.
         The fragment names in the listing output are now mostly sorted correctly.
         An unreadable SHELXL executable will not create an exeption any more.
 -181    Fixed bug where external restraints produced "illegal instruction" error
