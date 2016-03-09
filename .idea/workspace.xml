@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="f7d97d12-771b-4a68-afb3-c6933a706eff" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/setup/debian-package/DEBIAN/postinst" afterPath="$PROJECT_DIR$/setup/debian-package/DEBIAN/postinst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/setup/Output/changelog.txt" afterPath="$PROJECT_DIR$/setup/Output/changelog.txt" />
     </list>
     <ignored path="DSR.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -56,14 +56,24 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="dbfile.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="dbfile.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/dbfile.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5555556">
+            <state vertical-scroll-proportion="0.0">
               <caret line="267" column="50" selection-start-line="267" selection-start-column="50" selection-end-line="267" selection-end-column="50" />
               <folding>
                 <element signature="e#485#522#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="changelog.txt" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/setup/Output/changelog.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.12592593">
+              <caret line="6" column="77" selection-start-line="6" selection-start-column="77" selection-end-line="6" selection-end-column="77" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -94,6 +104,7 @@
         <option value="$PROJECT_DIR$/dsr_db.txt" />
         <option value="$PROJECT_DIR$/dbfile.py" />
         <option value="$PROJECT_DIR$/setup/debian-package/DEBIAN/postinst" />
+        <option value="$PROJECT_DIR$/setup/Output/changelog.txt" />
       </list>
     </option>
   </component>
@@ -198,29 +209,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="debian-package" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="DSR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="DSR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="setup" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="debian-package" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="DEBIAN" />
+              <option name="myItemId" value="Output" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -475,7 +464,13 @@
       <option name="project" value="LOCAL" />
       <updated>1457428229695</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="removed dsr_user_db.txt creation from debian postinst">
+      <created>1457510015705</created>
+      <option name="number" value="00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1457510015705</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -525,6 +520,7 @@
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15007898" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290461" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39978564" sideWeight="0.5021075" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290461" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.105882354" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -532,7 +528,6 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290461" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -558,7 +553,8 @@
     <MESSAGE value="worksp" />
     <MESSAGE value="todo" />
     <MESSAGE value="removed DSR_DB_DIR support" />
-    <option name="LAST_COMMIT_MESSAGE" value="removed DSR_DB_DIR support" />
+    <MESSAGE value="removed dsr_user_db.txt creation from debian postinst" />
+    <option name="LAST_COMMIT_MESSAGE" value="removed dsr_user_db.txt creation from debian postinst" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -816,11 +812,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/dbfile.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5555556">
+        <state vertical-scroll-proportion="0.0">
           <caret line="267" column="50" selection-start-line="267" selection-start-column="50" selection-end-line="267" selection-end-column="50" />
           <folding>
             <element signature="e#485#522#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/setup/Output/changelog.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.12592593">
+          <caret line="6" column="77" selection-start-line="6" selection-start-column="77" selection-end-line="6" selection-end-column="77" />
+          <folding />
         </state>
       </provider>
     </entry>
