@@ -1053,7 +1053,7 @@ class ImportGRADE():
                 user_db_names.append(self._db[i]['name'])
         # try to write the new dbentry:
         try:
-            with open(self.userdb_path, 'w') as f:
+            with open(self.user_db_path, 'w') as f:
                 for name in grade_db_names:
                     print('Importing {} ({}) to user database...'.format(self._resi_name, name))
                     atomlist = imported_entry[name]['atoms']
