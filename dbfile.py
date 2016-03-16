@@ -250,7 +250,7 @@ class global_DB():
         :param dbnames: file names of the databases
         :type dbnames:  string
         '''
-        if userdb == None:
+        if userdb is None:
             # using the environment variable turned out to be too complicated.
             # DSR_DB_DIR is now deprecated!
             #try:
@@ -263,7 +263,7 @@ class global_DB():
         else:
             user_db_path = userdb
         ##############################################    
-        if maindb == None:
+        if maindb is None:
             try:
                 main_dbdir = os.environ["DSR_DIR"]
             except(KeyError):
@@ -807,7 +807,7 @@ class ImportGRADE():
         :param dbnames: file names of the databases
         :type dbnames:  string
         '''
-        if userdb == None:
+        if userdb is None:
             homedir = expanduser("~")
             self.user_db_path = os.path.join(homedir, "dsr_user_db.txt")
             if not os.path.isfile(self.user_db_path):
@@ -815,7 +815,7 @@ class ImportGRADE():
         else:
             self.user_db_path = userdb
         ##############################################    
-        if maindb == None:
+        if maindb is None:
             try:
                 main_dbdir = os.environ["DSR_DIR"]
             except(KeyError):
