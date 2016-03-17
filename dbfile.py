@@ -894,14 +894,21 @@ class ImportGRADE():
         :param pdbfile: file with some information about the molecule
         :type pdbfile: list of strings
         '''
-        regex = re.compile(r'^.*Compound full name.*')
+        full_name_regex = re.compile(r'^.*Compound full name.*')
+        resi_regex = re.compile(r'^HETATM\s+1.*')
         for line in pdbfile:
             if not isinstance(line, str):
                 line = line.decode('ascii')
-            if regex.match(line):
+            if full_name_regex.match(line):
                 line = line.replace('_', '')
                 line = line.replace('-', '')
                 line = line.replace('#', '')
+                break
+            if resi_regex.match(line):
+                line = line.replace('_', '')
+                line = line.replace('-', '')
+                line = line.replace('#', '')
+                return line.split()[3]
                 break
         if not line:
             return 'NONE'
