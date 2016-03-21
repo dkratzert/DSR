@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f7d97d12-771b-4a68-afb3-c6933a706eff" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/DSR.iml" afterPath="$PROJECT_DIR$/.idea/DSR.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cf3fit.py" afterPath="$PROJECT_DIR$/cf3fit.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dsr.py" afterPath="$PROJECT_DIR$/dsr.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/p21n_cf3.res" afterPath="$PROJECT_DIR$/p21n_cf3.res" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/refine.py" afterPath="$PROJECT_DIR$/refine.py" />
     </list>
     <ignored path="DSR.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -31,7 +26,7 @@
       <file leaf-file-name="dsr.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/dsr.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-16.23077">
+            <state vertical-scroll-proportion="0.0">
               <caret line="369" column="21" selection-start-line="369" selection-start-column="21" selection-end-line="369" selection-end-column="21" />
               <folding>
                 <marker date="1457536300420" expanded="true" signature="1529:1535" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
@@ -43,8 +38,8 @@
       <file leaf-file-name="cf3fit.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/cf3fit.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.77588654">
-              <caret line="428" column="8" selection-start-line="428" selection-start-column="8" selection-end-line="428" selection-end-column="8" />
+            <state vertical-scroll-proportion="1.4941764">
+              <caret line="422" column="8" selection-start-line="422" selection-start-column="8" selection-end-line="422" selection-end-column="8" />
               <folding>
                 <element signature="e#533#547#0" expanded="true" />
               </folding>
@@ -218,7 +213,7 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
   </component>
-  <component name="RunManager" selected="Python tests.Doctest nalimov_test">
+  <component name="RunManager" selected="Python tests.Unittests in test">
     <configuration default="false" name="Unittests in test" type="tests" factoryName="Unittests" singleton="true" temporary="true" nameIsGenerated="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -424,10 +419,10 @@
     </list>
     <recent_temporary>
       <list size="4">
-        <item index="0" class="java.lang.String" itemvalue="Python tests.Doctest nalimov_test" />
-        <item index="1" class="java.lang.String" itemvalue="Python.dbfile" />
-        <item index="2" class="java.lang.String" itemvalue="Python.dsr" />
-        <item index="3" class="java.lang.String" itemvalue="Python tests.Unittests in test" />
+        <item index="0" class="java.lang.String" itemvalue="Python tests.Unittests in test" />
+        <item index="1" class="java.lang.String" itemvalue="Python tests.Doctest nalimov_test" />
+        <item index="2" class="java.lang.String" itemvalue="Python.dbfile" />
+        <item index="3" class="java.lang.String" itemvalue="Python.dsr" />
       </list>
     </recent_temporary>
   </component>
@@ -476,9 +471,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Doctest_nalimov_test - 2016.03.04 at 12h 25m 08s.xml">
-      <configuration name="Doctest nalimov_test" configurationId="tests" />
-    </history-entry>
     <history-entry file="Doctest_nalimov_test - 2016.03.04 at 12h 35m 30s.xml">
       <configuration name="Doctest nalimov_test" configurationId="tests" />
     </history-entry>
@@ -506,6 +498,9 @@
     <history-entry file="Unittests_in_test - 2016.02.29 at 15h 24m 07s.xml">
       <configuration name="Unittests in test" configurationId="tests" />
     </history-entry>
+    <history-entry file="Unittests_in_test - 2016.03.11 at 16h 30m 09s.xml">
+      <configuration name="Unittests in test" configurationId="tests" />
+    </history-entry>
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -518,26 +513,26 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1066" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15007898" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290461" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39978564" sideWeight="0.5021075" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26737967" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290461" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19037433" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18996799" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32870865" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24960506" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290461" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3989305" sideWeight="0.49789253" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32941177" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24973376" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26737967" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3989305" sideWeight="0.49789253" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -968,7 +963,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/dsr.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-16.23077">
+        <state vertical-scroll-proportion="0.0">
           <caret line="369" column="21" selection-start-line="369" selection-start-column="21" selection-end-line="369" selection-end-column="21" />
           <folding>
             <marker date="1457536300420" expanded="true" signature="1529:1535" placeholder="&quot;&quot;&quot;...&quot;&quot;&quot;" />
@@ -986,8 +981,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/cf3fit.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.77588654">
-          <caret line="428" column="8" selection-start-line="428" selection-start-column="8" selection-end-line="428" selection-end-column="8" />
+        <state vertical-scroll-proportion="1.4941764">
+          <caret line="422" column="8" selection-start-line="422" selection-start-column="8" selection-end-line="422" selection-end-column="8" />
           <folding>
             <element signature="e#533#547#0" expanded="true" />
           </folding>
