@@ -23,18 +23,7 @@
     <favorites_list name="DSR" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="dsr_db.txt" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/dsr_db.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="9.450549">
-              <caret line="595" column="34" selection-start-line="595" selection-start-column="34" selection-end-line="595" selection-end-column="34" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <leaf />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -111,6 +100,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
@@ -132,7 +122,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -825,8 +814,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/dsr_db.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="9.450549">
-          <caret line="595" column="34" selection-start-line="595" selection-start-column="34" selection-end-line="595" selection-end-column="34" />
+        <state vertical-scroll-proportion="0.4788069">
+          <caret line="1330" column="9" selection-start-line="1330" selection-start-column="9" selection-end-line="1330" selection-end-column="9" />
           <folding />
         </state>
       </provider>
