@@ -14,8 +14,10 @@
 #  University of Wisconsin-Madison. Madison, WI, USA
 #  http://xray.chem.wisc.edu/Projects/IdealizedMolecularGeometry.html
 #
-# Some are imported from Grade the Web Server http://grade.globalphasing.org
+# Some are from the Cambridge structural Database:
+# Groom, C. R. & Allen, F. H. (2014). Angew. Chem. Int. Ed. 53, 662-671.
 #
+# Some are imported from the Grade Web Server http://grade.globalphasing.org
 #
 # Other fragments are from in-house measurements.
 #
@@ -76,7 +78,7 @@ C12 6 1.62800 12.03400 13.82200
 
 <imi>
 REM Name: N-methylimidazole, 1-methylimidazole, C4H6N2
-REM Source: own measurement
+REM Source: Daniel Kratzert
 rem Restraints from atom connectivities:
 DFIX 1.3477 C2   C3
 DFIX 1.3815 C2   N1
@@ -1324,7 +1326,7 @@ C2   1  0.000000  0.000000 -1.176783
 
 
 <NSiMe3>
-rem Src: own measurement
+rem Src: Daniel Kratzert
 REM Name: Trimethylsilyl-N, C3H10OSi, N-TMS
 RESI NSI
 SADI Si1 C1 Si1 C2 Si1 C3
@@ -1343,7 +1345,7 @@ C3    1    0.001505    0.299282    0.171842
 
 
 <Hexa>
-rem Src: own measurement
+rem Src: Daniel Kratzert
 REM Name: Hexamethyldisilazane, C6H19NSi2
 RESI HEXA
 SADI N1 Si1 N1 Si2
@@ -1993,7 +1995,7 @@ C4    1    0.34314   0.86040   0.95545
 
 
 <Triflate>
-rem Src: Own measurement
+rem Src: Daniel Kratzert
 rem Name: Trifluoromethanesulfonate, CF3SO3-, Triflate
 RESI TRIF
 SIMU C1 > O3
@@ -2019,7 +2021,7 @@ O3    3    0.80703   0.27957   0.36326
 
 <N-Adamantane>
 rem Name: Adamantane-N, C10H15N
-rem Src: own measurement
+rem Src: Daniel Kratzert
 RESI NADA
 SADI N1 C2 N1 C3 N1 C4
 SADI C1 C2 C1 C3 C1 C4  C5 C6 C6 C7 C7 C8 C8 C9 C9 C10 C10 C5
@@ -2045,7 +2047,7 @@ C10  2   -0.058852  0.386127  0.561687
 
 
 <Adamantane>
-rem Src: own measurement
+rem Src: Daniel Kratzert
 REM Name: Adamantane, C10H16
 RESI CADA
 SADI C1 C2 C1 C3 C1 C4 C5 C6 C6 C7 C7 C8 C8 C9 C9 C10 C10 C5 =
