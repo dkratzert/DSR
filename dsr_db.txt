@@ -47,7 +47,24 @@
 #   in the SHELXL file automatically.
 ########################################################################################
 
-
+<pyrazine>
+REM Src: CCDC GUDSUV
+REM Name: Pyrazine, 1,4-Diazabenzene, 1,4-Diazine, C4H4N2
+RESI PYRC
+SADI C1 C2 C3 C4
+SADI C1 N1 C4 N1 C2 N2 C3 N2
+SADI 0.04 N1 C2 N1 C3 N2 C1 N2 C4
+FLAT N1 > C4
+SIMU N1 > C4
+RIGU N1 > C4
+FRAG 17 10.7669 10.7894 6.8101 90 117.396 90
+N1      3  0.330400  0.434200  0.475100  1.000000 0.05000
+N2      3  0.398600  0.683100  0.487000  1.000000 0.05000
+C1      1  0.457900  0.470600  0.510300  1.000000 0.05000
+C2      1  0.492500  0.595100  0.515900  1.000000 0.05000
+C3      1  0.270800  0.648100  0.453700  1.000000 0.05000
+C4      1  0.236200  0.523300  0.446300  1.000000 0.05000
+</pyrazine>
 
 <ptbu>
 rem Name: tris-(tert-butyle)-phosphane, C12H27P
@@ -797,9 +814,6 @@ C5  1 0.000000    2.560546   -0.385972
 </dmpz>
 
 
-
-
-
 <Bipyridine>
 rem Src: CCDC DOCYEB
 REM Name: 2,2'-Bipyridine, C10H8N2, bipy
@@ -831,7 +845,7 @@ C10     1  0.676400  0.172740  0.511330  1.000000 0.05000
 <Pyrazole>
 REM Src: Gaussian03, pbe1pbe/6-311+G(d), Ilia A. Guzei
 REM Name: Pyrazole, C3H4N2
-RESI pyr
+RESI pyra
 SADI C1 C2 C2 C3
 SADI C1 N1 C3 N2
 SADI C1 N2 C3 N1
@@ -849,7 +863,7 @@ N2  3  0.007233  1.178904 0.000000
 <Pyrene>
 REM Src: Gaussian03,  b3lyp/6-311+G(d), Ilia A. Guzei
 rem Name: Pyrene, C16H10
-RESI pyr
+RESI pyrb
 SADI C1 C2 C2 C3 C3 C3A C3A C4 C4 C5 C5 C5A C5A C6 C6 C7 C7 C8 C8 C8A C8A C9 =
   C9 C10 C10 C10A C10A C1 C10A C10B C10B C3A C10B C10C C10C C5A C10C C8A
 SADI 0.04 C1 C3 C1 C10B C3A C2 C3A C10A C3 C10B C2 C10A C4 C5A C4 C10B C10C C5 C5 C3A =
