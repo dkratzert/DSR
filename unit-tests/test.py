@@ -659,7 +659,7 @@ class ImportGRADE_Test(unittest.TestCase):
         with open(filename2) as filen:
             ob = filen.readlines()
         name = self.ig.get_name_from_pdbfile(ob)
-        self.assertEqual(name, 'NONE')
+        self.assertEqual(name, 'PFA')
 
 
     def testrun_get_comments(self):
