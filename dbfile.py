@@ -681,7 +681,7 @@ class global_DB():
         :type fragment: string
         '''
         result = search_fragment_name(fragment)
-        print('Do you mean one of these?:')
+        print('Do you mean one of these?:\n')
         print_search_results(result)
 
     def get_atoms_from_fragment(self, fragment):
