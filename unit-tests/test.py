@@ -320,7 +320,6 @@ class NumberSchemeTest(unittest.TestCase):
         self.assertListEqual(numberscheme, self.numbers)
 
 
-@disabled
 class insertAfixTest(unittest.TestCase):
     def setUp(self):
         import db
@@ -329,7 +328,7 @@ class insertAfixTest(unittest.TestCase):
         self.res_file = 'p21c.res'
         testresfile = './p21c.res'
         invert = True
-        self.options = OptionsParser()
+        self.options = OptionsParser('foo')
         self.rl = ResList(testresfile)
         self.reslist = self.rl.get_res_list()
         self.dsrp = DSR_Parser(self.reslist, self.rl)
@@ -364,12 +363,11 @@ class insertAfixTest(unittest.TestCase):
         misc.remove_file('dsr_CF3_p21c.dfix')
 
 
-@disabled
 class removeDublicatesAfixTest(unittest.TestCase):
     def setUp(self):
         # self.verbosity = 4
         from options import OptionsParser
-        self.options = OptionsParser()
+        self.options = OptionsParser('foo')
         self.res_file = './collect_resi.res'
         self.res_list = ResList(self.res_file)
         self.reslist = self.res_list.get_res_list()
@@ -464,7 +462,7 @@ class dbfileTest(unittest.TestCase):
         self.assertEqual(result, names2)
 
 
-# @disabled
+
 class globalDB(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
