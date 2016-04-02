@@ -20,6 +20,66 @@ from resfile import ResList, ResListEdit
 from resi import Resi
 from export import Export
 import sys
+from os import system
+from subprocess import call
+
+
+class dsrrunTest(unittest.TestCase):
+    def setUp(self):
+        unittest.TestCase.setUp(self)
+        self.maxDiff = None
+        misc.copy_file('test-data/beispiel/1.ins', 'test-data/beispiel/1a.res')
+        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/1a.hkl')
+        misc.copy_file('test-data/beispiel/2.ins', 'test-data/beispiel/2a.res')
+        misc.copy_file('test-data/beispiel/2.hkl', 'test-data/beispiel/2a.hkl')
+        misc.copy_file('test-data/beispiel/3.ins', 'test-data/beispiel/3a.res')
+        misc.copy_file('test-data/beispiel/3.hkl', 'test-data/beispiel/3a.hkl')
+        misc.copy_file('test-data/beispiel/4.ins', 'test-data/beispiel/4a.res')
+        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/4a.hkl')
+        misc.remove_file('test-data/beispiel/1a.ins')
+        misc.remove_file('test-data/beispiel/2a.ins')
+        misc.remove_file('test-data/beispiel/3a.ins')
+        misc.remove_file('test-data/beispiel/4a.ins')
+        misc.remove_file('dsr_CCF3_4_4a.dfix')
+        misc.remove_file('*.fcf')
+        self.dsr = '/Applications/DSR/dsr'
+        #self.dsr = misc.which('dsr')
+    
+    def testrun_run1(self): 
+        call([self.dsr, "-r", "./test-data/beispiel/1a.res"])
+        with open('./test-data/beispiel/1a.res') as txt:
+            erster = txt.read()
+        with open('./test-data/beispiel/1a-erg.res') as txt2:
+            erster_erg = txt2.read()
+        self.assertEqual(erster, erster_erg)
+
+    def testrun_run2(self):    
+        call([self.dsr, "-r", "./test-data/beispiel/2a.res"])
+        with open('./test-data/beispiel/2a.res') as txt:
+            zweiter = txt.read()
+        with open('./test-data/beispiel/2a-erg.res') as txt2:
+            zweiter_erg = txt2.read()
+        self.assertEqual(zweiter, zweiter_erg)
+
+    def testrun_run3(self):    
+        call([self.dsr, "-r", "./test-data/beispiel/3a.res"])
+        with open('./test-data/beispiel/3a.res') as txt:
+            dritter = txt.read()
+        with open('./test-data/beispiel/3a-erg.res') as txt2:
+            dritter_erg = txt2.read()
+        self.assertEqual(dritter, dritter_erg)
+
+    def testrun_run4(self):    
+        call([self.dsr, "-re", "./test-data/beispiel/4a.res"])
+        with open('./test-data/beispiel/3a.res') as txt:
+            vierter = txt.read()
+        with open('./test-data/beispiel/3a-erg.res') as txt2:
+            vierter_erg = txt2.read()
+        with open('./test-data/beispiel/dsr_CCF3_4_4a-erg.dfix') as txt3:
+            vierter_dfix = txt3.read()
+        with open('./test-data/beispiel/dsr_CCF3_4_4a-erg.dfix') as txt3:
+            vierter_dfixerg = txt3.read()
+        self.assertEqual(vierter_dfix, vierter_dfixerg)        
 
 print(sys.version)
 db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
@@ -56,7 +116,6 @@ cells = ['10.5086', '20.9035', '20.5072', '90', '94.13', '90']
 def disabled(f):
     def _decorator():
         print f.__name__ + ' has been disabled'
-
     return _decorator
 
 

@@ -417,8 +417,9 @@ def copy_file(source, target):
                 shutil.copyfile(filen, target)
         else:
             shutil.copyfile(source, target)
-    except(IOError):
+    except(IOError) as e:
         print('Unable to copy {}.'.format(source_file))
+        print(e)
 
 
 def make_directory(dirpath):
