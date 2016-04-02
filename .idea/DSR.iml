@@ -6,7 +6,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.olex" />
       <excludeFolder url="file://$MODULE_DIR$/.settings" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="Python 2.7.10 (/System/Library/Frameworks/Python.framework/Versions/2.7/bin/python2.7)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PyDocumentationSettings">
