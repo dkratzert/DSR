@@ -282,15 +282,11 @@ F9    4    0.043287    0.119635    0.323460    31.00000    0.07721    0.04418 =
 PART 0
 RESI 0
  
-SADI_CF3 0.02 C1 C2 C1 C3 C1 C4
-SADI_CF3 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4
-SADI_CF3 0.04 C2 C3 C3 C4 C2 C4
-SADI_CF3 0.04 O1 C2 O1 C3 O1 C4
-SADI_CF3 0.04 F1 F2 F2 F3 F3 F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7
-DFIX_CF3 1.35 O1 C1
-SADI_CF3 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1
- 
-RESI 4 CF3
+SIMU_CCF3 O1 > F9
+RIGU_CCF3 O1 > F9
+RESI 4 CCF3
+REM The restraints for residue CCF3 are in this file:
++dsr_CCF3_4_5a.dfix
 PART 2 -31
 O1    3    0.083154    0.235054    0.401721   -31.00000    0.04000
 C1    1    0.033194    0.232482    0.336692   -31.00000    0.04000
@@ -310,14 +306,14 @@ PART 0
 RESI 0
  
 REM rem dsr put OC(CF3)3 with O1 C1 C2 on O1_3 C1_3 Q5 part 2 occ -31 resi
-REM !cf3
+REM !dfix
  
 AFIX   0
 HKLF 4
  
 REM  p21c in P2(1)/c
 REM R1 =  0.1203 for    7085 Fo > 4sig(Fo)  and  0.1628 for all   10786 data
-REM    828 parameters refined using   4373 restraints
+REM    828 parameters refined using   1851 restraints
  
 END  
      
