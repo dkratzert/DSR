@@ -283,7 +283,7 @@ F9    4    0.043287    0.119635    0.323460    31.00000    0.07721    0.04418 =
          0.04388   -0.01151   -0.01944    0.01273
 PART 0
 RESI 0
-rem dsr put OC(CF3)3 with O1 C1 C2 on O1_3 C1_3 Q5 part 2 occ -31 resi 
+rem dsr put OC(CF3)3 with O1 C1 C2 on O1_3 C1_3 Q5 part 2 occ -31 resi 9
  
 HKLF 4
  

@@ -339,8 +339,8 @@ F9    4    0.136675    0.333939    0.329561   -31.00000    0.04000
 PART 0
 RESI 0
  
-REM rem dsr put OC(CF3)3 with O1 C1 C2 on O1_3 C1_3 Q5 part 2 occ -31 resi =
-REM CF3 8 dfix
+REM rem dsr put OC(CF3)3 with O1 C1 C2 on O1_3 C1_3 Q5 part 2 occ -31 resi
+REM !CF3 8 dfix
  
 AFIX   0
 HKLF 4
