@@ -6,7 +6,7 @@
 # test resi module
 # test PART and OCC without parameter value supplied
 # test file without H atoms in replacemode
-
+import os
 import unittest
 from dsr import VERSION
 from afix import InsertAfix
@@ -34,13 +34,12 @@ class dsrrunTest(unittest.TestCase):
     def setUp(self):
         #unittest.TestCase.setUp(self)
         self.maxDiff = 1000
-        misc.remove_file('test-data/beispiel/1a.res')
+        misc.remove_file(os.path.relpath('./test-data/beispiel/1a.res'))
         misc.remove_file('test-data/beispiel/2a.res')
         misc.remove_file('test-data/beispiel/3a.res')
         misc.remove_file('test-data/beispiel/4a.res')
         misc.remove_file('test-data/beispiel/5a.res')
-        print('################zizizüüüüüüü')
-        misc.copy_file('test-data/beispiel/1.ins', 'test-data/beispiel/1a.res')
+        misc.copy_file(os.path.relpath('./test-data/beispiel/1.ins'),os.path.relpath('./test-data/beispiel/1a.res'))
         misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/1a.hkl')
         misc.copy_file('test-data/beispiel/2.ins', 'test-data/beispiel/2a.res')
         misc.copy_file('test-data/beispiel/2.hkl', 'test-data/beispiel/2a.hkl')
@@ -59,11 +58,13 @@ class dsrrunTest(unittest.TestCase):
         #misc.remove_file('dsr_CCF3_4_4a.dfix')
         misc.remove_file('*.fcf')
         #self.dsr = '/Applications/DSR/dsr'
-        self.dsr = 'dsr'
+        self.dsr = 'D:\Programme\DSR\dsr'
         #self.dsr = misc.which('dsr')
     
-    def testrun_run1(self): 
-        call([self.dsr, "-r", "./test-data/beispiel/1a.res"])
+    def testrun_run1(self):
+        print('11111111')
+        system('{} -r ./test-data/beispiel/1a.res'.format(self.dsr))
+        #call([self.dsr, "-r", "./test-data/beispiel/1a.res"])
         with open('./test-data/beispiel/1a.res') as txt:
             erster = txt.readlines()
         with open('./test-data/beispiel/1a-erg.res') as txt2:
@@ -98,7 +99,8 @@ class dsrrunTest(unittest.TestCase):
         #    vierter_dfixerg = txt4e.readlines()
         #self.assertEqual(vierter_dfix, vierter_dfixerg)        
 
-    def testrun_run5(self):    
+    def testrun_run5(self):
+        print(self.dsr)
         call([self.dsr, "-re", "./test-data/beispiel/5a.res"])
         with open('./test-data/beispiel/5a.res') as txt:
             fuenf = txt.readlines()
@@ -403,7 +405,7 @@ class NumberSchemeTest(unittest.TestCase):
         numberscheme = self.num.get_fragment_number_scheme()
         self.assertListEqual(numberscheme, self.numbers)
 
-
+@disabled
 class insertAfixTest(unittest.TestCase):
     def setUp(self):
         import db
@@ -413,6 +415,7 @@ class insertAfixTest(unittest.TestCase):
         testresfile = './p21c.res'
         invert = True
         self.options = OptionsParser('foo')
+        self.options.rigid_group = False
         self.rl = ResList(testresfile)
         self.reslist = self.rl.get_res_list()
         self.dsrp = DSR_Parser(self.reslist, self.rl)
@@ -439,7 +442,7 @@ class insertAfixTest(unittest.TestCase):
         self.maxDiff = None
         afix = InsertAfix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead, \
                           self.dsr_dict, self.sfac_table, self.find_atoms, \
-                          self.numberscheme, self.options)
+                          self.numberscheme, options = {'rigid_group': False})
         afix_extern_entry = afix.build_afix_entry(True, 'dsr_CF3_p21c.dfix', self.resi)
         # afix_intern_entry = afix.build_afix_entry(False, 'TEST', self.resi)
         # self.assertEqual(afix_intern_entry, self.intern)
@@ -450,8 +453,8 @@ class insertAfixTest(unittest.TestCase):
 class removeDublicatesAfixTest(unittest.TestCase):
     def setUp(self):
         # self.verbosity = 4
-        from options import OptionsParser
-        self.options = OptionsParser('foo')
+        #from options import OptionsParser
+        #self.options = OptionsParser('foo')
         self.res_file = './collect_resi.res'
         self.res_list = ResList(self.res_file)
         self.reslist = self.res_list.get_res_list()
@@ -471,7 +474,7 @@ class removeDublicatesAfixTest(unittest.TestCase):
         self.num = NumberScheme(self.reslist, self.dbatoms, self.resi)
         self.numberscheme = self.num.get_fragment_number_scheme()
         self.afix = InsertAfix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead, \
-                               self.dsr_dict, self.sfac_table, self.find_atoms, self.numberscheme, self.options)
+                               self.dsr_dict, self.sfac_table, self.find_atoms, self.numberscheme, {'rigid_group': False})
         self.db_testhead = ['SADI_CCF3 C1 C2 C1 C3 C1 C4',
                             'SADI_CCF3 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ',
                             'REM test']
