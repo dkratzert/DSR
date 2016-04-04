@@ -13,7 +13,7 @@ dsrsaves/*
 /setup/Output/*.exe
 /setup/Output/*.deb
 /setup/Output/*.rpm
-#!/setup/Output/release
+.idea
 !/setup/Output/rel/*.exe
 *.fcf
 *.2fcf

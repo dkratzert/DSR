@@ -27,7 +27,7 @@ print(sys.version)
 
 def disabled(f):
     def _decorator():
-        print f.__name__ + ' has been disabled'
+        print(f.__name__ + ' has been disabled')
     return _decorator
 
 class dsrrunTest(unittest.TestCase):
@@ -58,7 +58,8 @@ class dsrrunTest(unittest.TestCase):
         #misc.remove_file('dsr_CF3_4_dsr_CF3_p21c.dfix')
         #misc.remove_file('dsr_CCF3_4_4a.dfix')
         misc.remove_file('*.fcf')
-        self.dsr = '/Applications/DSR/dsr'
+        #self.dsr = '/Applications/DSR/dsr'
+        self.dsr = 'dsr'
         #self.dsr = misc.which('dsr')
     
     def testrun_run1(self): 
