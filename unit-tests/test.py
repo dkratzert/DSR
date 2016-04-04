@@ -49,6 +49,7 @@ class dsrrunTest(unittest.TestCase):
         misc.remove_file(os.path.relpath('./test-data/beispiel/1a.res'))
         misc.remove_file(os.path.relpath('test-data/beispiel/2a.res'))
         misc.remove_file(os.path.relpath('test-data/beispiel/3a.res'))
+        misc.remove_file(os.path.relpath('test-data/beispiel/4a.res'))
         misc.remove_file(os.path.relpath('test-data/beispiel/5a.res'))
         misc.remove_file(os.path.relpath('test-data/beispiel/6a.res'))
         misc.copy_file('test-data/beispiel/1.ins', 'test-data/beispiel/1a.res')
@@ -57,6 +58,8 @@ class dsrrunTest(unittest.TestCase):
         misc.copy_file('test-data/beispiel/2.hkl', 'test-data/beispiel/2a.hkl')
         misc.copy_file('test-data/beispiel/3.ins', 'test-data/beispiel/3a.res')
         misc.copy_file('test-data/beispiel/3.hkl', 'test-data/beispiel/3a.hkl')
+        misc.copy_file('test-data/beispiel/4.ins', 'test-data/beispiel/4a.res')
+        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/4a.hkl')
         #misc.copy_file('test-data/beispiel/5.ins', 'test-data/beispiel/5a.res')
         #misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/5a.hkl')
         #misc.copy_file('test-data/beispiel/6.ins', 'test-data/beispiel/6a.res')
@@ -64,10 +67,11 @@ class dsrrunTest(unittest.TestCase):
         misc.remove_file('test-data/beispiel/1a.ins')
         misc.remove_file('test-data/beispiel/2a.ins')
         misc.remove_file('test-data/beispiel/3a.ins')
+        misc.remove_file('test-data/beispiel/4a.ins')
         #misc.remove_file('test-data/beispiel/5a.ins')
         #misc.remove_file('test-data/beispiel/6a.ins')
         #misc.remove_file('dsr_CF3_4_dsr_CF3_p21c.dfix')
-        #misc.remove_file('dsr_CCF3_4_4a.dfix')
+        misc.remove_file('./test-data/beispiel/dsr_CF3_4_4a.dfix')
         misc.remove_file('*.fcf')
         #self.dsr = '/Applications/DSR/dsr'
         self.dsr = 'D:\Programme\DSR\dsr'
@@ -126,7 +130,7 @@ class dsrrunTest(unittest.TestCase):
             dritter_erg = txt2.readlines()
         self.assertEqual(dritter, dritter_erg)
 
-    @unittest.skip(" skipping4 ")
+    #@unittest.skip(" skipping4 ")
     def testrun_run4(self):
         """
         external restraints with:
@@ -138,7 +142,7 @@ class dsrrunTest(unittest.TestCase):
             vierter = txt.readlines()
         with open('./test-data/beispiel/4a-erg.res') as txt2:
             vierter_erg = txt2.readlines()
-        with open('dsr_CF3_4_./test-data/beispiel/4a.dfix') as txt4:
+        with open('./test-data/beispiel/dsr_CF3_4_4a.dfix') as txt4:
             vierter_dfix = txt4.readlines()
         with open('./test-data/beispiel/dsr_CF3_4_4a-erg.dfix') as txt4e:
             vierter_dfixerg = txt4e.readlines()
