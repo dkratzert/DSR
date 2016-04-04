@@ -2,13 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f7d97d12-771b-4a68-afb3-c6933a706eff" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/unit-tests/test-data/beispiel/dsr_CCF3_4_5a-erg.dfix" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/unit-tests/test-data/beispiel/dsr_CCF3_9_4a-erg.dfix" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/unit-tests/test-data/beispiel/1a-erg.res" afterPath="$PROJECT_DIR$/unit-tests/test-data/beispiel/1a-erg.res" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/unit-tests/test-data/beispiel/2a-erg.res" afterPath="$PROJECT_DIR$/unit-tests/test-data/beispiel/2a-erg.res" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/unit-tests/test-data/beispiel/3a-erg.res" afterPath="$PROJECT_DIR$/unit-tests/test-data/beispiel/3a-erg.res" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/unit-tests/test-data/beispiel/4a-erg.res" afterPath="$PROJECT_DIR$/unit-tests/test-data/beispiel/4a-erg.res" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/afix.py" afterPath="$PROJECT_DIR$/afix.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/unit-tests/test-data/beispiel/3a.ins" afterPath="$PROJECT_DIR$/unit-tests/test-data/beispiel/3a.ins" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/unit-tests/test.py" afterPath="$PROJECT_DIR$/unit-tests/test.py" />
     </list>
     <ignored path="DSR.iws" />
@@ -40,11 +36,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="test.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="test.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/unit-tests/test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="127">
-              <caret line="60" column="14" selection-start-line="60" selection-start-column="14" selection-end-line="60" selection-end-column="14" />
+            <state relative-caret-position="187">
+              <caret line="31" column="5" selection-start-line="31" selection-start-column="5" selection-end-line="31" selection-end-column="5" />
               <folding>
                 <element signature="e#201#215#0" expanded="true" />
               </folding>
@@ -52,12 +48,14 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="afix.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="afix.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/afix.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4998">
-              <caret line="307" column="39" selection-start-line="307" selection-start-column="39" selection-end-line="307" selection-end-column="39" />
-              <folding />
+            <state relative-caret-position="348">
+              <caret line="55" column="62" selection-start-line="55" selection-start-column="62" selection-end-line="55" selection-end-column="62" />
+              <folding>
+                <element signature="e#484#521#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -82,9 +80,9 @@
         <option value="$PROJECT_DIR$/dsr.py" />
         <option value="$PROJECT_DIR$/dsr_db.txt" />
         <option value="$PROJECT_DIR$/dbfile.py" />
-        <option value="$PROJECT_DIR$/afix.py" />
         <option value="$PROJECT_DIR$/unit-tests/test-data/beispiel/1a-erg.res" />
         <option value="$PROJECT_DIR$/unit-tests/test.py" />
+        <option value="$PROJECT_DIR$/afix.py" />
       </list>
     </option>
   </component>
@@ -141,8 +139,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -161,62 +157,10 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="DSR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="DSR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="unit-tests" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="DSR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="DSR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="unit-tests" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test-data" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="DSR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="DSR" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="unit-tests" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test-data" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="beispiel" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -224,7 +168,24 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
   </component>
-  <component name="RunManager" selected="Python tests.Unittests in test">
+  <component name="RunManager" selected="Python tests.Doctest foo">
+    <configuration default="false" name="test" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/unit-tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="DSR" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/unit-tests/test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
     <configuration default="false" name="Unittests in test" type="tests" factoryName="Unittests" singleton="true" temporary="true" nameIsGenerated="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -240,50 +201,6 @@
       <option name="METHOD_NAME" value="" />
       <option name="FOLDER_NAME" value="" />
       <option name="TEST_TYPE" value="TEST_SCRIPT" />
-      <option name="PATTERN" value="" />
-      <option name="USE_PATTERN" value="false" />
-      <option name="PUREUNITTEST" value="true" />
-      <option name="PARAMS" value="" />
-      <option name="USE_PARAM" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="Unittest dsrrunTest.testrun_run1" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/unit-tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="DSR" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/unit-tests/test.py" />
-      <option name="CLASS_NAME" value="dsrrunTest" />
-      <option name="METHOD_NAME" value="testrun_run1" />
-      <option name="FOLDER_NAME" value="" />
-      <option name="TEST_TYPE" value="TEST_METHOD" />
-      <option name="PATTERN" value="" />
-      <option name="USE_PATTERN" value="false" />
-      <option name="PUREUNITTEST" value="true" />
-      <option name="PARAMS" value="" />
-      <option name="USE_PARAM" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="Unittest dsrrunTest.testrun_run2" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/unit-tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="DSR" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/unit-tests/test.py" />
-      <option name="CLASS_NAME" value="dsrrunTest" />
-      <option name="METHOD_NAME" value="testrun_run2" />
-      <option name="FOLDER_NAME" value="" />
-      <option name="TEST_TYPE" value="TEST_METHOD" />
       <option name="PATTERN" value="" />
       <option name="USE_PATTERN" value="false" />
       <option name="PUREUNITTEST" value="true" />
@@ -472,20 +389,58 @@
       <option name="USE_KEYWORD" value="false" />
       <method />
     </configuration>
-    <list size="5">
-      <item index="0" class="java.lang.String" itemvalue="Python tests.Unittests in test" />
-      <item index="1" class="java.lang.String" itemvalue="Python tests.Unittest dsrrunTest.testrun_run1" />
-      <item index="2" class="java.lang.String" itemvalue="Python tests.Unittest dsrrunTest.testrun_run2" />
-      <item index="3" class="java.lang.String" itemvalue="Python tests.Unittest dsrrunTest.testrun_run3" />
-      <item index="4" class="java.lang.String" itemvalue="Python tests.Unittest dsrrunTest.testrun_run4" />
+    <configuration default="false" name="Doctest foo" type="tests" factoryName="Doctests" nameIsGenerated="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/unit-tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="DSR" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/unit-tests/test.py" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="foo" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_FUNCTION" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Doctests in afix" type="tests" factoryName="Doctests" nameIsGenerated="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="DSR" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/afix.py" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <list size="6">
+      <item index="0" class="java.lang.String" itemvalue="Python tests.Doctest foo" />
+      <item index="1" class="java.lang.String" itemvalue="Python tests.Doctests in afix" />
+      <item index="2" class="java.lang.String" itemvalue="Python.test" />
+      <item index="3" class="java.lang.String" itemvalue="Python tests.Unittests in test" />
+      <item index="4" class="java.lang.String" itemvalue="Python tests.Unittest dsrrunTest.testrun_run3" />
+      <item index="5" class="java.lang.String" itemvalue="Python tests.Unittest dsrrunTest.testrun_run4" />
     </list>
     <recent_temporary>
-      <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python tests.Unittests in test" />
-        <item index="1" class="java.lang.String" itemvalue="Python tests.Unittest dsrrunTest.testrun_run4" />
-        <item index="2" class="java.lang.String" itemvalue="Python tests.Unittest dsrrunTest.testrun_run3" />
-        <item index="3" class="java.lang.String" itemvalue="Python tests.Unittest dsrrunTest.testrun_run2" />
-        <item index="4" class="java.lang.String" itemvalue="Python tests.Unittest dsrrunTest.testrun_run1" />
+      <list size="4">
+        <item index="0" class="java.lang.String" itemvalue="Python.test" />
+        <item index="1" class="java.lang.String" itemvalue="Python tests.Unittests in test" />
+        <item index="2" class="java.lang.String" itemvalue="Python tests.Unittest dsrrunTest.testrun_run4" />
+        <item index="3" class="java.lang.String" itemvalue="Python tests.Unittest dsrrunTest.testrun_run3" />
       </list>
     </recent_temporary>
   </component>
@@ -542,35 +497,35 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Unittest_dsrrunTest_testrun_run2 - 2016.04.04 at 11h 10m 43s.xml">
-      <configuration name="Unittest dsrrunTest.testrun_run2" configurationId="tests" />
+    <history-entry file="Doctest_foo - 2016.04.04 at 17h 25m 53s.xml">
+      <configuration name="Doctest foo" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittest_dsrrunTest_testrun_run3 - 2016.04.04 at 11h 14m 03s.xml">
-      <configuration name="Unittest dsrrunTest.testrun_run3" configurationId="tests" />
+    <history-entry file="Doctest_foo - 2016.04.04 at 17h 26m 27s.xml">
+      <configuration name="Doctest foo" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittest_dsrrunTest_testrun_run4 - 2016.04.04 at 11h 21m 39s.xml">
-      <configuration name="Unittest dsrrunTest.testrun_run4" configurationId="tests" />
+    <history-entry file="Doctest_foo - 2016.04.04 at 17h 26m 35s.xml">
+      <configuration name="Doctest foo" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittest_dsrrunTest_testrun_run4 - 2016.04.04 at 11h 22m 01s.xml">
-      <configuration name="Unittest dsrrunTest.testrun_run4" configurationId="tests" />
+    <history-entry file="Doctest_foo - 2016.04.04 at 17h 26m 52s.xml">
+      <configuration name="Doctest foo" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittest_dsrrunTest_testrun_run4 - 2016.04.04 at 11h 23m 04s.xml">
-      <configuration name="Unittest dsrrunTest.testrun_run4" configurationId="tests" />
+    <history-entry file="Doctest_foo - 2016.04.04 at 17h 27m 08s.xml">
+      <configuration name="Doctest foo" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittest_dsrrunTest_testrun_run4 - 2016.04.04 at 11h 23m 24s.xml">
-      <configuration name="Unittest dsrrunTest.testrun_run4" configurationId="tests" />
+    <history-entry file="Doctest_foo - 2016.04.04 at 17h 27m 24s.xml">
+      <configuration name="Doctest foo" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittest_dsrrunTest_testrun_run4 - 2016.04.04 at 11h 28m 32s.xml">
-      <configuration name="Unittest dsrrunTest.testrun_run4" configurationId="tests" />
+    <history-entry file="Doctest_foo - 2016.04.04 at 17h 27m 39s.xml">
+      <configuration name="Doctest foo" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittest_dsrrunTest_testrun_run4 - 2016.04.04 at 11h 29m 25s.xml">
-      <configuration name="Unittest dsrrunTest.testrun_run4" configurationId="tests" />
+    <history-entry file="Doctests_in_afix - 2016.04.04 at 17h 22m 31s.xml">
+      <configuration name="Doctests in afix" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittest_dsrrunTest_testrun_run4 - 2016.04.04 at 11h 29m 53s.xml">
-      <configuration name="Unittest dsrrunTest.testrun_run4" configurationId="tests" />
+    <history-entry file="Doctests_in_afix - 2016.04.04 at 17h 22m 46s.xml">
+      <configuration name="Doctests in afix" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_test - 2016.04.04 at 13h 11m 19s.xml">
-      <configuration name="Unittests in test" configurationId="tests" />
+    <history-entry file="Doctests_in_afix - 2016.04.04 at 17h 24m 21s.xml">
+      <configuration name="Doctests in afix" configurationId="tests" />
     </history-entry>
   </component>
   <component name="TodoView">
@@ -584,14 +539,15 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1066" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14955239" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290461" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39978564" sideWeight="0.5021075" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26737967" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290461" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18996799" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3272727" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3272727" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24960506" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290461" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -602,7 +558,6 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24973376" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.26737967" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -627,18 +582,23 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="2" />
+      <breakpoints>
+        <line-breakpoint enabled="true" type="python-line">
+          <url>file://$PROJECT_DIR$/afix.py</url>
+          <line>48</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="python-line">
+          <url>file://$PROJECT_DIR$/afix.py</url>
+          <line>52</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+      <option name="time" value="5" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/dsr.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="422" column="11" selection-start-line="422" selection-start-column="8" selection-end-line="422" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/refine.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -879,13 +839,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/misc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="151" column="7" selection-start-line="151" selection-start-column="7" selection-end-line="151" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/setup/Output/changelog.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -930,26 +883,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/options.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="59" column="8" selection-start-line="59" selection-start-column="8" selection-end-line="59" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/afix.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4998">
-          <caret line="307" column="39" selection-start-line="307" selection-start-column="39" selection-end-line="307" selection-end-column="39" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/unit-tests/test-data/beispiel/1a-erg.res">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="238">
           <caret line="14" column="1" selection-start-line="14" selection-start-column="1" selection-end-line="14" selection-end-column="1" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -957,24 +894,57 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="201">
           <caret line="521" column="0" selection-start-line="521" selection-start-column="0" selection-end-line="521" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/options.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="337">
+          <caret line="166" column="56" selection-start-line="166" selection-start-column="45" selection-end-line="166" selection-end-column="56" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/tools/python2/Lib/unittest/util.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="4" selection-start-line="7" selection-start-column="4" selection-end-line="7" selection-end-column="4" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://C:/tools/python2/Lib/unittest/case.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="622" column="0" selection-start-line="622" selection-start-column="0" selection-end-line="723" selection-end-column="22" />
+        <state relative-caret-position="430">
+          <caret line="722" column="26" selection-start-line="722" selection-start-column="26" selection-end-line="722" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/misc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="663">
+          <caret line="150" column="7" selection-start-line="150" selection-start-column="7" selection-end-line="150" selection-end-column="7" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/unit-tests/test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="127">
-          <caret line="60" column="14" selection-start-line="60" selection-start-column="14" selection-end-line="60" selection-end-column="14" />
+        <state relative-caret-position="187">
+          <caret line="31" column="5" selection-start-line="31" selection-start-column="5" selection-end-line="31" selection-end-column="5" />
           <folding>
             <element signature="e#201#215#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/afix.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="348">
+          <caret line="55" column="62" selection-start-line="55" selection-start-column="62" selection-end-line="55" selection-end-column="62" />
+          <folding>
+            <element signature="e#484#521#0" expanded="true" />
           </folding>
         </state>
       </provider>
