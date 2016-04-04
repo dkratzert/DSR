@@ -39,6 +39,7 @@ def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
     '''
     number = '1'
     files = []
+    filename = os.path.normpath(filename)
     # find a unique number for the restraint file:
     for filen in misc.sortedlistdir('.'):
         if fnmatch.fnmatch(filen, 'dsr_*_'+filename):
@@ -256,7 +257,6 @@ class InsertAfix(object):
                     self.dfix_head = add_residue_to_dfix(self.dfix_head, resi.get_resinumber)
                 dfx_file_name = write_dbhead_to_file(dfx_file_name, self.dfix_head, resi.get_residue_class, resi.get_resinumber)
             else:
-                # TODO: Path is wrong here:
                 dfx_file_name = write_dbhead_to_file(dfx_file_name, self._dbhead, resi.get_residue_class, resi.get_resinumber)
                 self._dbhead = self._dbhead = other_head
             if self.dfix_head:
