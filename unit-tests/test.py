@@ -10,6 +10,7 @@ import difflib
 import os
 import pprint
 import unittest
+
 from dsr import VERSION
 from afix import InsertAfix
 from atomhandling import get_atomtypes, FindAtoms, check_source_target, \
@@ -28,91 +29,17 @@ from subprocess import call
 print(sys.version)
 
 
-def assertListEqual(seq1, seq2, msg=None, seq_type=None):
-    """An equality assertion for ordered sequences (like lists and tuples).
-
-    For the purposes of this function, a valid ordered sequence type is one
-    which can be indexed, has a length, and has an equality operator.
-
-    Args:
-        seq1: The first sequence to compare.
-        seq2: The second sequence to compare.
-        seq_type: The expected datatype of the sequences, or None if no
-                datatype should be enforced.
-        msg: Optional message to use on failure instead of a list of
-                differences.
+def foo():
     """
-    seq_type_name = "sequence"
-    differing = None
-    try:
-        len1 = len(seq1)
-    except (TypeError, NotImplementedError):
-        differing = 'First %s has no length.    Non-sequence?' % (
-            seq_type_name)
-    if differing is None:
-        try:
-            len2 = len(seq2)
-        except (TypeError, NotImplementedError):
-            differing = 'Second %s has no length.    Non-sequence?' % (
-                seq_type_name)
-    if differing is None:
-        if seq1 == seq2:
-            return
-        seq1_repr = safe_repr(seq1)
-        seq2_repr = safe_repr(seq2)
-        if len(seq1_repr) > 30:
-            seq1_repr = seq1_repr[:30] + '...'
-        if len(seq2_repr) > 30:
-            seq2_repr = seq2_repr[:30] + '...'
-        elements = (seq_type_name.capitalize(), seq1_repr, seq2_repr)
-        differing = '%ss differ: %s != %s\n' % elements
-        for i in range(min(len1, len2)):
-            try:
-                item1 = seq1[i]
-            except (TypeError, IndexError, NotImplementedError):
-                differing += ('\nUnable to index element %d of first %s\n' %
-                              (i, seq_type_name))
-                break
-            try:
-                item2 = seq2[i]
-            except (TypeError, IndexError, NotImplementedError):
-                differing += ('\nUnable to index element %d of second %s\n' %
-                              (i, seq_type_name))
-                break
-            if item1 != item2:
-                differing += ('\nFirst differing element %d:\n%s\n%s\n' %
-                              (i, item1, item2))
-                break
-        else:
-            if (len1 == len2 and seq_type is None and
-                        type(seq1) != type(seq2)):
-                # The sequences are the same, but have differing types.
-                return
-        if len1 > len2:
-            differing += ('\nFirst %s contains %d additional '
-                          'elements.\n' % (seq_type_name, len1 - len2))
-            try:
-                differing += ('First extra element %d:\n%s\n' %
-                              (len2, seq1[len2]))
-            except (TypeError, IndexError, NotImplementedError):
-                differing += ('Unable to index element %d '
-                              'of first %s\n' % (len2, seq_type_name))
-        elif len1 < len2:
-            differing += ('\nSecond %s contains %d additional '
-                          'elements.\n' % (seq_type_name, len2 - len1))
-            try:
-                differing += ('First extra element %d:\n%s\n' %
-                              (len1, seq2[len1]))
-            except (TypeError, IndexError, NotImplementedError):
-                differing += ('Unable to index element %d '
-                              'of second %s\n' % (len1, seq_type_name))
-    standardMsg = differing
-    diffMsg = '\n' + '\n'.join(
-        difflib.ndiff(pprint.pformat(seq1).splitlines(),
-                      pprint.pformat(seq2).splitlines()))
-    standardMsg = truncateMessage(standardMsg, diffMsg)
-    msg = self._formatMessage(msg, standardMsg)
-    self.fail(msg)
+    >>> dsr = 'D:\Programme\DSR\dsr'
+    >>> misc.remove_file(os.path.relpath('test-data/beispiel/4a.res'))
+    >>> misc.copy_file('test-data/beispiel/4.ins', 'test-data/beispiel/4a.res')
+    >>> misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/4a.hkl')
+    >>> misc.remove_file('test-data/beispiel/4a.ins')
+    >>> system("{} -re ./test-data/beispiel/4a.res".format(dsr))
+    0
+    """
+    pass
 
 
 class dsrrunTest(unittest.TestCase):
@@ -122,7 +49,6 @@ class dsrrunTest(unittest.TestCase):
         misc.remove_file(os.path.relpath('./test-data/beispiel/1a.res'))
         misc.remove_file(os.path.relpath('test-data/beispiel/2a.res'))
         misc.remove_file(os.path.relpath('test-data/beispiel/3a.res'))
-        misc.remove_file(os.path.relpath('test-data/beispiel/4a.res'))
         misc.remove_file(os.path.relpath('test-data/beispiel/5a.res'))
         misc.remove_file(os.path.relpath('test-data/beispiel/6a.res'))
         misc.copy_file('test-data/beispiel/1.ins', 'test-data/beispiel/1a.res')
@@ -131,18 +57,15 @@ class dsrrunTest(unittest.TestCase):
         misc.copy_file('test-data/beispiel/2.hkl', 'test-data/beispiel/2a.hkl')
         misc.copy_file('test-data/beispiel/3.ins', 'test-data/beispiel/3a.res')
         misc.copy_file('test-data/beispiel/3.hkl', 'test-data/beispiel/3a.hkl')
-        misc.copy_file('test-data/beispiel/4.ins', 'test-data/beispiel/4a.res')
-        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/4a.hkl')
-        misc.copy_file('test-data/beispiel/5.ins', 'test-data/beispiel/5a.res')
-        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/5a.hkl')
-        misc.copy_file('test-data/beispiel/6.ins', 'test-data/beispiel/6a.res')
-        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/6a.hkl')
+        #misc.copy_file('test-data/beispiel/5.ins', 'test-data/beispiel/5a.res')
+        #misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/5a.hkl')
+        #misc.copy_file('test-data/beispiel/6.ins', 'test-data/beispiel/6a.res')
+        #misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/6a.hkl')
         misc.remove_file('test-data/beispiel/1a.ins')
         misc.remove_file('test-data/beispiel/2a.ins')
         misc.remove_file('test-data/beispiel/3a.ins')
-        misc.remove_file('test-data/beispiel/4a.ins')
-        misc.remove_file('test-data/beispiel/5a.ins')
-        misc.remove_file('test-data/beispiel/6a.ins')
+        #misc.remove_file('test-data/beispiel/5a.ins')
+        #misc.remove_file('test-data/beispiel/6a.ins')
         #misc.remove_file('dsr_CF3_4_dsr_CF3_p21c.dfix')
         #misc.remove_file('dsr_CCF3_4_4a.dfix')
         misc.remove_file('*.fcf')
@@ -160,8 +83,6 @@ class dsrrunTest(unittest.TestCase):
         # rigid
         # -s
 
-    def tearDown(self):
-        pass
 
     #@unittest.skip(" skipping1 ")
     def testrun_run1(self):
@@ -207,6 +128,11 @@ class dsrrunTest(unittest.TestCase):
 
     @unittest.skip(" skipping4 ")
     def testrun_run4(self):
+        """
+        external restraints with:
+        resi cf3 =
+            PART 2 occ -31
+        """
         system("{} -re ./test-data/beispiel/4a.res".format(self.dsr))
         with open('./test-data/beispiel/4a.res') as txt:
             vierter = txt.readlines()
@@ -1386,6 +1312,7 @@ if __name__ == "__main__":
     import sys
     import doctest
     import elements
+
 
     failed, attempted = doctest.testmod(misc)  # , verbose=True)
     if failed == 0:
