@@ -156,7 +156,7 @@ C2 P1 C6', 'FLAT C1 > C6 P1', 'FLAT C7 > C12 P1', 'FLAT C13 > C18 P1', 'SIMU P1 
         >>> numberscheme = num.get_fragment_number_scheme()
         RESI instruction is enabled. Leaving atom numbers as they are.
         >>> dfix_head = ''
-        >>> afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, sfac_table, find_atoms, numberscheme, options, dfix_head)
+        >>> afix = InsertAfix(reslist, dbatoms, dbtypes, dbhead, dsr_dict, sfac_table, find_atoms, numberscheme, {'rigid_group': False}, dfix_head)
         >>> afix.remove_duplicate_restraints(dbhead, 'PPh3')
         ['SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1 C7 C8 C8 C9 C9 C10 C10 C11 C11 C12 C12 C7 \
 C13 C14 C14 C15 C15 C16 C16 C17 C17 C18 C18 C13', 'SADI P1 C1 P1 C7 P1 C13', \
