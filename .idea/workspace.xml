@@ -4,8 +4,6 @@
     <list default="true" id="f7d97d12-771b-4a68-afb3-c6933a706eff" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/afix.py" afterPath="$PROJECT_DIR$/afix.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/unit-tests/test-data/beispiel/3a.ins" afterPath="$PROJECT_DIR$/unit-tests/test-data/beispiel/3a.ins" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/unit-tests/test.py" afterPath="$PROJECT_DIR$/unit-tests/test.py" />
     </list>
     <ignored path="DSR.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -29,8 +27,18 @@
       <file leaf-file-name="dsr.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/dsr.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="6409">
-              <caret line="398" column="62" selection-start-line="398" selection-start-column="62" selection-end-line="398" selection-end-column="62" />
+            <state relative-caret-position="396">
+              <caret line="412" column="36" selection-start-line="412" selection-start-column="36" selection-end-line="412" selection-end-column="36" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="resfile.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/resfile.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="337">
+              <caret line="28" column="0" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -39,8 +47,8 @@
       <file leaf-file-name="test.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/unit-tests/test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="31" column="5" selection-start-line="31" selection-start-column="5" selection-end-line="31" selection-end-column="5" />
+            <state relative-caret-position="306">
+              <caret line="38" column="22" selection-start-line="38" selection-start-column="22" selection-end-line="38" selection-end-column="22" />
               <folding>
                 <element signature="e#201#215#0" expanded="true" />
               </folding>
@@ -51,8 +59,8 @@
       <file leaf-file-name="afix.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/afix.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="348">
-              <caret line="55" column="62" selection-start-line="55" selection-start-column="62" selection-end-line="55" selection-end-column="62" />
+            <state relative-caret-position="167">
+              <caret line="259" column="17" selection-start-line="259" selection-start-column="17" selection-end-line="259" selection-end-column="17" />
               <folding>
                 <element signature="e#484#521#0" expanded="true" />
               </folding>
@@ -82,6 +90,7 @@
         <option value="$PROJECT_DIR$/dbfile.py" />
         <option value="$PROJECT_DIR$/unit-tests/test-data/beispiel/1a-erg.res" />
         <option value="$PROJECT_DIR$/unit-tests/test.py" />
+        <option value="$PROJECT_DIR$/resfile.py" />
         <option value="$PROJECT_DIR$/afix.py" />
       </list>
     </option>
@@ -497,15 +506,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Doctest_foo - 2016.04.04 at 17h 25m 53s.xml">
-      <configuration name="Doctest foo" configurationId="tests" />
-    </history-entry>
-    <history-entry file="Doctest_foo - 2016.04.04 at 17h 26m 27s.xml">
-      <configuration name="Doctest foo" configurationId="tests" />
-    </history-entry>
-    <history-entry file="Doctest_foo - 2016.04.04 at 17h 26m 35s.xml">
-      <configuration name="Doctest foo" configurationId="tests" />
-    </history-entry>
     <history-entry file="Doctest_foo - 2016.04.04 at 17h 26m 52s.xml">
       <configuration name="Doctest foo" configurationId="tests" />
     </history-entry>
@@ -518,14 +518,23 @@
     <history-entry file="Doctest_foo - 2016.04.04 at 17h 27m 39s.xml">
       <configuration name="Doctest foo" configurationId="tests" />
     </history-entry>
-    <history-entry file="Doctests_in_afix - 2016.04.04 at 17h 22m 31s.xml">
-      <configuration name="Doctests in afix" configurationId="tests" />
+    <history-entry file="Doctest_foo - 2016.04.04 at 17h 29m 42s.xml">
+      <configuration name="Doctest foo" configurationId="tests" />
     </history-entry>
-    <history-entry file="Doctests_in_afix - 2016.04.04 at 17h 22m 46s.xml">
-      <configuration name="Doctests in afix" configurationId="tests" />
+    <history-entry file="Doctest_foo - 2016.04.04 at 17h 29m 56s.xml">
+      <configuration name="Doctest foo" configurationId="tests" />
     </history-entry>
-    <history-entry file="Doctests_in_afix - 2016.04.04 at 17h 24m 21s.xml">
-      <configuration name="Doctests in afix" configurationId="tests" />
+    <history-entry file="Doctest_foo - 2016.04.04 at 17h 31m 36s.xml">
+      <configuration name="Doctest foo" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Doctest_foo - 2016.04.04 at 17h 32m 30s.xml">
+      <configuration name="Doctest foo" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Doctest_foo - 2016.04.04 at 17h 34m 15s.xml">
+      <configuration name="Doctest foo" configurationId="tests" />
+    </history-entry>
+    <history-entry file="Doctest_foo - 2016.04.04 at 17h 34m 56s.xml">
+      <configuration name="Doctest foo" configurationId="tests" />
     </history-entry>
   </component>
   <component name="TodoView">
@@ -585,12 +594,12 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/afix.py</url>
-          <line>48</line>
+          <line>46</line>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="python-line">
           <url>file://$PROJECT_DIR$/afix.py</url>
-          <line>52</line>
+          <line>50</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
@@ -861,21 +870,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/resfile.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="389">
-          <caret line="171" column="8" selection-start-line="171" selection-start-column="8" selection-end-line="171" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dsr.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6409">
-          <caret line="398" column="62" selection-start-line="398" selection-start-column="62" selection-end-line="398" selection-end-column="62" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/tools/python2/Lib/argparse.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="405">
@@ -931,18 +925,34 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/unit-tests/test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="31" column="5" selection-start-line="31" selection-start-column="5" selection-end-line="31" selection-end-column="5" />
+        <state relative-caret-position="306">
+          <caret line="38" column="22" selection-start-line="38" selection-start-column="22" selection-end-line="38" selection-end-column="22" />
           <folding>
             <element signature="e#201#215#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/resfile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="337">
+          <caret line="28" column="0" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dsr.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="396">
+          <caret line="412" column="36" selection-start-line="412" selection-start-column="36" selection-end-line="412" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/afix.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="348">
-          <caret line="55" column="62" selection-start-line="55" selection-start-column="62" selection-end-line="55" selection-end-column="62" />
+        <state relative-caret-position="167">
+          <caret line="259" column="17" selection-start-line="259" selection-start-column="17" selection-end-line="259" selection-end-column="17" />
           <folding>
             <element signature="e#484#521#0" expanded="true" />
           </folding>
