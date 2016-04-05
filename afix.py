@@ -39,13 +39,13 @@ def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
     '''
     number = '1'
     files = []
-    filename = os.path.normpath(filename)
     # find a unique number for the restraint file:
     for filen in misc.sortedlistdir('.'):
         if fnmatch.fnmatch(filen, 'dsr_*_'+filename):
             filenum = filen.split('_')
             if str.isdigit(filenum[1]):
                 files.append(filenum[1])
+    filepath, filename = os.path.split(os.path.abspath(filename))
     try:
         number = str(int(files[-1])+1)
     except(IndexError):
@@ -56,17 +56,16 @@ def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
         filename = 'dsr_'+resi_class+'_'+resi_number+'_'+filename
     if not resi_number and resi_class:       # only residue class known
         filename = 'dsr_'+resi_class+'_'+filename
-    if os.path.isfile(filename):
+    if os.path.isfile(os.path.abspath(filename)):
         print('Previous restraint file found.'\
             ' Using restraints from "{}"'.format(filename))
         return filename
-    else:
-        print('Restraints were written to "{}"'.format(filename))
     try:
-        dfix_file = open(filename, 'w')  # open the ins file
+        dfix_file = open(os.path.join(filepath, filename), 'w')  # open the ins file
     except(IOError):
-        print('Unable to write res file! Check directory write permissions.')
+        print('Unable to write restraints file! Check directory write permissions.')
         sys.exit(False)
+    print('Restraints were written to "{}"'.format(os.path.join(filepath, filename)))
     for i in dbhead:            #modified reslist
         dfix_file.write("%s" %i)    #write the new file
     dfix_file.close()
@@ -122,7 +121,7 @@ class InsertAfix(object):
                                     'command': 'PUT/REPLACE'}
         :param sfac_table:   SHELXL SFAC table as list like: ['C', 'H', 'O', 'F', 'Al', 'Ga']
         :param find_atoms:   FindAtoms() object
-        :param numberscheme: atoms numbering scheme like: ['O1', 'C1', 'C2', 'F1', 'F2', 'F3', 'C3']
+        :param numberscheme: atoms numbering scheme like: ['O1A', 'C1A', 'C2A', 'F1A', 'F2A', 'F3A', 'C3A']
 
         '''
         self._reslist = reslist
@@ -253,10 +252,18 @@ class InsertAfix(object):
             self._dbhead = misc.wrap_headlines(distance)
             # returns the real name of the restraints file:
             if self.dfix_head:
+                # DFIX enabled:
+                pname = os.path.splitext(dfx_file_name)
+                dfx_file_name = pname[0]+"_dfx"+pname[1]
                 if resi.get_residue_class:
+                    # External, no dfix but with residue:
                     self.dfix_head = add_residue_to_dfix(self.dfix_head, resi.get_resinumber)
+                else:
+                    # No residue but dfix and external:
+                    self.dfix_head = rename_dbhead_atoms(new_atomnames, old_atoms, self.dfix_head)
                 dfx_file_name = write_dbhead_to_file(dfx_file_name, self.dfix_head, resi.get_residue_class, resi.get_resinumber)
             else:
+                # DFIX disabled:
                 dfx_file_name = write_dbhead_to_file(dfx_file_name, self._dbhead, resi.get_residue_class, resi.get_resinumber)
                 self._dbhead = self._dbhead = other_head
             if self.dfix_head:

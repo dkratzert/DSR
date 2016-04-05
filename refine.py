@@ -42,7 +42,7 @@ class ShelxlRefine():
         self._reslist = reslist
         self._shelx_command = self.find_shelxl_exe()
         self.b_array = self.approx_natoms()
-        self.backup_file = str(self.resfile_name+'.dsr-bak')
+        self.backup_file = os.path.abspath(str(self.resfile_name+'.dsr-bak'))
 
         if not self._shelx_command:
             print('\nSHELXL executable not found in system path! No fragment fitting possible.\n')
@@ -222,11 +222,11 @@ class ShelxlRefine():
         name: self.resfile_name-date-time-seconds.res
         '''
         import datetime
-        bakup_dir = 'dsrsaves'
         now = datetime.datetime.now()
         timestamp = (str(now.year)+'_'+str(now.month)+'_'+str(now.day)+'_'+
                      str(now.hour)+'-'+str(now.minute)+'-'+str(now.second))
-        resfile = str(self.resfile_name+'.res')
+        resfile = os.path.abspath(str(self.resfile_name+'.res'))
+        bakup_dir = os.path.abspath(os.path.dirname(resfile))+os.path.sep+os.path.relpath('dsrsaves')
         try:
             shutil.copyfile(resfile, self.backup_file)
         except(IOError):
@@ -239,7 +239,7 @@ class ShelxlRefine():
                 print('Unable to create backup directory {}.'.format(bakup_dir))
                 #sys.exit(False)
         try:
-            shutil.copyfile(resfile, bakup_dir+'/'+self.resfile_name+'_'+timestamp+'.res')
+            shutil.copyfile(resfile, bakup_dir+os.path.sep+os.path.split(self.resfile_name)[1]+'_'+timestamp+'.res')
         except(IOError):
             print('\nUnable to make backup file from {} in dsrsaves.'.format(resfile))
             #sys.exit(-1)
@@ -249,7 +249,7 @@ class ShelxlRefine():
         '''
         restores filename from backup
         '''
-        resfile = str(self.resfile_name+'.res')
+        resfile = os.path.abspath(str(self.resfile_name+'.res'))
         try:
             print('Restoring previous res file.')
             shutil.copyfile(self.backup_file, resfile)
