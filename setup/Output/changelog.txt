@@ -1,4 +1,6 @@
 Recent changes
+-183    New fragments, improved handling of relative paths for external restraints,
+        restore refinement cycles after DSR run. 
 -182    IMPORTANT! The default path for the user database is now the users home
         directory! For example /home/username/dsr_user_db.txt in Linux and 
         C:/users/Username in windows Vista and later. The DSR_DB_DIr environment

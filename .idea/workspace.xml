@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f7d97d12-771b-4a68-afb3-c6933a706eff" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/afix.py" afterPath="$PROJECT_DIR$/afix.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/refine.py" afterPath="$PROJECT_DIR$/refine.py" />
-    </list>
+    <list default="true" id="f7d97d12-771b-4a68-afb3-c6933a706eff" name="Default" comment="" />
     <ignored path="DSR.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -70,8 +66,8 @@
       <file leaf-file-name="afix.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/afix.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="525">
-              <caret line="279" column="94" selection-start-line="279" selection-start-column="94" selection-end-line="279" selection-end-column="94" />
+            <state relative-caret-position="219">
+              <caret line="261" column="55" selection-start-line="261" selection-start-column="55" selection-end-line="261" selection-end-column="55" />
               <folding>
                 <element signature="e#484#521#0" expanded="true" />
               </folding>
@@ -966,8 +962,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/afix.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="525">
-          <caret line="279" column="94" selection-start-line="279" selection-start-column="94" selection-end-line="279" selection-end-column="94" />
+        <state relative-caret-position="219">
+          <caret line="261" column="55" selection-start-line="261" selection-start-column="55" selection-end-line="261" selection-end-column="55" />
           <folding>
             <element signature="e#484#521#0" expanded="true" />
           </folding>
