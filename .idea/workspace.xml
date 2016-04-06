@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f7d97d12-771b-4a68-afb3-c6933a706eff" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cf3fit.py" afterPath="$PROJECT_DIR$/cf3fit.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dsr.py" afterPath="$PROJECT_DIR$/dsr.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/options.py" afterPath="$PROJECT_DIR$/options.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/refine.py" afterPath="$PROJECT_DIR$/refine.py" />
-    </list>
+    <list default="true" id="f7d97d12-771b-4a68-afb3-c6933a706eff" name="Default" comment="" />
     <ignored path="DSR.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -30,7 +24,7 @@
       <file leaf-file-name="dsr.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/dsr.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="294">
+            <state relative-caret-position="5865">
               <caret line="366" column="19" selection-start-line="366" selection-start-column="19" selection-end-line="366" selection-end-column="19" />
               <folding />
             </state>
@@ -50,7 +44,7 @@
       <file leaf-file-name="test.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/unit-tests/test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="935">
+            <state relative-caret-position="1241">
               <caret line="73" column="49" selection-start-line="73" selection-start-column="49" selection-end-line="73" selection-end-column="49" />
               <folding>
                 <element signature="e#201#215#0" expanded="true" />
@@ -62,7 +56,7 @@
       <file leaf-file-name="refine.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/refine.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="218">
+            <state relative-caret-position="289">
               <caret line="24" column="15" selection-start-line="24" selection-start-column="15" selection-end-line="24" selection-end-column="15" />
               <folding />
             </state>
@@ -72,7 +66,7 @@
       <file leaf-file-name="cf3fit.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cf3fit.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="303">
+            <state relative-caret-position="8483">
               <caret line="514" column="76" selection-start-line="514" selection-start-column="76" selection-end-line="514" selection-end-column="76" />
               <folding />
             </state>
@@ -82,7 +76,7 @@
       <file leaf-file-name="afix.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/afix.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="117">
+            <state relative-caret-position="4335">
               <caret line="255" column="55" selection-start-line="255" selection-start-column="55" selection-end-line="255" selection-end-column="55" />
               <folding>
                 <element signature="e#484#521#0" expanded="true" />
@@ -595,9 +589,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1066" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14955239" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14955239" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290461" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39978564" sideWeight="0.5021075" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290461" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -936,7 +930,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/unit-tests/test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="935">
+        <state relative-caret-position="1241">
           <caret line="73" column="49" selection-start-line="73" selection-start-column="49" selection-end-line="73" selection-end-column="49" />
           <folding>
             <element signature="e#201#215#0" expanded="true" />
@@ -958,7 +952,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/afix.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="117">
+        <state relative-caret-position="4335">
           <caret line="255" column="55" selection-start-line="255" selection-start-column="55" selection-end-line="255" selection-end-column="55" />
           <folding>
             <element signature="e#484#521#0" expanded="true" />
@@ -968,7 +962,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/dsr.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
+        <state relative-caret-position="5865">
           <caret line="366" column="19" selection-start-line="366" selection-start-column="19" selection-end-line="366" selection-end-column="19" />
           <folding />
         </state>
@@ -976,7 +970,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/refine.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="218">
+        <state relative-caret-position="289">
           <caret line="24" column="15" selection-start-line="24" selection-start-column="15" selection-end-line="24" selection-end-column="15" />
           <folding />
         </state>
@@ -984,7 +978,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/cf3fit.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="303">
+        <state relative-caret-position="8483">
           <caret line="514" column="76" selection-start-line="514" selection-start-column="76" selection-end-line="514" selection-end-column="76" />
           <folding />
         </state>
