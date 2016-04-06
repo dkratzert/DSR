@@ -365,7 +365,7 @@ class DSR():
         dsr_line_number = dsrp.find_dsr_command(line=False)
         if fragment in ['cf3', 'cf6', 'cf9']:
             cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table,
-                      basefilename, dsr_dict, resi, self.res_file)
+                      basefilename, dsr_dict, resi, self.res_file, self.options)
             if fragment == 'cf3':
                 cf3.cf3()
             if fragment == 'cf6':
@@ -418,7 +418,7 @@ class DSR():
         reslist[dsr_line_number] = reslist[dsr_line_number]+'\n'+afix_entry
         #reslist.insert(dsr_line_number+1, afix_entry)
         # write to file:
-        shx = ShelxlRefine(reslist, basefilename, find_atoms)
+        shx = ShelxlRefine(reslist, basefilename, find_atoms, self.options)
         acta_lines = shx.remove_acta_card()
         cycles = shx.get_refinement_cycles
         shx.set_refinement_cycles('0')  # also sets shx.cycles to current value
@@ -446,7 +446,7 @@ class DSR():
         if dsrp.command == 'REPLACE':
             reslist, find_atoms = replace_after_fit(rl, reslist, resi,
                                     fragment_numberscheme, cell)
-        shx = ShelxlRefine(reslist, basefilename, find_atoms)
+        shx = ShelxlRefine(reslist, basefilename, find_atoms, self.options)
         shx.restore_acta_card(acta_lines)
         try:
             if cycles != None:
