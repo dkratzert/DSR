@@ -103,6 +103,10 @@ class OptionsParser():
         return self._options.invert
 
     @property
+    def shelxl_ex(self):
+        return self._options.shelxl_ex
+
+    @property
     def search_string(self):
         if not self._options.search_string:
             return None
@@ -176,6 +180,8 @@ class OptionsParser():
                                 help=SUPPRESS, default=False)
         self.parser.add_argument("-ah", dest="head_for_gui", \
                                 help=SUPPRESS, default=False)
+        self.parser.add_argument("-shx", dest="shelxl_ex", \
+                                 help=SUPPRESS, default=False)
         self.parser.add_argument("-n", dest="no_refine", action="store_true", \
                                 help="do not refine after fragment transfer", default=False)
         return self.parser.parse_args()
