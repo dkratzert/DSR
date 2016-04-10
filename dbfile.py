@@ -597,16 +597,13 @@ class global_DB():
                     b = [float(y) for y in b]
                     dist = atomic_distance(a, b, self.get_unit_cell(fragment))
                     distances.append(dist)
-                dist_minus_longest = sorted(distances)
-                if len(distances) > 2:
-                    del dist_minus_longest[-1]
-                if len(distances) > 5:
-                    del dist_minus_longest[-1]
-                stdev_selected = std_dev(dist_minus_longest)
                 stdev = std_dev(distances)
+                #if fragment == "supersilyle":
+                #    print(round(stdev, 3), '\n'+join_floats(distances)+'####\n')
                 #print(stdev, fragment, stdev*len(pairs))
+                #
                 # only do outlier test if standard deviation is suspiciously large:
-                if stdev_selected > 0.048:
+                if stdev > 0.06:
                     outliers = nalimov_test(distances)
                     if outliers:
                         print("\nFragment {}:".format(fragment))
@@ -615,7 +612,7 @@ class global_DB():
                             print('Suspicious deviation in atom pair "{}" ({:4.3f} A, median: {:4.3f}) of SADI line {}:'.format(pair, distances[x], median(distances), num+1))
                             print(restr[num][:60], '...')
                             return False
-                if stdev > 2.6*float(dev):
+                if stdev > 2.5*float(dev):
                     print("\nFragment {}:".format(fragment))
                     print('Suspicious restraints in SADI line {} with high Stdeviation {:4.3f} (median length: {:4.3f} A).'.format(num+1, stdev, median(distances)))
                     print(' '.join(prefixes+line))
@@ -1109,64 +1106,13 @@ if __name__ == '__main__':
     db = gdb.build_db_dict()
     dbnames = list(db.keys())
     
-    
     for names in dbnames:
         # fragment = 'pfanion'
         fragment = names    
-        # fragline = gl.get_fragline_from_fragment(fragment)  # full string of FRAG line
-        # dbatoms = gl.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
         dbhead = gdb.get_head_from_fragment(fragment)  # this is only executed once
         dbhead = unwrap_head_lines(dbhead)
         dbatoms = gdb.get_atoms_from_fragment(fragment)
-        # print dbatoms
-        # print('residue:', db['toluene']['resi'])
-        # print('line of db:', db['toluene']['line'])
-        # print('database:', db['toluene']['db'])
-        # print(fragline)
-    
-        # for i in dbatoms:
-        #    print i
+
         head = db[fragment]['head']
-        gdb.check_sadi_consistence(fragment)
-    sys.exit()
-    # mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz')
-    # mog = ImportGRADE('./test-data/LIG.gradeserver_all.tgz')
+        # gdb.check_sadi_consistence(fragment)
 
-    # import tempfile
-    # import tarfile
-    gf = './test-data/LIG.gradeserver_all.tgz'
-    gradefile = tarfile.open(gf)
-    # create a temporary file and download platon to it.
-
-#    print
-    # list content of tgz file
-    # print gradefile.getmembers()
-
-    for i in gradefile.getnames():
-        if i.endswith(('.pdb', '.dfix', '.mol2')):
-            if re.match('.*obabel.*', i):
-                continue
-            # localFile = tempfile.TemporaryFile()
-            print(i)
-            gfile = gradefile.extractfile(i)
-            # localFile.write(gfile)
-#            print gfile.readlines()
-            # print i
-
-
-
-    # print localFile.readlines()
-    print()
-    # print misc.ll_to_string(mog.get_molatoms())
-    # for i in mog.get_molatoms('./test-data/TOL.mol2'):
-    #    #print '{:<6}{:>1}{:>10}{:>10}{:>10}'.format(i[0], i[1], i[2], i[3], i[4])
-    #    print '{:<6}{:>1}{:>10}{:>10}{:>10}'.format(*i)
-    #    #print i[3], i[0], i[1], i[2]
-    # print mog.get_atomnumbers()
-
-    # for i in mog.get_restraints('./test-data/TOL.dfix'):
-    #    print i
-
-    # mog.bild_grade_db_entry()
-    # print mog.bild_grade_db_entry('{}.mol2', '{}.dfix').format(dsr_dict[import_grade], dsr_dict[import_grade])
-    # mog.write_user_database()
