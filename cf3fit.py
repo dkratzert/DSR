@@ -85,10 +85,11 @@ class CF3(object):
     a class to create cf3 groups at terminal atoms
     '''
 
-    def __init__(self, rle, fa, reslist, fragment, sfac_table, basefilename, dsr_dict, resi, res_file):
+    def __init__(self, rle, fa, reslist, fragment, sfac_table, basefilename, dsr_dict, resi, res_file, options):
         '''
         Constructor
         '''
+        self.options = options
         self.resi = resi
         self.rand_id = id_generator(size=7)
         self.fa = fa
@@ -323,7 +324,7 @@ class CF3(object):
                 # restraints should never be placed in this reslist[line]:
                 self.reslist[line] = ' '.join(self.reslist[line].split()[1:3])+'\n'
         # set refinement cycles back to 8
-        shx = ShelxlRefine(self.reslist, self.basefilename, self.fa)
+        shx = ShelxlRefine(self.reslist, self.basefilename, self.fa, self.options)
         shx.set_refinement_cycles('8')
         self.rl.write_resfile(self.reslist, '.res')
         return fatoms
@@ -425,7 +426,7 @@ class CF3(object):
                                         fcount+1, fcount+2, fcount+3, *coords)
         self.reslist[atomline] = self.reslist[atomline]+atoms_cf9   
         self.reslist[self.rle.find_fvarlines()[0]] = fvar
-        shx = ShelxlRefine(self.reslist, self.basefilename, self.fa)
+        shx = ShelxlRefine(self.reslist, self.basefilename, self.fa, self.options)
         shx.set_refinement_cycles('8')
         self.rl.write_resfile(self.reslist, '.res')
         return fatoms
@@ -511,7 +512,7 @@ class CF3(object):
         :param rl: reslist object
         :param reslist: res file as list
         '''
-        shx = ShelxlRefine(reslist, self.basefilename, self.fa)
+        shx = ShelxlRefine(reslist, self.basefilename, self.fa, self.options)
         acta_lines = shx.remove_acta_card()
         shx.set_refinement_cycles('0')
         rl.write_resfile(reslist, '.ins')

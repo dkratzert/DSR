@@ -27,12 +27,13 @@ class ShelxlRefine():
     A class to do a shelxl refinement. It is only for shelxl 2013 and above!
     The resfilename should be without ending.
     '''
-    def __init__(self, reslist, resfile_name, find_atoms):
+    def __init__(self, reslist, resfile_name, find_atoms, options):
         '''
         :param reslist: SHELXL .res file as list
         :param resfile_name: SHELXL res file name
         :param find_atoms: FindAtoms() object
         '''
+        self.options = options
         self._find_atoms = find_atoms
         self._atoms_in_reslist = self._find_atoms.collect_residues()
         self.number_of_atoms = 0
@@ -76,6 +77,8 @@ class ShelxlRefine():
         names = ['shelxl', 'xl']
         download = 'You can download SHELXL at http://shelx.uni-ac.gwdg.de/SHELX'
         shx_exe = []
+        if self.options.shelxl_ex:
+            return self.options.shelxl_ex
         for name in names:
             shx_exe.extend(misc.which(name))  # list of shelxl executables in path
             try:
@@ -414,7 +417,7 @@ if __name__ == '__main__':
     find_atoms = FindAtoms(res_list)
     #lf = ListFile('p21c')
     #lst_file = lf.read_lst_file()
-    shx = ShelxlRefine(res_list, 'testfile', find_atoms)
+    shx = ShelxlRefine(res_list, 'testfile', find_atoms, options)
 
 
     #print(shx.afix_is_closed(110))
