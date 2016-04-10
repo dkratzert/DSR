@@ -681,7 +681,7 @@ class CF3(object):
     
 if __name__ == '__main__':
     from resi import Resi
-    options = OptionsParser()
+    options = OptionsParser('183')
     #res_file = options.res_file
     #res_file = '/tmp/mlcp57.res' 
     res_file = 'p21n_cf3.res'
