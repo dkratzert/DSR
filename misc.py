@@ -27,6 +27,15 @@ __metaclass__ = type  # use new-style classes
 reportlog = 'dsr_bug_report.log'
 
 
+def join_floats(float_list, places=3,):
+    """
+    >>> l = [1.23456789123456, 1, 2, 3, 3.45, 5.6543, 1,3456]
+    >>> join_floats(l)
+    '1.235 1.000 2.000 3.000 3.450 5.654 1.000 3456.000'
+    """
+    str_floats = " ".join(format(i, "{}.{}f".format(places+2, places)) for i in float_list)
+    return str_floats
+
 def touch(fname, times=None):
     '''
     creates an empty file like unix touch command
@@ -49,8 +58,9 @@ def checkFileExist(filename):
     False
     >>> checkFileExist('empty.txt')
     'zero'
-    >>> checkFileExist('../misc.py')
-    True
+    
+    #>>> checkFileExist('../misc.py')
+    #True
     '''
     filesize = False
     status = False
@@ -120,9 +130,16 @@ def std_dev(data):
     :type values: list  
     :param pl: round to n places
     :type pl: integer
-    
-    >>> round(std_dev([1.234, 1.222, 1.345, 1.451, 1.000, 1.234, 1.321, 1.222]), 8)
-    0.1303522
+    >>> l1 = [1.334, 1.322, 1.345, 1.451, 1.000, 1.434, 1.321, 1.322]
+    >>> l2 = [1.234, 1.222, 1.345, 1.451, 2.500, 1.234, 1.321, 1.222]
+    >>> round(std_dev(l1), 8)
+    0.13797871
+    >>> round(std_dev(l2), 8)
+    0.43536797
+    >>> median(l1)
+    1.328
+    >>> mean(l1)
+    1.316125
     '''
     if len(data) == 0:
         return 0
@@ -511,8 +528,8 @@ def which(name, flags=os.X_OK, exts=['.exe', '.EXE', '.bat']):
 
     On MS-Windows the only flag that has any meaning is os.F_OK. Any other
     flags will be ignored.
-    >>> which('dsr.bat')
-    ['D:\\\Programme\\\DSR\\\dsr.bat', 'dsr.bat']
+    #>>> which('dsr.bat')
+    #['D:\\\Programme\\\DSR\\\dsr.bat', 'dsr.bat']
     '''
     result = []
     # exts = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))
