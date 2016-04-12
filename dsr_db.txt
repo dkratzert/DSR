@@ -49,7 +49,7 @@
 
 <pmdeta>
 REM Src: CCDC DUQJIJ
-REM Name: N,N,N′,N′′,N′′-pentamethyldiethylenetriamine, PMDETA, C9H23N3
+REM Name: N,N,N',N'',N''-pentamethyldiethylenetriamine, PMDETA, C9H23N3
 SADI N1 C1 N1 C2 N1 C3 N2 C4 N2 C5 N2 C6 N3 C7 N3 C8 N3 C9
 SADI C3 C4 C6 C7
 SADI 0.04 C1 C2 C8 C9 C1 C3 C2 C3 C7 C8 C7 C9 C4 C6 C6 C5 C5 C4
