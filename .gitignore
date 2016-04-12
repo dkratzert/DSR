@@ -210,6 +210,8 @@ unit-tests/test-data/beispiel/3a.res
 
 *.iml
 
+.idea/
+
 .idea/DSR.iml
 
 .idea/misc.xml
