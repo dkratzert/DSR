@@ -3,13 +3,14 @@ shelXlesaves
 dsrsaves
 dsrsaves/*
 *.ps
+.idea/
+.olex/
 /manuals/*.pdf
 /setup/*.exe
 /setup/Output/*.tar.gz
 /setup/Output/*.exe
 /setup/Output/*.deb
 /setup/Output/*.rpm
-.idea
 !/setup/Output/rel/*.exe
 *.fcf
 *.2fcf
@@ -210,8 +211,4 @@ unit-tests/test-data/beispiel/3a.res
 
 *.iml
 
-.idea/DSR.iml
 
-.idea/misc.xml
-
-.idea/workspace.xml
