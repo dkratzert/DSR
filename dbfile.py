@@ -578,7 +578,7 @@ class global_DB():
                         dev = line[0]
                         del line[0] # delete standard deviation
                 except(IndexError):
-                    return
+                    return False
                 if len(line)%2 == 1: # test for uneven atoms count
                     print('Inconsistent SADI restraint line {} of "{}". Not all atoms form a pair.'.format(num, fragment))   
                 pairs = pairwise(line)
@@ -592,7 +592,7 @@ class global_DB():
                         a = atoms[atnames.index(i[0])][2:5]
                         b = atoms[atnames.index(i[1])][2:5]
                     except(ValueError):
-                        return
+                        return False
                     a = [float(x) for x in a]
                     b = [float(y) for y in b]
                     dist = atomic_distance(a, b, self.get_unit_cell(fragment))
@@ -614,8 +614,9 @@ class global_DB():
                             return False
                 if stdev > 2.5*float(dev):
                     print("\nFragment {}:".format(fragment))
-                    print('Suspicious restraints in SADI line {} with high Stdeviation {:4.3f} (median length: {:4.3f} A).'.format(num+1, stdev, median(distances)))
+                    print('Suspicious restraints in SADI line {} with high standard deviation {:4.3f} (median length: {:4.3f} A).'.format(num+1, stdev, median(distances)))
                     print(' '.join(prefixes+line))
+                    return False
         return True
                         
     

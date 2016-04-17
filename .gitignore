@@ -202,13 +202,7 @@ pip-log.txt
 
 
 *.lst
-
 *.tst
-.idea/workspace.xml
 
-unit-tests/test-data/beispiel/3a.res
-unit-tests/test-data/beispiel/3a.res
-
-*.iml
 
 
