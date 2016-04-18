@@ -197,7 +197,7 @@ class CF3(object):
             # atom is already isotropic, nothing to do...
             print('Pivot atom is isotropic. Atom split not possible!')
             self.dsr_dict['split'] = False
-            [[], []]
+            return [[], []]
 
     def add_chars(self, atom, alphabet):
         '''
