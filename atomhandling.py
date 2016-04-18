@@ -392,7 +392,6 @@ class FindAtoms():
                 sys.exit(0)
         return atom_dict
 
-
     def get_atom_line_numbers(self, atoms):
         '''
         returns the line numbers in the res_list of a given atom list
@@ -415,7 +414,6 @@ class FindAtoms():
                     single_atom = x[2] # x[2] is the line number
                     lines.append(single_atom)
         return lines
-
 
     def remove_adjacent_hydrogens(self, atoms, sfac_table, atype='H'):
         '''
