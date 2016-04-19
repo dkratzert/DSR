@@ -8,6 +8,7 @@ Homepage: <https://www.xs3.uni-freiburg.de/research/dsr>
 Vcs-Git: <git://git.debian.org/collab-maint/dsr.git>
 Package: dsr
 Architecture: all
+Installed-Size: 29296
 Depends: xclip
 Description: This program consists of a text database with fragments of molecules and
  the DSR program. It acts as a preprocessor for SHELXL .res files. The user.
