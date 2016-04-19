@@ -10,7 +10,8 @@ Package: dsr
 Architecture: all
 Installed-Size: 29296
 Depends: xclip
-Description: This program consists of a text database with fragments of molecules and
+Description: DSR - Disordered Structure Refinement
+ This program consists of a text database with fragments of molecules and
  the DSR program. It acts as a preprocessor for SHELXL .res files. The user.
  inserts a special command in the SHELXL .res file and the DSR program reads.
  this information to put a molecule or fragment with the desired atoms on the.
