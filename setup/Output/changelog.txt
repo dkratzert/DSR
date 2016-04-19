@@ -1,4 +1,6 @@
 Recent changes
+-184    PMDETA and DMAP fragments added, Fixed bug where cf3fit could not handle 
+        isotropic atoms (Thanks to C. Maichle-Moessmer for reporting).
 -183    New fragments, improved handling of relative paths for external restraints,
         restore refinement cycles after DSR run. 
 -182    IMPORTANT! The default path for the user database is now the users home
