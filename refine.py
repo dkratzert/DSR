@@ -121,8 +121,8 @@ class ShelxlRefine():
         regex = r'(^L\.S\.\s)|(^CGLS\s)'
         ls_line = misc.find_line(self._reslist, regex)
         ls_list = self._reslist[ls_line].split()
-        ls_list[1] = str(cycles)+'\n'
-        self._reslist[ls_line] = '  '.join(ls_list)
+        ls_list[1] = str(cycles)
+        self._reslist[ls_line] = '  '.join(ls_list)+'\n'
         return self._reslist
 
     @property

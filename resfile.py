@@ -251,7 +251,7 @@ class ResListEdit():
         sumvarlen = varlen+difference
         if len(fvar_list) != 0:
             for line in self.fvarlines:
-                self._reslist[line] = ' ' # removes the old FVAR
+                self.remove_line(line, remove=True) # removes the old FVAR
         for i in range(0, sumvarlen, line_length):
             l = 'FVAR  '+'  '.join( "{:<8}".format(x[:6].ljust(6, '0')) for x in fvar_list[i:i+line_length] )
             lines.append(l)
