@@ -49,7 +49,7 @@
 
 
 <cod>
-rem Name: 1,5-cyclooctadiene, C8H12
+rem Name: 1,5-cyclooctadiene, COD, C8H12
 rem Src: Miriam Schwab
 RESI COD
 SIMU C1 > C8
