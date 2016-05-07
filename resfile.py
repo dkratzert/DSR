@@ -74,9 +74,10 @@ class ResList():
             print('Unable to write .res file! Check directory write permissions.')
             sys.exit(-1)
         for i in reslist:            #modified reslist
+            if i == ' ':
+                i = i+' \n'  # prevent space character coming in front of an atom accidentally
             nfile.write("%s" %i)    #write the new file
         nfile.close()
-
 
 
 class ResListEdit():
