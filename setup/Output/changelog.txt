@@ -1,4 +1,7 @@
 Recent changes
+-185    Added COD to database. Fixed bug where cf3fit could delete the first atom
+        in the res file (Thanks to C. Maichle-Moessmer for reporting). Fixed
+        damaging of L.S. command with more than one parameter.
 -184    PMDETA and DMAP fragments added, Fixed bug where cf3fit could not handle 
         isotropic atoms (Thanks to C. Maichle-Moessmer for reporting).
 -183    New fragments, improved handling of relative paths for external restraints,
