@@ -262,10 +262,9 @@ F9    4    0.058836    0.122805    0.319484    31.00000    0.06663
 RESI 0
 PART 0
  
-RESI 4 CF3
-REM The restraints for residue CF3 are in this file:
-+dsr_CF3_4_5a_dfx.dfix
+RESI CF3 4
 PART 2 -31
+AFIX   9
 O1    3    0.077864    0.235782    0.401108   -31.00000    0.04000
 C1    1    0.032052    0.233931    0.335391   -31.00000    0.04000
 C2    1    0.026210    0.303885    0.307064   -31.00000    0.04000
@@ -284,7 +283,7 @@ PART 0
 RESI 0
  
 REM rem dsr put oc(cf3)3 with o1 c1 c2 c3 c4 on O1_3 c1_3 q6 Q4 q7 resi cf3
-REM !PART 2 occ -31 dfix
+REM !PART 2 occ -31
  
 AFIX   0
 HKLF 4

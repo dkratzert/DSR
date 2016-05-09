@@ -262,18 +262,11 @@ F9    4    0.058836    0.122805    0.319484    31.00000    0.06663
 RESI 0
 PART 0
  
-SADI 0.02 C1A C2A C1A C3A C1A C4A
-SADI 0.02 F1A C2A F2A C2A F3A C2A F4A C3A F5A C3A F6A C3A F7A C4A F8A C4A F9A =
-   C4A
-SADI 0.04 C2A C3A C3A C4A C2A C4A
-SADI 0.04 O1A C2A O1A C3A O1A C4A
-SADI 0.04 F1A F2A F2A F3A F3A F1A F4A F5A F5A F6A F6A F4A F7A F8A F8A F9A F9A =
-   F7A
-DFIX 1.35 O1A C1A
-SADI 0.1 F1A C1A F2A C1A F3A C1A F4A C1A F5A C1A F6A C1A F7A C1A F8A C1A F9A =
-   C1A
 SIMU O1A > F9A
 RIGU O1A > F9A
+ 
+REM The restraints for this moiety are in this file:
++dsr_1_6a.dfix
 PART 2 -31
 O1A   3    0.077864    0.235782    0.401108   -31.00000    0.04000
 C1A   1    0.032052    0.233931    0.335391   -31.00000    0.04000
@@ -291,15 +284,15 @@ F8A   4   -0.168228    0.213914    0.275571   -31.00000    0.04000
 F9A   4   -0.171553    0.230920    0.380544   -31.00000    0.04000
 PART 0
  
-REM rem dsr put oc(cf3)3 with o1 c1 c2 c3 c4 on O1_3 c1_3 q6 Q4 q7 occ -31
-REM !PART 2
+REM rem dsr put oc(cf3)3 with o1 c1 c2 c3 c4 on O1_3 c1_3 q6 Q4 q7 PART 2
+REM !occ -31
  
 AFIX   0
 HKLF 4
  
 REM  p21c in P2(1)/c
 REM R1 =  0.1557 for    7085 Fo > 4sig(Fo)  and  0.2016 for all   10786 data
-REM    758 parameters refined using   1793 restraints
+REM    758 parameters refined using   1675 restraints
  
 END  
      

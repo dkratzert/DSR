@@ -41,37 +41,52 @@ def foo():
     """
     pass
 
+class doctestsTest(unittest.TestCase):
+    import doctest
+    import elements
+
+    failed, attempted = doctest.testmod(misc)  # , verbose=True)
+    if failed == 0:
+        print('passed all {} tests in misc!'.format(attempted))
+
+    failed, attempted = doctest.testmod(elements)  # verbose=True)
+    if failed == 0:
+        print('passed all {} tests in elements!'.format(attempted))
+
+    import networkx
+
+    failed, attempted = doctest.testmod(networkx)  # verbose=True)
+    if failed == 0:
+        print('passed all {} tests in networkx!'.format(attempted))
+    failed, attempted = doctest.testmod(networkx.classes.graph)  # verbose=True)
+    if failed == 0:
+        print('passed all {} tests in networkx.classes.graph!'.format(attempted))
+
 
 class dsrrunTest(unittest.TestCase):
     def setUp(self):
         #unittest.TestCase.setUp(self)
         self.maxDiff = None
-        misc.remove_file(os.path.relpath('./test-data/beispiel/1a.res'))
+        # remove this to view the results:
+        misc.remove_file(os.path.relpath('test-data/beispiel/1a.res'))
         misc.remove_file(os.path.relpath('test-data/beispiel/2a.res'))
         misc.remove_file(os.path.relpath('test-data/beispiel/3a.res'))
         misc.remove_file(os.path.relpath('test-data/beispiel/4a.res'))
         misc.remove_file(os.path.relpath('test-data/beispiel/5a.res'))
         misc.remove_file(os.path.relpath('test-data/beispiel/6a.res'))
-        misc.copy_file('test-data/beispiel/1.ins', 'test-data/beispiel/1a.res')
-        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/1a.hkl')
-        misc.copy_file('test-data/beispiel/2.ins', 'test-data/beispiel/2a.res')
-        misc.copy_file('test-data/beispiel/2.hkl', 'test-data/beispiel/2a.hkl')
-        misc.copy_file('test-data/beispiel/3.ins', 'test-data/beispiel/3a.res')
-        misc.copy_file('test-data/beispiel/3.hkl', 'test-data/beispiel/3a.hkl')
-        misc.copy_file('test-data/beispiel/4.ins', 'test-data/beispiel/4a.res')
-        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/4a.hkl')
-        #misc.copy_file('test-data/beispiel/5.ins', 'test-data/beispiel/5a.res')
-        #misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/5a.hkl')
-        #misc.copy_file('test-data/beispiel/6.ins', 'test-data/beispiel/6a.res')
-        #misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/6a.hkl')
+        misc.remove_file(os.path.relpath('test-data/beispiel/7a.res'))
+        misc.remove_file('test-data/beispiel/dsr_CF3_4_5a.dfix')
+        misc.remove_file('test-data/beispiel/dsr_CF3_4_5a_dfx.dfix')
+        misc.remove_file('test-data/beispiel/dsr_CF3_4_4a.dfix')
+        ######################################
+        # remove this to view the input for dsr:
         misc.remove_file('test-data/beispiel/1a.ins')
         misc.remove_file('test-data/beispiel/2a.ins')
         misc.remove_file('test-data/beispiel/3a.ins')
         misc.remove_file('test-data/beispiel/4a.ins')
-        #misc.remove_file('test-data/beispiel/5a.ins')
-        #misc.remove_file('test-data/beispiel/6a.ins')
-        #misc.remove_file('dsr_CF3_4_dsr_CF3_p21c.dfix')
-        misc.remove_file('./test-data/beispiel/dsr_CF3_4_4a.dfix')
+        misc.remove_file('test-data/beispiel/5a.ins')
+        misc.remove_file('test-data/beispiel/6a.ins')
+        ##################################################
         misc.remove_file('*.fcf')
         #self.dsr = '/Applications/DSR/dsr'
         self.dsr = 'D:\Programme\DSR\dsr'
@@ -94,7 +109,9 @@ class dsrrunTest(unittest.TestCase):
         regular dsr run with
         resi cf3 PART 2 occ -31
         """
-        print('11111111')
+        print('1'*10)
+        misc.copy_file('test-data/beispiel/1.ins', 'test-data/beispiel/1a.res')
+        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/1a.hkl')
         system('{} -r ./test-data/beispiel/1a.res'.format(self.dsr))
         #call([self.dsr, "-r", "./test-data/beispiel/1a.res"])
         with open('./test-data/beispiel/1a.res') as txt:
@@ -110,6 +127,9 @@ class dsrrunTest(unittest.TestCase):
         resi cf3 dfix =
             PART 2 occ -31
         """
+        print('2' * 10)
+        misc.copy_file('test-data/beispiel/2.ins', 'test-data/beispiel/2a.res')
+        misc.copy_file('test-data/beispiel/2.hkl', 'test-data/beispiel/2a.hkl')
         system("{} -r ./test-data/beispiel/2a.res".format(self.dsr))
         with open('./test-data/beispiel/2a.res') as txt:
             zweiter = txt.readlines()
@@ -123,6 +143,9 @@ class dsrrunTest(unittest.TestCase):
         regular run with:
          occ -31 PART 2
         """
+        print('3' * 10)
+        misc.copy_file('test-data/beispiel/3.ins', 'test-data/beispiel/3a.res')
+        misc.copy_file('test-data/beispiel/3.hkl', 'test-data/beispiel/3a.hkl')
         system("{} -r ./test-data/beispiel/3a.res".format(self.dsr))
         with open('./test-data/beispiel/3a.res') as txt:
             dritter = txt.readlines()
@@ -137,6 +160,9 @@ class dsrrunTest(unittest.TestCase):
         resi cf3 =
             PART 2 occ -31
         """
+        print('4' * 10)
+        misc.copy_file('test-data/beispiel/4.ins', 'test-data/beispiel/4a.res')
+        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/4a.hkl')
         system("{} -re ./test-data/beispiel/4a.res".format(self.dsr))
         with open('./test-data/beispiel/4a.res') as txt:
             vierter = txt.readlines()
@@ -146,21 +172,76 @@ class dsrrunTest(unittest.TestCase):
             vierter_dfix = txt4.readlines()
         with open('./test-data/beispiel/dsr_CF3_4_4a-erg.dfix') as txt4e:
             vierter_dfixerg = txt4e.readlines()
+        self.assertEqual(vierter, vierter_erg)
         self.assertEqual(vierter_dfix, vierter_dfixerg)
 
-    @unittest.skip(" skipping ")
+    #@unittest.skip(" skipping5 ")
     def testrun_run5(self):
-        print(self.dsr)
-        call([self.dsr, "-re", "./test-data/beispiel/5a.res"])
+        """
+        -re resi cf3 part 2 occ -31 dfix
+        """
+        print('5' * 10)
+        misc.copy_file('test-data/beispiel/5.ins', 'test-data/beispiel/5a.res')
+        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/5a.hkl')
+        system("{} -re ./test-data/beispiel/5a.res".format(self.dsr))
         with open('./test-data/beispiel/5a.res') as txt:
             fuenf = txt.readlines()
         with open('./test-data/beispiel/5a-erg.res') as txt2:
             fuenf_erg = txt2.readlines()
-        #with open('./test-data/beispiel/dsr_CCF3_6_5a.dfix') as txt3:
-        #    fuenf_dfix = txt3.readlines()
-        #with open('./test-data/beispiel/dsr_CCF3_6_5a-erg.dfix') as txt3:
-        #    fuenf_dfixerg = txt3.readlines()
-        #self.assertEqual(fuenf_dfix, fuenf_dfixerg)  
+        with open('./test-data/beispiel/dsr_CF3_4_5a_dfx.dfix') as txt3:
+            fuenf_dfix = txt3.readlines()
+        with open('./test-data/beispiel/dsr_CF3_4_5a_dfx-erg.dfix') as txt3:
+            fuenf_dfixerg = txt3.readlines()
+        self.assertEqual(fuenf, fuenf_erg)
+        self.assertEqual(fuenf_dfix, fuenf_dfixerg)
+
+    # @unittest.skip(" skipping6 ")
+    def testrun_run6(self):
+        """
+        -re   PART 2 occ -31
+        """
+        print('6'*10)
+        misc.copy_file('test-data/beispiel/6.ins', 'test-data/beispiel/6a.res')
+        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/6a.hkl')
+        system("{} -re ./test-data/beispiel/6a.res".format(self.dsr))
+        with open('./test-data/beispiel/6a.res') as txt:
+            fuenf = txt.readlines()
+        with open('./test-data/beispiel/6a-erg.res') as txt2:
+            fuenf_erg = txt2.readlines()
+        with open('./test-data/beispiel/dsr_1_6a.dfix') as txt3:
+            fuenf_dfix = txt3.readlines()
+        with open('./test-data/beispiel/dsr_1_6a-erg.dfix') as txt3:
+            fuenf_dfixerg = txt3.readlines()
+        self.assertEqual(fuenf, fuenf_erg)
+        self.assertEqual(fuenf_dfix, fuenf_dfixerg)
+
+
+    # @unittest.skip(" skipping ")
+    def testrun_run7(self):
+        """
+        rigid
+
+        """
+        print('7' * 10)
+        misc.copy_file('test-data/beispiel/7.ins', 'test-data/beispiel/7a.res')
+        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/7a.hkl')
+        system("{} -r ./test-data/beispiel/7a.res -g".format(self.dsr))
+        with open('./test-data/beispiel/7a.res') as txt:
+            fuenf = txt.readlines()
+        with open('./test-data/beispiel/7a-erg.res') as txt2:
+            fuenf_erg = txt2.readlines()
+        self.assertEqual(fuenf, fuenf_erg)
+
+    def testrun_8(self):
+        """
+        dsr -s tol
+
+        """
+        system("{} -s tol > test-data\search.txt".format(self.dsr))
+        with open('test-data\search.txt') as txt:
+            se = txt.readlines()
+        with open('test-data\search-erg.txt') as txt2:
+            se_erg = txt2.readlines()
 
 
 db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
@@ -1313,25 +1394,4 @@ class MiscTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    import sys
-    import doctest
-    import elements
-
-
-    failed, attempted = doctest.testmod(misc)  # , verbose=True)
-    if failed == 0:
-        print('passed all {} tests in misc!'.format(attempted))
-
-    failed, attempted = doctest.testmod(elements)  # verbose=True)
-    if failed == 0:
-        print('passed all {} tests in elements!'.format(attempted))
-
-    import networkx
-
-    failed, attempted = doctest.testmod(networkx)  # verbose=True)
-    if failed == 0:
-        print('passed all {} tests in networkx!'.format(attempted))
-    failed, attempted = doctest.testmod(networkx.classes.graph)  # verbose=True)
-    if failed == 0:
-        print('passed all {} tests in networkx.classes.graph!'.format(attempted))
     unittest.main()
