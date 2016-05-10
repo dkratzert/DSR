@@ -51,7 +51,7 @@ def search_fragment_name(search_string):
     from misc import dice_coefficient
     gdb = global_DB()
     db = gdb.build_db_dict()
-    frags = db.keys()
+    frags = list(db.keys())
     names_list = []
     for i in frags:
         fragname = gdb.get_comment_from_fragment(i)
