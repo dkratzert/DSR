@@ -89,7 +89,7 @@ def make_sortkey(full_name):
     """
     Algorythm inspired by W. Sage J. Chem. Inf: Comput. Sci. 1983, 23, 186-197
     """
-    full_name = ''.join(e for e in full_name if e not in ('{}()[]'))
+    full_name = ''.join(e for e in full_name if e not in ('{}()[],'))
     full_name = full_name.split(',')[0].lower()
     if full_name.startswith('tert-'):
         full_name = full_name[4:]
