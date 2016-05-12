@@ -603,7 +603,7 @@ class global_DB():
                 #print(stdev, fragment, stdev*len(pairs))
                 #
                 # only do outlier test if standard deviation is suspiciously large:
-                if stdev > 0.06:
+                if stdev > 0.065:
                     outliers = nalimov_test(distances)
                     if outliers:
                         print("\nFragment {}:".format(fragment))
