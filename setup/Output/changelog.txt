@@ -1,4 +1,6 @@
 Recent changes
+-186    Fixed bug in sorting of names list. Made outlier test for SADI a bit weaker.
+        Added Fluorobenzene.
 -185    Added COD to database. Fixed bug where cf3fit could delete the first atom
         in the res file (Thanks to C. Maichle-Moessmer for reporting). Fixed
         damaging of L.S. command with more than one parameter.
