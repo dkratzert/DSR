@@ -403,7 +403,7 @@ def remove_file(filename, exit_dsr=False, terminate=False):
         try:
             os.remove(filename)
         except(WindowsError, OSError):  # @UndefinedVariable
-            print('can not delete {}'.format(file))
+            print('can not delete {}'.format(filename))
             # print 'unable to cleanup ins {} files!'.format(file)
             if terminate:
                 pgrogname = terminate
