@@ -225,8 +225,12 @@ class CF3(object):
         :type afix: string
         '''
         afix=str(afix)
+        target_atom = self.dsr_dict['target'][0]
+        if '_' in target_atom:
+            print('\nSorry, can not create a CF3 group inside a residue! \nThis would damage the original residue.')
+            sys.exit()
         if afix == '130':
-            print(('Generating CF3-Group at {}.'.format(self.dsr_dict['target'][0])))
+            print('Generating CF3-Group at {}.'.format(target_atom))
             restr = sadir_130
             if self.dsr_dict['dfix']:
                 restr = dfixr_130
@@ -333,13 +337,12 @@ class CF3(object):
     def cf9(self):
         '''
         create disorderd CF3 group on three positions.
-        either define atom at startup or let dsrparser get the atom name.
-        
-        :param atom: central atom of the group
-        :type atom: string
         '''
         print(('Generating threefold disordered CF3-Group at {}.'.format(self.dsr_dict['target'][0])))
-        atom = self.dsr_dict['target'][0]
+        target_atom = self.dsr_dict['target'][0]
+        if '_' in target_atom:
+            print('\nSorry, can not create a CF3 group inside a residue! \nThis would damage the original residue.')
+            sys.exit()
         if self.dsr_dict['dfix']:
             restr = dfixr_cf9
         else:
@@ -348,21 +351,20 @@ class CF3(object):
             restr = self.resi.format_restraints(restr)
             restr = [i+'\n' for i in restr]
         if len(self.dsr_dict['target']) > 1:
-            print('Using only first target atom {}.'.format(self.dsr_dict['target'][0]))
-        atomline = self.fa.get_atom_line_numbers([atom])[0]
-        found = self.find_bonded_fluorine(atom)
+            print('Using only first target target_atom {}.'.format(self.dsr_dict['target'][0]))
+        atomline = self.fa.get_atom_line_numbers([target_atom])[0]
+        found = self.find_bonded_fluorine(target_atom)
         for i in found:
-            print(('Deleting ' + i[0] + '_' + i[7] + ' from '+atom))
+            print(('Deleting ' + i[0] + '_' + i[7] + ' from '+target_atom))
         self.delete_bound_fluorine(found)
         # make a copy to find fluorine positions:
         ####################################################
         reslist_copy = self.reslist[:]
         self.make_pivot_isotropic(atomline)
         fatoms = self.make_afix(afixnum=130, linenumber=atomline, resioff=True)
-        fatom = fatoms[0]
         self.do_refine_cycle(self.rl, self.reslist)
         # this is the bond around the CF3 group rotates
-        Y, Z = self.lf.get_bondvector(atom)
+        Y, Z = self.lf.get_bondvector(target_atom)
         Y = remove_partsymbol(Y)
         Z = remove_partsymbol(Z)
         numberedatoms = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9']
@@ -375,7 +377,7 @@ class CF3(object):
         else:
             nums = NumberScheme(self.reslist, numberedatoms, False)
             F1, F2, F3, F4, F5, F6, F7, F8, F9  = nums.get_fragment_number_scheme()            
-        start_f_coord = self.lf.get_single_coordinate(fatom)
+        start_f_coord = self.lf.get_single_coordinate(fatoms[0])
         replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3),
                             ('F4', F4), ('F5', F5), ('F6', F6), ('F7', F7), 
                             ('F8', F8), ('F9', F9))
@@ -391,7 +393,7 @@ class CF3(object):
             occ = str((self.rle.get_fvar_count()+1)*10+1+20)
         fcount = self.rle.get_fvar_count()
         fvar = self.rle.set_free_variables(occ, '0.3') 
-        atomline = self.fa.get_atom_line_numbers([atom])[0]
+        atomline = self.fa.get_atom_line_numbers([target_atom])[0]
         self.make_pivot_isotropic(atomline)
         atoms_cf9 = ['PART 1 {1}1', 
                     F1+'   {0}   {4}    11.00000    0.04',
@@ -625,7 +627,7 @@ class CF3(object):
         # returns the atom names of the fluorine atoms:
         fluorine_names = self.cf3() 
         #self.do_refine_cycle(self.rl, self.reslist)
-        print(fluorine_names[0])
+        print(fluorine_names[0], '##################')
         ratom = self.lf.get_single_coordinate(fluorine_names[0])
         print('ratom:', ratom)
         #ratom = self.get_coordinates_of_first_atom(fluorine_names)
