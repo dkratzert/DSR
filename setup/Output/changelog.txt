@@ -1,4 +1,6 @@
 Recent changes
+-187    No CF3 groups inside of residues allowed any more. Fixed exception when 
+        DSR tries to delete a file.
 -186    Fixed bug in sorting of names list. Made outlier test for SADI a bit weaker.
         Added Fluorobenzene. User manual update.
 -185    Added COD to database. Fixed bug where cf3fit could delete the first atom
