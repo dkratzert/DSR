@@ -7,6 +7,9 @@ SHELX file definition
 - Comments: start with space ' ', rest is ignored
 
 - all characters following '!' or '=' are ignored
+  thus we can do 
+  if "=" in line:
+    line = line.split("=")[0]
 
 - TIME and MOLE are deprecated
 
