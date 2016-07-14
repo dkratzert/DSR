@@ -47,7 +47,7 @@ class ShelxlRefine():
 
         if not self._shelx_command:
             print('\nSHELXL executable not found in system path! No fragment fitting possible.\n')
-            print('You can download SHELXL at http://shelx.uni-ac.gwdg.de/SHELX/index.php\n')
+            print('You can download SHELXL at http://shelx.uni-goettingen.de\n')
             sys.exit()
 
 
@@ -75,7 +75,7 @@ class ShelxlRefine():
         returns the appropriate shelxl executable
         '''
         names = ['shelxl', 'xl']
-        download = 'You can download SHELXL at http://shelx.uni-ac.gwdg.de/SHELX'
+        download = 'You can download SHELXL at http://shelx.uni-goettingen.de'
         shx_exe = []
         if self.options.shelxl_ex:
             return self.options.shelxl_ex
