@@ -43,7 +43,9 @@ program_name = '\n'+((width//2)-9)*'-'+\
 
 # TODO and ideas:
 '''
-
+- Mesitylene has wrong FLAT
+- Change naming scheme that no new name is invented until there is an atom
+  with the same name in the structure.
 '''
 
 class DSR():
