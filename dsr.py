@@ -156,9 +156,9 @@ class DSR():
             self.head_to_gui()
         #  List of database Fragments:
         if self.list_db_csv:
+            print('DSR version:', VERSION)
             gdb = global_DB()
             frags = gdb.list_fragments()
-            print('DSR version:', VERSION)
             for i in frags:
                 print('{};;{};;{};;{}'.format(i[0], i[3], i[1], i[2]))
             sys.exit()  
