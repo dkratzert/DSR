@@ -205,7 +205,7 @@ class Export():
         atoms = self._clipatoms
         for line in atoms:
             if int(line[1]) < 0:
-                line[1] = abs(int(line[1]))
+                line[1] = int(line[1]) #abs(int(line[1])) <- No abs(), it causes confusion with GUI
             else:
                 line[1] = el.get_atomic_number(el.get_atomlabel(line[0]))
             frac_coord = [ float(i) for i in line[2:5] ]
