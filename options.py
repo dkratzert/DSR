@@ -104,7 +104,8 @@ class OptionsParser():
 
     @property
     def shelxl_ex(self):
-        return self._options.shelxl_ex
+        spath = sys.path.append(' '.join(self._options.shelxl_ex))
+        return spath
 
     @property
     def search_string(self):
@@ -143,14 +144,14 @@ class OptionsParser():
            the command line options as dict'''
         # Options parser for the command line:
         self.parser = ArgumentParser(prog='dsr', formatter_class=RawTextHelpFormatter,
-        description='{}\nDisordered Structure Refinement (DSR)\n'.format(self.versionline)
-        +'\nExample DSR .res file command line:\n'
-        +'\nREM DSR PUT/REPLACE "Fragment" WITH C1 C2 C3 ON Q1 Q2 Q3 PART 1 OCC -21 ='
-        +'\n  RESI DFIX\n'
-        +sep_line+'\n'
-        +'   PUT:     Just put the fragment source atoms here.\n'
-        +'   REPLACE: Replace atoms of PART 0 in 1.3 A distance around target atoms.\n'
-        +sep_line
+            description='{}\nDisordered Structure Refinement (DSR)\n'.format(self.versionline)
+            +'\nExample DSR .res file command line:\n'
+            +'\nREM DSR PUT/REPLACE "Fragment" WITH C1 C2 C3 ON Q1 Q2 Q3 PART 1 OCC -21 ='
+            +'\n  RESI DFIX\n'
+            +sep_line+'\n'
+            +'   PUT:     Just put the fragment source atoms here.\n'
+            +'   REPLACE: Replace atoms of PART 0 in 1.3 A distance around target atoms.\n'
+            +sep_line
         )
         self.parser.add_argument("-r", dest="res_file", metavar='"res file"', \
                                 help="res file with DSR command", default=False)
@@ -180,7 +181,7 @@ class OptionsParser():
                                 help=SUPPRESS, default=False)
         self.parser.add_argument("-ah", dest="head_for_gui", \
                                 help=SUPPRESS, default=False)
-        self.parser.add_argument("-shx", dest="shelxl_ex", \
+        self.parser.add_argument("-shx", dest="shelxl_ex", nargs='+', \
                                  help=SUPPRESS, default=False)
         self.parser.add_argument("-n", dest="no_refine", action="store_true", \
                                 help="do not refine after fragment transfer", default=False)
