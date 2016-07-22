@@ -104,9 +104,7 @@ class OptionsParser():
 
     @property
     def shelxl_ex(self):
-        spath = ''
-        if self._options.shelxl_ex != False:
-            spath = ' '.join(self._options.shelxl_ex)
+        spath = sys.path.append(' '.join(self._options.shelxl_ex))
         return spath
 
     @property
