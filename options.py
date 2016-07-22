@@ -42,8 +42,11 @@ class OptionsParser():
 
     @property
     def res_file(self):
+        rpath = ''
+        if self._options.res_file != False:
+            rpath = r' '.join(self._options.res_file)
         try:
-            rpath = os.path.normpath(self._options.res_file)
+            rpath = os.path.normpath(rpath)
         except:
             rpath = None
         return rpath
@@ -104,7 +107,13 @@ class OptionsParser():
 
     @property
     def shelxl_ex(self):
-        return self._options.shelxl_ex
+        '''
+        Option to define the path of the shelxl executable
+        '''
+        spath = ''
+        if self._options.shelxl_ex != False:
+            spath = r' '.join(self._options.shelxl_ex)
+        return spath
 
     @property
     def search_string(self):
@@ -141,18 +150,17 @@ class OptionsParser():
     def parse_commandline(self):
         '''parses the command line options and returns
            the command line options as dict'''
-        # Options parser for the command line:
         self.parser = ArgumentParser(prog='dsr', formatter_class=RawTextHelpFormatter,
-        description='{}\nDisordered Structure Refinement (DSR)\n'.format(self.versionline)
-        +'\nExample DSR .res file command line:\n'
-        +'\nREM DSR PUT/REPLACE "Fragment" WITH C1 C2 C3 ON Q1 Q2 Q3 PART 1 OCC -21 ='
-        +'\n  RESI DFIX\n'
-        +sep_line+'\n'
-        +'   PUT:     Just put the fragment source atoms here.\n'
-        +'   REPLACE: Replace atoms of PART 0 in 1.3 A distance around target atoms.\n'
-        +sep_line
-        )
-        self.parser.add_argument("-r", dest="res_file", metavar='"res file"', \
+            description='{}\nDisordered Structure Refinement (DSR)\n'.format(self.versionline)
+                + '\nExample DSR .res file command line:\n'
+                + '\nREM DSR PUT/REPLACE "Fragment" WITH C1 C2 C3 ON Q1 Q2 Q3 PART 1 OCC -21 ='
+                + '\n  RESI DFIX\n'
+                + sep_line+'\n'
+                + '   PUT:     Just put the fragment source atoms here.\n'
+                + '   REPLACE: Replace atoms of PART 0 in 1.3 A distance around target atoms.\n'
+                + sep_line
+            )
+        self.parser.add_argument("-r", dest="res_file", metavar='"res file"', nargs='+',\
                                 help="res file with DSR command", default=False)
         self.parser.add_argument("-re", dest="external_restr", metavar='"res file"', \
                                 help="res file with DSR command (write restraints to external file)", default=False)
@@ -180,7 +188,8 @@ class OptionsParser():
                                 help=SUPPRESS, default=False)
         self.parser.add_argument("-ah", dest="head_for_gui", \
                                 help=SUPPRESS, default=False)
-        self.parser.add_argument("-shx", dest="shelxl_ex", \
+                                # with nargs='+' it accepts space in path an dreturns a list:
+        self.parser.add_argument("-shx", dest="shelxl_ex", nargs='+',\
                                  help=SUPPRESS, default=False)
         self.parser.add_argument("-n", dest="no_refine", action="store_true", \
                                 help="do not refine after fragment transfer", default=False)

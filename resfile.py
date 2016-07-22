@@ -254,7 +254,10 @@ class ResListEdit():
             for line in self.fvarlines:
                 self.remove_line(line, remove=True) # removes the old FVAR
         for i in range(0, sumvarlen, line_length):
-            l = 'FVAR  '+'  '.join( "{:<8}".format(x[:6].ljust(6, '0')) for x in fvar_list[i:i+line_length] )
+            try:
+                l = 'FVAR  '+' '.join( "{:<8.5f}".format(float(x)) for x in fvar_list[i:i+line_length] )
+            except ValueError:
+                print('Warning! Non-numerical value in FAR line.')
             lines.append(l)
             fvars = '\n'.join(lines)
             fvars = fvars+'\n'

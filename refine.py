@@ -319,12 +319,17 @@ class ShelxlRefine():
         if not checkFileExist(hklfile):
             print('You need a proper hkl file to use DSR.')
             sys.exit()
-        command_line='{} -b{} {}'.format(self._shelx_command, self.b_array, self.resfile_name).split()
+        command_line = []
+        command_line.append('{}'.format(self._shelx_command))
+        command_line.append("-b{}".format(self.b_array))
+        command_line.append('{}'.format(self.resfile_name))
         self.backup_shx_file()
         print(sep_line)
-        print(' refining with "{}" and "L.S. 0"'.format(' '.join(command_line)))
-        p = subprocess.Popen(command_line, stdin = subprocess.PIPE,
-                            stdout = subprocess.PIPE, stderr=subprocess.STDOUT)
+        print(' Running SHELXL with "{}" and "L.S. 0"'.format(' '.join(command_line)))
+        p = subprocess.Popen(command_line,
+                            stdin = subprocess.PIPE,
+                            stdout = subprocess.PIPE,
+                            stderr = subprocess.STDOUT)
         (child_stdin, child_stdout_and_stderr) = (p.stdin, p.stdout)
         child_stdin.close()
         # Watch the output for successful termination
