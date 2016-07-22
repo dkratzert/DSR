@@ -323,7 +323,9 @@ class ShelxlRefine():
         self.backup_shx_file()
         print(sep_line)
         print(' refining with "{}" and "L.S. 0"'.format(' '.join(command_line)))
-        p = subprocess.Popen(command_line, stdin = subprocess.PIPE,
+        p = subprocess.Popen(command_line,
+                            shell=True,
+                            stdin = subprocess.PIPE,
                             stdout = subprocess.PIPE, stderr=subprocess.STDOUT)
         (child_stdin, child_stdout_and_stderr) = (p.stdin, p.stdout)
         child_stdin.close()
