@@ -154,12 +154,15 @@ class Export():
         res_export.append('REM Sum formula: {}\n'.format(self._gdb.get_sum_formula(self._fragment_name)))
         res_export.append('WGHT  0.1'+'\n')
         res_export.append('FVAR  1'+'\n')
-        if not self._export_all:
+        #if not self._export_all:
+        try:
             res_export.append('rem Restraints from DSR database:\n')
             res_export.append( ''.join(wrap_headlines(self._gdb.get_head_from_fragment(self._fragment_name))) )
             res_export.append('rem Restraints from atom connectivities:\n')
             res_export.append(self.make_dfix())
             res_export.append('rem end of restraints\n')
+        except:
+            pass
         res_export.append('\n')
         res_export.append(final_atomlist)                         # the atoms
         res_export.append('\nHKLF 0\nEND\n')         # the end
