@@ -305,25 +305,24 @@ class Restraints():
             for chunk in chunks:
                 if self.is_flat(chunk):
                     flats.append(chunk[:])
-#                    print('flatchunk:', chunk)
             if not flats:
                 return False
+            newflats = []
+            # check for neighbours and add the to the flat list:
             for chunk in flats:
-                for i in neighbors:
-                    for at in chunk:
-                        if self.binds_to(at, i) and i not in chunk:
-                            if not self.binds_to(chunk[0], i):
-                                # only delete if not bounded to the beforehand added atom
-                                del chunk[0]
-                            else:
-                                # otherwise delete from the other end
-                                del chunk[-1]
-                            chunk.append(i)
-                            del neighbors[0]
-                    if self.is_flat(chunk):
-                        if not chunk in flats:
-                            flats.append(chunk)
-        return flats
+                newflats.append(chunk)
+                for atnum, chunkatom in enumerate(chunk[:]):
+                    for nbatom in neighbors:
+                        if self.binds_to(nbatom, chunkatom):
+                            # add bound atoms near their partners:
+                            ch = chunk[:]
+                            ch.insert(atnum, nbatom)
+                            ch = misc.shift(ch, atnum)
+                            del ch[-1]
+                            # finally add the new chunk to the flats list:
+                            if self.is_flat(ch):
+                                newflats.append(ch)
+        return newflats
 
     def binds_to(self, a, b):
         '''
@@ -613,7 +612,7 @@ if __name__ == '__main__':
     res_list = rl.get_res_list()
     dsrp = DSR_Parser(res_list, rl)
     dsr_dict = dsrp.get_dsr_dict
-    fragment = 'PPh3'
+    fragment = 'mesityl'
     fragment= fragment.lower()
     invert = True
     rl = ResList(res_file)
@@ -624,13 +623,13 @@ if __name__ == '__main__':
     part = '2'
 
     dbatoms = gdb.get_atoms_from_fragment(fragment)
-    print('dbatoms:', dbatoms)
+    #print('dbatoms:', dbatoms)
     num = NumberScheme(res_list, dbatoms, residue)
     fragment_atoms = num.get_fragment_number_scheme()
     #print(numberscheme)
     #fragment_atoms = [i[0] for i in dbatoms]
     fragment_atoms = format_atom_names(fragment_atoms, part, residue)
-    print(fragment_atoms)
+    #print(fragment_atoms)
 
     restr = Restraints(fragment, gdb)
     dfix_12 = restr.get_formated_12_dfixes()
@@ -642,6 +641,7 @@ if __name__ == '__main__':
     flats = restr.get_formated_flats()
     print('flats:\n'+''.join(flats))
     #print(''.join(dfixes_13))
+    sys.exit()
 
     print(restr.binds_to('C1', 'O1'), 'it binds')
 
