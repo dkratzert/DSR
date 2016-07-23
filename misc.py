@@ -590,7 +590,7 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
 
 def shift(seq, n):
     '''
-    shift a sliceable object by n
+    left-shift a sliceable object by n
 
     :param seq: sequence to shift
     :type seq: string or list
