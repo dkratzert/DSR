@@ -309,7 +309,7 @@ class Restraints():
                 return False
             newflats = []
             # check for neighbours and add the to the flat list:
-            for chunknum, chunk in enumerate(flats):
+            for chunk in flats:
                 newflats.append(chunk)
                 for atnum, chunkatom in enumerate(chunk[:]):
                     for nbatom in neighbors:
