@@ -287,7 +287,6 @@ class Restraints():
         is flat, if yes, add this chunk minus first atom
         '''
         list_of_rings = nx.cycle_basis(self._G)
-        #print('The list of rings:', list_of_rings)
         if not list_of_rings:
             return False
         flats = []
@@ -295,7 +294,7 @@ class Restraints():
         for ring in list_of_rings:
             for atom in ring:
                 # lets see if there is a neighboring atom:
-                nb = self._G.neighbors(atom)[1:]
+                nb = self._G.neighbors(atom)#[1:]
                 for i in nb:
                     if not i in flatten(list_of_rings):
                         neighbors.append(i)
@@ -318,8 +317,20 @@ class Restraints():
                             ch = chunk[:]
                             ch.insert(atnum, nbatom)
                             ch = misc.shift(ch, atnum)
-                            del ch[-1]
-                            # finally add the new chunk to the flats list:
+                            H = self._G.subgraph(ch)
+                            # Try to delete atoms in the subgraph and test if subgraph divides.
+                            # If it not devides, remove the atom unless it is the just added neighbour.
+                            for num, i in enumerate(reversed(ch), start=1):
+                                print(ch, nbatom, ch[-num], num, '###')
+                                H.remove_node(ch[-num])
+                                comp = nx.connected_components(H)
+                                if len(comp) > 1:
+                                    continue
+                                else:
+                                    if ch[-num] in neighbors:
+                                        continue
+                                    del ch[-num]
+                                    break
                             if self.is_flat(ch):
                                 newflats.append(ch)
         return newflats
