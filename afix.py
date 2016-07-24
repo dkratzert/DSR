@@ -79,18 +79,20 @@ def add_residue_to_dfix(dfix_head, resinum):
     ['DFIX  1.456  C1_4  C2_4\\n', 'DFIX  1.212  C3_4  C4_4\\n']
     >>> add_residue_to_dfix(['DFIX 1.456 C1 C2', 'DFIX 1.212 C3 C4'], '5')
     ['DFIX  1.456  C1_5  C2_5\\n', 'DFIX  1.212  C3_5  C4_5\\n']
+    >>> add_residue_to_dfix(['FLAT C6 C1 C2 C3', 'FLAT  C7  C1  C2  C3'], '2')
+    ['FLAT  C6_2  C1_2  C2_2  C3_2\\n', 'FLAT  C7_2  C1_2  C2_2  C3_2\\n']
     '''
     newhead = []
     for line in dfix_head:
         line = line.split()
-        try:
-            line[3]
-        except:
-            newhead.append(' '.join(line))
-            continue
-        line[2] = line[2]+'_'+str(resinum)
-        line[3] = line[3]+'_'+str(resinum)
-        line = '  '.join(line)+'\n'
+        first = line[0]
+        for num, item in enumerate(line):
+            try:
+                int(item[0])
+            except:
+                line[num] = line[num] + '_' + str(resinum)
+                continue
+        line = first+'  '+'  '.join(line[1:]) + '\n'
         newhead.append(line)
     return newhead
 

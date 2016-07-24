@@ -277,17 +277,16 @@ class Restraints():
         return chunks
 
     def make_flat_restraints(self):
-        '''
+        """
         searches for rings in the graph G, splits it in 4-member chunks and tests if
         they are flat: volume of tetrahedron of chunk < 0.1 A-3.
+        Additionally, the ring adjacent atoms are added and new chunks created.
+
         returns list of flat chunks.
 
-        first add neighbor atoms to neighbors
-        check if original rings are flat, if flat check if ring with neighbor
-        is flat, if yes, add this chunk minus first atom
-        '''
+        TODO: Make a doctest!!
+        """
         list_of_rings = nx.cycle_basis(self._G)
-        #print('The list of rings:', list_of_rings)
         if not list_of_rings:
             return False
         flats = []
@@ -295,12 +294,12 @@ class Restraints():
         for ring in list_of_rings:
             for atom in ring:
                 # lets see if there is a neighboring atom:
-                nb = self._G.neighbors(atom)[1:]
+                nb = self._G.neighbors(atom)#[1:]
                 for i in nb:
                     if not i in flatten(list_of_rings):
                         neighbors.append(i)
             if len(ring) < 4:
-                continue #wenn ring zu wenig atome hat dann nächsten
+                continue # only proceed if ring is bigger than 3 atoms
             chunks = self.get_overlapped_chunks(ring, 4)
             for chunk in chunks:
                 if self.is_flat(chunk):
@@ -318,9 +317,24 @@ class Restraints():
                             ch = chunk[:]
                             ch.insert(atnum, nbatom)
                             ch = misc.shift(ch, atnum)
-                            del ch[-1]
-                            # finally add the new chunk to the flats list:
-                            if self.is_flat(ch):
+                            H = self._G.subgraph(ch)
+                            # Try to delete atoms in the subgraph and test if subgraph divides.
+                            # If it not devides, remove the atom unless it is the just added neighbour.
+                            for num, i in enumerate(reversed(ch), start=1):
+                                #print(ch, nbatom, ch[-num], num, '###')
+                                H.remove_node(ch[-num])
+                                comp = nx.connected_components(H)
+                                # check if graph is disconnected now:
+                                if len(comp) > 1:
+                                    continue
+                                else:
+                                    # do not delete the just added neighbour:
+                                    if ch[-num] in neighbors:
+                                        continue
+                                    del ch[-num]
+                                    break  # finished, go to next flat
+                            # only add if it really results in a flat composition:
+                            if self.is_flat(ch) and not ch in newflats:
                                 newflats.append(ch)
         return newflats
 
@@ -612,7 +626,7 @@ if __name__ == '__main__':
     res_list = rl.get_res_list()
     dsrp = DSR_Parser(res_list, rl)
     dsr_dict = dsrp.get_dsr_dict
-    fragment = 'mesityl'
+    fragment = 'cpstar'
     fragment= fragment.lower()
     invert = True
     rl = ResList(res_file)
