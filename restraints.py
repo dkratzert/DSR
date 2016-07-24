@@ -283,6 +283,8 @@ class Restraints():
         Additionally, the ring adjacent atoms are added and new chunks created.
 
         returns list of flat chunks.
+
+        TODO: Make a doctest!!
         """
         list_of_rings = nx.cycle_basis(self._G)
         if not list_of_rings:
@@ -332,7 +334,7 @@ class Restraints():
                                     del ch[-num]
                                     break  # finished, go to next flat
                             # only add if it really results in a flat composition:
-                            if self.is_flat(ch):
+                            if self.is_flat(ch) and not ch in newflats:
                                 newflats.append(ch)
         return newflats
 
@@ -624,7 +626,7 @@ if __name__ == '__main__':
     res_list = rl.get_res_list()
     dsrp = DSR_Parser(res_list, rl)
     dsr_dict = dsrp.get_dsr_dict
-    fragment = 'mesityl'
+    fragment = 'cpstar'
     fragment= fragment.lower()
     invert = True
     rl = ResList(res_file)
