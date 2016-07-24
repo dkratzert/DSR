@@ -277,15 +277,13 @@ class Restraints():
         return chunks
 
     def make_flat_restraints(self):
-        '''
+        """
         searches for rings in the graph G, splits it in 4-member chunks and tests if
         they are flat: volume of tetrahedron of chunk < 0.1 A-3.
-        returns list of flat chunks.
+        Additionally, the ring adjacent atoms are added and new chunks created.
 
-        first add neighbor atoms to neighbors
-        check if original rings are flat, if flat check if ring with neighbor
-        is flat, if yes, add this chunk minus first atom
-        '''
+        returns list of flat chunks.
+        """
         list_of_rings = nx.cycle_basis(self._G)
         if not list_of_rings:
             return False
@@ -299,7 +297,7 @@ class Restraints():
                     if not i in flatten(list_of_rings):
                         neighbors.append(i)
             if len(ring) < 4:
-                continue #wenn ring zu wenig atome hat dann nächsten
+                continue # only proceed if ring is bigger than 3 atoms
             chunks = self.get_overlapped_chunks(ring, 4)
             for chunk in chunks:
                 if self.is_flat(chunk):
@@ -321,16 +319,19 @@ class Restraints():
                             # Try to delete atoms in the subgraph and test if subgraph divides.
                             # If it not devides, remove the atom unless it is the just added neighbour.
                             for num, i in enumerate(reversed(ch), start=1):
-                                print(ch, nbatom, ch[-num], num, '###')
+                                #print(ch, nbatom, ch[-num], num, '###')
                                 H.remove_node(ch[-num])
                                 comp = nx.connected_components(H)
+                                # check if graph is disconnected now:
                                 if len(comp) > 1:
                                     continue
                                 else:
+                                    # do not delete the just added neighbour:
                                     if ch[-num] in neighbors:
                                         continue
                                     del ch[-num]
-                                    break
+                                    break  # finished, go to next flat
+                            # only add if it really results in a flat composition:
                             if self.is_flat(ch):
                                 newflats.append(ch)
         return newflats
