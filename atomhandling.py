@@ -130,7 +130,11 @@ class FindAtoms():
         '''
         self._reslist = reslist
         sfacline = find_multi_lines(self._reslist, r'SFAC\s+[a-zA-Z]+')
-        self.sfac = self._reslist[sfacline[0]].split()[1:]
+        try:
+            self.sfac = self._reslist[sfacline[0]].split()[1:]
+        except IndexError:
+            print("No SFAC card found in .res file.")
+            sys.exit()
         self.e2s = Elem_2_Sfac(self.sfac)
         self._residues = self.collect_residues()
 
