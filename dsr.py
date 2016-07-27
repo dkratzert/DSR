@@ -43,7 +43,16 @@ program_name = '\n'+((width//2)-9)*'-'+\
 
 # TODO and ideas:
 '''
-- Add Amino Acids
+- Add Rcomplete -> create log file with r value and link to result file.
+  Add button in ShelXle that changes to result after the calc?
+
+- Add an export header entry for ShelXle containing any warnings/errors from DSR. For example restraint errors.
+
+- Add Peters way of using restraints with free variable. (low priority)
+
+- move atoms that end on special positions away from it if in negative part
+
+- start a slack community for DSR!
 '''
 
 class DSR():
