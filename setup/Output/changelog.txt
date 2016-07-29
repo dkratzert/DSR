@@ -1,7 +1,8 @@
 Recent changes
 -188    Fixed bug that produces  "dsr: error: unrecognized arguments: [...]" if
         SHELXL was located in a directory containing space characters.
-        Fixed bug where FVAR 1 ended up as 1000000.
+        Fixed bug where "FVAR 1" ended up as 1000000.
+        Added all natural amino acids. Improved FLAT restraints. 
 -187    No CF3 groups inside of residues allowed any more. Fixed exception when 
         DSR tries to delete a file.
         MAC OS: Fixed broken startup script.
