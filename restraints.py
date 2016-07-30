@@ -369,7 +369,7 @@ class Restraints():
         '''
         flats = self.make_flat_restraints()
         if not flats:
-            return ['']
+            return []
         flat_format = []
         for i in flats:
             i = [misc.remove_partsymbol(x) for x in i]
