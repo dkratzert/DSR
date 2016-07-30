@@ -832,7 +832,8 @@ class ImportGRADE():
         self._atoms = self.get_pdbatoms(self._pdbfile)
         self._firstlast = self.get_first_last_atom(self._atoms)
         self._restraints = self.get_restraints()
-        self._resi_name = self.get_name_from_pdbfile(self._pdbfile)
+        self._resi_name = self.get_resi_from_pdbfile()
+        self._frag_name = self.get_name_from_pdbfile()
         if not isinstance(self._resi_name, str):
                 self._resi_name = self._resi_name.decode()
         self._comments = self.get_comments()
@@ -882,36 +883,53 @@ class ImportGRADE():
         return tmp
 
 
-    def get_name_from_pdbfile(self, pdbfile):
+    def get_name_from_pdbfile(self):
         '''
         get the fragment name from the pdbfile.txt file
         :param pdbfile: file with some information about the molecule
         :type pdbfile: list of strings
         '''
+        full_name = None
         full_name_regex = re.compile(r'^.*Compound full name.*')
-        resi_regex = re.compile(r'^HETATM\s+1.*')
-        for line in pdbfile:
+        for line in self._pdbfile:
             if not isinstance(line, str):
                 line = line.decode('ascii')
+            if not line:
+                continue
             if full_name_regex.match(line):
                 line = line.replace('_', '')
                 line = line.replace('-', '')
                 line = line.replace('#', '')
+                try:
+                    line = line.split()
+                    line[4]
+                except(IndexError):
+                    full_name = None
+                full_name = line[5]
                 break
+        return full_name
+
+
+    def get_resi_from_pdbfile(self):
+        '''
+        get the fragment name from the pdbfile.txt file
+        :param pdbfile: file with some information about the molecule
+        :type pdbfile: list of strings
+        '''
+        resi_name = None
+        resi_regex = re.compile(r'^HETATM\s+1.*')
+        for line in self._pdbfile:
+            if not isinstance(line, str):
+                line = line.decode('ascii')
+            if not line:
+                continue
             if resi_regex.match(line):
                 line = line.replace('_', '')
                 line = line.replace('-', '')
                 line = line.replace('#', '')
-                return line.split()[3]
+                resi_name = line.split()[3]
                 break
-        if not line:
-            return 'NONE'
-        try:
-            line = line.split()
-            line[4]
-        except(IndexError):
-            return 'NONE'
-        return line[5]
+        return resi_name
 
 
     def get_comments(self):
@@ -927,7 +945,7 @@ class ImportGRADE():
         '''
         matches = ['REM Produced by Grade', 'REM GEN:', 'REM grade-cif2shelx', 'REM Version:', 'REM Total charge']
         comments = []
-        name = 'REM Name: '+self._resi_name
+        name = 'REM Name: '+self._frag_name
         comments.append(name.split())
         for m in matches:
             for line in self._dfixfile:
@@ -1004,18 +1022,22 @@ class ImportGRADE():
         .mol2 and .dfix file
         '''
         db_import_dict = {}
-        num = 1
+        num = 0
         name = self._resi_name[:3].upper()
         if not isinstance(name, str):
             name = name.decode()
-        resi_name =  name + str(num)
+        resi_name =  name
         if not self._db_tags:
             print('Unable to import fragment. Database is empty.')
             sys.exit(False)
         for i in self._db_tags:
-            while resi_name.upper() == i[0]:
+            while resi_name == i[0]:
                 num = num + 1
                 resi_name = resi_name[:3] + str(num)
+        if num == 0:
+            resi_name = resi_name[:3]
+        else:
+            resi_name = resi_name[:3] + str(num)
         # print 'using {} as resiname'.format(resi_name)
         fragline = 'FRAG 17 1  1  1  90  90  90'
         db_import_dict[resi_name] = {
@@ -1099,6 +1121,11 @@ class ImportGRADE():
 
 if __name__ == '__main__':
 
+    mog = ImportGRADE('/Users/daniel/Downloads/aminoacids/GLN.gradeserver_all.tgz', False)
+    print(mog.get_resi_from_pdbfile())
+    print(mog.get_name_from_pdbfile())
+
+    sys.exit()
     gdb = global_DB(invert=False)
     db = gdb.build_db_dict()
     dbnames = list(db.keys())
