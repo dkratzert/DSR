@@ -481,6 +481,7 @@ if __name__ == '__main__':
     """
     try:
         remove_file(reportlog)
+        #dsr = DSR(res_file_name="p21c.res")
         dsr = DSR()
     except Exception as e:
         import platform
