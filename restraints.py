@@ -483,7 +483,7 @@ class ListFile():
                 try:
                     cell = [float(i) for i in cell]
                 except(ValueError) as e:
-                    print(e, '\nbad cell parameters in line {} in the list file.'.format(num+1))
+                    print('{} \nbad cell parameters in line {} in the list file.'.format(e, num+1))
                     sys.exit()
                 break
         if not cell:

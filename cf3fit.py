@@ -269,7 +269,7 @@ class CF3(object):
             splitatoms = False
         found = self.find_bonded_fluorine(atom)
         for i in found:
-            print(('Deleting ' + i[0] + '_' + i[7] + ' from '+atom))
+            print(('Deleting {}_{} from {}'.format(i[0], i[7], atom)))
         self.delete_bound_fluorine(found)
         fatoms = self.make_afix(afixnum=afix, linenumber=atomline)
         if not fatoms:
@@ -355,7 +355,7 @@ class CF3(object):
         atomline = self.fa.get_atom_line_numbers([target_atom])[0]
         found = self.find_bonded_fluorine(target_atom)
         for i in found:
-            print(('Deleting ' + i[0] + '_' + i[7] + ' from '+target_atom))
+            print(('Deleting {}_{} from {}'.format(i[0], i[7], target_atom)))
         self.delete_bound_fluorine(found)
         # make a copy to find fluorine positions:
         ####################################################
