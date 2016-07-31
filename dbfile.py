@@ -371,6 +371,13 @@ class global_DB():
         :type db_name:   string
         :param line:     line number of db entry
         :type line:      integer
+
+        >>> gdb = global_DB(invert=False)
+        >>> gdb.get_fragment_atoms(fragment='benzene', db_name='dsr_db', line=669)
+        ... # doctest: +NORMALIZE_WHITESPACE
+        [['C1', '1', '0.880000', '-0.330900', '0.267190'], ['C2', '1', '0.786200', '-0.377700', '0.238080'],
+        ['C3', '1', '0.760600', '-0.318400', '0.192570'], ['C4', '1', '0.829200', '-0.212200', '0.175520'],
+        ['C5', '1', '0.923200', '-0.164400', '0.204000'], ['C6', '1', '0.948800', '-0.223200', '0.249920']]
         '''
         atoms = []
         end = False
@@ -400,37 +407,30 @@ class global_DB():
         '''
         returns header information of the specific fragment:
         tag, Name/comment, source, cell, residue, dbtype, restr, atoms
-        ----------------------------------------
+        >>> gdb = global_DB(invert=False)
+        >>> gdb.get_head_for_gui('benzene')
+        ... # doctest: +NORMALIZE_WHITESPACE
         <tag>
-         toluene 
+         benzene
         </tag>
         <comment>
-         Toluene, C7H8 
+         Benzene, Benzol, C6H6
         </comment>
         <source>
-         CCDC CESLUJ 
+         UGEDEQ
         </source>
         <cell>
-         1;;1;;1;;90;;90;;90 
+         1;;1;;1;;90;;90;;90
         </cell>
         <residue>
-         TOL 
+         BENZ
         </residue>
         <dbtype>
-         dsr_db 
+         dsr_db
         </dbtype>
         <restr>
-         SADI C2 C3 C3 C4 C4 C5 C5 C6 C6 C7 C7 C2;;SADI 0.04 C2 C6 C2 C4 C7 C5 C3 C7 C4 C6 C3 C5;;DFIX 1.51 C1 C2;;SADI 0.04 C1 C7 C1 C3;;FLAT C1 > C7;;SIMU C1 > C7;;RIGU C1 > C7 
-         </restr>
-        <atoms>
-         C1;;6;;1.78099;;7.14907;;12.00423
-        C2;;6;;2.20089;;8.30676;;11.13758
-        C3;;6;;1.26895;;9.02168;;10.39032
-        C4;;6;;1.64225;;10.07768;;9.58845
-        C5;;6;;2.98081;;10.44432;;9.51725
-        C6;;6;;3.92045;;9.74974;;10.25408
-        C7;;6;;3.53891;;8.69091;;11.05301 
-        </atoms>
+         SADI 0.02 C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1;;SADI 0.04 C1 C5 C1 C5 C4 C2 C4 C6 C6 C2 C5 C3;;FLAT C1 > C6;;SIMU C1 > C6;;RIGU C1 > C6
+        </restr>
         '''
         fragment = fragment.lower()
         print("<tag>\n", fragment, "\n</tag>")
@@ -888,6 +888,10 @@ class ImportGRADE():
         get the fragment name from the pdbfile.txt file
         :param pdbfile: file with some information about the molecule
         :type pdbfile: list of strings
+
+        >>> mog = ImportGRADE('/Users/daniel/Downloads/aminoacids/GLN.gradeserver_all.tgz', False)
+        >>> print(mog.get_name_from_pdbfile())
+        GLUTAMINE
         '''
         full_name = None
         full_name_regex = re.compile(r'^.*Compound full name.*')
@@ -915,6 +919,10 @@ class ImportGRADE():
         get the fragment name from the pdbfile.txt file
         :param pdbfile: file with some information about the molecule
         :type pdbfile: list of strings
+
+        >>> mog = ImportGRADE('/Users/daniel/Downloads/aminoacids/GLN.gradeserver_all.tgz', False)
+        >>> print(mog.get_resi_from_pdbfile())
+        GLN
         '''
         resi_name = None
         resi_regex = re.compile(r'^HETATM\s+1.*')
@@ -1038,7 +1046,6 @@ class ImportGRADE():
             resi_name = resi_name[:3]
         else:
             resi_name = resi_name[:3] + str(num)
-        # print 'using {} as resiname'.format(resi_name)
         fragline = 'FRAG 17 1  1  1  90  90  90'
         db_import_dict[resi_name] = {
                 'head'    : self._restraints,
@@ -1121,9 +1128,13 @@ class ImportGRADE():
 
 if __name__ == '__main__':
 
-    mog = ImportGRADE('/Users/daniel/Downloads/aminoacids/GLN.gradeserver_all.tgz', False)
-    print(mog.get_resi_from_pdbfile())
-    print(mog.get_name_from_pdbfile())
+    import doctest
+
+    failed, attempted = doctest.testmod()  # verbose=True)
+    if failed == 0:
+        print('passed all {} tests!'.format(attempted))
+
+    ###################################################################
 
     sys.exit()
     gdb = global_DB(invert=False)
