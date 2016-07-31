@@ -50,8 +50,6 @@ program_name = '\n'+((width//2)-9)*'-'+\
 
 - Add Peters way of using restraints with free variable. (low priority)
 
-- move atoms that end on special positions away from it if in negative part
-
 - start a slack community for DSR!
 '''
 
