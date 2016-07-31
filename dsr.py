@@ -161,7 +161,7 @@ class DSR():
             self.head_to_gui()
         #  List of database Fragments:
         if self.list_db_csv:
-            print('DSR version:', VERSION)
+            print('DSR version: {}'.format(VERSION))
             gdb = global_DB()
             frags = gdb.list_fragments()
             for i in frags:
@@ -396,15 +396,15 @@ class DSR():
         print('Inserting {} into res File.'.format(fragment))
         if self.invert:
             print('Fragment inverted.')
-        print('Source atoms:', ', '.join(dsrp.source))
-        print('Target atoms:', ', '.join(dsrp.target))
+        print('Source atoms: {}'.format(', '.join(dsrp.source)))
+        print('Target atoms: {}'.format(', '.join(dsrp.target)))
 
         # several checks if the atoms in the dsr command line are consistent
         check_source_target(dsrp.source, dsrp.target, dbatoms)
         num = NumberScheme(reslist, dbatoms, resi.get_resinumber)
         # returns also the atom names if residue is active
         fragment_numberscheme = num.get_fragment_number_scheme()
-        print('Fragment atom names:', ', '.join(fragment_numberscheme))
+        print('Fragment atom names: {}'.format(', '.join(fragment_numberscheme)))
         dfix_head = ''
         if dsrp.dfix_active:
             restr = Restraints(fragment, gdb)
