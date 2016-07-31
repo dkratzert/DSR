@@ -274,7 +274,7 @@ class ShelxlRefine():
         for out in output:
             #if re.match(r'.*Command line parameters', out):
             if out.startswith(' +  Copyright(C)'):
-                print(' SHELXL '+' '.join(out.split()[6:8]))
+                print(' SHELXL {}'.format(' '.join(out.split()[6:8])))
             # wR2
             # These values are always bad after a simple LS fit without any atom movement:
             if out.startswith(' wR2') and not wr2:
