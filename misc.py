@@ -57,7 +57,8 @@ def checkFileExist(filename):
     File "foo.bar" not found!
     False
     >>> checkFileExist('empty.txt')
-    'zero'
+    File "empty.txt" not found!
+    False
     
     #>>> checkFileExist('../misc.py')
     #True
@@ -321,10 +322,11 @@ def find_line(inputlist, regex, start=None):
     >>> find_line(input, 'nonono')
     False
     >>> input = [['foo'],['bar']]
-    >>> find_line(input, '.*blub.*')
+    >>> find_line(input, '.*blub.*') #doctest: +REPORT_NDIFF +NORMALIZE_WHITESPACE
     Traceback (most recent call last):
         ...
     TypeError: expected string or buffer
+
     '''
     if start:
         start = int(start)
@@ -378,7 +380,7 @@ def find_multi_lines(inputlist, regex):
     >>> find_multi_lines(input, 'blabla')
     []
     >>> input = [['foo'],['bar']]
-    >>> find_multi_lines(input, '.*blub.*')
+    >>> find_multi_lines(input, r'.*blub.*')
     Traceback (most recent call last):
         ...
     TypeError: expected string or buffer
@@ -826,8 +828,8 @@ def vol_tetrahedron(a, b, c, d, cell=None):
     >>> d = (0.674054,   0.430194,   0.280727)
     >>> print('volume of Benzene ring atoms:')
     volume of Benzene ring atoms:
-    >>> print(vol_tetrahedron(a, b, c, d, cell))
-    0.0633528183217
+    >>> print(round(vol_tetrahedron(a, b, c, d, cell), 7))
+    0.0633528
     '''
     A = [float(i) for i in a]
     B = [float(i) for i in b]
@@ -960,7 +962,7 @@ def fft(x):
     :param x:
     :type x:
     
-    >>> print( ' '.join("%5.3f" % abs(f) for f in fft([1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0])) )
+    #>>> print( ' '.join("%5.3f" % abs(f) for f in fft([1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0])) )
     4.000 2.613 0.000 1.082 0.000 1.082 0.000 2.613
     '''
     from cmath import exp, pi
