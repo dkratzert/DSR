@@ -1,5 +1,5 @@
 Recent changes
--189    Improved GRADE import. Fixed bug with calculated restraints. 
+-189    Improved GRADE import. Fixed bug regarding calculated FLAT restraints.
 -188    Fixed bug that produces  "dsr: error: unrecognized arguments: [...]" if
         SHELXL was located in a directory containing space characters.
         Fixed bug where "FVAR 1" ended up as 1000000.
