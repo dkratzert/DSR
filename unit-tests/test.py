@@ -1064,7 +1064,6 @@ class ExportTest(unittest.TestCase):
     def testrun_do_export_fragment(self):
         self.maxDiff = None
         fragment = 'toluene'
-        from export import Export
         export = Export(fragment, self.gdb, self.invert)
         resfile = export.export_resfile()
         self.assertListEqual(resfile, self.resgood)
@@ -1072,7 +1071,6 @@ class ExportTest(unittest.TestCase):
     def testrun_do_export_fragment_all(self):
         self.maxDiff = None
         fragment = 'toluene'
-        from export import Export
         export = Export(fragment, self.gdb, self.invert, export_all=True)
         resfile = export.export_resfile()
         self.assertListEqual(resfile, self.resgoodall)
