@@ -99,8 +99,15 @@ class Export():
 
 
     def export_resfile(self):
-        '''
+        r'''
         exports a .res file from a database entry to be viewed in a GUI
+        #>>> invert = False
+        #>>> gdb = global_DB(invert)
+        #>>> fragment = 'toluene'
+        #>>> export = Export(fragment, gdb, invert)
+        #>>> print(export.export_resfile()) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF
+        Exporting "toluene" to toluene.res
+
         '''
         print('Exporting "{0}" to {0}.res'.format(self._fragment_name))
         if self.invert:
@@ -398,6 +405,22 @@ class Export():
 
 
 if __name__ == '__main__':
+
+    import sys
+    import doctest
+    failed, attempted = doctest.testmod() #verbose=True)
+    if failed == 0:
+        print('passed all {} tests!'.format(attempted))
+
+    sys.exit()
+
+
+
+    ##############################################################################
+
+
+
+
     #from dbfile import global_DB
     gdb = global_DB()
     db = gdb.build_db_dict()['toluene']
