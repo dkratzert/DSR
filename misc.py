@@ -1169,7 +1169,21 @@ def almost_equal(a, b, places=3):
     False
     """
     return round(abs(a - b), places) == 0
-    
+
+
+def file_len(fname):
+    """
+    Returns the number of lines in a text file.
+
+    >>> file_len('p21c.hkl')
+    42976
+    """
+    i = 0
+    with open(fname) as f:
+        for i, l in enumerate(f, 1):
+            pass
+    return i
+
 
 if __name__ == '__main__':
     import sys
