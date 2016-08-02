@@ -15,7 +15,7 @@ import sys, os, re
 import shutil
 from resfile import ResList
 import misc
-from misc import find_line, checkFileExist, remove_line
+from misc import find_line, check_file_exist, remove_line
 from constants import sep_line
 
 
@@ -114,7 +114,7 @@ class ShelxlRefine():
         '''
         Modifies the number of refinement cycles in the reslist.
         '''
-        status = checkFileExist(self.resfile_name + '.res')
+        status = check_file_exist(self.resfile_name + '.res')
         if not status:
             print('Error: unable to find res file!')
             sys.exit(-1)
@@ -130,7 +130,7 @@ class ShelxlRefine():
         '''
         Modifies the number of refinement cycles in the reslist.
         '''
-        status = checkFileExist(self.resfile_name + '.res')
+        status = check_file_exist(self.resfile_name + '.res')
         if not status:
             print('Error: unable to find res file!')
             sys.exit(-1)
@@ -316,7 +316,7 @@ class ShelxlRefine():
         '''
         resfile = self.resfile_name+'.res'
         hklfile = self.resfile_name+'.hkl'
-        if not checkFileExist(hklfile):
+        if not check_file_exist(hklfile):
             print('You need a proper hkl file to use DSR.')
             sys.exit()
         command_line = []
@@ -341,7 +341,7 @@ class ShelxlRefine():
         child_stdout_and_stderr.close()
         # output only the most importand things from shelxl:
         self.pretty_shx_output(output)
-        status = checkFileExist(resfile) # status is False if shelx was unsecessful
+        status = check_file_exist(resfile) # status is False if shelx was unsecessful
         if not status: # fail
             print(sep_line)
             print('\nError: SHELXL terminated unexpectedly.')
@@ -358,7 +358,7 @@ class ShelxlRefine():
         :param list_file: SHELXL listing file
         :type list_file: list
         '''
-        is_resfile_there = misc.checkFileExist(self.resfile_name+'.res')
+        is_resfile_there = misc.check_file_exist(self.resfile_name + '.res')
         if is_resfile_there and is_resfile_there == 'zero':
             print('Something failed in SHELXL. Please check your .ins and .lst file!')
             self.restore_shx_file()
