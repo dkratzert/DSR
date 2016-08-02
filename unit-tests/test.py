@@ -12,14 +12,19 @@ import sys
 import unittest
 from os import system
 
+import afix
 import atomhandling
+import dbfile
+import dsrparse
 import elements
+import export
 import misc
 from afix import InsertAfix
 from atomhandling import get_atomtypes, FindAtoms, check_source_target, \
     rename_dbhead_atoms, SfacTable, Elem_2_Sfac, NumberScheme
 from atoms import Element, atoms
 from dbfile import global_DB, invert_dbatoms_coordinates, ReadDB, ImportGRADE
+import dsr
 from dsr import VERSION
 from dsrparse import DSR_Parser
 from export import Export
@@ -43,6 +48,26 @@ def foo():
     pass
 
 class doctestsTest(unittest.TestCase):
+
+    failed, attempted = doctest.testmod(dsr)  # , verbose=True)
+    if failed == 0:
+        print('passed all {} tests in dsr!'.format(attempted))
+
+    failed, attempted = doctest.testmod(afix)  # , verbose=True)
+    if failed == 0:
+        print('passed all {} tests in misc!'.format(attempted))
+
+    failed, attempted = doctest.testmod(dsrparse)  # , verbose=True)
+    if failed == 0:
+        print('passed all {} tests in misc!'.format(attempted))
+
+    failed, attempted = doctest.testmod(export)  # , verbose=True)
+    if failed == 0:
+        print('passed all {} tests in misc!'.format(attempted))
+
+    failed, attempted = doctest.testmod(dsrparse)  # , verbose=True)
+    if failed == 0:
+        print('passed all {} tests in misc!'.format(attempted))
 
     failed, attempted = doctest.testmod(misc)  # , verbose=True)
     if failed == 0:
