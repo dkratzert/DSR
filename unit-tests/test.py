@@ -12,6 +12,7 @@ import sys
 import unittest
 from os import system
 
+import atomhandling
 import elements
 import misc
 from afix import InsertAfix
@@ -1224,15 +1225,15 @@ class MiscTest(unittest.TestCase):
 
     def testrun_get_atoms(self):
         self.maxDiff = None
-        noatoms = misc.get_atoms([])
+        noatoms = atomhandling.get_atoms([])
         self.assertEqual(noatoms, [])
-        atoms = misc.get_atoms(self.dbatoms)
+        atoms = atomhandling.get_atoms(self.dbatoms)
         self.assertListEqual(atoms, self.dbatoms)
-        stratoms = misc.get_atoms(self.strdbatoms)
+        stratoms = atomhandling.get_atoms(self.strdbatoms)
         self.assertListEqual(stratoms, self.dbatoms)
-        tst = misc.get_atoms(['O1 3 -0.01453 1.66590 0.10966'])
-        tst2 = misc.get_atoms(['O1 3 -0.01453 1.66590'])
-        tst3 = misc.get_atoms('O1 3 -0.01453 1.66590  0.10966')
+        tst = atomhandling.get_atoms(['O1 3 -0.01453 1.66590 0.10966'])
+        tst2 = atomhandling.get_atoms(['O1 3 -0.01453 1.66590'])
+        tst3 = atomhandling.get_atoms('O1 3 -0.01453 1.66590  0.10966')
         self.assertEqual(tst, [['O1', '3', '-0.01453', '1.66590', '0.10966']])
         self.assertEqual(tst2, [])
         self.assertEqual(tst3, [])
