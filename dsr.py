@@ -499,7 +499,7 @@ if __name__ == '__main__':
         logger.addHandler(ch)
         print('\n')
         print('Congratulations! You found a bug in DSR. Please send the file\n'\
-              ' "report-bug.log" and the .res file (if possible) to dkratzert@gmx.de\n'
+              ' "dsr_bug_report.log" and the .res file (if possible) to dkratzert@gmx.de\n'
               )
         #.format(os.path.dirname(os.path.realpath(reportlog))+os.sep ))
         logger.exception(e)
