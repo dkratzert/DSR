@@ -1284,7 +1284,7 @@ C8    1   0.199100   0.746600   0.120650   1.00000   0.05000
 
 
 <Nonane>
-REM Name: n-Nonane, C8H18
+REM Name: n-Nonane, C9H20
 rem Src: CCDC 103192
 RESI OCT1
 SADI C1 C2  C2 C3  C3 C4  C4 C5  C5 C6  C6 C7  C7 C8  C8 C9
