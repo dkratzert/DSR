@@ -176,7 +176,7 @@ class ResListEdit():
         returns a list of FVAR occurences
         sys.exit() if no atom or FVAR found
         '''
-        fvarlines = misc.find_multi_lines(self._reslist, r'^FVAR.+[0-9]+')
+        fvarlines = misc.find_multi_lines(self._reslist, r'^FVAR')
         if not fvarlines:   # There is no FVAR in the res file after SHELXS!
             for num, i in enumerate(self._reslist):
                 if self._find_atoms.is_atom(i):

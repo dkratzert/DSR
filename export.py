@@ -34,7 +34,7 @@ class Export():
     SFAC C
     UNIT 1
     WGHT 0.05
-    FVAR 1
+    FVAR 1.0
     C1   1  0.268330  0.478380  0.161680  11.00   0.04
     C2   1  0.205960  0.555770  0.217990  11.00   0.04
     C3   1  0.249400  0.600760  0.310040  11.00   0.04
@@ -174,7 +174,7 @@ class Export():
         res_export.append('REM  RESIDUE: {}\n'.format(self._resi))
         res_export.append('REM Sum formula: {}\n'.format(self._gdb.get_sum_formula(self._fragment_name)))
         res_export.append('WGHT  0.1'+'\n')
-        res_export.append('FVAR  1'+'\n')
+        res_export.append('FVAR  1.0'+'\n')
         #if not self._export_all:
         try:
             res_export.append('rem Restraints from DSR database:\n')
