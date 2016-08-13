@@ -47,6 +47,25 @@
 #   in the SHELXL file automatically.
 ########################################################################################
 
+
+<isoprop>
+rem Name: Isopropanole, Propan-2-ol, C3H8O
+rem Src: CCDC 12671777
+rem Temp: 173 K
+SADI C1 C2  C1 C3
+DFIX 1.4248 C1 O1
+DANG 2.3732 O1 C3
+DANG 2.4353 O1 C2
+DANG 2.5114 C2 C3
+RESI ISOP 
+FRAG 17 6.1744  14.915  19.453  87.55  84.37  88.94
+O1   1  0.7435  0.2855  0.4937
+C1   1  0.8016  0.1938  0.5063
+C2   1  0.6173  0.1314  0.5064
+C3   1  0.9955  0.1713  0.4565
+</isoprop>
+
+
 <fluorbenz>
 rem Name: Fluorobenzene, C6H5F
 rem Src: CCDC FACFAQ
