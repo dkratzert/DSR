@@ -1,6 +1,6 @@
 #/bin/bash
 
-GIT="/home/daniel/Downloads/DSR"
+GIT="$(pwd)"
 PACK="/usr/src/packages"
 cd $GIT
 
