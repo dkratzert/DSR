@@ -1,5 +1,6 @@
 Recent changes
 -191    Prevent ** NEGATIVE OCCUPANCY FOR ATOM XX  ** warning in case of wrong 
+        free variable values before fit. Added Isopropanole.
 -190    Fixed TypeError when using split and cf6.
 -189    Improved GRADE import. Fixed bug regarding calculated FLAT restraints.
 -188    Fixed bug that produces  "dsr: error: unrecognized arguments: [...]" if
