@@ -34,7 +34,7 @@ from cf3fit import CF3
 from os.path import expanduser
 
 
-VERSION = '188'
+VERSION = '190'
 # dont forget to change version in Innoscript file, spec file and deb file.
 
 program_name = '\n'+((width//2)-9)*'-'+\
@@ -526,7 +526,7 @@ if __name__ == '__main__':
         logger.addHandler(ch)
         print('\n')
         print('Congratulations! You found a bug in DSR. Please send the file\n'\
-              ' "report-bug.log" and the .res file (if possible) to dkratzert@gmx.de\n'
+              ' "dsr_bug_report.log" and the .res file (if possible) to dkratzert@gmx.de\n'
               )
         #.format(os.path.dirname(os.path.realpath(reportlog))+os.sep ))
         logger.exception(e)
