@@ -3,8 +3,8 @@
 
 TMP="/tmp"
 #GIT="/cygdrive/c/Users/$USERNAME/Documents/GitHub/DSR"
-#GIT="/home/daniel/GitHub/DSR"
-GIT="/home/daniel/Downloads/DSR"
+GIT="/home/daniel/devel/GitHub/DSR"
+#GIT="/home/daniel/Downloads/DSR"
 VERSION=$(cat $GIT/dsr.py|grep -e "VERSION ="|cut -d ' ' -f3|tr -d "\'")
 BUILDDIR="/usr/src/packages/BUILD/DSR-$VERSION"
 

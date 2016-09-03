@@ -13,18 +13,40 @@ from __future__ import print_function
 import re, sys
 import string
 from atoms import Element
-from misc import find_line, get_atoms, find_multi_lines,\
+from misc import find_line, find_multi_lines,\
     atomic_distance
 from constants import atomregex, SHX_CARDS
 from atoms import atoms
-#from collections import OrderedDict
-#import textwrap
 
 
 __metaclass__ = type  # use new-style classes
 
+
+def get_atoms(atlist):
+    """
+    returns all atoms found in the input as list of lists
+    >>> get_atoms(['F8    4    0.349210   0.073474   0.519443 -21.00000   0.03106', 'foo'])
+    [['F8', '4', '0.349210', '0.073474', '0.519443']]
+    """
+    atoms = []
+    try:
+        atlist[0]
+    except:
+        return []
+    if isinstance(atlist[0], list):
+        for i in atlist:
+            atoms.append(i[:5])
+        return atoms
+    for i in atlist:
+        if re.match(atomregex, str(i)):  # search atoms
+            l = i.split()[:5]  # convert to list and use only first 5 columns
+            if l[0].upper() not in SHX_CARDS:  # exclude all non-atom cards
+                atoms.append(l)
+    return atoms
+
+
 def get_atomtypes(dbatoms):
-    '''
+    """
     find all atoms in a list of shelxl format atom lines.
     returns a list like ['N', 'C', 'C', 'C'].
 
@@ -46,7 +68,7 @@ def get_atomtypes(dbatoms):
     Traceback (most recent call last):
     ...
     KeyError
-    '''
+    """
     el = Element()
     found = []
     # find lines with atoms and see if they are in the atom list
@@ -65,16 +87,17 @@ def get_atomtypes(dbatoms):
         raise KeyError
     return found
 
+
 def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
-    '''
+    """
     deletes the atoms in replace mode that are near the fragment atoms
-    
+
     :param rl: Reslist() instance
     :param reslist: .res file list
     :param resi: Resi() instance
     :param fragment_numberscheme: atom names of the fitting fragment
     :param cell: cell parameters
-    
+
     >>> from resfile import ResList
     >>> from dbfile import global_DB
     >>> from resfile import ResListEdit
@@ -93,8 +116,9 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     No residue number was given. Using residue number 4.
     >>> fragment_numberscheme = ['O1_1', 'C1_1', 'C2_1', 'F1_1', 'F2', 'F3', 'C3', 'F4', 'F5', 'F6', 'C4', 'F7', 'F8', 'F9']
     >>> cell = rle.get_cell()
-    >>> replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell)
-    '''
+
+    #>>> replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell)
+    """
     remdist=1.3
     from resfile import ResListEdit
     find_atoms = FindAtoms(reslist)
@@ -120,9 +144,9 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
 
 
 class FindAtoms():
-    '''
+    """
     Finds Atoms and creates a data structure
-    '''
+    """
 
     def __init__(self, reslist):
         '''
@@ -140,21 +164,23 @@ class FindAtoms():
 
     @property
     def atoms_as_residues(self):
-        '''
+        """
         returns   residues = {   #  0           1            2         3      4      5          6
-                            {'0': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number], 
+                            {'0': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number],
                            ['C2', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number]},
-                     {'1': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number], 
+                     {'1': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number],
                      []} }
-        '''
+        """
         return self._residues
 
     def is_atom(self, atomline):
-        '''
+        """
         returns all atoms found in the input as list if they are real atoms
 
         :param atomline:  'O1    3    0.120080   0.336659   0.494426  11.00000   0.01445 ...'
-        '''
+        >>> FindAtoms.is_atom('', atomline = 'O1    3    0.120080   0.336659   0.494426  11.00000   0.01445 ...')
+        ['O1', '3', '0.120080', '0.336659', '0.494426']
+        """
         atom = ''
         if re.search(atomregex, str(atomline)):        # search atoms
             atom = atomline.split()[:5]              # convert to list and use only first 5 columns
@@ -163,22 +189,26 @@ class FindAtoms():
             else:
                 return False
 
-
     def get_resinum(self, resi):
-        '''
+        """
         returns the residue number and class of a string like 'RESI TOL 1'
         or 'RESI 1 TOL'
         {'class': 'TOL', 'number': '1'}
 
         :param resi: ['RESI', 'number', 'class']
         :type resi: list or string
-        '''
+
+        >>> sorted(FindAtoms.get_resinum('', 'RESI 1 TOL').keys())
+        ['class', 'number']
+        >>> sorted(FindAtoms.get_resinum('', 'RESI 1 TOL').values())
+        ['1', 'TOL']
+        """
         resi_dict = {
             'class' : None,
             'number': None}
         try:
             resi.remove('RESI')
-        except(AttributeError):
+        except AttributeError:
             resi = resi.split()
             resi.remove('RESI')
         resi.sort()
@@ -190,10 +220,17 @@ class FindAtoms():
                 del resi[0]
         return resi_dict
     
-    def get_partnumber(self, partstring):
-        '''
+    @staticmethod
+    def get_partnumber(partstring):
+        """
         get the part number from a string like PART 1 oder PART 2 -21
-        '''
+        Parameters
+        ----------
+        partstring: string like 'PART 2 -21'
+
+        >>> FindAtoms.get_partnumber(partstring='PART 2 -21')
+        2
+        """
         partstring = partstring.upper()
         part = partstring.split()
         try:
@@ -204,14 +241,18 @@ class FindAtoms():
         return partnum
     
     def find_atoms_to_replace(self, frag_atoms, cell, remdist=1.2, only_this=None):
-        '''
-        this method looks around every atom of the fitted fragment and removes 
+        """
+        this method looks around every atom of the fitted fragment and removes
         atoms that are near a certain distance to improve the replace mode
 
         :param frag_atoms: atoms of the fitting fragment ['C1', '1', 'x', 'y', 'z']
         :param cell: unit cell parameters (list)
         :param remdist: distance below atoms shoud be deleted
-        '''
+
+        Parameters
+        ----------
+        only_this: replace only this special atom
+        """
         atoms_to_delete = []
         frag_coords = self.get_atomcoordinates(frag_atoms)
         atoms = self._residues
@@ -357,9 +398,9 @@ class FindAtoms():
 
 
     def get_atomcoordinates(self, atoms):
-        '''
+        """
         finds an atom regardless if it is in a residue or not.
-        
+
         rerturns a dictionary {'C1': ['1.123', '0.7456', '3.245']}
 
         start with digit-> rest auch digit-> resinumber or alias
@@ -375,16 +416,15 @@ class FindAtoms():
 
         :param atoms: list of atoms like ['C1', 'Q2', 'C3_2', ...]
         :type atoms: list
-        '''
+        """
         atom_dict = {}
         for i in atoms:
             num = self.get_atoms_resinumber(i)
             try:
                 self._residues[num]
-            except(KeyError):
+            except KeyError:
                 print('Atom "{}" not found in res file!!'.format(i))
                 break
-                #return
             for x in self._residues[num]:
                 if x[0].upper() == i.split('_')[0].upper():
                     single_atom = {i.upper(): x[1]}
@@ -397,15 +437,15 @@ class FindAtoms():
         return atom_dict
 
     def get_atom_line_numbers(self, atoms):
-        '''
+        """
         returns the line numbers in the res_list of a given atom list
         one atom of self._residues[resinum]:
             ['C12', ['0.471727', '0.649578', '0.232054'], 98]
         returns a list like ['98', 'xx', ..]
         :param atoms: list of atom names
         :type atoms: list
-        :type lines: list of integers
-        '''
+        :return lines: list of integers
+        """
         # this is to make sure the atomlines are correct: 
         residues = self.collect_residues()
         lines = []
@@ -776,14 +816,15 @@ class NumberScheme():
         return orglist
 
 
-
 if __name__ == '__main__':
-    
     import doctest
     failed, attempted = doctest.testmod()#verbose=True)
     if failed == 0:
         print('passed all {} tests!'.format(attempted))
     sys.exit()
+
+    ###########################################################
+
     from dsrparse import DSR_Parser
     from resfile import ResList
     from dbfile import global_DB
@@ -897,3 +938,6 @@ if __name__ == '__main__':
     bad_dbatoms = [['lO1', 3, '-0.01453', '1.66590', '1.66590'], ['C1', 1, '-0.00146', '0.26814', '0.06351']]
     print('test')
     #get_atomtypes(bad_dbatoms)
+
+
+

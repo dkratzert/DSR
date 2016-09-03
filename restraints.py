@@ -548,7 +548,7 @@ class ListFile():
                     return (i, atom)
                     break
         if not line:
-            return False
+            return ('', '')
         at1 = self._listfile_list[line].split('.')[0].split()[-3]
         at2 = self._listfile_list[line].split('.')[0].split()[-1]
         return (at1, at2)
