@@ -85,7 +85,16 @@ Source: "..\pyperclip.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\elements.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\README"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Python27-dsr\*"; DestDir: "{app}\Python27"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
-Source: "..\example\*"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21c.hkl; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21c.res; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21c_step0.res; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21c_step1.res; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21c_step2.res; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21c_step3.res; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21c-step2.ins; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21c_final.res; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21n_cf3.hkl; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21n_cf3.res; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: ".\Output\changelog.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\dsr_user_db.txt"; DestDir: "{app}"; Flags: ignoreversion confirmoverwrite uninsneveruninstall onlyifdoesntexist; Permissions: users-modify
 Source: "..\networkx\*"; DestDir: "{app}\networkx"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
@@ -101,7 +110,6 @@ Name: "{group}\DSR user-database"; Filename: "{%USERPROFILE}\dsr_user_db.txt"
 Root: "HKLM"; Subkey: "Software\DSR"; ValueType: string; ValueName: "dsr_directory"; ValueData: "{app}"; Flags: uninsdeletekey
 Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "DSR_DIR"; ValueData: "{app}"; Flags: deletevalue
 Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "DSR_DB_DIR"; ValueData: "{app}"; Flags: deletevalue
-Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "DSRDIR"; ValueData: "{app}"; Flags: deletevalue
 
 [UninstallDelete]
 Type: files; Name: "{app}\*.pyc"
