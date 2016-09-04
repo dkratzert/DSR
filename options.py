@@ -45,6 +45,8 @@ class OptionsParser():
         rpath = ''
         if self._options.res_file != False:
             rpath = r' '.join(self._options.res_file)
+        else:
+            return False
         try:
             rpath = os.path.normpath(rpath)
         except:
