@@ -101,12 +101,11 @@ install -m 666 example/p21c.hkl %{buildroot}%{prefix}/DSR/example/p21c.hkl
 install -m 666 example/p21c.res %{buildroot}%{prefix}/DSR/example/p21c.res
 install -m 666 example/p21c_step0.res %{buildroot}%{prefix}/DSR/example/p21c_step0.res
 install -m 666 example/p21c_step1.res %{buildroot}%{prefix}/DSR/example/p21c_step1.res
-install -m 666 example/p21c_step2.res %{buildroot}%{prefix}/DSR/example/p21c_step2.res
+install -m 666 example/p21c_step2.ins %{buildroot}%{prefix}/DSR/example/p21c_step2.ins
 install -m 666 example/p21c_step3.res %{buildroot}%{prefix}/DSR/example/p21c_step3.res
-install -m 666 example/p21c-step2.ins %{buildroot}%{prefix}/DSR/example/p21c-step2.ins
-install -m 666 example/p21c-step2.ins %{buildroot}%{prefix}/DSR/example/example/p21c_final.res
-install -m 666 example/p21c-step2.ins %{buildroot}%{prefix}/DSR/example/example/p21n_cf3.hkl
-install -m 666 example/p21c-step2.ins %{buildroot}%{prefix}/DSR/example/example/p21n_cf3.res
+install -m 666 example/p21c_final.res %{buildroot}%{prefix}/DSR/example/p21c_final.res
+install -m 666 example/p21n_cf3.hkl %{buildroot}%{prefix}/DSR/example/p21n_cf3.hkl
+install -m 666 example/p21n_cf3.res %{buildroot}%{prefix}/DSR/example/p21n_cf3.res
 
 install -m 644 networkx/external/decorator/decorator3/_decorator3.py            %{buildroot}%{prefix}/DSR/networkx/external/decorator/decorator3/_decorator3.py
 install -m 644 networkx/external/decorator/decorator3/__init__.py               %{buildroot}%{prefix}/DSR/networkx/external/decorator/decorator3/__init__.py
