@@ -91,7 +91,7 @@ Source: "..\example/p21c_step0.res"; DestDir: "{app}\example"; Flags: ignorevers
 Source: "..\example/p21c_step1.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\example/p21c_step2.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\example/p21c_step3.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
-Source: "..\example/p21c-step2.ins"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21c_step2.ins"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\example/p21c_final.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\example/p21n_cf3.hkl"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\example/p21n_cf3.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs

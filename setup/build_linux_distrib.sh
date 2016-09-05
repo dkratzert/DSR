@@ -38,9 +38,8 @@ example/p21c.hkl
 example/p21c.res
 example/p21c_step0.res
 example/p21c_step1.res
-example/p21c_step2.res
+example/p21c_step2.ins
 example/p21c_step3.res
-example/p21c-step2.ins
 example/p21c_final.res
 example/p21n_cf3.hkl
 example/p21n_cf3.res
