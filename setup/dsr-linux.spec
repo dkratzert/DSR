@@ -499,12 +499,11 @@ dos2unix -q %{buildroot}%{prefix}/*
 %{prefix}/DSR/example/p21c.res
 %{prefix}/DSR/example/p21c_step0.res
 %{prefix}/DSR/example/p21c_step1.res
-%{prefix}/DSR/example/p21c_step2.res
+%{prefix}/DSR/example/p21c_step2.ins
 %{prefix}/DSR/example/p21c_step3.res
-%{prefix}/DSR/example/p21c-step2.ins
-%{prefix}/DSR/example/example/p21c_final.res
-%{prefix}/DSR/example/example/p21n_cf3.hkl
-%{prefix}/DSR/example/example/p21n_cf3.res
+%{prefix}/DSR/example/p21c_final.res
+%{prefix}/DSR/example/p21n_cf3.hkl
+%{prefix}/DSR/example/p21n_cf3.res
 %{prefix}/DSR/networkx/external/decorator/decorator3/_decorator3.py
 %{prefix}/DSR/networkx/external/decorator/decorator3/__init__.py
 %{prefix}/DSR/networkx/external/decorator/__init__.py
