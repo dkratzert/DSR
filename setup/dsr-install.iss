@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "DSR - Disordered Structure Refinement"
-#define MyAppVersion "190"
+#define MyAppVersion "191"
 #define MyAppPublisher "Daniel Kratzert"
 
 [Setup]
@@ -85,18 +85,18 @@ Source: "..\pyperclip.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\elements.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\README"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Python27-dsr\*"; DestDir: "{app}\Python27"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
-Source: "..\example/p21c.hkl; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
-Source: "..\example/p21c.res; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
-Source: "..\example/p21c_step0.res; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
-Source: "..\example/p21c_step1.res; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
-Source: "..\example/p21c_step2.res; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
-Source: "..\example/p21c_step3.res; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
-Source: "..\example/p21c-step2.ins; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
-Source: "..\example/p21c_final.res; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
-Source: "..\example/p21n_cf3.hkl; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
-Source: "..\example/p21n_cf3.res; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21c.hkl"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21c.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21c_step0.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21c_step1.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21c_step2.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21c_step3.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21c-step2.ins"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21c_final.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21n_cf3.hkl"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example/p21n_cf3.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: ".\Output\changelog.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dsr_user_db.txt"; DestDir: "{app}"; Flags: ignoreversion confirmoverwrite uninsneveruninstall onlyifdoesntexist; Permissions: users-modify
+;Source: "..\dsr_user_db.txt"; DestDir: "{app}"; Flags: ignoreversion confirmoverwrite uninsneveruninstall onlyifdoesntexist; Permissions: users-modify
 Source: "..\networkx\*"; DestDir: "{app}\networkx"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
 Source: "..\mpmath\*"; DestDir: "{app}\mpmath"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
 

@@ -63,10 +63,8 @@ mkdir -p %{buildroot}%{prefix}/DSR/mpmath/functions
 mkdir -p %{buildroot}%{prefix}/DSR/mpmath/libmp
 mkdir -p %{buildroot}%{prefix}/DSR/mpmath/matrices
 
-touch %{buildroot}%{prefix}/DSR/dsr_user_db.txt
 mkdir -p %{buildroot}/etc/profile.d
 chmod a+rw %{buildroot}%{prefix}/DSR/example
-chmod a+rw %{buildroot}%{prefix}/DSR/dsr_user_db.txt
 
 %post
 echo "DSR was installed in /opt/DSR"
@@ -497,7 +495,6 @@ dos2unix -q %{buildroot}%{prefix}/*
 %{prefix}/DSR/cf3fit.py
 %{prefix}/DSR/pyperclip.py
 %{prefix}/DSR/dsr_db.txt
-%{prefix}/DSR/dsr_user_db.txt
 #%{prefix}/DSR/manuals/DSR-manual.pdf
 %{prefix}/DSR/example/p21c.hkl
 %{prefix}/DSR/example/p21c.res
