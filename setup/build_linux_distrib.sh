@@ -53,7 +53,7 @@ touch $GIT/setup/Output/$OUTFILE
 
 TMPDIR=$TMP/DSR-$VERSION
 rm -r $TMPDIR
-mkdir $TMPDIR
+mkdir -p $TMPDIR
 mkdir $TMPDIR/example
 mkdir $TMPDIR/setup
 mkdir $TMPDIR/manuals
@@ -76,6 +76,7 @@ tar -rf $GIT/setup/Output/$OUTFILE DSR-$VERSION 2> /dev/null
 gzip -f $GIT/setup/Output/$OUTFILE
 
 rm -r $BUILDDIR
+mkdir -p $BUILDDIR
 cp -r $TMPDIR/* $BUILDDIR
 # for debian:
 DEBDIR="/usr/src/packages/BUILD/dsr"
