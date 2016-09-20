@@ -16,7 +16,6 @@ import atomhandling as at
 from misc import wrap_headlines
 from dbfile import global_DB
 import copy
-import pyperclip
 from restraints import Restraints
 from atoms import Element
 
@@ -206,6 +205,7 @@ class Export():
         C7   1     2.3940  -0.0040   1.3940
         FEND
         '''
+        import pyperclip
         clip_text = []
         atoms = self.format_atoms_for_export()
         atoms = '\n'.join(atoms)
