@@ -440,7 +440,7 @@ class global_DB():
         print("<cell>\n", '1;;1;;1;;90;;90;;90', "\n</cell>") 
         print("<residue>\n", self.get_resi_from_fragment(fragment), "\n</residue>")
         print("<dbtype>\n", self.get_db_name_from_fragment(fragment), "\n</dbtype>")
-        print('<restr>\n', ';;'.join(self.db_dict[fragment]['head']), '\n', '</restr>')
+        print("<restr>\n", ';;'.join(self.db_dict[fragment]['head']), '\n</restr>')
         self.check_consistency(fragment) # too many critical errors with GUI
         self.check_db_header_consistency(fragment)
         if not self.check_sadi_consistence(fragment):

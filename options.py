@@ -91,12 +91,12 @@ class OptionsParser():
     def import_grade(self):
         return self._options.import_grade
     
-    @property
-    def frag_for_gui(self):
-        frag = False
-        if self._options.frag_for_gui:
-            frag = self._options.frag_for_gui.lower()
-        return frag
+    #@property
+    #def frag_for_gui(self):
+    #    frag = False
+    #    if self._options.frag_for_gui:
+    #        frag = self._options.frag_for_gui.lower()
+    #    return frag
     
     @property
     def head_for_gui(self):
@@ -194,8 +194,8 @@ class OptionsParser():
                                 help=SUPPRESS, default=False)
         self.parser.add_argument("-x", dest="search_extern", \
                                 help=SUPPRESS, default=False)
-        self.parser.add_argument("-ac", dest="frag_for_gui", \
-                                help=SUPPRESS, default=False)
+        #self.parser.add_argument("-ac", dest="frag_for_gui", \
+        #                        help=SUPPRESS, default=False)
         self.parser.add_argument("-ah", dest="head_for_gui", \
                                 help=SUPPRESS, default=False)
                                 # with nargs='+' it accepts space in path an dreturns a list:
