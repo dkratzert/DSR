@@ -141,8 +141,8 @@ class DSR():
             self.search_string = self.options.search_string
         else:
             self.search_string = search_string
-        if not atom_coordinates:
-            self.frag_for_gui = self.options.frag_for_gui
+        #if not atom_coordinates:
+        #    self.frag_for_gui = self.options.frag_for_gui
         if not search_extern:
             self.search_extern = self.options.search_extern
         else:
@@ -155,8 +155,8 @@ class DSR():
             if not any([self.res_file, self.external, self.import_grade,
                        self.export_clip, self.export_all, self.export_fragment]):
                 self.options.error()
-        if self.frag_for_gui:
-            self.export_to_gui()
+        #if self.frag_for_gui:
+        #    self.export_to_gui()
         if self.head_csv:
             self.head_to_gui()
         #  List of database Fragments:
@@ -237,18 +237,18 @@ class DSR():
         gdb.get_head_for_gui(self.head_csv)
         sys.exit()
 
-    def export_to_gui(self):
-        '''
-        Exports the current fragment atoms to the GUI.
-        '''
-        from export import Export
-        gdb = global_DB(self.invert)
-        self.export_fragment = self.frag_for_gui
-        export = Export(self.export_fragment, gdb, self.invert)
-        atoms = export.export_to_gui()
-        if not atoms:
-            sys.exit()
-        sys.exit()
+    #def export_to_gui(self):
+    #    '''
+    #    Exports the current fragment atoms to the GUI.
+    #    '''
+    #    from export import Export
+    #    gdb = global_DB(self.invert)
+    #    self.export_fragment = self.frag_for_gui
+    #    export = Export(self.export_fragment, gdb, self.invert)
+    #    atoms = export.export_to_gui()
+    #    if not atoms:
+    #        sys.exit()
+    #    sys.exit()
     
     def do_export_fragment(self):
         '''

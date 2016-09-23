@@ -554,7 +554,7 @@ def remove_partsymbol(atom):
     """
     if '_' in atom:
         presuff = atom.split('_')
-        prefix, suffix = presuff[0], presuff[-1].strip(string.ascii_letters)
+        prefix, suffix = presuff[0], presuff[-1].strip(string.ascii_letters)  # parts are encoded in letters
         if not suffix:
             atom = prefix
         else:
