@@ -351,7 +351,11 @@ class CF3(object):
             restr = [i+'\n' for i in restr]
         if len(self.dsr_dict['target']) > 1:
             print('Using only first target target_atom {}.'.format(self.dsr_dict['target'][0]))
-        atomline = self.fa.get_atom_line_numbers([target_atom])[0]
+        try:
+            atomline = self.fa.get_atom_line_numbers([target_atom])[0]
+        except IndexError:
+            print("\nAtom {} not found.\n".format(target_atom))
+            sys.exit()
         found = self.find_bonded_fluorine(target_atom)
         for i in found:
             print(('Deleting {}_{} from {}'.format(i[0], i[7], target_atom)))
