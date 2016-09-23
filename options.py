@@ -13,6 +13,8 @@ from __future__ import print_function
 import sys
 import re
 import os
+
+import misc
 from constants import sep_line
 try:
     from argparse import RawTextHelpFormatter
@@ -115,6 +117,12 @@ class OptionsParser():
         spath = ''
         if self._options.shelxl_ex != False:
             spath = r' '.join(self._options.shelxl_ex)
+        if not os.access(spath, os.X_OK):
+            try:
+                spath = misc.which(spath)
+                return spath[0]
+            except IndexError:
+                return ''
         return spath
 
     @property
