@@ -232,7 +232,9 @@ class DSR():
         except:
             print("Could not get atom information.")
             print(helpmsg)
-        print('<atoms>\n', atoms, '\n</atoms>')
+        print("<atoms>")
+        print(atoms)
+        print("</atoms>")
         # prints most of the needed info:
         gdb.get_head_for_gui(self.head_csv)
         sys.exit()
