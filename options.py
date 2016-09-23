@@ -117,6 +117,8 @@ class OptionsParser():
         spath = ''
         if self._options.shelxl_ex != False:
             spath = r' '.join(self._options.shelxl_ex)
+        else:
+            return False
         if not os.access(spath, os.X_OK):
             try:
                 spath = misc.which(spath)
