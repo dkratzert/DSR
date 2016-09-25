@@ -1,4 +1,5 @@
 Recent changes
+-192    small fixes
 -191    Prevent ** NEGATIVE OCCUPANCY FOR ATOM XX  ** warning in case of wrong 
         free variable values before fit. Added Isopropanole. Optimized examples.
         Updated user manual. Fixed minor problem in case no shelxl executable is
