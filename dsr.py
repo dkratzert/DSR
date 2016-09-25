@@ -34,7 +34,7 @@ from cf3fit import CF3
 from os.path import expanduser
 
 
-VERSION = '191'
+VERSION = '192'
 # dont forget to change version in Innoscript file, spec file and deb file.
 
 program_name = '\n'+((width//2)-9)*'-'+\
@@ -43,14 +43,12 @@ program_name = '\n'+((width//2)-9)*'-'+\
 
 # TODO and ideas:
 '''
-- Add Rcomplete -> create log file with r value and link to result file.
-  Add button in ShelXle that changes to result after the calc?
+- Add Rcomplete
 
 - Add an export header entry for ShelXle containing any warnings/errors from DSR. For example restraint errors.
 
 - Add Peters way of using restraints with free variable. (low priority)
 
-- start a slack community for DSR!
 '''
 
 class DSR():
@@ -141,8 +139,6 @@ class DSR():
             self.search_string = self.options.search_string
         else:
             self.search_string = search_string
-        #if not atom_coordinates:
-        #    self.frag_for_gui = self.options.frag_for_gui
         if not search_extern:
             self.search_extern = self.options.search_extern
         else:
@@ -155,8 +151,6 @@ class DSR():
             if not any([self.res_file, self.external, self.import_grade,
                        self.export_clip, self.export_all, self.export_fragment]):
                 self.options.error()
-        #if self.frag_for_gui:
-        #    self.export_to_gui()
         if self.head_csv:
             self.head_to_gui()
         #  List of database Fragments:
@@ -232,25 +226,12 @@ class DSR():
         except:
             print("Could not get atom information.")
             print(helpmsg)
-        print("<atoms>")
+        print("\n<atoms>")
         print(atoms)
         print("</atoms>")
         # prints most of the needed info:
         gdb.get_head_for_gui(self.head_csv)
         sys.exit()
-
-    #def export_to_gui(self):
-    #    '''
-    #    Exports the current fragment atoms to the GUI.
-    #    '''
-    #    from export import Export
-    #    gdb = global_DB(self.invert)
-    #    self.export_fragment = self.frag_for_gui
-    #    export = Export(self.export_fragment, gdb, self.invert)
-    #    atoms = export.export_to_gui()
-    #    if not atoms:
-    #        sys.exit()
-    #    sys.exit()
     
     def do_export_fragment(self):
         '''
