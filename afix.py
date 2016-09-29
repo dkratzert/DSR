@@ -147,8 +147,12 @@ class InsertAfix(object):
     def insert_dsr_warning(self):
         '''
         information to insert into .res-file
+        TODO: insert this text only once in the file and also the
+              comments from GRADE
         '''
-        return 'rem the following was inserted by DSR:\n'
+        txt = "rem the following was inserted by DSR:\n" \
+              "http://dx.doi.org/10.1107/S1600576715005580\n"
+        return txt
 
     def collect_all_restraints(self):
         '''
