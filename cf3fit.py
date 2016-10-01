@@ -231,13 +231,13 @@ class CF3(object):
         try:
             atomline = self.fa.get_atom_line_numbers([targetatom])[0]
         except IndexError:
-            print("\nAtom {} not found.\n".format(targetatom))
+            print("\n*** Atom {} not found ***\n".format(targetatom))
             sys.exit()
         [uvals, c_coords] = self.make_pivot_isotropic(atomline)
         afix=str(afix)
         target_atom = self.dsr_dict['target'][0]
         if '_' in target_atom:
-            print('\nSorry, can not create a CF3 group inside a residue! \nThis would damage the original residue.')
+            print('\n**** Sorry, can not create a CF3 group inside a residue! \nThis would damage the residue. ***')
             sys.exit()
         if afix == '130':
             print('Generating CF3-Group at {}.'.format(target_atom))
@@ -344,7 +344,7 @@ class CF3(object):
         print(('Generating threefold disordered CF3-Group at {}.'.format(self.dsr_dict['target'][0])))
         target_atom = self.dsr_dict['target'][0]
         if '_' in target_atom:
-            print('\nSorry, can not create a CF3 group inside a residue! \nThis would damage the original residue.')
+            print('\n*** Sorry, can not create a CF3 group inside a residue! \nThis would damage the residue. ***')
             sys.exit()
         if self.dsr_dict['dfix']:
             restr = dfixr_cf9
@@ -358,7 +358,7 @@ class CF3(object):
         try:
             atomline = self.fa.get_atom_line_numbers([target_atom])[0]
         except IndexError:
-            print("\nAtom {} not found.\n".format(target_atom))
+            print("\n*** Atom {} not found. ***\n".format(target_atom))
             sys.exit()
         found = self.find_bonded_fluorine(target_atom)
         for i in found:

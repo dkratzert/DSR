@@ -208,23 +208,23 @@ class DSR():
         '''
         from export import Export
         atoms = []
-        helpmsg = "Please ask daniel.kratzert@ac.uni-freiburg.de for help."
+        helpmsg = "*** Please ask daniel.kratzert@ac.uni-freiburg.de for help ***"
         try:
             gdb = global_DB(self.invert, fragment=self.head_csv)
         except Exception as e:  # @UnusedVariable
-            print("Initializing the database failed.")
+            print("*** Initializing the database failed ***")
             print(helpmsg)
             #print(e)
             sys.exit()
         try:
             export = Export(self.head_csv, gdb, self.invert)
         except:
-            print("Unable to export informations from DSR.")
+            print("*** Unable to export informations from DSR ***")
             sys.exit()
         try:
             atoms = export.export_to_gui()
         except:
-            print("Could not get atom information.")
+            print("*** Could not get atom information ***")
             print(helpmsg)
         print("\n<atoms>")
         print(atoms)
@@ -321,13 +321,13 @@ class DSR():
         # The database content:
         basefilename = resfile.filename_wo_ending(self.res_file)
         if not basefilename:
-            print('Illegal option')
+            print('*** Illegal option ***')
             sys.exit()
         gdb = global_DB(self.invert)
         rl = resfile.ResList(self.res_file)
         reslist = rl.get_res_list()
         if len(reslist) == 0:
-            print("The input file is empty. Can not proceed!")
+            print("*** The input file is empty. Can not proceed! ***")
             sys.exit()
         find_atoms = FindAtoms(reslist)
         rle = resfile.ResListEdit(reslist, find_atoms)
@@ -399,8 +399,8 @@ class DSR():
                           sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
         afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfix', resi)
         if dsr_line_number < fvarlines[-1]:
-            print('\nWarning! The DSR command line MUST NOT appear before FVAR or the first atom in the .res file!')
-            print('Can not proceed...\n')
+            print('\n*** Warning! The DSR command line MUST NOT appear before FVAR or the first atom in the .res file! ***')
+            print('*** Can not proceed... ***\n')
             sys.exit()
         reslist[dsr_line_number] = reslist[dsr_line_number]+'\n'+afix_entry
         #reslist.insert(dsr_line_number+1, afix_entry)
@@ -441,7 +441,7 @@ class DSR():
             else:
                 shx.set_refinement_cycles(8)
         except(IndexError):
-            print('Unable to set refinement cycles')
+            print('*** Unable to set refinement cycles ***')
         if not self.options.rigid_group:
             shx.remove_afix(afix.rand_id_afix)   # removes the afix 9
         # final resfile write:
@@ -475,14 +475,14 @@ if __name__ == '__main__':
             logging.info('Platform: {} {}, {}'.format(platform.system(),
                                platform.release(), ' '.join(platform.uname())))
         except:
-            print("Can not write logfile")
+            print("*** Can not write logfile ***")
             pass
         logger = logging.getLogger('dsr')
         ch = logging.StreamHandler()
         logger.addHandler(ch)
         print('\n')
-        print('Congratulations! You found a bug in DSR. Please send the file\n'\
-              ' "dsr_bug_report.log" and the .res file (if possible) to dkratzert@gmx.de\n'
+        print('*** Congratulations! You found a bug in DSR. Please send the file ***\n'\
+              '*** "dsr_bug_report.log" and the .res file (if possible) to dkratzert@gmx.de\n ***'
               )
         #.format(os.path.dirname(os.path.realpath(reportlog))+os.sep ))
         logger.exception(e)

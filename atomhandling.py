@@ -83,7 +83,7 @@ def get_atomtypes(dbatoms):
             pass
         found.append(el.get_atomlabel(atom_name))
     if len(dbatoms) != len(found):    # do we really need this here??
-        print("One of the Atoms in the database entry is not correct! Exiting...")
+        print("*** One of the Atoms in the database entry is not correct! ***")
         raise KeyError
     return found
 
@@ -131,7 +131,7 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
         frag_at = fragment_numberscheme
     atoms_to_delete = find_atoms.find_atoms_to_replace(frag_at, cell, remdist)
     if atoms_to_delete:
-        print('Replacing following atoms (< {0} A near fragment):\n'.format(remdist), 
+        print('Replacing following atoms (< {0} A near fragment):\n'.format(remdist),
               ' '.join(sorted(set(atoms_to_delete))))
     target_lines = set(find_atoms.get_atom_line_numbers(atoms_to_delete))
     rle = ResListEdit(reslist, find_atoms)
@@ -157,7 +157,7 @@ class FindAtoms():
         try:
             self.sfac = self._reslist[sfacline[0]].split()[1:]
         except IndexError:
-            print("No SFAC card found in .res file.")
+            print("*** No SFAC card found in .res file ***")
             sys.exit()
         self.e2s = Elem_2_Sfac(self.sfac)
         self._residues = self.collect_residues()
@@ -236,7 +236,7 @@ class FindAtoms():
         try:
             partnum = int(part[1])
         except(ValueError, IndexError):
-            print('Wrong PART definition found! Check your PART instructions.')
+            print('*** Wrong PART definition found! Check your PART instructions ***')
             partnum = 0
         return partnum
     
@@ -390,7 +390,7 @@ class FindAtoms():
             if not resinum:
                 resinum = '0'
             if len(resinum) > 4:
-                print('Invalid residue number in', atom)
+                print('*** Invalid residue number in {}'.format(atom))
                 sys.exit(-1)
             return str(resinum)
         else:
@@ -423,7 +423,7 @@ class FindAtoms():
             try:
                 self._residues[num]
             except KeyError:
-                print('Atom "{}" not found in res file!!'.format(i))
+                print('*** Atom "{}" not found in res file!! ***'.format(i))
                 break
             for x in self._residues[num]:
                 if x[0].upper() == i.split('_')[0].upper():
@@ -432,7 +432,7 @@ class FindAtoms():
         for i in atoms:
             i = i.upper()
             if i not in list(atom_dict.keys()):
-                print('\nAtom "{}" not found in res file!'.format(i))
+                print('\n*** Atom "{}" not found in res file! ***'.format(i))
                 sys.exit(0)
         return atom_dict
 
@@ -548,14 +548,14 @@ def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
     nsrc = len(db_source_atoms)
     ntrg = len(res_target_atoms)
     if nsrc != ntrg:
-        print('Number of source and target atoms/peaks is different!! '\
-                '({} and {} atoms/peaks)'.format(nsrc, ntrg))
+        print('*** Number of source and target atoms/peaks is different!! '\
+                '({} and {} atoms/peaks) ***'.format(nsrc, ntrg))
         sys.exit(False)
     # do the source atoms exist at all?:
     for i in db_source_atoms:
         i = i.upper()
         if i not in temp:
-            print('\nAtom {} not found in database entry! Exiting...\n'.format(i))
+            print('\n*** Atom {} not found in database entry! ***'.format(i))
             sys.exit(False)
     return True
 
@@ -627,7 +627,7 @@ class SfacTable():
         unitline = find_line(self._reslist, r'UNIT\s+[0-9]+')     # position of the UNIT card
         try:
             if sfacline[-1] > unitline:
-                print(' SFAC in line {} must be defined before UNIT!'.format(sfacline[-1]+1))
+                print('*** SFAC in line {} must be defined before UNIT! ***'.format(sfacline[-1]+1))
                 sys.exit()
         except():
             pass
@@ -653,14 +653,14 @@ class SfacTable():
         if regular_sfac_line_num:
             sfacline = regular_sfac_line_num
         if not sfacline:
-            print(' No SFAC card found! Can not proceed.')
+            print('*** No SFAC card found! Can not proceed ***')
             sys.exit()
         for i in self._db_atom_types:  # this is to compare the occurence of element type from resfile and db
             i = i.upper()
             if i not in sfac+explicit_scat:         # all atom types from db not already in sfac
                 sfac.append(i)        # get appended to sfac
             if i not in self.elements:
-                print('error, atom {} not valid'.format(i))
+                print('*** Error, atom {} not valid ***'.format(i))
                 sys.exit(False)
         for i in range(1, len(sfac+explicit_scat)+1):
             i = str(i)

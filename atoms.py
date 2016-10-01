@@ -172,10 +172,10 @@ class Element():
             elif atom[0] in elements:
                 return atom[0]  # then for all one-letter atoms
             else:
-                print('\n {} is not a valid atom!!\n'.format(atom))
+                print('*** {} is not a valid atom!! ***'.format(atom))
                 raise KeyError
         except(IndexError):
-            print('\n {} is not a valid atom!!\n'.format(atom))
+            print('*** {} is not a valid atom! ***'.format(atom))
             raise KeyError
     
 

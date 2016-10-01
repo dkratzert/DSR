@@ -63,7 +63,7 @@ def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
     try:
         dfix_file = open(os.path.join(filepath, filename), 'w')  # open the ins file
     except(IOError):
-        print('Unable to write restraints file! Check directory write permissions.')
+        print('*** Unable to write restraints file! Check directory write permissions. ***')
         sys.exit(False)
     print('Restraints were written to "{}"'.format(os.path.join(filepath, filename)))
     for i in dbhead:            #modified reslist
@@ -309,7 +309,7 @@ class InsertAfix(object):
                 try:
                     afix_list[n][2:5] =  coordinates[self.target_atoms[ind]]
                 except(IndexError):
-                    print('More source than target atoms present! Exiting...')
+                    print('*** More source than target atoms present! Exiting... ***')
                     sys.exit(False)
         newlist = []
         for i in afix_list:

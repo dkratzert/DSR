@@ -856,14 +856,14 @@ class globalDB(unittest.TestCase):
         gdb = global_DB(True, None, maindb="./comment.TXT", userdb="./db1.TXT")
         gdb.build_db_dict()
         fragment = 'com'
-        comment = gdb.get_comment_from_fragment('com4')
+        comment = gdb.get_name_from_fragment('com4')
         self.assertEqual(comment, 'A really fancy name.')
         names = ['name!', 'Name 1,2-Dimethoxyethane, not coordinated, C4H10O2, '
                           'DME, Src: Turbomole, B3-LYP/def2-TZVPP, This DME is not coordinated',
                  'Src: Turbomole, B3-LYP/def2-TZVPP, blub, This DME is not coordinated',
                  'A really fancy name.']
         for i in range(1, 5):
-            com = gdb.get_comment_from_fragment(fragment + str(i))
+            com = gdb.get_name_from_fragment(fragment + str(i))
             self.assertEqual(com, names[i - 1])
 
     def testrun_get_resi_from_fragment(self):
