@@ -43,6 +43,8 @@ program_name = '\n'+((width//2)-9)*'-'+\
 
 # TODO and ideas:
 '''
+- Add auto updater
+
 - Add Rcomplete
 
 - Add an export header entry for ShelXle containing any warnings/errors from DSR. For example restraint errors.
