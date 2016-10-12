@@ -551,20 +551,28 @@ def remove_partsymbol(atom):
     'C_5'
     >>> remove_partsymbol('SAME/SADI')
     'SAME/SADI'
-    >>> remove_partsymbol('C22_4_b')
+    >>> remove_partsymbol('C22_4^b')
     'C22_4'
+    >>> remove_partsymbol('C23^b')
+    'C23'
+    >>> remove_partsymbol('C24_0^b')
+    'C24'
+    >>> remove_partsymbol('C25_0b')
+    'C25'
     """
-    if '_' in atom:
-        if atom.count("_") == 2:
-            # since SHELXL 2016/5, residue and part are devided by a second "_"
-            presuff = atom.split('_')
-            # parts are encoded in letters:
-            prefix, suffix = presuff[0], presuff[1].strip(string.ascii_letters)  
+    if '_' in atom or '^' in atom:
+        if '^' in atom:
+            # since SHELXL 2016/5, residue and part are devided by "^"
+            name = atom.split('^')[0]
+            if name.split('_')[-1] == '0':
+                return name.split('_')[0]
+            else:
+                return name
         else:
             presuff = atom.split('_')
-            prefix, suffix = presuff[0], presuff[-1].strip(string.ascii_letters)  
+            prefix, suffix = presuff[0], presuff[-1].strip(string.ascii_letters)
         if not suffix:
-            atom = prefix
+            return prefix
         else:
             if suffix == '0':
                 atom = prefix
