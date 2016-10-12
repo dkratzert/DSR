@@ -11,6 +11,14 @@
 #
 from __future__ import print_function
 
+import shutil
+import tarfile
+import tempfile
+import os
+
+import misc
+
+
 def get_current_dsr_version():
     """
     determines the current version of DSR on the web server
@@ -56,14 +64,39 @@ def is_update_needed():
     pass
 
 
-def get_update_package():
+def get_update_package(version, name):
     """
     Downloads the current DSR distribution from the web server and
     returns True if it suceeded.
+
+    :type version: int or string
+    :type name: string
 
     Returns
     -------
     True/False
     """
-    pass
+    import urllib
+    response = urllib.urlopen('http://www.xs3-data.uni-freiburg.de/data/DSR-192.tar.gz')
+    with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
+        tmpfile.write(response.read())
+    tmpdir = tempfile.mkdtemp()
+    with tarfile.open(tmpfile.name) as tarobj:
+        tarobj.extractall(path=tmpdir)
+    misc.remove_file(tmpfile.name)
+    shutil.move(os.path.join(tmpdir, "DSR-192"), os.path.join(tmpdir, "DSR"))
+    shutil.copy(os.path.join(tmpdir, "DSR"), "D:/Programme/")
+    #shutil.rmtree(os.path.join(tmpdir, "DSR"))
+    tmpdir.clear()
 
+
+
+
+if __name__ == "__main__":
+    import sys
+    import doctest
+    #failed, attempted = doctest.testmod()  # verbose=True)
+    #if failed == 0:
+    #    print('passed all {} tests!'.format(attempted))
+
+    get_update_package('er', 'drsr')
