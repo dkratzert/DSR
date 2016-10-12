@@ -386,11 +386,13 @@ def remove_file(filename, exit_dsr=False, terminate=False):
     removes the file "filename" from disk
     program exits when exit is true
     platon gets terminated if terminate is true
+
+    >>> remove_file('foobar')
     '''
     if os.path.isfile(filename):
         try:
             os.remove(filename)
-        except(WindowsError, OSError):  # @UndefinedVariable
+        except(shutil.WindowsError, OSError):
             print('can not delete {}'.format(filename))
             # print 'unable to cleanup ins {} files!'.format(file)
             if terminate:

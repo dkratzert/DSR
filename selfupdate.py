@@ -31,72 +31,89 @@ def get_current_dsr_version():
     version number
     :type: int
     """
-    pass
+    import urllib
+    response = urllib.urlopen('http://www.xs3-data.uni-freiburg.de/data/version.txt')
+    version = response.readline().strip()
+    return version
+
 
 def update_dsr():
     """
     Updates the running DSR to the current version on the web server.
-
-    >>> update_dsr()
-    True
-
-    Returns
-    -------
-    Sucess or not
-    True/False
     """
-    pass
+    version = get_current_dsr_version()
+    from dsr import VERSION
+    if int(VERSION) < int(version):
+        print('*** Current available version of DSR is {}. Performing upate ***'.format(version))
+        get_update_package(version)
+        print('*** Finished updating ***')
+        return True
+    if int(VERSION) >= int(version):
+        print('*** DSR is already up to date ***')
+        return False
 
-def is_update_needed():
+
+def overwrite_dir(root_src_dir, root_dst_dir, move=True):
     """
-    Decides if an update of DSR is needed and updates if neccesary. It does
-    nothing in case of an already updated version.
+    Moves the content of scrdir over destdir and overwrites all files.
 
-    >>> is_update_needed()
-    "updating DSR ..."
-    "update was sucessful"
-    "You are already using the current version. No update needed."
-
-    Returns
-    -------
-    True/False
+    :param src_dir: source directory
+    :param dst_dir: target directory
+    :return: True/False
     """
-    pass
+    for src_dir, dirs, files in os.walk(root_src_dir):
+        dst_dir = src_dir.replace(root_src_dir, root_dst_dir, 1)
+        if not os.path.exists(dst_dir):
+            os.makedirs(dst_dir)
+        for file_ in files:
+            src_file = os.path.join(src_dir, file_)
+            dst_file = os.path.join(dst_dir, file_)
+            if os.path.exists(dst_file):
+                os.remove(dst_file)
+            if move:
+                shutil.move(src_file, dst_dir)
+            else:
+                shutil.copy2(src_file, dst_dir)
+    return True
 
 
-def get_update_package(version, name):
+def get_update_package(version):
     """
     Downloads the current DSR distribution from the web server and
-    returns True if it suceeded.
+    updates the files.
 
     :type version: int or string
-    :type name: string
 
     Returns
     -------
     True/False
     """
+    dsrdir = "/Applications/DSR" # TODO: add real DSR_DIR here
     import urllib
-    response = urllib.urlopen('http://www.xs3-data.uni-freiburg.de/data/DSR-192.tar.gz')
+    response = urllib.urlopen('http://www.xs3-data.uni-freiburg.de/data/DSR-{}.tar.gz'.format(version))
     with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
         tmpfile.write(response.read())
-    tmpdir = tempfile.mkdtemp()
-    with tarfile.open(tmpfile.name) as tarobj:
-        tarobj.extractall(path=tmpdir)
-    misc.remove_file(tmpfile.name)
-    shutil.move(os.path.join(tmpdir, "DSR-192"), os.path.join(tmpdir, "DSR"))
-    shutil.copy(os.path.join(tmpdir, "DSR"), "D:/Programme/")
-    #shutil.rmtree(os.path.join(tmpdir, "DSR"))
-    tmpdir.clear()
+    tmpdir = tempfile.mkdtemp()  # a temporary directory
+    try:
+        with tarfile.open(tmpfile.name) as tarobj:
+            tarobj.extractall(path=tmpdir)
+    except tarfile.ReadError:
+        print('*** Cound not get update from server. If this problem persists, please update manually! ***')
+        return False
+    os.remove(tmpfile.name)
+    overwrite_dir(os.path.join(tmpdir, "DSR-{}".format(version)), dsrdir, move=False)
+    shutil.rmtree(tmpdir, ignore_errors=True)  # cleanup the files
+    return True
+
 
 
 
 
 if __name__ == "__main__":
-    import sys
-    import doctest
+    #import sys
+    #import doctest
     #failed, attempted = doctest.testmod()  # verbose=True)
     #if failed == 0:
     #    print('passed all {} tests!'.format(attempted))
 
-    get_update_package('er', 'drsr')
+    update_dsr()
