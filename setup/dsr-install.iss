@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "DSR - Disordered Structure Refinement"
-#define MyAppVersion "192"
+#define MyAppVersion "193"
 #define MyAppPublisher "Daniel Kratzert"
 
 [Setup]
@@ -74,6 +74,7 @@ Source: "..\dbfile.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\dsrparse.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\export.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\cf3fit.py"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\selfupdate.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\terminalsize.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\misc.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\options.py"; DestDir: "{app}"; Flags: ignoreversion
