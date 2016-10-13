@@ -34,7 +34,7 @@ from cf3fit import CF3
 from os.path import expanduser
 
 
-VERSION = '192'
+VERSION = '193'
 # dont forget to change version in Innoscript file, spec file and deb file.
 
 program_name = '\n'+((width//2)-9)*'-'+\
