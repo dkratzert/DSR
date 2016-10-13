@@ -90,7 +90,11 @@ class OptionsParser():
     @property
     def import_grade(self):
         return self._options.import_grade
-    
+
+    @property
+    def selfupdate(self):
+        return self._options.selfupdate
+
     @property
     def head_for_gui(self):
         frag = False
@@ -183,6 +187,8 @@ class OptionsParser():
                                 help="search the database for a name", default=False)
         self.parser.add_argument("-g", dest="rigid_group", help="keep group rigid (no restraints)", \
                                 action="store_true", default=False)
+        self.parser.add_argument("-u", dest="selfupdate", help="Update DSR to the most current version", \
+                                 action="store_true", default=False)
         self.parser.add_argument("-ea", dest="export_all", action='store_true', \
                                 help=SUPPRESS, default=False)
         self.parser.add_argument("-lc", dest="list_db_csv", action='store_true', \
