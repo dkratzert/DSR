@@ -20,6 +20,7 @@ import sys
 
 from dsr import VERSION
 
+urlprefix = "http://www.xs3-data.uni-freiburg.de/tst"
 
 def get_current_dsr_version():
     """
@@ -35,7 +36,7 @@ def get_current_dsr_version():
     """
     import urllib
     try:
-        response = urllib.urlopen('http://www.xs3-data.uni-freiburg.de/tst/version.txt')
+        response = urllib.urlopen('{}/version.txt'.format(urlprefix))
     except IOError:
         print("*** Unable to connect to update server. No Update possible. ***")
         sys.exit()
@@ -67,10 +68,12 @@ def update_dsr(force=False, version=None):
         version = get_current_dsr_version()
     if force:
         get_update_package(version)
+        print('*** Finished updating to version {} ***'.format(version))
+        return True
     if int(VERSION) < int(version):
         print('*** Current available version of DSR is {}. Performing upate ***'.format(version))
         get_update_package(version)
-        print('*** Finished updating ***')
+        print('*** Finished updating to version {} ***'.format(version))
         return True
     if int(VERSION) >= int(version):
         print('*** DSR is already up to date ***')
@@ -99,15 +102,15 @@ def post_update_things():
     """
     dsrdir = os.environ["DSR_DIR"]
     plat = get_system()
-    upath = os.path.join(dsrdir, "/dsr")
+    upath = os.path.join(dsrdir, "dsr")
     if plat == "win":
-        shutil.copy2(os.path.join(dsrdir, "/setup/dsr.bat"), dsrdir)
+        pass
     elif plat == "mac":
-        shutil.copy2(os.path.join(dsrdir, "/setup/dsr-mac"), upath)
+        shutil.copy2(os.path.abspath(os.path.join(dsrdir, "setup//dsr-mac")), upath)
         st = os.stat(upath)
         os.chmod(upath, st.st_mode | os.stat.S_IXUSR | os.stat.S_IXGRP | os.stat.S_IXOTH)
     else:
-        shutil.copy2(os.path.join(dsrdir, "/setup/dsr-linux"), upath)
+        shutil.copy2(os.path.abspath(os.path.join(dsrdir, "setup//dsr-linux")), upath)
         st = os.stat(upath)
         os.chmod(upath, st.st_mode | os.stat.S_IXUSR | os.stat.S_IXGRP | os.stat.S_IXOTH)
 
@@ -152,7 +155,7 @@ def get_update_package(version):
     except KeyError:
         print("*** DSR_DIR environment variable not set. Can not update DSR. ***" )
     import urllib
-    response = urllib.urlopen('http://www.xs3-data.uni-freiburg.de/tst/DSR-{}.tar.gz'.format(version))
+    response = urllib.urlopen('{}/DSR-{}.tar.gz'.format(urlprefix, version))
     with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
         tmpfile.write(response.read())
     tmpdir = tempfile.mkdtemp()  # a temporary directory
