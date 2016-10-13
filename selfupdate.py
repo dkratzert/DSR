@@ -154,6 +154,7 @@ def get_update_package(version):
         dsrdir = os.environ["DSR_DIR"]
     except KeyError:
         print("*** DSR_DIR environment variable not set. Can not update DSR. ***" )
+        sys.exit()
     import urllib
     response = urllib.urlopen('{}/DSR-{}.tar.gz'.format(urlprefix, version))
     with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
