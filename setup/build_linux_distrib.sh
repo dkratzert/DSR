@@ -2,7 +2,7 @@
 
 
 TMP="/tmp"
-GIT="./"
+GIT="."
 #GIT="/home/daniel/devel/GitHub/DSR"
 #GIT="/home/daniel/Downloads/DSR"
 VERSION=$(cat $GIT/dsr.py|grep -e "VERSION ="|cut -d ' ' -f3|tr -d "\'")
