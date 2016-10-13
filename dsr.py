@@ -319,7 +319,6 @@ class DSR():
         '''
         main object to run DSR as command line program
         '''
-        #print(program_name)
         # The database content:
         basefilename = resfile.filename_wo_ending(self.res_file)
         if not basefilename:
