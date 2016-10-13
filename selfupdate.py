@@ -100,6 +100,7 @@ def post_update_things():
     Performs some file operations after the update.
     :return:
     """
+    import stat
     dsrdir = os.environ["DSR_DIR"]
     plat = get_system()
     upath = os.path.join(dsrdir, "dsr")
@@ -112,7 +113,7 @@ def post_update_things():
     else:
         shutil.copy2(os.path.abspath(os.path.join(dsrdir, "setup//dsr-linux")), upath)
         st = os.stat(upath)
-        os.chmod(upath, st.st_mode | os.stat.S_IXUSR | os.stat.S_IXGRP | os.stat.S_IXOTH)
+        os.chmod(upath, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
 
 def overwrite_dir(root_src_dir, root_dst_dir, move=True):
