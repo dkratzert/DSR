@@ -34,7 +34,7 @@ from cf3fit import CF3
 from os.path import expanduser
 
 
-VERSION = '192'
+VERSION = '193'
 # dont forget to change version in Innoscript file, spec file and deb file.
 
 program_name = '\n'+((width//2)-9)*'-'+\
@@ -169,6 +169,12 @@ class DSR():
                 print('{};;{};;{};;{}'.format(i[0], i[1], i[2], i[3]))
             sys.exit()
         print(program_name)
+        ################
+        if self.options.selfupdate:
+            import selfupdate
+            selfupdate.update_dsr()
+            sys.exit()
+        ##############
         if self.list_db:
             self.list_dbentries()
         if self.search_string:
@@ -319,7 +325,6 @@ class DSR():
         '''
         main object to run DSR as command line program
         '''
-        #print(program_name)
         # The database content:
         basefilename = resfile.filename_wo_ending(self.res_file)
         if not basefilename:
