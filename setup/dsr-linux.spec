@@ -89,6 +89,7 @@ install -m 644 options.py %{buildroot}%{prefix}/DSR/options.py
 install -m 644 terminalsize.py %{buildroot}%{prefix}/DSR/terminalsize.py
 install -m 644 resfile.py %{buildroot}%{prefix}/DSR/resfile.py
 install -m 644 cf3fit.py %{buildroot}%{prefix}/DSR/cf3fit.py
+install -m 644 selfupdate.py %{buildroot}%{prefix}/DSR/selfupdate.py
 install -m 644 elements.py %{buildroot}%{prefix}/DSR/elements.py
 install -m 644 restraints.py %{buildroot}%{prefix}/DSR/restraints.py
 install -m 644 resi.py %{buildroot}%{prefix}/DSR/resi.py
@@ -492,6 +493,7 @@ dos2unix -q %{buildroot}%{prefix}/*
 %{prefix}/DSR/resi.py
 %{prefix}/DSR/refine.py
 %{prefix}/DSR/cf3fit.py
+%{prefix}/DSR/selfupdate.py
 %{prefix}/DSR/pyperclip.py
 %{prefix}/DSR/dsr_db.txt
 #%{prefix}/DSR/manuals/DSR-manual.pdf
