@@ -237,7 +237,7 @@ class CF3(object):
         afix=str(afix)
         target_atom = self.dsr_dict['target'][0]
         if '_' in target_atom:
-            print('\n**** Sorry, can not create a CF3 group inside a residue! \nThis would damage the residue. ***')
+            print('\n*** Sorry, can not create a CF3 group inside a residue! \nThis would damage the residue. ***')
             sys.exit()
         if afix == '130':
             print('Generating CF3-Group at {}.'.format(target_atom))
