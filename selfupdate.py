@@ -20,7 +20,7 @@ import sys
 
 from dsr import VERSION
 
-urlprefix = "http://www.xs3-data.uni-freiburg.de/tst"
+urlprefix = "http://www.xs3-data.uni-freiburg.de/data"
 
 # changes the user-agent of the http request:
 class DSRURLopener(urllib.FancyURLopener):
