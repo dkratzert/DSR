@@ -11,12 +11,14 @@
 #
 from __future__ import print_function
 
+import os
 import shutil
 import tarfile
 import tempfile
-import os
 
-import misc
+import sys
+
+from dsr import VERSION
 
 
 def get_current_dsr_version():
@@ -32,9 +34,27 @@ def get_current_dsr_version():
     :type: int
     """
     import urllib
-    response = urllib.urlopen('http://www.xs3-data.uni-freiburg.de/data/version.txt')
+    try:
+        response = urllib.urlopen('http://www.xs3-data.uni-freiburg.de/data/version.txt')
+    except IOError:
+        print("*** Unable to connect to update server. No Update possible. ***")
+        sys.exit()
     version = response.readline().strip()
     return version
+
+
+def is_update_needed():
+    """
+    Decides if an update of DSR is needed.
+
+    >>> is_update_needed()
+    :return: True/False
+    """
+    version = get_current_dsr_version()
+    if int(VERSION) < int(version):
+        return True
+    else:
+        return False
 
 
 def update_dsr():
@@ -42,7 +62,7 @@ def update_dsr():
     Updates the running DSR to the current version on the web server.
     """
     version = get_current_dsr_version()
-    from dsr import VERSION
+
     if int(VERSION) < int(version):
         print('*** Current available version of DSR is {}. Performing upate ***'.format(version))
         get_update_package(version)
@@ -51,6 +71,41 @@ def update_dsr():
     if int(VERSION) >= int(version):
         print('*** DSR is already up to date ***')
         return False
+
+
+def get_system():
+    """
+    Gets the currently running operating system
+    :return: system
+    """
+    import platform
+    plat = platform.system()
+    if plat.upper() == "WINDOWS":
+        return "win"
+    if plat.upper() == "DARWIN":
+        return "mac"
+    if plat.upper() == "LINUX":
+        return "lin"
+
+
+def post_update_things():
+    """
+    Performs some file operations after the update.
+    :return:
+    """
+    dsrdir = os.environ["DSR_DIR"]
+    plat = get_system()
+    upath = os.path.join(dsrdir, "/dsr")
+    if plat == "win":
+        shutil.copy2(os.path.join(dsrdir, "/setup/dsr.bat"), dsrdir)
+    elif plat == "mac":
+        shutil.copy2(os.path.join(dsrdir, "/setup/dsr-mac"), upath)
+        st = os.stat(upath)
+        os.chmod(upath, st.st_mode | os.stat.S_IXUSR | os.stat.S_IXGRP | os.stat.S_IXOTH)
+    else:
+        shutil.copy2(os.path.join(dsrdir, "/setup/dsr-linux"), upath)
+        st = os.stat(upath)
+        os.chmod(upath, st.st_mode | os.stat.S_IXUSR | os.stat.S_IXGRP | os.stat.S_IXOTH)
 
 
 def overwrite_dir(root_src_dir, root_dst_dir, move=True):
@@ -88,7 +143,10 @@ def get_update_package(version):
     -------
     True/False
     """
-    dsrdir = "/Applications/DSR" # TODO: add real DSR_DIR here
+    try:
+        dsrdir = os.environ["DSR_DIR"]
+    except KeyError:
+        print("*** DSR_DIR environment variable not set. Can not update DSR. ***" )
     import urllib
     response = urllib.urlopen('http://www.xs3-data.uni-freiburg.de/data/DSR-{}.tar.gz'.format(version))
     with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
@@ -103,6 +161,7 @@ def get_update_package(version):
     os.remove(tmpfile.name)
     overwrite_dir(os.path.join(tmpdir, "DSR-{}".format(version)), dsrdir, move=False)
     shutil.rmtree(tmpdir, ignore_errors=True)  # cleanup the files
+    post_update_things()
     return True
 
 
@@ -115,5 +174,5 @@ if __name__ == "__main__":
     #failed, attempted = doctest.testmod()  # verbose=True)
     #if failed == 0:
     #    print('passed all {} tests!'.format(attempted))
-
+    #is_update_needed()
     update_dsr()
