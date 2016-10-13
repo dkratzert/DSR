@@ -35,7 +35,7 @@ def get_current_dsr_version():
     """
     import urllib
     try:
-        response = urllib.urlopen('http://www.xs3-data.uni-freiburg.de/data/version.txt')
+        response = urllib.urlopen('http://www.xs3-data.uni-freiburg.de/tst/version.txt')
     except IOError:
         print("*** Unable to connect to update server. No Update possible. ***")
         sys.exit()
@@ -57,12 +57,16 @@ def is_update_needed():
         return False
 
 
-def update_dsr():
+def update_dsr(force=False, version=None):
     """
     Updates the running DSR to the current version on the web server.
     """
-    version = get_current_dsr_version()
-
+    if version:
+        version = version
+    else:
+        version = get_current_dsr_version()
+    if force:
+        get_update_package(version)
     if int(VERSION) < int(version):
         print('*** Current available version of DSR is {}. Performing upate ***'.format(version))
         get_update_package(version)
@@ -148,7 +152,7 @@ def get_update_package(version):
     except KeyError:
         print("*** DSR_DIR environment variable not set. Can not update DSR. ***" )
     import urllib
-    response = urllib.urlopen('http://www.xs3-data.uni-freiburg.de/data/DSR-{}.tar.gz'.format(version))
+    response = urllib.urlopen('http://www.xs3-data.uni-freiburg.de/tst/DSR-{}.tar.gz'.format(version))
     with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
         tmpfile.write(response.read())
     tmpdir = tempfile.mkdtemp()  # a temporary directory
@@ -174,5 +178,5 @@ if __name__ == "__main__":
     #failed, attempted = doctest.testmod()  # verbose=True)
     #if failed == 0:
     #    print('passed all {} tests!'.format(attempted))
-    #is_update_needed()
-    update_dsr()
+    #print(is_update_needed())
+    update_dsr(force=True, version=193)
