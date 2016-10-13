@@ -117,7 +117,7 @@ def post_update_things():
     elif plat == "mac":
         shutil.copy2(os.path.abspath(os.path.join(dsrdir, "setup//dsr-mac")), upath)
         st = os.stat(upath)
-        os.chmod(upath, st.st_mode | os.stat.S_IXUSR | os.stat.S_IXGRP | os.stat.S_IXOTH)
+        os.chmod(upath, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
     else:
         shutil.copy2(os.path.abspath(os.path.join(dsrdir, "setup//dsr-linux")), upath)
         st = os.stat(upath)
