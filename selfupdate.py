@@ -175,7 +175,10 @@ def get_update_package(version):
         print('*** Cound not get update from server. If this problem persists, please update manually! ***')
         return False
     os.remove(tmpfile.name)
-    overwrite_dir(os.path.join(tmpdir, "DSR-{}".format(version)), dsrdir, move=False)
+    try:
+        overwrite_dir(os.path.join(tmpdir, "DSR-{}".format(version)), dsrdir, move=False)
+    except OSError:
+        print('Unable to perform update. Please run me with super-user rights, e.g.: "sudo DSR_DIR=/opt/DSR /opt/DSR/dsr -u"')
     shutil.rmtree(tmpdir, ignore_errors=True)  # cleanup the files
     post_update_things()
     return True
