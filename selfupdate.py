@@ -82,7 +82,7 @@ def update_dsr(force=False, version=None):
         print('*** Finished updating to version {} ***'.format(version))
         return True
     if int(VERSION) >= int(version):
-        print('*** DSR is already up to date ***')
+        print('*** DSR is already up to date (version {}) ***'.format(version))
         return False
 
 
