@@ -392,7 +392,7 @@ def remove_file(filename, exit_dsr=False, terminate=False):
     if os.path.isfile(filename):
         try:
             os.remove(filename)
-        except(shutil.WindowsError, OSError):
+        except(WindowsError, OSError):
             print('can not delete {}'.format(filename))
             # print 'unable to cleanup ins {} files!'.format(file)
             if terminate:

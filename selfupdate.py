@@ -15,26 +15,32 @@ import os
 import shutil
 import tarfile
 import tempfile
-
+import urllib
 import sys
 
 from dsr import VERSION
 
 urlprefix = "http://www.xs3-data.uni-freiburg.de/tst"
 
+# changes the user-agent of the http request:
+class DSRURLopener(urllib.FancyURLopener):
+    version = "DSR-updater"
+
+urllib._urlopener = DSRURLopener()
+
+
 def get_current_dsr_version():
     """
     determines the current version of DSR on the web server
 
     >>> get_current_dsr_version()
-    123
+    '193'
 
     Returns
     -------
     version number
     :type: int
     """
-    import urllib
     try:
         response = urllib.urlopen('{}/version.txt'.format(urlprefix))
     except IOError:
@@ -47,9 +53,9 @@ def get_current_dsr_version():
 def is_update_needed():
     """
     Decides if an update of DSR is needed.
-
-    >>> is_update_needed()
     :return: True/False
+    >>> is_update_needed()
+    False
     """
     version = get_current_dsr_version()
     if int(VERSION) < int(version):
@@ -84,6 +90,8 @@ def get_system():
     """
     Gets the currently running operating system
     :return: system
+    >>> get_system()
+    'win'
     """
     import platform
     plat = platform.system()
@@ -156,7 +164,6 @@ def get_update_package(version):
     except KeyError:
         print("*** DSR_DIR environment variable not set. Can not update DSR. ***" )
         sys.exit()
-    import urllib
     response = urllib.urlopen('{}/DSR-{}.tar.gz'.format(urlprefix, version))
     with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
         tmpfile.write(response.read())

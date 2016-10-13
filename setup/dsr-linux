@@ -1,5 +1,5 @@
 #!/bin/bash
-#tst2
+
 if [ clear ]; then
     clear
 fi
