@@ -1,0 +1,25 @@
+#!/bin/bash
+
+if [ clear ]; then
+    clear
+fi
+# initialize DSR_DIR to default directory if not set properly
+if [ ! $DSR_DIR ]; then 
+    export DSR_DIR=/opt/DSR
+fi
+
+# test if python 2.7 is available
+if [ $(which python2.7 2> /dev/null) ]; then 
+    PYTHON_EXE=$(which python2.7)
+else
+    # not? then we hope the best
+    # DSR should also run with python3
+    PYTHON_EXE=$(which python)
+fi
+
+# finally start dsr
+if [ $# -eq 0 ]; then
+    $PYTHON_EXE $DSR_DIR/dsr.py --help
+else
+    $PYTHON_EXE $DSR_DIR/dsr.py $*
+fi

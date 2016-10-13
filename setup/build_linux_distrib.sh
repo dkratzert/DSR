@@ -33,6 +33,8 @@ pyperclip.py
 dsr_db.txt
 manuals/DSR-manual.pdf
 setup/dsr.sh
+setup/dsr-mac
+setup/dsr-linux
 dsr
 example/p21c.hkl
 example/p21c.res
