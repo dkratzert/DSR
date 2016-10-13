@@ -26,6 +26,7 @@ options.py
 resfile.py
 restraints.py
 cf3fit.py
+selfupdate.py
 terminalsize.py
 resi.py
 refine.py
