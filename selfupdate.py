@@ -29,7 +29,7 @@ class DSRURLopener(urllib.FancyURLopener):
 urllib._urlopener = DSRURLopener()
 
 
-def get_current_dsr_version():
+def get_current_dsr_version(silent=False):
     """
     determines the current version of DSR on the web server
 
@@ -44,20 +44,21 @@ def get_current_dsr_version():
     try:
         response = urllib.urlopen('{}/version.txt'.format(urlprefix))
     except IOError:
-        print("*** Unable to connect to update server. No Update possible. ***")
-        sys.exit()
+        if not silent:
+            print("*** Unable to connect to update server. No Update possible. ***")
+        return 0
     version = response.readline().strip()
     return version
 
 
-def is_update_needed():
+def is_update_needed(silent=False):
     """
     Decides if an update of DSR is needed.
     :return: True/False
     >>> is_update_needed()
     False
     """
-    version = get_current_dsr_version()
+    version = get_current_dsr_version(silent)
     if int(VERSION) < int(version):
         return True
     else:
@@ -194,5 +195,5 @@ if __name__ == "__main__":
     #failed, attempted = doctest.testmod()  # verbose=True)
     #if failed == 0:
     #    print('passed all {} tests!'.format(attempted))
-    #print(is_update_needed())
-    update_dsr(force=True, version=193)
+    print(is_update_needed(silent=True))
+    #update_dsr(force=True, version=193)
