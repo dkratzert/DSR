@@ -16,6 +16,8 @@ import os
 
 import misc
 from constants import sep_line
+
+
 try:
     from argparse import RawTextHelpFormatter
 except(ImportError):
@@ -38,13 +40,11 @@ class OptionsParser():
         return
 
     def error(self):
-        #print("\nPlease give one of the options as argument!\n")
         self.parser.print_help()
         sys.exit()
 
     @property
     def res_file(self):
-        rpath = ''
         if self._options.res_file != False:
             rpath = r' '.join(self._options.res_file)
         else:

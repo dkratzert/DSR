@@ -91,6 +91,7 @@ class DSR():
         # vars() retrieves the options as dict, values() the values and any()
         # decides if any option is set.
         self.external = False
+        self.helpmsg = "*** Please ask daniel.kratzert@ac.uni-freiburg.de for help ***"
         if not res_file_name:
             self.res_file = self.options.res_file
         else:
@@ -145,24 +146,32 @@ class DSR():
             self.search_extern = self.options.search_extern
         else:
             self.search_extern = search_extern
+        if self.invert:
+            if not any([self.res_file, self.external, self.import_grade,
+                        self.export_clip, self.export_all, self.export_fragment]):
+                self.options.error()
         if not head_csv:
             self.head_csv = self.options.head_for_gui
         else:
             self.head_csv = head_csv
-        if self.invert:
-            if not any([self.res_file, self.external, self.import_grade,
-                       self.export_clip, self.export_all, self.export_fragment]):
-                self.options.error()
         if self.head_csv:
             self.head_to_gui()
+        #################################
+        try:
+            self.gdb = global_DB(self.invert)
+        except Exception as e:  # @UnusedVariable
+            print("*** Initializing the database failed ***")
+            print(self.helpmsg)
+            print(e)
+            sys.exit()
+        #################################
         #  List of database Fragments:
         if self.list_db_csv:
             print('DSR version: {}'.format(VERSION))
-            gdb = global_DB()
-            frags = gdb.list_fragments()
+            frags = self.gdb.list_fragments()
             for i in frags:
                 print('{};;{};;{};;{}'.format(i[0], i[3], i[1], i[2]))
-            sys.exit()  
+            sys.exit()
         if self.search_extern:
             result = search_fragment_name(self.search_extern)
             for i in result:
@@ -216,24 +225,24 @@ class DSR():
         '''
         from export import Export
         atoms = []
-        helpmsg = "*** Please ask daniel.kratzert@ac.uni-freiburg.de for help ***"
         try:
             gdb = global_DB(self.invert, fragment=self.head_csv)
         except Exception as e:  # @UnusedVariable
             print("*** Initializing the database failed ***")
-            print(helpmsg)
-            #print(e)
+            print(self.helpmsg)
+            print(e)
             sys.exit()
         try:
             export = Export(self.head_csv, gdb, self.invert)
-        except:
+        except Exception as e:
             print("*** Unable to export informations from DSR ***")
+            print(e)
             sys.exit()
         try:
             atoms = export.export_to_gui()
         except:
             print("*** Could not get atom information ***")
-            print(helpmsg)
+            print(self.helpmsg)
         print("\n<atoms>")
         print(atoms)
         print("</atoms>")
@@ -246,8 +255,7 @@ class DSR():
         Exports the current fragment to a res file.
         '''
         from export import Export
-        gdb = global_DB(self.invert)
-        export = Export(self.export_fragment, gdb, self.invert)
+        export = Export(self.export_fragment, self.gdb, self.invert)
         export.write_res_file()
         sys.exit()
 
@@ -256,11 +264,10 @@ class DSR():
         export all database entries at once
         '''
         from export import Export
-        gdb = global_DB(self.invert)
-        db = gdb.build_db_dict()
+        db = self.gdb.build_db_dict()
         dbnames = list(db.keys())
         for name in dbnames:
-            export = Export(name, gdb, self.invert, self.export_all)
+            export = Export(name, self.gdb, self.invert, self.export_all)
             export.write_res_file()
         sys.exit(1)
 
@@ -269,8 +276,7 @@ class DSR():
         Exports the current fragment to the clipboard.
         '''
         from export import Export
-        gdb = global_DB(self.invert)
-        export = Export(self.export_clip, gdb)
+        export = Export(self.export_clip, self.gdb)
         export.export_to_clip()
         sys.exit(True)
 
@@ -279,8 +285,7 @@ class DSR():
         list all entries in the db.
         '''
         dbdir = expanduser('~')
-        gdb = global_DB()
-        fraglist = gdb.list_fragments()
+        fraglist = self.gdb.list_fragments()
         fragnames = []
         try:
             (width, height) = get_terminal_size()  # @UnusedVariable
@@ -297,10 +302,13 @@ class DSR():
               '\n Feel free to add more fragments to "{}dsr_user_db.txt"' \
               '\n and please mail them to dkratzert@gmx.de.'.format(dbdir + os.path.sep))
         for fragment in fragnames:
-            gdb.check_consistency(fragment)
-            gdb.check_db_atom_consistency(fragment)
-            gdb.check_db_header_consistency(fragment)
-            gdb.check_sadi_consistence(fragment)
+            self.gdb.check_consistency(fragment)
+            self.gdb.check_db_atom_consistency(fragment)
+            self.gdb.check_db_header_consistency(fragment)
+            self.gdb.check_sadi_consistence(fragment)
+        from selfupdate import is_update_needed
+        if is_update_needed():
+            print("\n*** An update for DSR is available. You can update with 'DSR -r' ***")
         sys.exit()
 
     def import_from_grade(self):
@@ -330,7 +338,6 @@ class DSR():
         if not basefilename:
             print('*** Illegal option ***')
             sys.exit()
-        gdb = global_DB(self.invert)
         rl = resfile.ResList(self.res_file)
         reslist = rl.get_res_list()
         if len(reslist) == 0:
@@ -347,9 +354,9 @@ class DSR():
             db_residue_string = 'CF3'
             db_atom_types = ['C', 'F']
         else:
-            dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
-            db_residue_string = gdb.get_resi_from_fragment(fragment)
-            dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
+            dbhead = self.gdb.get_head_from_fragment(fragment)        # this is only executed once
+            db_residue_string = self.gdb.get_resi_from_fragment(fragment)
+            dbatoms = self.gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
             # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
             db_atom_types = get_atomtypes(dbatoms)
         sf = SfacTable(reslist, db_atom_types)
@@ -369,13 +376,13 @@ class DSR():
             print('\nFinished...')
             sys.exit()
         # checks have to be after CF3, CF6 etc.
-        gdb.check_consistency(fragment)
-        gdb.check_db_atom_consistency(fragment)
-        gdb.check_db_header_consistency(fragment)
-        gdb.check_sadi_consistence(fragment)
+        self.gdb.check_consistency(fragment)
+        self.gdb.check_db_atom_consistency(fragment)
+        self.gdb.check_db_header_consistency(fragment)
+        self.gdb.check_sadi_consistence(fragment)
         if dsrp.occupancy:
             rle.set_free_variables(dsrp.occupancy)
-        fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
+        fragline = self.gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
         dbhead = resi.remove_resi(dbhead)
         ### corrects the atom type according to the previous defined global sfac table:
         dbatoms = set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table)
@@ -397,7 +404,7 @@ class DSR():
         print('Fragment atom names: {}'.format(', '.join(fragment_numberscheme)))
         dfix_head = ''
         if dsrp.dfix_active:
-            restr = Restraints(fragment, gdb)
+            restr = Restraints(fragment, self.gdb)
             dfix_12 = restr.get_formated_12_dfixes()
             dfix_13 = restr.get_formated_13_dfixes()
             flats = restr.get_formated_flats()
