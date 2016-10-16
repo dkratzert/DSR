@@ -44,7 +44,7 @@ class Export():
     HKLF 4
     END
     '''
-    def __init__(self, fragment_name, gdb, invert=False, export_all=False):
+    def __init__(self, fragment_name, gdb, invert=False):
         '''
 
         :param fragment_name: string, name of the database fragment
@@ -53,7 +53,6 @@ class Export():
         self.invert = invert
         self._fragment_name = fragment_name.lower()
         self._gdb = gdb
-        self._export_all = export_all
         try:
             self._db = self._gdb.build_db_dict()[self._fragment_name]
         except(KeyError):
@@ -174,10 +173,12 @@ class Export():
         res_export.append('REM Sum formula: {}\n'.format(self._gdb.get_sum_formula(self._fragment_name)))
         res_export.append('WGHT  0.1'+'\n')
         res_export.append('FVAR  1.0'+'\n')
-        #if not self._export_all:
         try:
             res_export.append('rem Restraints from DSR database:\n')
             res_export.append( ''.join(wrap_headlines(self._gdb.get_head_from_fragment(self._fragment_name))) )
+        except:
+            pass
+        try:
             res_export.append('rem Restraints from atom connectivities:\n')
             res_export.append(self.make_dfix())
             res_export.append('rem end of restraints\n')
