@@ -44,16 +44,14 @@ def invert_dbatoms_coordinates(atoms):
     return atoms
 
 
-def search_fragment_name(search_string):
+def search_fragment_name(search_string, gdb):
     '''
     searches the Name: comments in the database for a given name
     '''
     from misc import dice_coefficient
-    gdb = global_DB()
-    db = gdb.build_db_dict()
-    frags = list(db.keys())
+    db = gdb.db_dict
     names_list = []
-    for i in frags:
+    for i in db:
         fragname = gdb.get_name_from_fragment(i)
         line_number = gdb.get_line_number_from_fragment(i)
         dbname = gdb.get_db_name_from_fragment(i)
@@ -61,15 +59,10 @@ def search_fragment_name(search_string):
     search_results = {}
     for i in names_list:
         db_entry = i[1]
-        #Levenshtein gibt bei kurzen Suchstrings zu schlechte Ergebnisse:
-        #coefficient = levenshtein(self.search_string, db_entry)
         coefficient = dice_coefficient(search_string, db_entry)
         search_results[coefficient] = i
     # select the best 5 results:
     selected_results = [search_results[i] for i in sorted(search_results)[0:5]]
-    #for i in selected_results:
-    #    i.append(make_sortkey(i[1]))
-    #selected_results.sort(key=lambda x: x[4].lower())
     return selected_results
 
 
@@ -78,7 +71,6 @@ def print_search_results(results):
     prints the results of a database search to screen and exit.
     results are
     '''
-    #print(' Found following database entries:')
     print(' Fragment          | Full name, Comments                      | Line number')
     print(sep_line)
     for line in results:
@@ -213,7 +205,7 @@ class global_DB():
                               '# Some Fragments are from geometry optimizations with Gaussian 03:\n',
                               '#  Gaussian 03, Revision B.04,\n', '#  M. J. Frisch, et. al. Gaussian, ...}
         
-        self._dbentry_dict: dictionary with the individial fragments
+        self.dbentry_dict: dictionary with the individial fragments
                   {'benzene':
                     {'comment': ['Source: GRADE import', 'Name: Benzene, C6H6'],
                      'head': ['DFIX 1.379 0.015 C1 C2 ', 'DFIX 1.379 0.015 C1 C6 ',
@@ -279,7 +271,8 @@ class global_DB():
                     self._db_tags = [self._db_tags[num]] # speedup in case the fragment is known
                     break
         self._db_plain_dict = self._getdb.get_databases
-        self._dbentry_dict = self.build_db_dict()
+        self.dbentry_dict = self.build_db_dict()
+
 
     def list_fragments(self):
         '''
@@ -287,8 +280,7 @@ class global_DB():
         [['tbu-c', 1723, 'dsr_db', 'Tert-butyl-C'], ...]
         '''
         fraglist = []
-        fragments = self._dbentry_dict.keys()
-        for frag in fragments:
+        for frag in self.dbentry_dict:
             comment = self.get_name_from_fragment(frag)
             line = [frag, 
                     self.get_line_number_from_fragment(frag), 
@@ -333,7 +325,7 @@ class global_DB():
     
     @property
     def db_dict(self):
-        return self._dbentry_dict
+        return self.dbentry_dict
 
     def get_residue_from_head(self, head, fragment=''):
         '''
@@ -684,7 +676,7 @@ class global_DB():
         :type fragment: string
         '''
         try:
-            return self._dbentry_dict[fragment.lower()]['atoms']
+            return self.dbentry_dict[fragment.lower()]['atoms']
         except KeyError:
             print('*** Could not find {} in database ***'.format(fragment))
             self.search_for_error_response(fragment)
@@ -695,7 +687,7 @@ class global_DB():
         returns the line with FRAG 17 cell from the dbentry
         '''
         try:
-            fragline = self._dbentry_dict[fragment.lower()]['fragline']
+            fragline = self.dbentry_dict[fragment.lower()]['fragline']
         except(KeyError):
             print('*** Fragment "{}" not found in database ***'.format(fragment))
             self.search_for_error_response(fragment)
@@ -714,7 +706,7 @@ class global_DB():
         '''
         returns the line number from the dbentry
         '''
-        return self._dbentry_dict[fragment.lower()]['line']
+        return self.dbentry_dict[fragment.lower()]['line']
 
 
     def get_head_from_fragment(self, fragment):
@@ -724,7 +716,7 @@ class global_DB():
         '''
         fragment = fragment.lower()
         try:
-            head = self._dbentry_dict[fragment]['head']
+            head = self.dbentry_dict[fragment]['head']
         except KeyError:
             print('*** Could not find {} in database ***'.format(fragment))
             self.search_for_error_response(fragment)
@@ -739,7 +731,7 @@ class global_DB():
         can be either class or class + number.
         convention is only class.
         '''
-        return self._dbentry_dict[fragment.lower()]['resi']
+        return self.dbentry_dict[fragment.lower()]['resi']
 
 
     def get_name_from_fragment(self, fragment):
@@ -749,7 +741,7 @@ class global_DB():
         :param fragment: actual fragment name
         :type fragment: string
         '''
-        comment = self._dbentry_dict[fragment.lower()]['comment']
+        comment = self.dbentry_dict[fragment.lower()]['comment']
         for i in comment:
             if re.match(r'.*[n|N]ame:.*', i):
                 i = i.split(' ', 1)[1:]
@@ -765,7 +757,7 @@ class global_DB():
         :param fragment: actual fragment name
         :type fragment: string
         '''
-        src = self._dbentry_dict[fragment.lower()]['comment']
+        src = self.dbentry_dict[fragment.lower()]['comment']
         for i in src:
             if re.match(r'.*[s|S][r|R][c|C]|Source:.*', i):
                 i = i.split(' ', 1)[1:]
@@ -779,7 +771,7 @@ class global_DB():
         '''
         returns the fragment database name of fragment x
         '''
-        return self._dbentry_dict[fragment.lower()]['db']
+        return self.dbentry_dict[fragment.lower()]['db']
 
 
 class ImportGRADE():

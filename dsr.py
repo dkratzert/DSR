@@ -43,8 +43,6 @@ program_name = '\n'+((width//2)-9)*'-'+\
 
 # TODO and ideas:
 '''
-- Add auto updater
-
 - Add Rcomplete
 
 - Add an export header entry for ShelXle containing any warnings/errors from DSR. For example restraint errors.
@@ -173,7 +171,7 @@ class DSR():
                 print('{};;{};;{};;{}'.format(i[0], i[3], i[1], i[2]))
             sys.exit()
         if self.search_extern:
-            result = search_fragment_name(self.search_extern)
+            result = search_fragment_name(self.search_extern, self.gdb)
             for i in result:
                 print('{};;{};;{};;{}'.format(i[0], i[1], i[2], i[3]))
             sys.exit()
@@ -187,7 +185,7 @@ class DSR():
         if self.list_db:
             self.list_dbentries()
         if self.search_string:
-            result = search_fragment_name(self.search_string)
+            result = search_fragment_name(self.search_string, self.gdb)
             print_search_results(result)
             sys.exit()
         ## Export !all! fragments
@@ -264,10 +262,9 @@ class DSR():
         export all database entries at once
         '''
         from export import Export
-        db = self.gdb.build_db_dict()
-        dbnames = list(db.keys())
-        for name in dbnames:
-            export = Export(name, self.gdb, self.invert, self.export_all)
+        db = self.gdb.db_dict
+        for name in db:
+            export = Export(name, self.gdb, self.invert)
             export.write_res_file()
         sys.exit(1)
 
@@ -276,6 +273,7 @@ class DSR():
         Exports the current fragment to the clipboard.
         '''
         from export import Export
+        self.export_fragment = self.export_clip
         export = Export(self.export_clip, self.gdb)
         export.export_to_clip()
         sys.exit(True)

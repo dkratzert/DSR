@@ -119,7 +119,7 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
 
     #>>> replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell)
     """
-    remdist=1.3
+    remdist=1.35
     from resfile import ResListEdit
     find_atoms = FindAtoms(reslist)
     if resi.get_resinumber:
