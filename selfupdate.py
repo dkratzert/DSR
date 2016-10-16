@@ -74,14 +74,20 @@ def update_dsr(force=False, version=None):
     else:
         version = get_current_dsr_version()
     if force:
-        get_update_package(version)
-        print('*** Finished updating to version {} ***'.format(version))
-        return True
+        status = get_update_package(version)
+        if status:
+            print('*** Finished updating to version {} ***'.format(version))
+            return True
+        else:
+            return False
     if int(VERSION) < int(version):
         print('*** Current available version of DSR is {}. Performing upate ***'.format(version))
-        get_update_package(version)
-        print('*** Finished updating to version {} ***'.format(version))
-        return True
+        status = get_update_package(version)
+        if status:
+            print('*** Finished updating to version {} ***'.format(version))
+            return True
+        else:
+            return False
     if int(VERSION) >= int(version):
         print('*** DSR is already up to date (version {}) ***'.format(version))
         return False
@@ -172,8 +178,9 @@ def get_update_package(version):
     try:
         with tarfile.open(tmpfile.name) as tarobj:
             tarobj.extractall(path=tmpdir)
-    except tarfile.ReadError:
+    except tarfile.ReadError as e:
         print('*** Cound not get update from server. If this problem persists, please update manually! ***')
+        print('***', e, '***')
         return False
     os.remove(tmpfile.name)
     try:
