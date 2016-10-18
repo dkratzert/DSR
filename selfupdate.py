@@ -167,9 +167,9 @@ def get_update_package(version):
     True/False
     """
     try:
-        dsrdir = os.environ["DSR_DIR"]
+        dsrdir = os.path.dirname(os.path.realpath(__file__))
     except KeyError:
-        print("*** DSR_DIR environment variable not set. Can not update DSR. ***" )
+        print("*** Could not determine the location of DSR. Can not update. ***" )
         sys.exit()
     response = urllib.urlopen('{}/DSR-{}.tar.gz'.format(urlprefix, version))
     with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
@@ -186,21 +186,19 @@ def get_update_package(version):
     try:
         overwrite_dir(os.path.join(tmpdir, "DSR-{}".format(version)), dsrdir, move=False)
     except OSError:
-        print('Unable to perform update. Please run me with super-user rights, e.g.: "sudo DSR_DIR=/opt/DSR /opt/DSR/dsr -u"')
+        print(
+            'Unable to perform update. Please run me with super-user rights, e.g.: "sudo /opt/DSR/dsr -u"')
         sys.exit()
     shutil.rmtree(tmpdir, ignore_errors=True)  # cleanup the files
     post_update_things()
     return True
 
 
-
-
-
 if __name__ == "__main__":
-    #import sys
-    #import doctest
-    #failed, attempted = doctest.testmod()  # verbose=True)
-    #if failed == 0:
+    # import sys
+    # import doctest
+    # failed, attempted = doctest.testmod()  # verbose=True)
+    # if failed == 0:
     #    print('passed all {} tests!'.format(attempted))
     print(is_update_needed(silent=True))
-    #update_dsr(force=True, version=193)
+    # update_dsr(force=True, version=193)
