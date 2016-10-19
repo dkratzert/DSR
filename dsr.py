@@ -469,7 +469,6 @@ if __name__ == '__main__':
     cp = cProfile.Profile()
     cp.enable(subcalls=True, builtins=True)
     """
-    print('\n'*5)  # Instead of cls/clear in start script, because the produce weired characters in Qt
     try:
         remove_file(reportlog)
         #dsr = DSR(res_file_name="p21c.res")
