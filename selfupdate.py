@@ -119,16 +119,19 @@ def post_update_things():
     dsrdir = os.environ["DSR_DIR"]
     plat = get_system()
     upath = os.path.join(dsrdir, "dsr")
-    if plat == "win":
-        pass
-    elif plat == "mac":
-        shutil.copy2(os.path.abspath(os.path.join(dsrdir, "setup//dsr-mac")), upath)
-        st = os.stat(upath)
-        os.chmod(upath, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-    else:
-        shutil.copy2(os.path.abspath(os.path.join(dsrdir, "setup//dsr-linux")), upath)
-        st = os.stat(upath)
-        os.chmod(upath, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+    try:
+        if plat == "win":
+            pass
+        elif plat == "mac":
+            shutil.copy2(os.path.abspath(os.path.join(dsrdir, "setup//dsr-mac")), upath)
+            st = os.stat(upath)
+            os.chmod(upath, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+        else:
+            shutil.copy2(os.path.abspath(os.path.join(dsrdir, "setup//dsr-linux")), upath)
+            st = os.stat(upath)
+            os.chmod(upath, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+    except IOError:  # Unable to write in this case
+        print('*** Unable to perform update. Please run me with super-user rights, e.g.: "sudo /opt/DSR/dsr -u" ***')
 
 
 def overwrite_dir(root_src_dir, root_dst_dir, move=True):
