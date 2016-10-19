@@ -1,4 +1,5 @@
 Recent changes
+-194    Fixed ANSI escape codes appearing in ShelXle GUI. Improved updater.
 -193    Added auto updater to DSR. Run "dsr -u" to update to the most recent version.
 -192    Fixed strange characters in fragment list in Linux and other Small fixes.
 -191    Prevent ** NEGATIVE OCCUPANCY FOR ATOM XX  ** warning in case of wrong 
