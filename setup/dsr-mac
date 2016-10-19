@@ -1,8 +1,5 @@
 #!/bin/bash
 
-if [ clear ]; then
-    clear
-fi
 # initialize DSR_DIR to default directory if not set properly
 if [ ! $DSR_DIR ]; then 
     export DSR_DIR=/Applications/DSR
