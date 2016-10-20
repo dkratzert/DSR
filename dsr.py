@@ -36,7 +36,7 @@ from cf3fit import CF3
 from os.path import expanduser
 
 
-VERSION = '194'
+VERSION = '195'
 # dont forget to change version in Innoscript file, spec file and deb file.
 
 program_name = '\n'+((width//2)-9)*'-'+' D S R - v{} '.format(VERSION)+((width//2)-8)*'-'
@@ -52,14 +52,14 @@ class DSR():
     '''
     main class
     '''
-    def __init__(self):
+    def __init__(self, options):
 
         '''
         '''
         import time
         time1 = time.clock()
         # options from the commandline options parser:
-        self.options = OptionsParser(program_name)
+        self.options = options
         # vars() retrieves the options as dict, values() the values and any()
         # decides if any option is set.
         self.external = False
@@ -371,7 +371,8 @@ if __name__ == '__main__':
     """
     try:
         remove_file(reportlog)
-        dsr = DSR()
+        options = OptionsParser(program_name)
+        dsr = DSR(options)
     except Exception as e:
         import platform
         import logging
