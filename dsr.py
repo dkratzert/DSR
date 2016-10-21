@@ -53,9 +53,8 @@ class DSR():
     main class
     '''
     def __init__(self, options):
-
-        '''
-        '''
+        """
+        """
         import time
         time1 = time.clock()
         # options from the commandline options parser:
@@ -85,9 +84,6 @@ class DSR():
         self.rigid = self.options.rigid_group
         self.search_string = self.options.search_string
         self.search_extern = self.options.search_extern
-        #if not any([self.res_file, self.external, self.import_grade, self.list_db, self.list_db_csv, self.search_string,
-        #            self.export_clip, self.export_all, self.export_fragment, self.search_extern]):
-        #    self.options.error()
         self.head_csv = self.options.head_for_gui
         if self.head_csv:
             self.fragment = self.head_csv
@@ -105,12 +101,12 @@ class DSR():
             print(e)
             sys.exit()
         if any([self.export_fragment, self.head_csv, self.export_all, self.export_clip]):
-            #try:
-            self.export = Export(gdb=self.gdb, invert=self.invert)
-            #except Exception as e:
-            #    print("*** Unable to export informations from DSR ***")
-            ##    print(e)
-            #    sys.exit()
+            try:
+                self.export = Export(gdb=self.gdb, invert=self.invert)
+            except Exception as e:
+                print("*** Unable to export informations from DSR ***")
+                print(e)
+                sys.exit()
         #################################
         if self.head_csv:
             self.head_to_gui()
@@ -150,9 +146,12 @@ class DSR():
                 self.export.export_to_clip(self.fragment)
             except() as e:
                 print(e)
+            sys.exit()
         ## Import a GRADE fragment
         if self.import_grade:
-            self.import_from_grade()
+            mog = ImportGRADE(self.import_grade, self.invert)
+            mog.write_user_database()
+            sys.exit(1)
         if not any(list(vars(self.options.all_options).values())+[self.res_file]):
             self.options.error()
         self.rl = resfile.ResList(self.res_file)
@@ -213,23 +212,6 @@ class DSR():
             print("\n*** An update for DSR is available. You can update with 'DSR -r' ***")
         sys.exit()
 
-    def import_from_grade(self):
-        '''
-        imports a fragment from the GRADE webserver.
-        '''
-        mog = ImportGRADE(self.import_grade, self.invert)
-        mog.write_user_database()
-        sys.exit(1)
-
-    def go_refine(self, shx):
-        '''
-        actually starts the fragment fit
-        '''
-        try:
-            shx.run_shelxl()
-        except() as e:
-            print(e)
-            sys.exit()
 
     def main(self):
         '''
@@ -327,7 +309,11 @@ class DSR():
             print('\nPerforming no fragment fit. Just prepared the .ins file for you.')
             return
         #  Refine with L.S. 0 to insert the fragment
-        self.go_refine(shx)
+        try:
+            shx.run_shelxl()
+        except() as e:
+            print(e)
+            sys.exit()
         # Display the results from the list file:
         lf = ListFile(basefilename)
         lst_file = lf.read_lst_file()
