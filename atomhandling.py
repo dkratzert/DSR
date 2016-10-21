@@ -255,38 +255,38 @@ class FindAtoms():
         """
         atoms_to_delete = []
         frag_coords = self.get_atomcoordinates(frag_atoms)
-        atoms = self._residues
-        for i in atoms:
+        for resinum in self._residues:
             suffix = ''
-            if i != 0:
-                suffix = '_{}'.format(i)
-            # i is the resideue number
-            for y in atoms[i]:
-                if y[0].startswith('Q'):
+            if resinum != 0:
+                suffix = '_{}'.format(resinum)
+            # resinum is the resideue number
+            for atom in self._residues[resinum]:
+                if atom[0].startswith('Q'):
                     # ignore q peaks:
                     continue
-                if only_this and only_this != y[5]:
+                if only_this and only_this != atom[5]:
                     continue
-                # y[4] is the part number
-                if int(y[4]) == 0:
+                # atomlist[4] is the part number
+                # replace only in part 0:
+                if int(atom[4]) == 0:
                     for name in frag_coords:
                         # name is the atom name
-                        if name == y[0]:
+                        if atom[0]+suffix in frag_coords:
                             # do not delete the fitted fragment
-                            continue
+                            break
                         at1 = [float(x) for x in frag_coords[name]]
-                        at2 = [float(x) for x in y[1]]
+                        at2 = [float(x) for x in atom[1]]
                         resinum1 = self.get_atoms_resinumber(name)
-                        resinum2 = self.get_atoms_resinumber(y[0]+suffix)
+                        resinum2 = self.get_atoms_resinumber(atom[0]+suffix)
                         if at1 == at2 and resinum1 == resinum2:
                             # do not delete atoms on exactly the same position
                             # and same residue
-                            continue
+                            break
                         d = atomic_distance(at1, at2, cell)
                         # now get the atom types of the pair atoms and with that
                         # the covalence radius. 
                         if d < remdist:
-                            atoms_to_delete.append(y[0]+suffix) 
+                            atoms_to_delete.append(atom[0]+suffix)
         return sorted(atoms_to_delete)
     
 
