@@ -98,15 +98,15 @@ class Restraints():
         self._atoms = [i[0] for i in self.db[fragment]['atoms']]
         self._cell = self.gdb.get_unit_cell(fragment)
         self.fragment = fragment
-        cart_coords = self.get_fragment_atoms_cartesian()
-        self.cart_coords = [[float(y) for y in i] for i in cart_coords]
         self.atom_types = get_atomtypes(self.db[fragment]['atoms'])
+        self.cart_coords = [[float(y) for y in i] for i in self.get_fragment_atoms_cartesian()]
         self._connectivity_table = self.get_conntable_from_atoms(
                                         self.cart_coords, self.atom_types, self._atoms)
         self.coords_dict = self.get_coords_dict()
         self._G = self.get_adjmatrix()
 
     def get_coords_dict(self):
+
         coords = OrderedDict({})
         for name, co in zip(self._atoms, self.cart_coords):
             coords[name] = co
@@ -120,8 +120,8 @@ class Restraints():
         :type fragment:
         '''
         from export import Export
-        ex = Export(self.fragment, self.gdb, False)
-        atoms = ex.format_atoms_for_export()
+        ex = Export(self.gdb, False)
+        atoms = ex.format_atoms_for_export(self.fragment)
         coords = []
         for i in atoms:
             coords.append(i.split()[2:5])
