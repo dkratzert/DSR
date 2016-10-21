@@ -78,7 +78,7 @@ class Export():
         return cell
 
     def make_dfix(self, fragname):
-        restr = Restraints(fragname, self._gdb)
+        restr = Restraints(self, fragname, self._gdb)
         dfix_12 = restr.get_formated_12_dfixes()
         dfix_13 = restr.get_formated_13_dfixes()
         flats = restr.get_formated_flats()
