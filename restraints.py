@@ -91,14 +91,14 @@ class Restraints():
     needs atoms with numpart like C1_2b
     '''
 
-    def __init__(self, fragment, gdb):
-        fragment = fragment.lower()
+    def __init__(self, export, frag, gdb):
+        self.fragment = frag.lower()
         self.gdb = gdb
+        self.export = export
         self.db = self.gdb.db_dict
-        self._atoms = [i[0] for i in self.db[fragment]['atoms']]
-        self._cell = self.gdb.get_unit_cell(fragment)
-        self.fragment = fragment
-        self.atom_types = get_atomtypes(self.db[fragment]['atoms'])
+        self._atoms = [i[0] for i in self.db[frag]['atoms']]
+        self._cell = self.gdb.get_unit_cell(frag)
+        self.atom_types = get_atomtypes(self.db[frag]['atoms'])
         self.cart_coords = [[float(y) for y in i] for i in self.get_fragment_atoms_cartesian()]
         self._connectivity_table = self.get_conntable_from_atoms(
                                         self.cart_coords, self.atom_types, self._atoms)
@@ -106,7 +106,9 @@ class Restraints():
         self._G = self.get_adjmatrix()
 
     def get_coords_dict(self):
-
+        """
+        Returns an ordered dictionary with coordinates of the fragment
+        """
         coords = OrderedDict({})
         for name, co in zip(self._atoms, self.cart_coords):
             coords[name] = co
@@ -119,9 +121,7 @@ class Restraints():
         :param fragment:
         :type fragment:
         '''
-        from export import Export
-        ex = Export(self.gdb, False)
-        atoms = ex.format_atoms_for_export(self.fragment)
+        atoms = self.export.format_atoms_for_export(self.fragment)
         coords = []
         for i in atoms:
             coords.append(i.split()[2:5])
@@ -657,7 +657,7 @@ if __name__ == '__main__':
     #print(''.join(dfixes_13))
     sys.exit()
 
-    print(restr.binds_to('C1', 'O1'), 'it binds')
+    #print(restr.binds_to('C1', 'O1'), 'it binds')
 
     def make_eadp(fa, fragatoms, resi_class, wavelength=0.71):
         '''
