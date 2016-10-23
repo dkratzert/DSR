@@ -57,7 +57,15 @@ class OptionsParser():
 
     @property
     def external_restr(self):
-        return self._options.external_restr
+        if self._options.external_restr != False:
+            erpath = r' '.join(self._options.external_restr)
+        else:
+            return False
+        try:
+            erpath = os.path.normpath(erpath)
+        except:
+            erpath = None
+        return erpath
 
     @property
     def no_refine(self):
