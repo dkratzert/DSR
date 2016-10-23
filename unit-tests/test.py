@@ -355,17 +355,17 @@ class reslistTest(unittest.TestCase):
         self.assertIsNone(self.fa.is_atom(self.atom2))
 
     def testrun_resinum(self):
-        # print(self.fa.get_resinum(self.resi_str))
-        self.assertEqual(self.fa.get_resinum(self.resi_str)['number'], '3')
-        self.assertEqual(self.fa.get_resinum(self.resi_list)['number'], '3')
-        self.assertIsNone(self.fa.get_resinum(self.resi_list_class)['number'])
-        self.assertIs(self.fa.get_resinum(self.resi_list_num)['number'], '3')
+        # print(self.fa.get_resi_definition_dict(self.resi_str))
+        self.assertEqual(self.fa.get_resi_definition_dict(self.resi_str)['number'], '3')
+        self.assertEqual(self.fa.get_resi_definition_dict(self.resi_list)['number'], '3')
+        self.assertIsNone(self.fa.get_resi_definition_dict(self.resi_list_class)['number'])
+        self.assertIs(self.fa.get_resi_definition_dict(self.resi_list_num)['number'], '3')
 
     def testrun_resinum_class(self):
-        self.assertEqual(self.fa.get_resinum(self.resi_str)['class'], 'TOL')
-        self.assertEqual(self.fa.get_resinum(self.resi_list)['class'], 'TOL')
-        self.assertIs(self.fa.get_resinum(self.resi_list_class)['class'], 'TOL')
-        self.assertIsNone(self.fa.get_resinum(self.resi_list_num)['class'])
+        self.assertEqual(self.fa.get_resi_definition_dict(self.resi_str)['class'], 'TOL')
+        self.assertEqual(self.fa.get_resi_definition_dict(self.resi_list)['class'], 'TOL')
+        self.assertIs(self.fa.get_resi_definition_dict(self.resi_list_class)['class'], 'TOL')
+        self.assertIsNone(self.fa.get_resi_definition_dict(self.resi_list_num)['class'])
 
     def testrun_get_atoms_resiclass(self):
         self.assertEqual(self.fa.get_atoms_resiclass('C1'), None)

@@ -173,23 +173,30 @@ class FindAtoms():
         """
         return self._residues
 
-    def is_atom(self, atomline):
+    @staticmethod
+    def is_atom(atomline):
         """
         returns all atoms found in the input as list if they are real atoms
 
         :param atomline:  'O1    3    0.120080   0.336659   0.494426  11.00000   0.01445 ...'
-        >>> FindAtoms.is_atom('', atomline = 'O1    3    0.120080   0.336659   0.494426  11.00000   0.01445 ...')
+        >>> FindAtoms.is_atom(atomline = 'O1    3    0.120080   0.336659   0.494426  11.00000   0.01445 ...')
         ['O1', '3', '0.120080', '0.336659', '0.494426']
+        >>> FindAtoms.is_atom(atomline = 'O1    0.120080   0.336659   0.494426  11.00000   0.01445 ...')
+        []
+        >>> FindAtoms.is_atom(atomline = 'O1    0.120080   0.336659   0.494426  11.00000   0.01445 ...')
+        []
         """
-        atom = ''
         if re.search(atomregex, str(atomline)):        # search atoms
             atom = atomline.split()[:5]              # convert to list and use only first 5 columns
             if atom[0].upper() not in SHX_CARDS:      # exclude all non-atom cards
                 return atom
             else:
-                return False
+                return []
+        else:
+            return []
 
-    def get_resinum(self, resi):
+    @staticmethod
+    def get_resi_definition_dict(resi):
         """
         returns the residue number and class of a string like 'RESI TOL 1'
         or 'RESI 1 TOL'
@@ -198,9 +205,9 @@ class FindAtoms():
         :param resi: ['RESI', 'number', 'class']
         :type resi: list or string
 
-        >>> sorted(FindAtoms.get_resinum('', 'RESI 1 TOL').keys())
+        >>> sorted(FindAtoms.get_resi_definition_dict('RESI 1 TOL').keys())
         ['class', 'number']
-        >>> sorted(FindAtoms.get_resinum('', 'RESI 1 TOL').values())
+        >>> sorted(FindAtoms.get_resi_definition_dict('RESI 1 TOL').values())
         ['1', 'TOL']
         """
         resi_dict = {
@@ -288,18 +295,17 @@ class FindAtoms():
                         if d < remdist:
                             atoms_to_delete.append(atom[0]+suffix)
         return sorted(atoms_to_delete)
-    
 
     def collect_residues(self):
-        '''
+        """
         find all atoms and sort them into residues
 
         residues is a dictionary which includes a dictionary for each residue
         which in turn includes a list of its atoms.
 
-        residues = { {'0': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number], 
+        residues = { {'0': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number],
                            ['C2', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number]},
-                     {'1': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number], 
+                     {'1': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number],
                      []} }
 
         for i in residues.keys():
@@ -307,13 +313,13 @@ class FindAtoms():
             for x in ats:
                 if 'C12' in x[0]:
                     print x #print C12 from all residues
-        :type linenumber: int
-        '''
+        """
         resi = False
         part = False
         partnum = '0'
         resiclass = None
         residues = {'0': []}
+        resinum = 0
         for num, i in enumerate(self._reslist):
             i = i.upper()
             # First collect the residue
@@ -325,8 +331,8 @@ class FindAtoms():
                 continue
             if i.startswith('RESI') and not re.match(r'^RESI\s+0', i):
                 resi = True
-                resinum = self.get_resinum(i.split())['number']
-                resiclass = self.get_resinum(i.split())['class']
+                resinum = self.get_resi_definition_dict(i.split())['number']
+                resiclass = self.get_resi_definition_dict(i.split())['class']
                 residues.update({resinum: []})
                 continue
             # Now collect the part:
@@ -898,7 +904,7 @@ if __name__ == '__main__':
 
     #sys.exit()
 
-    #  print('Residue dict:', fa.get_resinum('RESI 1 TOL'.split()))
+    #  print('Residue dict:', fa.get_resi_definition_dict('RESI 1 TOL'.split()))
     #print( fa.get_atomcoordinates(['Fe1_1', 'C29', 'Q12']) )
     #  print('line number:', fa.get_atom_line_numbers(['C12', 'C333', 'Q12']))
     #
