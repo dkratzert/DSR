@@ -171,7 +171,7 @@ class OptionsParser():
             )
         self.parser.add_argument("-r", dest="res_file", metavar='"res file"', nargs='+',\
                                 help="res file with DSR command", default=False)
-        self.parser.add_argument("-re", dest="external_restr", metavar='"res file"', \
+        self.parser.add_argument("-re", dest="external_restr", metavar='"res file"', nargs='+',\
                                 help="res file with DSR command (write restraints to external file)", default=False)
         self.parser.add_argument("-e", dest="export_fragment", metavar='"fragment"', \
                                 help="export fragment as .res/.png file", default=False)
