@@ -59,13 +59,12 @@ class DSR():
         time1 = time.clock()
         # options from the commandline options parser:
         self.options = options
-        # vars() retrieves the options as dict, values() the values and any()
-        # decides if any option is set.
         self.external = False
         self.fragment = ''
         self.helpmsg = "*** Please ask daniel.kratzert@ac.uni-freiburg.de for help ***"
         self.res_file = self.options.res_file
         if self.options.external_restr:
+            self.external = True
             self.res_file = self.options.external_restr
         self.export_fragment = self.options.export_fragment
         if self.export_fragment:
@@ -100,13 +99,12 @@ class DSR():
             print(self.helpmsg)
             print(e)
             sys.exit()
-        if any([self.export_fragment, self.head_csv, self.export_all, self.export_clip]):
-            try:
-                self.export = Export(gdb=self.gdb, invert=self.invert)
-            except Exception as e:
-                print("*** Unable to export informations from DSR ***")
-                print(e)
-                sys.exit()
+        try:
+            self.export = Export(gdb=self.gdb, invert=self.invert)
+        except Exception as e:
+            print("*** Unable to export informations from DSR ***")
+            print(e)
+            sys.exit()
         #################################
         if self.head_csv:
             self.head_to_gui()
@@ -218,6 +216,7 @@ class DSR():
         main object to run DSR as command line program
         '''
         # The database content:
+        dbatoms = []
         basefilename = resfile.filename_wo_ending(self.res_file)
         if not basefilename:
             print('*** Illegal option ***')
