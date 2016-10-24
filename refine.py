@@ -425,7 +425,7 @@ if __name__ == '__main__':
     find_atoms = FindAtoms(res_list)
     #lf = ListFile('p21c')
     #lst_file = lf.read_lst_file()
-    shx = ShelxlRefine(res_list, 'testfile', find_atoms, options)
+    shx = ShelxlRefine(res_list, 'testfile', find_atoms)
 
 
     #print(shx.afix_is_closed(110))

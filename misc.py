@@ -227,7 +227,7 @@ def sortedlistdir(directory):
     :param cmpfunc: compare funtion to sort
     :type cmpfunc: string
 
-    >>> sortedlistdir("./old")
+    >>> sortedlistdir("../old")
     ['dsr.py']
     """
     dirlist = os.listdir(directory)

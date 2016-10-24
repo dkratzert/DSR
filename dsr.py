@@ -361,7 +361,12 @@ if __name__ == '__main__':
     except Exception as e:
         import platform
         import logging
-        logging.basicConfig(filename=reportlog, filemode='w', level=logging.DEBUG)
+        try:
+            logging.basicConfig(filename=reportlog, filemode='w', level=logging.DEBUG)
+        except IOError:
+            print("Error:", e)
+            import sys
+            sys.exit()
         remove_file(reportlog)
         logging.info('DSR version: {}'.format(VERSION))
         logging.info('Python version: {}'.format(sys.version))
