@@ -663,7 +663,7 @@ class global_DB():
         :param fragment: the fragment
         :type fragment: string
         '''
-        result = search_fragment_name(fragment)
+        result = search_fragment_name(fragment, self)
         print('Do you mean one of these?:\n')
         print_search_results(result)
 
