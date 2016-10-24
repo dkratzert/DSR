@@ -172,6 +172,7 @@ class DSR():
         except:
             print("*** Could not get atom information ***")
             print(self.helpmsg)
+            sys.exit()
         print("\n<atoms>")
         print(atoms)
         print("</atoms>")
