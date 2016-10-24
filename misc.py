@@ -59,8 +59,7 @@ def check_file_exist(filename):
     File "foo.bar" not found!
     False
     >>> check_file_exist('empty.txt')
-    File "empty.txt" not found!
-    False
+    'zero'
 
     #>>> checkFileExist('../misc.py')
     #True
