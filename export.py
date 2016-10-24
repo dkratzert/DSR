@@ -119,7 +119,12 @@ class Export():
         'C7   1     0.48938   0.61536   0.41297   11.0   0.04\n'],
         '\nHKLF 0\nEND\n']
         '''
-        dbentry = self._db[fragname]
+        try:
+            dbentry = self._db[fragname]
+        except KeyError:
+            print('*** Could not find {} in database ***'.format(fragname))
+            import sys
+            sys.exit()
         atoms = dbentry['atoms']
         cell = dbentry['fragline'][2:]
         cell = self.format_calced_coords(cell=cell, fragment=fragname)  # expands the cell of calculated structures
@@ -246,7 +251,12 @@ class Export():
         '''
         el = Element()
         from misc import frac_to_cart
-        dbentry = self._db[fragname]
+        try:
+            dbentry = self._db[fragname]
+        except KeyError:
+            print("*** Fragment {} was not found in the Database! ***".format(fragname))
+            import sys
+            sys.exit()
         cell = dbentry['fragline'][2:]
         cell = [float(x) for x in cell]
         atoms = copy.deepcopy(dbentry['atoms'])
