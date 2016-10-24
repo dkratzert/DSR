@@ -54,18 +54,17 @@ class Export():
         '''
         self.invert = invert
         self._gdb = gdb
-        self._db = self._gdb.db_dict
 
     def format_calced_coords(self, cell, fragment):
         '''
         In calculated structure the cell is 1 1 1 90 90 90. Shelxle has problems
         with that when growing. So the cell is expanded to 50 50 50
+        >>> gdb = global_DB()
+        >>> exp = Export(gdb, invert=False) 
+        >>> exp.format_calced_coords([1, 1, 1, 90, 90, 90], "benzene")
+        ['50', '50', '50', 90, 90, 90]
         '''
-        try:
-            atoms = self._db[fragment]['atoms']
-        except(KeyError):
-            print('*** Fragment "{}" was not found in the database!! ***'.format(fragment))
-            sys.exit()
+        atoms = self._gdb[fragment]['atoms']
         summe = int(sum(float(i) for i in cell[0:3]))  # this is to detect calculated structures
         if summe == 3:  # 1+1+1=3!
             for coord in range(2, 5):  # x, y, z of coordinates
@@ -100,31 +99,27 @@ class Export():
         >>> invert = False
         >>> gdb = global_DB(invert)
         >>> fragment = 'toluene'
-        >>> export = Export(fragment, gdb, invert)
-        >>> print(export.export_resfile()) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF +ELLIPSIS
+        >>> export = Export(gdb, invert)
+        >>> print(export.export_resfile(fragment)) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF +ELLIPSIS
         Exporting "toluene" to toluene.res
-        ['TITL toluene\n', 'REM This file was exported by DSR version 189\n', 'REM Name: Toluene, C7H8\nREM Source:
-        CCDC CESLUJ\n', 'CELL 0.71073    11.246   14.123   27.184   90.000  100.079   90.000\n',
-        'ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n', 'LATT  -1\n',
-        'SFAC C\n', 'UNIT 1 \n', 'REM  RESIDUE: TOL\n', 'REM Sum formula: C7 \n', 'WGHT  0.1\n',
-        'FVAR  1\n', 'rem Restraints from DSR database:\n',
-        'SADI C2 C3 C3 C4 C4 C5 C5 C6 C6 C7 C7 C2\nSADI 0.04 C2 C6 C2 C4 C7 C5 C3 C7 C4 C6 C3 C5\nDFIX 1.51 C1 C2\nSADI 0.04 C1 C7 C1 C3\nFLAT C1 > C7\nSIMU C1 > C7\nRIGU C1 > C7\n',
-        'rem Restraints from atom connectivities:\n', ..., 'rem end of restraints\n', '\n',
-        ['C1   1     0.34810   0.50619   0.44851   11.0   0.04\n',
-        'C2   1     0.37174   0.58816   0.41613   11.0   0.04\n',
-        'C3   1     0.27706   0.63878   0.38821   11.0   0.04\n',
-        'C4   1     0.29758   0.71355   0.35825   11.0   0.04\n',
-        'C5   1     0.41548   0.73951   0.35559   11.0   0.04\n',
-        'C6   1     0.51068   0.69033   0.38312   11.0   0.04\n',
-        'C7   1     0.48938   0.61536   0.41297   11.0   0.04\n'],
-        '\nHKLF 0\nEND\n']
+        ['TITL toluene\n', 'REM This file was exported by DSR version 195\n', 'REM Name: Toluene, 
+        C7H8\nREM Source: CCDC CESLUJ\n', 'CELL 0.71073    11.246   14.123   27.184   90.000  100.079   90.000\n', 
+        'ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n', 'LATT  -1\n', 'SFAC C\n', 'UNIT 1 \n', 
+        'REM  RESIDUE: TOL\n', 'REM Sum formula: C7 \n', 'WGHT  0.1\n', 'FVAR  1.0\n', 
+        'rem Restraints from DSR database:\n', 
+        'SADI C2 C3 C3 C4 C4 C5 C5 C6 C6 C7 C7 C2\nSADI 0.04 C2 C6 C2 C4 C7 C5 C3 C7 C4 C6 C3 C5\nDFIX 1.51 C1 C2\nSADI 0.04 C1 C7 C1 C3\nFLAT C1 > C7\nSIMU C1 > C7\nRIGU C1 > C7\n', 
+        'rem Restraints from atom connectivities:\n', 
+        ['DFIX 1.5058 C1   C2  \n', 'DFIX 1.3922 C3   C2  \n', 'DFIX 1.3775 C3   C4  \n', 'DFIX 1.3946 C2   C7  \n', 'DFIX 1.3897 C4   C5  \n', 'DFIX 1.3814 C5   C6  \n', 'DFIX 1.3802 C7   C6  \n', 'DANG 2.5243 C1   C7  \n', 'DANG 2.5246 C1   C3  \n', 'DANG 2.4124 C2   C6  \n', 'DANG 2.4183 C2   C4  \n', 'DANG 2.3878 C3   C7  \n', 'DANG 2.3909 C3   C5  \n', 'DANG 2.3961 C4   C6  \n', 'DANG 2.3967 C5   C7  \n', 'FLAT C7  C6  C5  C4 \n', 'FLAT C5  C4  C3  C2 \n', 'FLAT C1  C2  C4  C3 \n'], 
+        'rem end of restraints\n', '\n', 
+        ['C1   1     0.34810   0.50619   0.44851   11.0   0.04\n', 
+        'C2   1     0.37174   0.58816   0.41613   11.0   0.04\n', 
+        'C3   1     0.27706   0.63878   0.38821   11.0   0.04\n', 
+        'C4   1     0.29758   0.71355   0.35825   11.0   0.04\n', 
+        'C5   1     0.41548   0.73951   0.35559   11.0   0.04\n', 
+        'C6   1     0.51068   0.69033   0.38312   11.0   0.04\n', 
+        'C7   1     0.48938   0.61536   0.41297   11.0   0.04\n'], '\nHKLF 0\nEND\n']
         '''
-        try:
-            dbentry = self._db[fragname]
-        except KeyError:
-            print('*** Could not find {} in database ***'.format(fragname))
-            import sys
-            sys.exit()
+        dbentry = self._gdb[fragname]
         atoms = dbentry['atoms']
         cell = dbentry['fragline'][2:]
         cell = self.format_calced_coords(cell=cell, fragment=fragname)  # expands the cell of calculated structures
@@ -230,8 +225,8 @@ class Export():
         Atom;;number;;x;;y;;z
 
         >>> gdb = global_DB(invert=False)
-        >>> exp = Export(fragment_name='toluene', gdb=gdb, invert=False)
-        >>> print(exp.format_atoms_for_export(gui=False)) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF
+        >>> exp = Export(gdb=gdb, invert=False)
+        >>> print(exp.format_atoms_for_export(fragname="toluene", gui=False)) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF
         ['C1      6  1.7810   7.1491  12.0042',
         'C2      6  2.2009   8.3068  11.1376',
         'C3      6  1.2689   9.0217  10.3903',
@@ -240,23 +235,15 @@ class Export():
         'C6      6  3.9205   9.7497  10.2541',
         'C7      6  3.5389   8.6909  11.0530']
 
-        >>> print(exp.format_atoms_for_export(gui=True)) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF
-        ['C1 6 -37.07978 100.96851 321.28921',
-        'C2 6 -28.23464 117.31887 298.09386',
-        'C3 6 -35.16023 127.41592 278.09343',
-        'C4 6 -27.14730 142.33011 256.63164',
-        'C5 6 -11.75518 147.50829 254.72616',
-        'C6 6 -4.69329 137.69847 274.44722',
-        'C7 6 -12.78499 122.74438 295.83020']
+        >>> print(exp.format_atoms_for_export(fragname="toluene", gui=True)) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF
+        ['C1 6 1.78099 7.14907 12.00423', 'C2 6 2.20089 8.30676 11.13758', 
+        'C3 6 1.26895 9.02168 10.39032', 'C4 6 1.64225 10.07768 9.58845', 
+        'C5 6 2.98081 10.44432 9.51725', 'C6 6 3.92045 9.74974 10.25408', 
+        'C7 6 3.53891 8.69091 11.05301']
         '''
         el = Element()
         from misc import frac_to_cart
-        try:
-            dbentry = self._db[fragname]
-        except KeyError:
-            print("*** Fragment {} was not found in the Database! ***".format(fragname))
-            import sys
-            sys.exit()
+        dbentry = self._gdb[fragname]
         cell = dbentry['fragline'][2:]
         cell = [float(x) for x in cell]
         atoms = copy.deepcopy(dbentry['atoms'])
@@ -294,8 +281,8 @@ class Export():
         exports atoms to output for the DSRGui
 
         >>> gdb = global_DB(invert=False)
-        >>> exp = Export(fragment_name='toluene', gdb=gdb, invert=False)
-        >>> print(exp.export_to_gui()) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF +ELLIPSIS
+        >>> exp = Export(gdb=gdb, invert=False)
+        >>> print(exp.export_to_gui(fragname="toluene")) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF +ELLIPSIS
         C1 6 1.78099 7.14907 12.00423;;C2 6 2.20089 8.30676 11.13758;;C3 6 1.26895 9.02168 10.39032;;C4
         6 1.64225 10.07768 9.58845;;C5 6 2.98081 10.44432 9.51725;;C6 6 3.92045 9.74974 10.25408;;C7 6 3.53891 8.69091 11.05301
         '''
@@ -335,6 +322,7 @@ class Export():
                   ''.format(fragment, resfile))
         except(IOError):
             print('*** Could not write file {} ***'.format(resfile))
+            import sys
             sys.exit(-1)
         f.close()
         print("Image creation is currently disabled, because PLATON and ImageMagic are causing troubles.")

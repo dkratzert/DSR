@@ -271,6 +271,13 @@ class global_DB():
         self._db_plain_dict = self._getdb.get_databases
         self._db_all_dict = self.build_db_dict()
 
+    def __getitem__(self, fragment):
+        try:
+            return self._db_all_dict[fragment]
+        except KeyError:
+            print("*** Fragment {} was not found in the Database! ***".format(fragment))
+            sys.exit()
+
     def list_fragments(self):
         '''
         list all fragments in the db as list of lists
