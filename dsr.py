@@ -45,7 +45,7 @@ program_name = '\n'+((width//2)-9)*'-'+' D S R - v{} '.format(VERSION)+((width//
 '''
 - Add Rcomplete
 - Add an export header entry for ShelXle containing any warnings/errors from DSR. For example restraint errors.
-
+- Add a dummy CF3 group in db to be displayed in GUI
 '''
 
 class DSR():
