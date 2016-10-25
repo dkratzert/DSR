@@ -103,7 +103,7 @@ Source: "..\mpmath\*"; DestDir: "{app}\mpmath"; Flags: ignoreversion createallsu
 
 [Icons]
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
-Name: "{group}\DSR manual"; Filename: "{app}\manual\DSR-manual.pdf"; WorkingDir: "{app}"
+Name: "{group}\DSR manual"; Filename: "{app}\manuals\DSR-manual.pdf"; WorkingDir: "{app}"
 Name: "{group}\DSR database"; Filename: "{app}\dsr_db.txt"; WorkingDir: "{app}"
 Name: "{group}\DSR user-database"; Filename: "{%USERPROFILE}\dsr_user_db.txt"
 
@@ -114,10 +114,13 @@ Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environm
 
 [UninstallDelete]
 Type: files; Name: "{app}\*.pyc"
+Type: files; Name: "{app}\dsr"
 Type: filesandordirs; Name: "{app}\python27"
 Type: filesandordirs; Name: "{app}\networkx"
 Type: filesandordirs; Name: "{app}\mpmath"
 Type: filesandordirs; Name: "{app}\example"
+Type: filesandordirs; Name: "{app}\manuals"
+Type: filesandordirs; Name: "{app}\setup"
 
 [Dirs]
 Name: "{app}\example"; Permissions: authusers-full
