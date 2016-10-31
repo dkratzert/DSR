@@ -272,7 +272,7 @@ class Restraints():
             chunk = ring[i:i+size]
             if len(chunk) < 4:
                 chunk = ring[-size:]
-            chunks.append(chunk)
+            chunks.append(sorted(chunk))
         return chunks
 
     def make_flat_restraints(self):
@@ -302,7 +302,8 @@ class Restraints():
             chunks = self.get_overlapped_chunks(ring, 4)
             for chunk in chunks:
                 if self.is_flat(chunk):
-                    flats.append(chunk[:])
+                    if not chunk in flats:
+                        flats.append(chunk)
             if not flats:
                 return False
             newflats = []
@@ -333,8 +334,12 @@ class Restraints():
                                     del ch[-num]
                                     break  # finished, go to next flat
                             # only add if it really results in a flat composition:
-                            if self.is_flat(ch) and not ch in newflats:
-                                newflats.append(ch)
+                            ch.sort()
+                            if self.is_flat(ch):
+                                if ch in newflats:
+                                    pass
+                                else:
+                                    newflats.append(ch)
         return newflats
 
     def binds_to(self, a, b):
