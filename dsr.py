@@ -46,6 +46,19 @@ program_name = '\n'+((width//2)-9)*'-'+' D S R - v{} '.format(VERSION)+((width//
 - Add Rcomplete
 - Add an export header entry for ShelXle containing any warnings/errors from DSR. For example restraint errors.
 - Add a dummy CF3 group in db to be displayed in GUI
+
+From SHELXL user guide:
+A free variable is a refinable parameter that can be used to impose a variety of additional
+linear constraints, e.g. to atomic coordinates, occupancies or displacement parameters.
+Starting values for all free variables are supplied on the FVAR instruction. Since the first
+FVAR parameter is the overall scale factor, there is no free variable number 1. If an atom
+parameter is given a value greater than 15 or less than -15, it is interpreted as a reference to
+a free variable. A positive value (10k+p) is decoded as p times free variable number k [fv(k)],
+and a negative value (i.e. k and p both negative) means p times [fv(–k)–1].
+
+- port to JANA?
+  -> learn JANA
+  -> What do I need to change?
 '''
 
 class DSR():

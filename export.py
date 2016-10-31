@@ -65,6 +65,7 @@ class Export():
         >>> exp.format_calced_coords([1, 1, 1, 90, 90, 90], "benzene")
         [['50', '50', '50', 90, 90, 90], [['C1', '1', '  0.017600', ' -0.006618', '  0.005344'], ['C2', '1', '  0.015724', ' -0.007554', '  0.004762'], ['C3', '1', '  0.015212', ' -0.006368', '  0.003851'], ['C4', '1', '  0.016584', ' -0.004244', '  0.003510'], ['C5', '1', '  0.018464', ' -0.003288', '  0.004080'], ['C6', '1', '  0.018976', ' -0.004464', '  0.004998']]]
         """
+        fragment = fragment.lower()
         atoms = copy.deepcopy(self._gdb[fragment]['atoms'])
         summe = int(sum(float(i) for i in cell[0:3]))  # this is to detect calculated structures
         if summe == 3:  # 1+1+1=3!
@@ -78,6 +79,7 @@ class Export():
         return [cell, atoms]
 
     def make_dfix(self, fragname):
+        fragname = fragname.lower()
         restr = Restraints(self, fragname, self._gdb)
         dfix_12 = restr.get_formated_12_dfixes()
         dfix_13 = restr.get_formated_13_dfixes()
@@ -128,6 +130,7 @@ class Export():
         'C7   1     0.48938   0.61536   0.41297   11.0   0.04\n'],
         '\nHKLF 0\nEND\n']
         """
+        fragname = fragname.lower()
         comment = self._gdb[fragname]['comment']
         cell = self._gdb[fragname]['fragline'][2:]
         # expands the cell of calculated structures:
@@ -201,7 +204,7 @@ class Export():
         return res_export
 
     def copy_to_clipboard(self, fragname):
-        '''
+        """
         copys the exported atoms to the clipboard including FRAG  FEND commands
 
         Export example:
@@ -215,8 +218,9 @@ class Export():
         C6   1     2.3980   0.0060   0.0090
         C7   1     2.3940  -0.0040   1.3940
         FEND
-        '''
+        """
         import pyperclip
+        fragname = fragname.lower()
         clip_text = []
         atoms = self.format_atoms_for_export(fragname)
         atoms = '\n'.join(atoms)
@@ -249,6 +253,7 @@ class Export():
         'C5 6 2.98081 10.44432 9.51725', 'C6 6 3.92045 9.74974 10.25408',
         'C7 6 3.53891 8.69091 11.05301']
         """
+        fragname = fragname.lower()
         el = Element()
         from misc import frac_to_cart
         dbentry = self._gdb[fragname]
@@ -273,6 +278,7 @@ class Export():
         return newlist
 
     def export_to_clip(self, fragname):
+        fragname = fragname.lower()
         try:
             tst = self.copy_to_clipboard(fragname)
         except(AttributeError) as e:
@@ -285,7 +291,7 @@ class Export():
             return False
 
     def export_to_gui(self, fragname):
-        '''
+        """
         exports atoms to output for the DSRGui
 
         >>> gdb = global_DB(invert=False)
@@ -293,17 +299,19 @@ class Export():
         >>> print(exp.export_to_gui(fragname="toluene")) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF +ELLIPSIS
         C1 6 1.78099 7.14907 12.00423;;C2 6 2.20089 8.30676 11.13758;;C3 6 1.26895 9.02168 10.39032;;C4
         6 1.64225 10.07768 9.58845;;C5 6 2.98081 10.44432 9.51725;;C6 6 3.92045 9.74974 10.25408;;C7 6 3.53891 8.69091 11.05301
-        '''
+        >>> print(exp.export_to_gui(fragname="TOLUENE")) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF +ELLIPSIS
+        """
+        fragname = fragname.lower()
         atoms = self.format_atoms_for_export(fragname, gui=True)
         atoms = ';;'.join(atoms)
         return atoms
 
     def file_is_opened(self, base, ending):
-        '''
+        """
         determines if the filebase.ending is opened and locked
         returns True if file can be opened
         returns False if file is locked
-        '''
+        """
         if not '.' in ending:
             ending = '.' + ending
         arg = base + ending
@@ -316,19 +324,19 @@ class Export():
             return False
 
     def write_res_file(self, fragment):
-        '''
+        """
         Writes the atom data to a "self._fragment_name".res file
-        '''
-        ## write to file:
+        """
+        fragment = fragment.lower()
+        # write to file:
         resfile = str(fragment) + '.res'
         try:
             f = open(resfile, 'w')
             for line in self.export_resfile(fragment):
                 line = ''.join(line)
                 f.write(line)
-            print('Database entry of "{}" successfully written to {}.' \
-                  ''.format(fragment, resfile))
-        except(IOError):
+            print('Database entry of "{}" successfully written to {}.'.format(fragment, resfile))
+        except IOError:
             print('*** Could not write file {} ***'.format(resfile))
             import sys
             sys.exit(-1)
@@ -348,6 +356,7 @@ class Export():
         This method tries to kill the platon process and removes all leftorver 
         file in case something goes wrong during the image drawing process.
         '''
+        fragname = fragname.lower()
         plat = None
         resfile = str(fragname) + '.res'
         insfile = str(fragname) + '.ins'
@@ -425,6 +434,7 @@ class Export():
         Convert to png
         ImageMagic from APEX causes problems
         """
+        fragname = fragname.lower()
         import misc
         if misc.which('montage'):  # i check for montage, because windows also ha a convert.exe
             pass
