@@ -78,6 +78,9 @@ class ShelxlRefine():
         download = 'You can download SHELXL at http://shelx.uni-goettingen.de'
         shx_exe = []
         if self.options.shelxl_ex:
+            if not check_file_exist(self.options.shelxl_ex):
+                print("SHELXL executable not found! Can not proceed...")
+                sys.exit()
             return self.options.shelxl_ex
         for name in names:
             shx_exe.extend(misc.which(name))  # list of shelxl executables in path

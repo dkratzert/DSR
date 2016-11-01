@@ -13,6 +13,8 @@ from __future__ import print_function
 import sys
 import re
 import os
+
+import misc
 from constants import sep_line
 try:
     from argparse import RawTextHelpFormatter
@@ -45,6 +47,8 @@ class OptionsParser():
         rpath = ''
         if self._options.res_file != False:
             rpath = r' '.join(self._options.res_file)
+        else:
+            return False
         try:
             rpath = os.path.normpath(rpath)
         except:
@@ -86,14 +90,11 @@ class OptionsParser():
     @property
     def import_grade(self):
         return self._options.import_grade
-    
+
     @property
-    def frag_for_gui(self):
-        frag = False
-        if self._options.frag_for_gui:
-            frag = self._options.frag_for_gui.lower()
-        return frag
-    
+    def selfupdate(self):
+        return self._options.selfupdate
+
     @property
     def head_for_gui(self):
         frag = False
@@ -113,6 +114,14 @@ class OptionsParser():
         spath = ''
         if self._options.shelxl_ex != False:
             spath = r' '.join(self._options.shelxl_ex)
+        else:
+            return False
+        if not os.access(spath, os.X_OK):
+            try:
+                spath = misc.which(spath)
+                return spath[0]
+            except IndexError:
+                return ''
         return spath
 
     @property
@@ -178,17 +187,17 @@ class OptionsParser():
                                 help="search the database for a name", default=False)
         self.parser.add_argument("-g", dest="rigid_group", help="keep group rigid (no restraints)", \
                                 action="store_true", default=False)
+        self.parser.add_argument("-u", dest="selfupdate", help="Update DSR to the most current version", \
+                                 action="store_true", default=False)
         self.parser.add_argument("-ea", dest="export_all", action='store_true', \
                                 help=SUPPRESS, default=False)
         self.parser.add_argument("-lc", dest="list_db_csv", action='store_true', \
                                 help=SUPPRESS, default=False)
         self.parser.add_argument("-x", dest="search_extern", \
                                 help=SUPPRESS, default=False)
-        self.parser.add_argument("-ac", dest="frag_for_gui", \
-                                help=SUPPRESS, default=False)
         self.parser.add_argument("-ah", dest="head_for_gui", \
                                 help=SUPPRESS, default=False)
-                                # with nargs='+' it accepts space in path an dreturns a list:
+                                # with nargs='+' it accepts space in path and returns a list:
         self.parser.add_argument("-shx", dest="shelxl_ex", nargs='+',\
                                  help=SUPPRESS, default=False)
         self.parser.add_argument("-n", dest="no_refine", action="store_true", \

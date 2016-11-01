@@ -54,7 +54,7 @@ def search_fragment_name(search_string):
     frags = list(db.keys())
     names_list = []
     for i in frags:
-        fragname = gdb.get_comment_from_fragment(i)
+        fragname = gdb.get_name_from_fragment(i)
         line_number = gdb.get_line_number_from_fragment(i)
         dbname = gdb.get_db_name_from_fragment(i)
         names_list.append([i, fragname, line_number, dbname])
@@ -191,8 +191,6 @@ class ReadDB():
             diff = c1 - c2
             duplicates = list(diff.elements())
             for i in duplicates:
-                # print list(set([ i for y in dbnames if y for y in i]))[0]
-                # print dbnames
                 print('\nDuplicate database entry "{}" found! Please remove/rename '\
                     'second entry\nand/or check all end tags in the database dsr_usr_db.txt or dsr_db.txt.\n'.format(duplicates.pop()))
             sys.exit(False)
@@ -291,7 +289,7 @@ class global_DB():
         fraglist = []
         fragments = self._dbentry_dict.keys()
         for frag in fragments:
-            comment = self.get_comment_from_fragment(frag)
+            comment = self.get_name_from_fragment(frag)
             line = [frag, 
                     self.get_line_number_from_fragment(frag), 
                     self.get_db_name_from_fragment(frag), 
@@ -434,13 +432,13 @@ class global_DB():
         '''
         fragment = fragment.lower()
         print("<tag>\n", fragment, "\n</tag>")
-        print("<comment>\n", self.get_comment_from_fragment(fragment), "\n</comment>")
+        print("<comment>\n", self.get_name_from_fragment(fragment), "\n</comment>")
         print("<source>\n", self.get_src_from_fragment(fragment), "\n</source>")
         # it returns cartesian coordinates, so we need this cell here:
         print("<cell>\n", '1;;1;;1;;90;;90;;90', "\n</cell>") 
         print("<residue>\n", self.get_resi_from_fragment(fragment), "\n</residue>")
         print("<dbtype>\n", self.get_db_name_from_fragment(fragment), "\n</dbtype>")
-        print('<restr>\n', ';;'.join(self.db_dict[fragment]['head']), '\n', '</restr>')
+        print("<restr>\n", ';;'.join(self.db_dict[fragment]['head']), '\n</restr>')
         self.check_consistency(fragment) # too many critical errors with GUI
         self.check_db_header_consistency(fragment)
         if not self.check_sadi_consistence(fragment):
@@ -461,17 +459,17 @@ class global_DB():
                 continue
             if not dbentry[i]:
                 if i == 'head':
-                    print('- Restraints in the header of database entry "{}" missing!\n Check your Database!'\
-                        ''.format(fragment))
+                    print('*** Restraints in the header of database entry "{}" ({}) missing! Check your Database! ***'\
+                            .format(fragment, self.get_name_from_fragment(fragment)))
                     return False
                 else:
-                    print('- Values for "{}" in database entry "{}" missing! Check your Database!'\
-                        ''.format(str.upper(i), fragment))
+                    print('*** Values for "{}" in database entry "{}" missing! Check your Database! ***'\
+                          .format(str.upper(i), fragment))
                     return False
         if len(dbentry['fragline']) != 8:
-            print('- The line starting with "FRAG" in the database entry of {} is '\
+            print('*** The line starting with "FRAG" in the database entry of {} is '\
                 'not correct.\n  Are the cell parameters really correct? '\
-                '"FRAG 17 a b c alpha beta gamma"\n'.format(fragment))
+                '"FRAG 17 a b c alpha beta gamma" ***\n'.format(fragment))
             sys.exit(False)
         return True
 
@@ -501,9 +499,8 @@ class global_DB():
         while dbatoms:
             at = dbatoms.pop()
             if at in dbatoms:
-                print('duplicate atom {0} in database entry "{1}" '\
-                    'found!'.format(at, fragment))
-                print("Check your database...")
+                print('*** Duplicate atom {0} in database entry "{1}" ({2}) '\
+                    'found! Check your database... ***'.format(at, fragment, self.get_name_from_fragment(fragment)))
                 sys.exit(-1)
 
     def check_db_header_consistency(self, fragment):
@@ -527,7 +524,7 @@ class global_DB():
             # only the first 4 characters, because SADI_TOL would be bad:
             if line2[0] not in SHX_CARDS:  
                 status = False
-                print('Bad line in header of database entry "{}" found! ({}.txt)'.format(fragment, db))
+                print('*** Bad line in header of database entry "{}" found! ({}.txt) ***'.format(fragment, db))
                 print(line)
                 #sys.exit(status)
             if line[:4] in RESTRAINT_CARDS:
@@ -543,9 +540,9 @@ class global_DB():
             atom = atom.upper()
             if not atom in atoms:
                 status = False
-                print('\nUnknown atom "{}" in restraints of "{}".'.format(atom, fragment))
+                print('\n*** Unknown atom "{}" in restraints of "{}". ***'.format(atom, fragment))
         if not status:
-            print('Check database entry.\n')
+            print('*** Check database entry. ***\n')
             sys.exit(status)
         return status
     
@@ -580,7 +577,7 @@ class global_DB():
                 except(IndexError):
                     return False
                 if len(line)%2 == 1: # test for uneven atoms count
-                    print('Inconsistent SADI restraint line {} of "{}". Not all atoms form a pair.'.format(num, fragment))   
+                    print('*** Inconsistent SADI restraint line {} of "{}". Not all atoms form a pair ***'.format(num, fragment))
                 pairs = pairwise(line)
                 distances = []
                 pairlist = []
@@ -605,12 +602,12 @@ class global_DB():
                         print("\nFragment {}:".format(fragment))
                         for x in outliers:
                             pair = ' '.join(pairlist[x])
-                            print('Suspicious deviation in atom pair "{}" ({:4.3f} A, median: {:4.3f}) of SADI line {}:'.format(pair, distances[x], median(distances), num+1))
+                            print('*** Suspicious deviation in atom pair "{}" ({:4.3f} A, median: {:4.3f}) of SADI line {} ***'.format(pair, distances[x], median(distances), num+1))
                             print(restr[num][:60], '...')
                             return False
                 if stdev > 2.5*float(dev):
                     print("\nFragment {}:".format(fragment))
-                    print('Suspicious restraints in SADI line {} with high standard deviation {:4.3f} (median length: {:4.3f} A).'.format(num+1, stdev, median(distances)))
+                    print('*** Suspicious restraints in SADI line {} with high standard deviation {:4.3f} (median length: {:4.3f} A) ***'.format(num+1, stdev, median(distances)))
                     print(' '.join(prefixes+line))
                     return False
         return True
@@ -662,9 +659,9 @@ class global_DB():
             if fragline:
                 pass
         except(UnboundLocalError):
-            print('Error. No cell parameters found in the database entry '\
-                    'of "{}".'.format(fragment))
-            print('Please add these parameters!')
+            print('*** Error. No cell parameters found in the database entry '\
+                    'of "{}" ***'.format(fragment))
+            print('*** Please add these parameters! ***')
             sys.exit(False)
         return (nhead, fragline, comment)
     
@@ -689,7 +686,7 @@ class global_DB():
         try:
             return self._dbentry_dict[fragment.lower()]['atoms']
         except KeyError:
-            print('Could not find {} in database.'.format(fragment))
+            print('*** Could not find {} in database ***'.format(fragment))
             self.search_for_error_response(fragment)
             sys.exit()
 
@@ -700,7 +697,7 @@ class global_DB():
         try:
             fragline = self._dbentry_dict[fragment.lower()]['fragline']
         except(KeyError):
-            print('Fragment "{}" not found in database!'.format(fragment))
+            print('*** Fragment "{}" not found in database ***'.format(fragment))
             self.search_for_error_response(fragment)
         return fragline
 
@@ -729,7 +726,7 @@ class global_DB():
         try:
             head = self._dbentry_dict[fragment]['head']
         except KeyError:
-            print('Could not find {} in database.'.format(fragment))
+            print('*** Could not find {} in database ***'.format(fragment))
             self.search_for_error_response(fragment)
         self.check_db_header_consistency(fragment)
         self.check_sadi_consistence(fragment)
@@ -745,7 +742,7 @@ class global_DB():
         return self._dbentry_dict[fragment.lower()]['resi']
 
 
-    def get_comment_from_fragment(self, fragment):
+    def get_name_from_fragment(self, fragment):
         '''
         returns the first comment line of the dbentry of a fragment
         if a line with "rem Name:" is present, this line is used as comment.
@@ -851,7 +848,7 @@ class ImportGRADE():
                 print('No such file or directory: {}'.format(grade_tar_file))
                 sys.exit(0)
         else:
-            print('File {} is not a valid file to import from!'.format(grade_base_filename[1]))
+            print('*** File {} is not a valid file to import from ***'.format(grade_base_filename[1]))
             sys.exit(0)
         pdbfile = False
         dfixfile = False

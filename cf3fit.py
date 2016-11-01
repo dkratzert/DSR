@@ -225,15 +225,19 @@ class CF3(object):
         :type afix: string
         """
         # the pivot atom of the CF3 group:
-        atom = self.dsr_dict['target'][0]
+        targetatom = self.dsr_dict['target'][0]
         if len(self.dsr_dict['target']) > 1:
             print(('Using only first target atom {}.'.format(self.dsr_dict['target'][0])))
-        atomline = self.fa.get_atom_line_numbers([atom])[0]
+        try:
+            atomline = self.fa.get_atom_line_numbers([targetatom])[0]
+        except IndexError:
+            print("\n*** Atom {} not found ***\n".format(targetatom))
+            sys.exit()
         [uvals, c_coords] = self.make_pivot_isotropic(atomline)
         afix=str(afix)
         target_atom = self.dsr_dict['target'][0]
         if '_' in target_atom:
-            print('\nSorry, can not create a CF3 group inside a residue! \nThis would damage the original residue.')
+            print('\n*** Sorry, can not create a CF3 group inside a residue! \nThis would damage the residue. ***')
             sys.exit()
         if afix == '130':
             print('Generating CF3-Group at {}.'.format(target_atom))
@@ -253,12 +257,12 @@ class CF3(object):
         if self.resi.get_residue_class:
             restr = self.resi.format_restraints(restr)
         if afix == '120' and self.dsr_dict['split'] and uvals:
-            num = NumberScheme(self.reslist, [atom], False)
-            if len(atom) < 4:
+            num = NumberScheme(self.reslist, [targetatom], False)
+            if len(targetatom) < 4:
                 # in this case it is possible to add a character
                 alphabet = [i for i in string.ascii_uppercase]
-                splitat1 = self.add_chars(atom, alphabet)
-                splitat2 = self.add_chars(atom, alphabet)
+                splitat1 = self.add_chars(targetatom, alphabet)
+                splitat2 = self.add_chars(targetatom, alphabet)
             else:
                 splitat1 = num.get_fragment_number_scheme()[0]
                 splitat2 = num.get_fragment_number_scheme(extranames=[splitat1])[0]
@@ -266,9 +270,9 @@ class CF3(object):
             axes = calc_ellipsoid_axes(c_coords, uvals, self.cell)
         else:
             splitatoms = False
-        found = self.find_bonded_fluorine(atom)
+        found = self.find_bonded_fluorine(targetatom)
         for i in found:
-            print(('Deleting {}_{} from {}'.format(i[0], i[7], atom)))
+            print(('Deleting {}_{} from {}'.format(i[0], i[7], targetatom)))
         self.delete_bound_fluorine(found)
         fatoms = self.make_afix(afixnum=afix, linenumber=atomline)
         if not fatoms:
@@ -277,10 +281,10 @@ class CF3(object):
         # this is essential
         self.reslist = self.rl.get_res_list()
         # this is the bond around the CF3 group rotates
-        restr = self.format_cf3_restraints(afix, restr, atom, fatoms, splitatoms)
+        restr = self.format_cf3_restraints(afix, restr, targetatom, fatoms, splitatoms)
         # get position for the fluorine atoms and make sure the reslist is the newest:
         self.fa._reslist = self.reslist
-        atomline = self.fa.get_atom_line_numbers([atom])[0]
+        atomline = self.fa.get_atom_line_numbers([targetatom])[0]
         # add restraints to reslist:
         restr = ''.join(restr)
         if not self.dsr_dict['split']:
@@ -340,7 +344,7 @@ class CF3(object):
         print(('Generating threefold disordered CF3-Group at {}.'.format(self.dsr_dict['target'][0])))
         target_atom = self.dsr_dict['target'][0]
         if '_' in target_atom:
-            print('\nSorry, can not create a CF3 group inside a residue! \nThis would damage the original residue.')
+            print('\n*** Sorry, can not create a CF3 group inside a residue! \nThis would damage the residue. ***')
             sys.exit()
         if self.dsr_dict['dfix']:
             restr = dfixr_cf9
@@ -351,7 +355,11 @@ class CF3(object):
             restr = [i+'\n' for i in restr]
         if len(self.dsr_dict['target']) > 1:
             print('Using only first target target_atom {}.'.format(self.dsr_dict['target'][0]))
-        atomline = self.fa.get_atom_line_numbers([target_atom])[0]
+        try:
+            atomline = self.fa.get_atom_line_numbers([target_atom])[0]
+        except IndexError:
+            print("\n*** Atom {} not found. ***\n".format(target_atom))
+            sys.exit()
         found = self.find_bonded_fluorine(target_atom)
         for i in found:
             print(('Deleting {}_{} from {}'.format(i[0], i[7], target_atom)))

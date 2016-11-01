@@ -16,7 +16,6 @@ import atomhandling as at
 from misc import wrap_headlines
 from dbfile import global_DB
 import copy
-import pyperclip
 from restraints import Restraints
 from atoms import Element
 
@@ -58,7 +57,7 @@ class Export():
         try:
             self._db = self._gdb.build_db_dict()[self._fragment_name]
         except(KeyError):
-            print('Fragment "{}" was not found in the database!!'.format(self._fragment_name))
+            print('*** Fragment "{}" was not found in the database!! ***'.format(self._fragment_name))
             sys.exit()
         self._resi = self._gdb.get_resi_from_fragment(self._fragment_name)
         self._comment = self._db['comment']
@@ -206,6 +205,7 @@ class Export():
         C7   1     2.3940  -0.0040   1.3940
         FEND
         '''
+        import pyperclip
         clip_text = []
         atoms = self.format_atoms_for_export()
         atoms = '\n'.join(atoms)
@@ -323,7 +323,7 @@ class Export():
             print('Database entry of "{}" successfully written to {}.'\
                     ''.format(self._fragment_name, resfile))
         except(IOError):
-            print('could not write file {}'.format(resfile))
+            print('*** Could not write file {} ***'.format(resfile))
             sys.exit(-1)
         f.close()
         self.make_image()
@@ -354,12 +354,12 @@ class Export():
         misc.remove_file(insfile) #platon runs faster if no ins file is present!
         misc.remove_file(self._fragment_name+'.png', exit_dsr=True)
         if not misc.which('platon'):
-            print('Could not write a .png image. No PLATON executable in PATH found.')
+            print('*** Could not write a .png image. No PLATON executable in PATH found. ***')
             return None
         try:
             copyfile(resfile, insfile)
         except(IOError):
-            print('unable to write .ins file for plotting!')
+            print('*** Unable to write .ins file for plotting! ***')
             return None
         try:
             plat = subprocess.Popen(commandline, stdin = subprocess.PIPE,
