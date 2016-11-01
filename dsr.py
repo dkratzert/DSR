@@ -34,7 +34,7 @@ from cf3fit import CF3
 from os.path import expanduser
 
 
-VERSION = '190'
+VERSION = '193'
 # dont forget to change version in Innoscript file, spec file and deb file.
 
 program_name = '\n'+((width//2)-9)*'-'+\
@@ -43,14 +43,14 @@ program_name = '\n'+((width//2)-9)*'-'+\
 
 # TODO and ideas:
 '''
-- Add Rcomplete -> create log file with r value and link to result file.
-  Add button in ShelXle that changes to result after the calc?
+- Add auto updater
+
+- Add Rcomplete
 
 - Add an export header entry for ShelXle containing any warnings/errors from DSR. For example restraint errors.
 
 - Add Peters way of using restraints with free variable. (low priority)
 
-- start a slack community for DSR!
 '''
 
 class DSR():
@@ -141,8 +141,6 @@ class DSR():
             self.search_string = self.options.search_string
         else:
             self.search_string = search_string
-        if not atom_coordinates:
-            self.frag_for_gui = self.options.frag_for_gui
         if not search_extern:
             self.search_extern = self.options.search_extern
         else:
@@ -155,8 +153,6 @@ class DSR():
             if not any([self.res_file, self.external, self.import_grade,
                        self.export_clip, self.export_all, self.export_fragment]):
                 self.options.error()
-        if self.frag_for_gui:
-            self.export_to_gui()
         if self.head_csv:
             self.head_to_gui()
         #  List of database Fragments:
@@ -173,6 +169,12 @@ class DSR():
                 print('{};;{};;{};;{}'.format(i[0], i[1], i[2], i[3]))
             sys.exit()
         print(program_name)
+        ################
+        if self.options.selfupdate:
+            import selfupdate
+            selfupdate.update_dsr()
+            sys.exit()
+        ##############
         if self.list_db:
             self.list_dbentries()
         if self.search_string:
@@ -214,40 +216,29 @@ class DSR():
         '''
         from export import Export
         atoms = []
-        helpmsg = "Please ask daniel.kratzert@ac.uni-freiburg.de for help."
+        helpmsg = "*** Please ask daniel.kratzert@ac.uni-freiburg.de for help ***"
         try:
             gdb = global_DB(self.invert, fragment=self.head_csv)
         except Exception as e:  # @UnusedVariable
-            print("Initializing the database failed.")
+            print("*** Initializing the database failed ***")
             print(helpmsg)
             #print(e)
             sys.exit()
         try:
             export = Export(self.head_csv, gdb, self.invert)
         except:
-            print("Unable to export informations from DSR.")
+            print("*** Unable to export informations from DSR ***")
             sys.exit()
         try:
             atoms = export.export_to_gui()
         except:
-            print("Could not get atom information.")
+            print("*** Could not get atom information ***")
             print(helpmsg)
-        print('<atoms>\n', atoms, '\n</atoms>')
+        print("\n<atoms>")
+        print(atoms)
+        print("</atoms>")
         # prints most of the needed info:
         gdb.get_head_for_gui(self.head_csv)
-        sys.exit()
-
-    def export_to_gui(self):
-        '''
-        Exports the current fragment atoms to the GUI.
-        '''
-        from export import Export
-        gdb = global_DB(self.invert)
-        self.export_fragment = self.frag_for_gui
-        export = Export(self.export_fragment, gdb, self.invert)
-        atoms = export.export_to_gui()
-        if not atoms:
-            sys.exit()
         sys.exit()
     
     def do_export_fragment(self):
@@ -334,17 +325,16 @@ class DSR():
         '''
         main object to run DSR as command line program
         '''
-        #print(program_name)
         # The database content:
         basefilename = resfile.filename_wo_ending(self.res_file)
         if not basefilename:
-            print('Illegal option')
+            print('*** Illegal option ***')
             sys.exit()
         gdb = global_DB(self.invert)
         rl = resfile.ResList(self.res_file)
         reslist = rl.get_res_list()
         if len(reslist) == 0:
-            print("The input file is empty. Can not proceed!")
+            print("*** The input file is empty. Can not proceed! ***")
             sys.exit()
         find_atoms = FindAtoms(reslist)
         rle = resfile.ResListEdit(reslist, find_atoms)
@@ -416,8 +406,8 @@ class DSR():
                           sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
         afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfix', resi)
         if dsr_line_number < fvarlines[-1]:
-            print('\nWarning! The DSR command line MUST NOT appear before FVAR or the first atom in the .res file!')
-            print('Can not proceed...\n')
+            print('\n*** Warning! The DSR command line MUST NOT appear before FVAR or the first atom in the .res file! ***')
+            print('*** Can not proceed... ***\n')
             sys.exit()
         reslist[dsr_line_number] = reslist[dsr_line_number]+'\n'+afix_entry
         #reslist.insert(dsr_line_number+1, afix_entry)
@@ -458,7 +448,7 @@ class DSR():
             else:
                 shx.set_refinement_cycles(8)
         except(IndexError):
-            print('Unable to set refinement cycles')
+            print('*** Unable to set refinement cycles ***')
         if not self.options.rigid_group:
             shx.remove_afix(afix.rand_id_afix)   # removes the afix 9
         # final resfile write:
@@ -477,36 +467,9 @@ if __name__ == '__main__':
     cp = cProfile.Profile()
     cp.enable(subcalls=True, builtins=True)
     """
-
-
-    class LoggerWriter:
-        def __init__(self, level):
-            # self.level is really like using log.debug(message)
-            # at least in my case
-            self.level = level
-
-        def write(self, message):
-            # if statement reduces the amount of newlines that are
-            # printed to the logger
-            if message != '\n':
-                self.level(message)
-
-        def flush(self):
-            # create a flush method so things can be flushed when
-            # the system wants to. Not sure if simply 'printing'
-            # sys.stderr is the correct way to do it, but it seemed
-            # to work properly for me.
-            self.level(sys.stderr)
-
     try:
         remove_file(reportlog)
         #dsr = DSR(res_file_name="p21c.res")
-        import logging
-        logging.basicConfig(filename="./dsr.lst", filemode='w', level=logging.INFO)
-        log = logging.getLogger('dsr')
-        log.addHandler(logging.StreamHandler())
-        sys.stdout = LoggerWriter(log.info)
-        sys.stderr = LoggerWriter(log.info)
         dsr = DSR()
     except Exception as e:
         import platform
@@ -519,14 +482,14 @@ if __name__ == '__main__':
             logging.info('Platform: {} {}, {}'.format(platform.system(),
                                platform.release(), ' '.join(platform.uname())))
         except:
-            print("Can not write logfile")
+            print("*** Can not write logfile ***")
             pass
         logger = logging.getLogger('dsr')
         ch = logging.StreamHandler()
         logger.addHandler(ch)
         print('\n')
-        print('Congratulations! You found a bug in DSR. Please send the file\n'\
-              ' "dsr_bug_report.log" and the .res file (if possible) to dkratzert@gmx.de\n'
+        print('*** Congratulations! You found a bug in DSR. Please send the file ***\n'\
+              '*** "dsr_bug_report.log" and the .res file (if possible) to dkratzert@gmx.de\n ***'
               )
         #.format(os.path.dirname(os.path.realpath(reportlog))+os.sep ))
         logger.exception(e)

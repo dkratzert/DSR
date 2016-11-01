@@ -386,11 +386,13 @@ def remove_file(filename, exit_dsr=False, terminate=False):
     removes the file "filename" from disk
     program exits when exit is true
     platon gets terminated if terminate is true
+
+    >>> remove_file('foobar')
     '''
     if os.path.isfile(filename):
         try:
             os.remove(filename)
-        except(WindowsError, OSError):  # @UndefinedVariable
+        except(WindowsError, OSError):
             print('can not delete {}'.format(filename))
             # print 'unable to cleanup ins {} files!'.format(file)
             if terminate:
@@ -551,12 +553,28 @@ def remove_partsymbol(atom):
     'C_5'
     >>> remove_partsymbol('SAME/SADI')
     'SAME/SADI'
+    >>> remove_partsymbol('C22_4^b')
+    'C22_4'
+    >>> remove_partsymbol('C23^b')
+    'C23'
+    >>> remove_partsymbol('C24_0^b')
+    'C24'
+    >>> remove_partsymbol('C25_0b')
+    'C25'
     """
-    if '_' in atom:
-        presuff = atom.split('_')
-        prefix, suffix = presuff[0], presuff[-1].strip(string.ascii_letters)
+    if '_' in atom or '^' in atom:
+        if '^' in atom:
+            # since SHELXL 2016/5, residue and part are devided by "^"
+            name = atom.split('^')[0]
+            if name.split('_')[-1] == '0':
+                return name.split('_')[0]
+            else:
+                return name
+        else:
+            presuff = atom.split('_')
+            prefix, suffix = presuff[0], presuff[-1].strip(string.ascii_letters)
         if not suffix:
-            atom = prefix
+            return prefix
         else:
             if suffix == '0':
                 atom = prefix
