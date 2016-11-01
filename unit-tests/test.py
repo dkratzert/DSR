@@ -352,20 +352,20 @@ class reslistTest(unittest.TestCase):
 
     def testrun_pos(self):
         self.assertEqual(self.fa.is_atom(self.atom1), ['F10', '4', '-0.362398', '0.278516', '0.447770'])
-        self.assertIsNone(self.fa.is_atom(self.atom2))
+        self.assertEqual(self.fa.is_atom(self.atom2), [])
 
     def testrun_resinum(self):
-        # print(self.fa.get_resinum(self.resi_str))
-        self.assertEqual(self.fa.get_resinum(self.resi_str)['number'], '3')
-        self.assertEqual(self.fa.get_resinum(self.resi_list)['number'], '3')
-        self.assertIsNone(self.fa.get_resinum(self.resi_list_class)['number'])
-        self.assertIs(self.fa.get_resinum(self.resi_list_num)['number'], '3')
+        # print(self.fa.get_resi_definition_dict(self.resi_str))
+        self.assertEqual(self.fa.get_resi_definition_dict(self.resi_str)['number'], '3')
+        self.assertEqual(self.fa.get_resi_definition_dict(self.resi_list)['number'], '3')
+        self.assertIsNone(self.fa.get_resi_definition_dict(self.resi_list_class)['number'])
+        self.assertIs(self.fa.get_resi_definition_dict(self.resi_list_num)['number'], '3')
 
     def testrun_resinum_class(self):
-        self.assertEqual(self.fa.get_resinum(self.resi_str)['class'], 'TOL')
-        self.assertEqual(self.fa.get_resinum(self.resi_list)['class'], 'TOL')
-        self.assertIs(self.fa.get_resinum(self.resi_list_class)['class'], 'TOL')
-        self.assertIsNone(self.fa.get_resinum(self.resi_list_num)['class'])
+        self.assertEqual(self.fa.get_resi_definition_dict(self.resi_str)['class'], 'TOL')
+        self.assertEqual(self.fa.get_resi_definition_dict(self.resi_list)['class'], 'TOL')
+        self.assertIs(self.fa.get_resi_definition_dict(self.resi_list_class)['class'], 'TOL')
+        self.assertIsNone(self.fa.get_resi_definition_dict(self.resi_list_num)['class'])
 
     def testrun_get_atoms_resiclass(self):
         self.assertEqual(self.fa.get_atoms_resiclass('C1'), None)
@@ -757,7 +757,7 @@ class globalDB(unittest.TestCase):
                                        ['This', 'DME', 'is', 'not', 'coordinated']])
 
     def testrun_build_db_dict(self):
-        gdb = global_DB(False, None, "db1_klein.TXT", "db2_klein.TXT")
+        gdb = global_DB(False, "db1_klein.TXT", "db2_klein.TXT")
         db = gdb.build_db_dict()
         self.assertEqual(db['dmx']['line'], 2)
         self.assertEqual(db['dmx']['name'], 'DMX')
@@ -770,7 +770,7 @@ class globalDB(unittest.TestCase):
     def testrun_get_residue_from_head(self):
         main_dbpath = "db1_klein.TXT"
         user_dbpath = "db2_klein.TXT"
-        gdb = global_DB(False, None, main_dbpath, user_dbpath)
+        gdb = global_DB(False, main_dbpath, user_dbpath)
         gdb.build_db_dict()
         self.assertEqual(gdb.get_residue_from_head(self.klein), 'CLBE')
 
@@ -786,7 +786,7 @@ class globalDB(unittest.TestCase):
         x = '-1.154'
         z = '0.526'
         o1 = ['O1', '1', '-1.154', '-0.748', '0.526']
-        gdb = global_DB(False, None, "db1.TXT", "db2.TXT")
+        gdb = global_DB(False, "db1.TXT", "db2.TXT")
         gdb.build_db_dict()
         atom = gdb.get_fragment_atoms('dme', 'dsr_user_db', 1)[0]
         self.assertListEqual(o1, atom)
@@ -796,7 +796,7 @@ class globalDB(unittest.TestCase):
         self.assertEqual('O1', atom[0])
 
     def testrun_get_fragment_atoms_shortline(self):
-        gdb = global_DB(invert=False, fragment=None, maindb="db1_shortline.TXT")
+        gdb = global_DB(invert=False, maindb="db1_shortline.TXT")
         # db = gdb.build_db_dict()
         atom = gdb.get_fragment_atoms('dme-free', 'dsr_db', 1)
         self.assertEqual(len(atom), 5)
@@ -806,7 +806,7 @@ class globalDB(unittest.TestCase):
         x = '1.154'
         z = '-0.526'
         o1 = ['O1', '1', '1.154', '0.748', '-0.526']
-        gdb = global_DB(True, None, "db1.TXT", "db2.TXT")
+        gdb = global_DB(True, "db1.TXT", "db2.TXT")
         gdb.build_db_dict()
         atom = gdb.get_fragment_atoms('dme', 'dsr_user_db', 1)[0]
         self.assertListEqual(o1, atom)
@@ -817,13 +817,13 @@ class globalDB(unittest.TestCase):
 
     def testrun_get_fragment_atoms_noatoms(self):
         with self.assertRaises(SystemExit):
-            gdb = global_DB(False, None, "db1_noatoms.TXT", "db2.TXT")
+            gdb = global_DB(False, "db1_noatoms.TXT", "db2.TXT")
             gdb.build_db_dict()
             gdb.get_fragment_atoms('dme-free', 'dsr_db', 1)
 
     def testrun_get_fragment_atoms_noend(self):
         with self.assertRaises(SystemExit):
-            gdb = global_DB(False, None, "db1_noend.TXT", "db2.TXT")
+            gdb = global_DB(False, "db1_noend.TXT", "db2.TXT")
             gdb.build_db_dict()
             gdb.get_fragment_atoms('dme-free', 'dsr_db', 1)
 
@@ -832,7 +832,7 @@ class globalDB(unittest.TestCase):
         main_dbpath = "./db1_head_inconsistent.TXT"
         user_dbpath = "./db2_klein.TXT"
         with self.assertRaises(SystemExit):
-            gdb = global_DB(invert=True, fragment=None, maindb=main_dbpath, userdb=user_dbpath)
+            gdb = global_DB(invert=True, maindb=main_dbpath, userdb=user_dbpath)
             db = gdb.build_db_dict()
             fragment = 'dmel'
             head = db[fragment]['head']
@@ -853,17 +853,17 @@ class globalDB(unittest.TestCase):
 
     def testrun_get_comment_from_fragment1(self):
         self.maxDiff = None
-        gdb = global_DB(True, None, maindb="./comment.TXT", userdb="./db1.TXT")
+        gdb = global_DB(True, maindb="./comment.TXT", userdb="./db1.TXT")
         gdb.build_db_dict()
         fragment = 'com'
-        comment = gdb.get_comment_from_fragment('com4')
+        comment = gdb.get_name_from_fragment('com4')
         self.assertEqual(comment, 'A really fancy name.')
         names = ['name!', 'Name 1,2-Dimethoxyethane, not coordinated, C4H10O2, '
                           'DME, Src: Turbomole, B3-LYP/def2-TZVPP, This DME is not coordinated',
                  'Src: Turbomole, B3-LYP/def2-TZVPP, blub, This DME is not coordinated',
                  'A really fancy name.']
         for i in range(1, 5):
-            com = gdb.get_comment_from_fragment(fragment + str(i))
+            com = gdb.get_name_from_fragment(fragment + str(i))
             self.assertEqual(com, names[i - 1])
 
     def testrun_get_resi_from_fragment(self):
@@ -1050,9 +1050,9 @@ class ExportTest(unittest.TestCase):
                            '\nHKLF 0\nEND\n']
 
     def testrun_format_calced_coords(self):
-        export = Export(self.export_clip, self.gdb)
-        bigcell = export.format_calced_coords(['1', '1', '1', '90', '90', '90'])
-        smallcell = export.format_calced_coords(['2', '1', '1', '90', '90', '90'])
+        export = Export(self.gdb, invert=False)
+        bigcell = export.format_calced_coords(['1', '1', '1', '90', '90', '90'], "benzene")[0]
+        smallcell = export.format_calced_coords(['2', '1', '1', '90', '90', '90'], "benzene")[0]
         cell1 = ['50', '50', '50', '90', '90', '90']
         cell2 = ['2', '1', '1', '90', '90', '90']
         self.assertListEqual(bigcell, cell1)
@@ -1062,10 +1062,10 @@ class ExportTest(unittest.TestCase):
         '''
         Exports the current fragment to the clipboard.
         '''
-        gdb = global_DB(self.invert)
-        export = Export(self.export_clip, gdb)
+        gdb = global_DB(invert=self.invert)
+        export = Export(gdb)
         #        with self.assertRaises(SystemExit):
-        self.assertTrue(export.export_to_clip())
+        self.assertTrue(export.export_to_clip('benzene'))
 
 
 class ResListEditTest(unittest.TestCase):

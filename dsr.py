@@ -13,6 +13,8 @@
 from __future__ import print_function
 import sys
 import os
+
+from export import Export
 from options import OptionsParser
 from constants import width, sep_line
 from misc import reportlog, remove_file, find_line,\
@@ -34,70 +36,66 @@ from cf3fit import CF3
 from os.path import expanduser
 
 
+<<<<<<< HEAD
 VERSION = '193'
+=======
+VERSION = '195'
+>>>>>>> master
 # dont forget to change version in Innoscript file, spec file and deb file.
 
-program_name = '\n'+((width//2)-9)*'-'+\
-                ' D S R - v{} '.format(VERSION)+\
-                    ((width//2)-8)*'-'
+program_name = '\n'+((width//2)-9)*'-'+' D S R - v{} '.format(VERSION)+((width//2)-8)*'-'
 
 # TODO and ideas:
 '''
+<<<<<<< HEAD
 - Add auto updater
 
 - Add Rcomplete
 
+=======
+- Add Rcomplete
+>>>>>>> master
 - Add an export header entry for ShelXle containing any warnings/errors from DSR. For example restraint errors.
+- Add a dummy CF3 group in db to be displayed in GUI
 
-- Add Peters way of using restraints with free variable. (low priority)
+From SHELXL user guide:
+A free variable is a refinable parameter that can be used to impose a variety of additional
+linear constraints, e.g. to atomic coordinates, occupancies or displacement parameters.
+Starting values for all free variables are supplied on the FVAR instruction. Since the first
+FVAR parameter is the overall scale factor, there is no free variable number 1. If an atom
+parameter is given a value greater than 15 or less than -15, it is interpreted as a reference to
+a free variable. A positive value (10k+p) is decoded as p times free variable number k [fv(k)],
+and a negative value (i.e. k and p both negative) means p times [fv(–k)–1].
 
+<<<<<<< HEAD
+=======
+- port to JANA?
+  -> learn JANA
+  -> What do I need to change?
+  
+- make CF3, CF6, CF9 to a visible database fragment
+>>>>>>> master
 '''
 
 class DSR():
     '''
     main class
     '''
-    def __init__(self, res_file_name=None, external_restr=None, atom_coordinates=None,
-                 export_fragment=None, search_string=None, search_extern=None,
-                 export_clip=None, import_grade=None, export_all=None, rigid=None,
-                 list_db=None, no_refine=None, invert=None, list_db_csv=None, head_csv=None):
-
-        '''
-        :param res_file_name:  name of the SHELXL res file, like 'p21c.res'
-        :type res_file_name:   string
-        :param external_restr: turn external restraints file on or off
-        :type external_restr:  boolean
-        :param export_fragment: name of fragment to be exported, like 'pfanion'
-        :type export_fragment: string
-        :param search_string:  search for this string in the database
-        :type search_string:   string
-        :param export_clip:    export fragment to clipboard, like 'pfanion'
-        :type export_clip:     string
-        :param import_grade:   import grade file to user database
-        :type import_grade:    string
-        :param export_all:     hidden option, export all fragments at once
-        :type export_all:      boolean
-        :param list_db:        list database entries
-        :type list_db:         boolean
-        :param list_db_csv:    hidden option, list database entries in machine readyble form
-        :type list_db_csv:     boolean
-        :param no_refine:      turn refinement off
-        :type no_refine:       boolean
-        :param invert:         invert the fragment during import, export or LS-fit
-        :type invert:          boolean
-        '''
+    def __init__(self, options):
+        """
+        """
+        import time
+        time1 = time.clock()
         # options from the commandline options parser:
-        self.options = OptionsParser(program_name)
-        # vars() retrieves the options as dict, values() the values and any()
-        # decides if any option is set.
+        self.options = options
         self.external = False
-        if not res_file_name:
-            self.res_file = self.options.res_file
-        else:
-            self.res_file = res_file_name
+        self.fragment = ''
+        self.helpmsg = "*** Please ask daniel.kratzert@ac.uni-freiburg.de for help ***"
+        self.res_file = self.options.res_file
         if self.options.external_restr:
             self.external = True
             self.res_file = self.options.external_restr
+<<<<<<< HEAD
         if external_restr:
             self.external = True
             self.res_file = external_restr
@@ -153,55 +151,104 @@ class DSR():
             if not any([self.res_file, self.external, self.import_grade,
                        self.export_clip, self.export_all, self.export_fragment]):
                 self.options.error()
+=======
+        self.export_fragment = self.options.export_fragment
+        if self.export_fragment:
+            self.res_file = self.options.export_fragment
+        if self.export_fragment:
+            self.fragment = self.export_fragment
+        self.export_clip = self.options.export_clip
+        if self.export_clip:
+            self.fragment = self.export_clip
+        self.import_grade = self.options.import_grade
+        self.export_all = self.options.export_all
+        self.list_db = self.options.list_db
+        self.list_db_csv = self.options.list_db_csv
+        self.no_refine = self.options.no_refine
+        self.invert = self.options.invert
+        self.rigid = self.options.rigid_group
+        self.search_string = self.options.search_string
+        self.search_extern = self.options.search_extern
+        self.head_csv = self.options.head_for_gui
+        if self.head_csv:
+            self.fragment = self.head_csv
+        if self.options.selfupdate:
+            print(program_name)
+            import selfupdate
+            selfupdate.update_dsr()
+            sys.exit()
+        #################################
+        try:
+            self.gdb = global_DB(invert=self.invert)
+        except Exception as e:  # @UnusedVariable
+            print("*** Initializing the database failed ***")
+            print(self.helpmsg)
+            print(e)
+            sys.exit()
+        try:
+            self.export = Export(gdb=self.gdb, invert=self.invert)
+        except Exception as e:
+            print("*** Unable to export informations from DSR ***")
+            print(e)
+            sys.exit()
+        #################################
+>>>>>>> master
         if self.head_csv:
             self.head_to_gui()
         #  List of database Fragments:
         if self.list_db_csv:
             print('DSR version: {}'.format(VERSION))
-            gdb = global_DB()
-            frags = gdb.list_fragments()
+            frags = self.gdb.list_fragments()
             for i in frags:
                 print('{};;{};;{};;{}'.format(i[0], i[3], i[1], i[2]))
-            sys.exit()  
+            sys.exit()
         if self.search_extern:
-            result = search_fragment_name(self.search_extern)
+            result = search_fragment_name(self.search_extern, self.gdb)
             for i in result:
                 print('{};;{};;{};;{}'.format(i[0], i[1], i[2], i[3]))
             sys.exit()
         print(program_name)
+<<<<<<< HEAD
         ################
         if self.options.selfupdate:
             import selfupdate
             selfupdate.update_dsr()
             sys.exit()
+=======
+>>>>>>> master
         ##############
         if self.list_db:
             self.list_dbentries()
         if self.search_string:
-            result = search_fragment_name(self.search_string)
+            result = search_fragment_name(self.search_string, self.gdb)
             print_search_results(result)
             sys.exit()
         ## Export !all! fragments
         if self.export_all:
-            self.export_all_fragments()
+            self.export.export_all_fragments()
         ## Export one fragment
         if self.export_fragment:
+            self.fragment = self.export_fragment
             try:
-                self.do_export_fragment()
+                self.export.write_res_file(self.fragment)
             except() as e:
                 print(e)
+            sys.exit()
         if self.export_clip:
             try:
-                self.export_to_clipboard()
+                self.export.export_to_clip(self.fragment)
             except() as e:
                 print(e)
+            sys.exit()
         ## Import a GRADE fragment
         if self.import_grade:
-            self.import_from_grade()
+            mog = ImportGRADE(self.import_grade, self.invert)
+            mog.write_user_database()
+            sys.exit(1)
         if not any(list(vars(self.options.all_options).values())+[self.res_file]):
             self.options.error()
-        import time
-        time1 = time.clock()
+        self.rl = resfile.ResList(self.res_file)
+        self.reslist = self.rl.get_res_list()
         self.main()
         time2 = time.clock()
         runtime = (time2 - time1)
@@ -214,8 +261,8 @@ class DSR():
         '''
         Exports current fragment header and atoms to the GUI
         '''
-        from export import Export
         atoms = []
+<<<<<<< HEAD
         helpmsg = "*** Please ask daniel.kratzert@ac.uni-freiburg.de for help ***"
         try:
             gdb = global_DB(self.invert, fragment=self.head_csv)
@@ -234,10 +281,19 @@ class DSR():
         except:
             print("*** Could not get atom information ***")
             print(helpmsg)
+=======
+        try:
+            atoms = self.export.export_to_gui(self.fragment)
+        except:
+            print("*** Could not get atom information ***")
+            print(self.helpmsg)
+            sys.exit()
+>>>>>>> master
         print("\n<atoms>")
         print(atoms)
         print("</atoms>")
         # prints most of the needed info:
+<<<<<<< HEAD
         gdb.get_head_for_gui(self.head_csv)
         sys.exit()
     
@@ -273,15 +329,18 @@ class DSR():
         export = Export(self.export_clip, gdb)
         export.export_to_clip()
         sys.exit(True)
+=======
+        self.gdb.get_head_for_gui(self.fragment)
+        sys.exit()
+>>>>>>> master
 
     def list_dbentries(self):
         '''
         list all entries in the db.
         '''
         dbdir = expanduser('~')
-        gdb = global_DB()
-        fraglist = gdb.list_fragments()
         fragnames = []
+        num = 0
         try:
             (width, height) = get_terminal_size()  # @UnusedVariable
         except():
@@ -289,7 +348,7 @@ class DSR():
         print('\n Entries found in the databases:\n')
         print(' Fragment         | Line | DB Name    | Full name, Comments ')
         print(sep_line)
-        for num, line in enumerate(fraglist):
+        for num, line in enumerate(self.gdb.list_fragments()):
             fragnames.append(line[0])
             line = ' {:<17}| {:<5}| {:<11}| {}'.format(*line)
             print(line[:width - 1])
@@ -297,85 +356,76 @@ class DSR():
               '\n Feel free to add more fragments to "{}dsr_user_db.txt"' \
               '\n and please mail them to dkratzert@gmx.de.'.format(dbdir + os.path.sep))
         for fragment in fragnames:
-            gdb.check_consistency(fragment)
-            gdb.check_db_atom_consistency(fragment)
-            gdb.check_db_header_consistency(fragment)
-            gdb.check_sadi_consistence(fragment)
+            self.gdb.check_consistency(fragment)
+            self.gdb.check_db_atom_consistency(fragment)
+            self.gdb.check_db_header_consistency(fragment)
+            self.gdb.check_sadi_consistence(fragment)
+        from selfupdate import is_update_needed
+        if is_update_needed():
+            print("\n*** An update for DSR is available. You can update with 'DSR -r' ***")
         sys.exit()
 
-    def import_from_grade(self):
-        '''
-        imports a fragment from the GRADE webserver.
-        '''
-        mog = ImportGRADE(self.import_grade, self.invert)
-        mog.write_user_database()
-        sys.exit(1)
-
-    def go_refine(self, shx):
-        '''
-        actually starts the fragment fit
-        '''
-        try:
-            shx.run_shelxl()
-        except() as e:
-            print(e)
-            sys.exit()
 
     def main(self):
         '''
         main object to run DSR as command line program
         '''
         # The database content:
+        dbatoms = []
         basefilename = resfile.filename_wo_ending(self.res_file)
         if not basefilename:
             print('*** Illegal option ***')
             sys.exit()
+<<<<<<< HEAD
         gdb = global_DB(self.invert)
         rl = resfile.ResList(self.res_file)
         reslist = rl.get_res_list()
         if len(reslist) == 0:
+=======
+        if len(self.reslist) == 0:
+>>>>>>> master
             print("*** The input file is empty. Can not proceed! ***")
             sys.exit()
-        find_atoms = FindAtoms(reslist)
-        rle = resfile.ResListEdit(reslist, find_atoms)
-        dsrp = DSR_Parser(reslist, rle)
+        find_atoms = FindAtoms(self.reslist)
+        rle = resfile.ResListEdit(self.reslist, find_atoms)
+        dsrp = DSR_Parser(self.reslist, rle)
         dsr_dict = dsrp.get_dsr_dict
         fvarlines = rle.find_fvarlines()
-        fragment = dsrp.fragment.lower()
-        if fragment in ['cf3', 'cf6', 'cf9']:
+        self.fragment = dsrp.fragment.lower()
+        if self.fragment in ['cf3', 'cf6', 'cf9']:
             dbhead = 'RESI CF3'
             db_residue_string = 'CF3'
             db_atom_types = ['C', 'F']
         else:
-            dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
-            db_residue_string = gdb.get_resi_from_fragment(fragment)
-            dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
+            dbhead = self.gdb.get_head_from_fragment(self.fragment)        # this is only executed once
+            db_residue_string = self.gdb.get_resi_from_fragment(self.fragment)
+            dbatoms = self.gdb.get_atoms_from_fragment(self.fragment)      # only the atoms of the dbentry as list
             # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
             db_atom_types = get_atomtypes(dbatoms)
-        sf = SfacTable(reslist, db_atom_types)
+        sf = SfacTable(self.reslist, db_atom_types)
         sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
-        resi = Resi(reslist, dsr_dict, dbhead, db_residue_string, find_atoms)
+        resi = Resi(self.reslist, dsr_dict, dbhead, db_residue_string, find_atoms)
         # line where the dsr command is found in the resfile:
         dsr_line_number = dsrp.find_dsr_command(line=False)
-        if fragment in ['cf3', 'cf6', 'cf9']:
-            cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table,
+        if self.fragment in ['cf3', 'cf6', 'cf9']:
+            cf3 = CF3(rle, find_atoms, self.reslist, self.fragment, sfac_table,
                       basefilename, dsr_dict, resi, self.res_file, self.options)
-            if fragment == 'cf3':
+            if self.fragment == 'cf3':
                 cf3.cf3()
-            if fragment == 'cf6':
+            if self.fragment == 'cf6':
                 cf3.cf3('120')
-            if fragment == 'cf9':
+            if self.fragment == 'cf9':
                 cf3.cf9()
             print('\nFinished...')
             sys.exit()
         # checks have to be after CF3, CF6 etc.
-        gdb.check_consistency(fragment)
-        gdb.check_db_atom_consistency(fragment)
-        gdb.check_db_header_consistency(fragment)
-        gdb.check_sadi_consistence(fragment)
+        self.gdb.check_consistency(self.fragment)
+        self.gdb.check_db_atom_consistency(self.fragment)
+        self.gdb.check_db_header_consistency(self.fragment)
+        self.gdb.check_sadi_consistence(self.fragment)
         if dsrp.occupancy:
             rle.set_free_variables(dsrp.occupancy)
-        fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
+        fragline = self.gdb.get_fragline_from_fragment(self.fragment)  # full string of FRAG line
         dbhead = resi.remove_resi(dbhead)
         ### corrects the atom type according to the previous defined global sfac table:
         dbatoms = set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table)
@@ -383,7 +433,7 @@ class DSR():
         ## Insert FRAG ... FEND entry:
         rle.insert_frag_fend_entry(dbatoms, fragline, fvarlines)
 
-        print('Inserting {} into res File.'.format(fragment))
+        print('Inserting {} into res File.'.format(self.fragment))
         if self.invert:
             print('Fragment inverted.')
         print('Source atoms: {}'.format(', '.join(dsrp.source)))
@@ -391,37 +441,40 @@ class DSR():
 
         # several checks if the atoms in the dsr command line are consistent
         check_source_target(dsrp.source, dsrp.target, dbatoms)
-        num = NumberScheme(reslist, dbatoms, resi.get_resinumber)
+        num = NumberScheme(self.reslist, dbatoms, resi.get_resinumber)
         # returns also the atom names if residue is active
         fragment_numberscheme = num.get_fragment_number_scheme()
         print('Fragment atom names: {}'.format(', '.join(fragment_numberscheme)))
         dfix_head = ''
         if dsrp.dfix_active:
-            restr = Restraints(fragment, gdb)
+            restr = Restraints(self.export, self.fragment, self.gdb)
             dfix_12 = restr.get_formated_12_dfixes()
             dfix_13 = restr.get_formated_13_dfixes()
             flats = restr.get_formated_flats()
             dfix_head = dfix_12+dfix_13+flats
-        afix = InsertAfix(reslist, dbatoms, db_atom_types, dbhead, dsr_dict,
+        afix = InsertAfix(self.reslist, dbatoms, db_atom_types, dbhead, dsr_dict,
                           sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
         afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfix', resi)
         if dsr_line_number < fvarlines[-1]:
             print('\n*** Warning! The DSR command line MUST NOT appear before FVAR or the first atom in the .res file! ***')
             print('*** Can not proceed... ***\n')
             sys.exit()
-        reslist[dsr_line_number] = reslist[dsr_line_number]+'\n'+afix_entry
-        #reslist.insert(dsr_line_number+1, afix_entry)
+        self.reslist[dsr_line_number] = self.reslist[dsr_line_number] + '\n' + afix_entry
         # write to file:
-        shx = ShelxlRefine(reslist, basefilename, find_atoms, self.options)
+        shx = ShelxlRefine(self.reslist, basefilename, find_atoms, self.options)
         acta_lines = shx.remove_acta_card()
         cycles = shx.get_refinement_cycles
         shx.set_refinement_cycles('0')  # also sets shx.cycles to current value
-        rl.write_resfile(reslist, '.ins')
+        self.rl.write_resfile(self.reslist, '.ins')
         if self.no_refine:
             print('\nPerforming no fragment fit. Just prepared the .ins file for you.')
             return
         #  Refine with L.S. 0 to insert the fragment
-        self.go_refine(shx)
+        try:
+            shx.run_shelxl()
+        except() as e:
+            print(e)
+            sys.exit()
         # Display the results from the list file:
         lf = ListFile(basefilename)
         lst_file = lf.read_lst_file()
@@ -430,16 +483,16 @@ class DSR():
         lfd.print_LS_fit_deviations()
         cell = rle.get_cell()
         # open res file again to restore 8 refinement cycles:
-        rl = resfile.ResList(self.res_file)
-        reslist = rl.get_res_list()
+        self.rl = resfile.ResList(self.res_file)
+        reslist = self.rl.get_res_list()
         # remove the "REM " instriction bevore the +dfixfile instruction
         plusline = find_line(reslist, "REM "+afix.rand_id_dfx)
         if plusline:
             reslist[plusline-1] = reslist[plusline-1][4:]
             remove_line(reslist, plusline, remove=True)
         if dsrp.command == 'REPLACE':
-            reslist, find_atoms = replace_after_fit(rl, reslist, resi,
-                                    fragment_numberscheme, cell)
+            reslist, find_atoms = replace_after_fit(self.rl, reslist, resi,
+                                                    fragment_numberscheme, cell)
         shx = ShelxlRefine(reslist, basefilename, find_atoms, self.options)
         shx.restore_acta_card(acta_lines)
         try:
@@ -452,15 +505,11 @@ class DSR():
         if not self.options.rigid_group:
             shx.remove_afix(afix.rand_id_afix)   # removes the afix 9
         # final resfile write:
-        rl.write_resfile(reslist, '.res')
+        self.rl.write_resfile(reslist, '.res')
 
 
 if __name__ == '__main__':
     '''main function'''
-    #dsr = DSR(list_db=True)
-    #dsr = DSR(export_fragment='toluene')
-    #dsr = DSR(res_file_name='p21n_cf3.res')
-    #sys.exit()
     """
     import cProfile
     import pstats
@@ -469,12 +518,17 @@ if __name__ == '__main__':
     """
     try:
         remove_file(reportlog)
-        #dsr = DSR(res_file_name="p21c.res")
-        dsr = DSR()
+        options = OptionsParser(program_name)
+        dsr = DSR(options)
     except Exception as e:
         import platform
         import logging
-        logging.basicConfig(filename=reportlog, filemode='w', level=logging.DEBUG)
+        try:
+            logging.basicConfig(filename=reportlog, filemode='w', level=logging.DEBUG)
+        except IOError:
+            print("Error:", e)
+            import sys
+            sys.exit()
         remove_file(reportlog)
         logging.info('DSR version: {}'.format(VERSION))
         logging.info('Python version: {}'.format(sys.version))
