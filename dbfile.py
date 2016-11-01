@@ -365,15 +365,16 @@ class global_DB():
         :type line:      integer
 
         >>> gdb = global_DB(invert=False)
-        >>> gdb.get_fragment_atoms(fragment='benzene', db_name='dsr_db', line=669)
+        >>> gdb.get_fragment_atoms(fragment='benZene', db_name='dsr_db', line=669)
         ... # doctest: +NORMALIZE_WHITESPACE
         [['C1', '1', '0.880000', '-0.330900', '0.267190'], ['C2', '1', '0.786200', '-0.377700', '0.238080'],
         ['C3', '1', '0.760600', '-0.318400', '0.192570'], ['C4', '1', '0.829200', '-0.212200', '0.175520'],
         ['C5', '1', '0.923200', '-0.164400', '0.204000'], ['C6', '1', '0.948800', '-0.223200', '0.249920']]
         '''
+        fragment = fragment.lower()
         atoms = []
         end = False
-        regex = re.escape(r'</{}>'.format(fragment.lower()))
+        regex = re.escape(r'</{}>'.format(fragment))
         for i in self._db_plain_dict[db_name][int(line):]:
             i = i.strip('\n\r')
             if re.match(regex, i.lower()):  # find the endtag of db entry
@@ -401,7 +402,7 @@ class global_DB():
         returns header information of the specific fragment:
         tag, Name/comment, source, cell, residue, dbtype, restr, atoms
         >>> gdb = global_DB(invert=False)
-        >>> gdb.get_head_for_gui('benzene')
+        >>> gdb.get_head_for_gui('benZene')
         ... # doctest: +NORMALIZE_WHITESPACE
         <tag>
          benzene
@@ -475,6 +476,7 @@ class global_DB():
         :param fragment: fragment name
         :type fragment: string
         '''
+        fragment = fragment.lower()
         try:
             types = get_atomtypes(self._db_all_dict[fragment]['atoms'])
         except:
@@ -489,6 +491,7 @@ class global_DB():
         '''This method is for atoms only (without db header)!
           check the db for duplicates:
         '''
+        fragment = fragment.lower()
         dbatoms = [i[0].upper().strip() for i in self.get_atoms_from_fragment(fragment)]
         # check for duplicates:
         while dbatoms:
@@ -551,6 +554,7 @@ class global_DB():
         :param fragment: frag name
         :param factor: factor for confidence interval
         '''
+        fragment = fragment.lower()
         atoms = self._db_all_dict[fragment]['atoms']
         restr = self._db_all_dict[fragment]['head']
         restraints = deepcopy(restr)
@@ -633,6 +637,7 @@ class global_DB():
              fragline, # line with frag command e.g. 'FRAG 17 1 1 1 90 90 90'
               comment: # comment lines from the head
         '''
+        fragment = fragment.lower()
         head = []
         nhead = []
         comment = []
@@ -682,8 +687,9 @@ class global_DB():
         :param fragment: fragment name
         :type fragment: string
         '''
+        fragment = fragment.lower()
         try:
-            return self._db_all_dict[fragment.lower()]['atoms']
+            return self._db_all_dict[fragment]['atoms']
         except KeyError:
             print('*** Could not find {} in database ***'.format(fragment))
             self.search_for_error_response(fragment)
@@ -693,8 +699,9 @@ class global_DB():
         '''
         returns the line with FRAG 17 cell from the dbentry
         '''
+        fragment = fragment.lower()
         try:
-            fragline = self._db_all_dict[fragment.lower()]['fragline']
+            fragline = self._db_all_dict[fragment]['fragline']
         except(KeyError):
             print('*** Fragment "{}" not found in database ***'.format(fragment))
             self.search_for_error_response(fragment)
@@ -1110,7 +1117,8 @@ if __name__ == '__main__':
     failed, attempted = doctest.testmod()  # verbose=True)
     if failed == 0:
         print('passed all {} tests!'.format(attempted))
-
+    else:
+        print('{} of {} tests failed'.format(failed, attempted))
     ###################################################################
 
     sys.exit()

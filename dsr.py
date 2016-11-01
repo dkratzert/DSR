@@ -59,6 +59,8 @@ and a negative value (i.e. k and p both negative) means p times [fv(–k)–1].
 - port to JANA?
   -> learn JANA
   -> What do I need to change?
+  
+- make CF3, CF6, CF9 to a visible database fragment
 '''
 
 class DSR():

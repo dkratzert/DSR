@@ -64,6 +64,8 @@ class Export():
         >>> exp = Export(gdb, invert=False)
         >>> exp.format_calced_coords([1, 1, 1, 90, 90, 90], "benzene")
         [['50', '50', '50', 90, 90, 90], [['C1', '1', '  0.017600', ' -0.006618', '  0.005344'], ['C2', '1', '  0.015724', ' -0.007554', '  0.004762'], ['C3', '1', '  0.015212', ' -0.006368', '  0.003851'], ['C4', '1', '  0.016584', ' -0.004244', '  0.003510'], ['C5', '1', '  0.018464', ' -0.003288', '  0.004080'], ['C6', '1', '  0.018976', ' -0.004464', '  0.004998']]]
+        >>> exp.format_calced_coords([1, 1, 1, 90, 90, 90], "BENZENE")
+        [['50', '50', '50', 90, 90, 90], [['C1', '1', '  0.017600', ' -0.006618', '  0.005344'], ['C2', '1', '  0.015724', ' -0.007554', '  0.004762'], ['C3', '1', '  0.015212', ' -0.006368', '  0.003851'], ['C4', '1', '  0.016584', ' -0.004244', '  0.003510'], ['C5', '1', '  0.018464', ' -0.003288', '  0.004080'], ['C6', '1', '  0.018976', ' -0.004464', '  0.004998']]]
         """
         fragment = fragment.lower()
         atoms = copy.deepcopy(self._gdb[fragment]['atoms'])
@@ -101,34 +103,37 @@ class Export():
         exports a .res file from a database entry to be viewed in a GUI
         >>> invert = False
         >>> gdb = global_DB(invert)
-        >>> fragment = 'toluene'
+        >>> fragment = 'toLuene'
         >>> export = Export(gdb, invert)
         >>> print(export.export_resfile(fragment)) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF +ELLIPSIS
         Exporting "toluene" to toluene.res
-        ['TITL toluene\n', 'REM This file was exported by DSR version 195\n',
-        'REM Name: Toluene, C7H8\nREM Source: CCDC CESLUJ\n',
-        'CELL 0.71073    11.246   14.123   27.184   90.000  100.079   90.000\n',
-        'ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n',
-        'LATT  -1\n', 'SFAC C\n', 'UNIT 1 \n', 'REM  RESIDUE: TOL\n',
-        'REM Sum formula: C7 \n', 'WGHT  0.1\n', 'FVAR  1.0\n', 'rem Restraints from DSR database:\n',
-        'SADI C2 C3 C3 C4 C4 C5 C5 C6 C6 C7 C7 C2\nSADI 0.04 C2 C6 C2 C4 C7 C5 C3 C7 C4 C6 C3 C5\nDFIX 1.51 C1 C2\nSADI 0.04 C1 C7 C1 C3\nFLAT C1 > C7\nSIMU C1 > C7\nRIGU C1 > C7\n',
-        'rem Restraints from atom connectivities:\n',
-        ['DFIX 1.3922 C3   C2  \n', 'DFIX 1.3775 C3   C4  \n', 'DFIX 1.5058 C2   C1
-        \n', 'DFIX 1.3946 C2   C7  \n', 'DFIX 1.3802 C7   C6  \n',
-        'DFIX 1.3814 C6   C5  \n', 'DFIX 1.3897 C5   C4  \n',
-        'DANG 2.5246 C1   C3  \n', 'DANG 2.5243 C1   C7  \n',
-        'DANG 2.4183 C2   C4  \n', 'DANG 2.4124 C2   C6  \n',
-        'DANG 2.3878 C3   C7  \n', 'DANG 2.3909 C3   C5  \n',
-        'DANG 2.3961 C4   C6  \n', 'DANG 2.3967 C5   C7  \n',
-        'FLAT C2 C7 C6 C5\n', 'FLAT C1 C2 C7 C6\n', 'FLAT C6 C5 C4 C3\n'], 'rem end of restraints\n',
-        '\n', ['C1   1     0.34810   0.50619   0.44851   11.0   0.04\n',
-        'C2   1     0.37174   0.58816   0.41613   11.0   0.04\n',
-        'C3   1     0.27706   0.63878   0.38821   11.0   0.04\n',
-        'C4   1     0.29758   0.71355   0.35825   11.0   0.04\n',
-        'C5   1     0.41548   0.73951   0.35559   11.0   0.04\n',
-        'C6   1     0.51068   0.69033   0.38312   11.0   0.04\n',
-        'C7   1     0.48938   0.61536   0.41297   11.0   0.04\n'],
+        ['TITL toluene\n', 'REM This file was exported by DSR version 195\n', 
+        'REM Name: Toluene, C7H8\nREM Source: CCDC CESLUJ\n', 
+        'CELL 0.71073    11.246   14.123   27.184   90.000  100.079   90.000\n', 
+        'ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n', 
+        'LATT  -1\n', 'SFAC C\n', 'UNIT 1 \n', 'REM  RESIDUE: TOL\n', 
+        'REM Sum formula: C7 \n', 'WGHT  0.1\n', 'FVAR  1.0\n', 'rem Restraints from DSR database:\n', 
+        'SADI C2 C3 C3 C4 C4 C5 C5 C6 C6 C7 C7 C2\nSADI 0.04 C2 C6 C2 C4 C7 C5 C3 C7 C4 C6 C3 C5\nDFIX 1.51 C1 C2\nSADI 0.04 C1 C7 C1 C3\nFLAT C1 > C7\nSIMU C1 > C7\nRIGU C1 > C7\n', 
+        'rem Restraints from atom connectivities:\n', 
+        ['DFIX 1.3922 C3   C2  \n', 'DFIX 1.3775 C3   C4  \n', 
+        'DFIX 1.5058 C2   C1  \n', 'DFIX 1.3946 C2   C7  \n', 
+        'DFIX 1.3802 C7   C6  \n', 'DFIX 1.3814 C6   C5  \n', 
+        'DFIX 1.3897 C5   C4  \n', 'DANG 2.5246 C1   C3  \n', 
+        'DANG 2.5243 C1   C7  \n', 'DANG 2.4183 C2   C4  \n', 
+        'DANG 2.4124 C2   C6  \n', 'DANG 2.3878 C3   C7  \n', 
+        'DANG 2.3909 C3   C5  \n', 'DANG 2.3961 C4   C6  \n', 
+        'DANG 2.3967 C5   C7  \n', 'FLAT C2 C5 C6 C7\n', 
+        'FLAT C1 C2 C6 C7\n', 
+        'FLAT C3 C4 C5 C6\n'], 'rem end of restraints\n', 
+        '\n', ['C1   1     0.34810   0.50619   0.44851   11.0   0.04\n', 
+        'C2   1     0.37174   0.58816   0.41613   11.0   0.04\n', 
+        'C3   1     0.27706   0.63878   0.38821   11.0   0.04\n', 
+        'C4   1     0.29758   0.71355   0.35825   11.0   0.04\n', 
+        'C5   1     0.41548   0.73951   0.35559   11.0   0.04\n', 
+        'C6   1     0.51068   0.69033   0.38312   11.0   0.04\n', 
+        'C7   1     0.48938   0.61536   0.41297   11.0   0.04\n'], 
         '\nHKLF 0\nEND\n']
+        
         """
         fragname = fragname.lower()
         comment = self._gdb[fragname]['comment']
@@ -252,6 +257,15 @@ class Export():
         'C3 6 1.26895 9.02168 10.39032', 'C4 6 1.64225 10.07768 9.58845',
         'C5 6 2.98081 10.44432 9.51725', 'C6 6 3.92045 9.74974 10.25408',
         'C7 6 3.53891 8.69091 11.05301']
+        
+        >>> print(exp.format_atoms_for_export(fragname="TOLUeNE", gui=True)) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF
+        ['C1 6 1.78099 7.14907 12.00423', 'C2 6 2.20089 8.30676 11.13758',
+        'C3 6 1.26895 9.02168 10.39032', 'C4 6 1.64225 10.07768 9.58845',
+        'C5 6 2.98081 10.44432 9.51725', 'C6 6 3.92045 9.74974 10.25408',
+        'C7 6 3.53891 8.69091 11.05301']
+        
+        #>>> print(exp.format_atoms_for_export(fragname="", gui=True))
+        #sys.exit()
         """
         fragname = fragname.lower()
         el = Element()
@@ -300,6 +314,7 @@ class Export():
         C1 6 1.78099 7.14907 12.00423;;C2 6 2.20089 8.30676 11.13758;;C3 6 1.26895 9.02168 10.39032;;C4
         6 1.64225 10.07768 9.58845;;C5 6 2.98081 10.44432 9.51725;;C6 6 3.92045 9.74974 10.25408;;C7 6 3.53891 8.69091 11.05301
         >>> print(exp.export_to_gui(fragname="TOLUENE")) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF +ELLIPSIS
+        C1 6 1.78099 7.14907 12.00423;;C2 6 2.20089 8.30676 11.13758;;C3 6 1.26895 9.02168 10.39032;;C4 6 1.64225 10.07768 9.58845;;C5 6 2.98081 10.44432 9.51725;;C6 6 3.92045 9.74974 10.25408;;C7 6 3.53891 8.69091 11.05301
         """
         fragname = fragname.lower()
         atoms = self.format_atoms_for_export(fragname, gui=True)
@@ -476,6 +491,8 @@ if __name__ == '__main__':
     failed, attempted = doctest.testmod()  # verbose=True)
     if failed == 0:
         print('passed all {} tests!'.format(attempted))
+    else:
+        print('{} of {} tests failed'.format(failed, attempted))
 
     sys.exit()
 
