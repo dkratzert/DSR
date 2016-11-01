@@ -209,6 +209,8 @@ class FindAtoms():
         ['class', 'number']
         >>> sorted(FindAtoms.get_resi_definition_dict('RESI 1 TOL').values())
         ['1', 'TOL']
+        >>> FindAtoms.get_resi_definition_dict('RESI 1 TOL')
+        {'class': 'TOL', 'number': '1'}
         """
         resi_dict = {
             'class' : None,
@@ -367,13 +369,13 @@ class FindAtoms():
 
 
     def get_atoms_resiclass(self, atom):
-        '''
+        """
         returns the residue class of a given atom. C1 would be 'None'
         C1_1 would be 'CF3' for example
-
+        
         :param atom: an atom name with or without residue number like C1 or C1_1
         :type atom: string
-        '''
+        """
         num = self.get_atoms_resinumber(atom)
         atom = atom.split('_')[0]
         residue = self._residues[num]
@@ -383,13 +385,13 @@ class FindAtoms():
 
 
     def get_atoms_resinumber(self, atom):
-        '''
+        """
         returns the residue number of a given atom. C1 would be '0'
         C1_1 would be '1', ...
 
         :param atom: an atom name with or without residue number like C1 or C1_1
         :type atom: string
-        '''
+        """
         if '_' in atom:
             suffix = atom.split('_')
             resinum = suffix[-1].strip(string.ascii_letters) # we don't need the part here
@@ -827,6 +829,8 @@ if __name__ == '__main__':
     failed, attempted = doctest.testmod()#verbose=True)
     if failed == 0:
         print('passed all {} tests!'.format(attempted))
+    else:
+        print('{} of {} tests failed'.format(failed, attempted))
     sys.exit()
 
     ###########################################################
