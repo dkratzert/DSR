@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "DSR - Disordered Structure Refinement"
-#define MyAppVersion "190"
+#define MyAppVersion "195"
 #define MyAppPublisher "Daniel Kratzert"
 
 [Setup]
@@ -74,6 +74,7 @@ Source: "..\dbfile.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\dsrparse.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\export.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\cf3fit.py"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\selfupdate.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\terminalsize.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\misc.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\options.py"; DestDir: "{app}"; Flags: ignoreversion
@@ -85,15 +86,24 @@ Source: "..\pyperclip.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\elements.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\README"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Python27-dsr\*"; DestDir: "{app}\Python27"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
-Source: "..\example\*"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example\p21c.hkl"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example\p21c.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example\p21c_step0.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example\p21c_step1.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+;Source: "..\example\p21c_step2.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example\p21c_step3.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example\p21c_step2.ins"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example\p21c_final.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example\p21n_cf3.hkl"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example\p21n_cf3.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: ".\Output\changelog.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dsr_user_db.txt"; DestDir: "{app}"; Flags: ignoreversion confirmoverwrite uninsneveruninstall onlyifdoesntexist; Permissions: users-modify
+;Source: "..\dsr_user_db.txt"; DestDir: "{app}"; Flags: ignoreversion confirmoverwrite uninsneveruninstall onlyifdoesntexist; Permissions: users-modify
 Source: "..\networkx\*"; DestDir: "{app}\networkx"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
 Source: "..\mpmath\*"; DestDir: "{app}\mpmath"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
 
 [Icons]
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
-Name: "{group}\DSR manual"; Filename: "{app}\manual\DSR-manual.pdf"; WorkingDir: "{app}"
+Name: "{group}\DSR manual"; Filename: "{app}\manuals\DSR-manual.pdf"; WorkingDir: "{app}"
 Name: "{group}\DSR database"; Filename: "{app}\dsr_db.txt"; WorkingDir: "{app}"
 Name: "{group}\DSR user-database"; Filename: "{%USERPROFILE}\dsr_user_db.txt"
 
@@ -101,14 +111,16 @@ Name: "{group}\DSR user-database"; Filename: "{%USERPROFILE}\dsr_user_db.txt"
 Root: "HKLM"; Subkey: "Software\DSR"; ValueType: string; ValueName: "dsr_directory"; ValueData: "{app}"; Flags: uninsdeletekey
 Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "DSR_DIR"; ValueData: "{app}"; Flags: deletevalue
 Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "DSR_DB_DIR"; ValueData: "{app}"; Flags: deletevalue
-Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "DSRDIR"; ValueData: "{app}"; Flags: deletevalue
 
 [UninstallDelete]
 Type: files; Name: "{app}\*.pyc"
+Type: files; Name: "{app}\dsr"
 Type: filesandordirs; Name: "{app}\python27"
 Type: filesandordirs; Name: "{app}\networkx"
 Type: filesandordirs; Name: "{app}\mpmath"
 Type: filesandordirs; Name: "{app}\example"
+Type: filesandordirs; Name: "{app}\manuals"
+Type: filesandordirs; Name: "{app}\setup"
 
 [Dirs]
 Name: "{app}\example"; Permissions: authusers-full

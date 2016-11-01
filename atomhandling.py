@@ -173,23 +173,30 @@ class FindAtoms():
         """
         return self._residues
 
-    def is_atom(self, atomline):
+    @staticmethod
+    def is_atom(atomline):
         """
         returns all atoms found in the input as list if they are real atoms
 
         :param atomline:  'O1    3    0.120080   0.336659   0.494426  11.00000   0.01445 ...'
-        >>> FindAtoms.is_atom('', atomline = 'O1    3    0.120080   0.336659   0.494426  11.00000   0.01445 ...')
+        >>> FindAtoms.is_atom(atomline = 'O1    3    0.120080   0.336659   0.494426  11.00000   0.01445 ...')
         ['O1', '3', '0.120080', '0.336659', '0.494426']
+        >>> FindAtoms.is_atom(atomline = 'O1    0.120080   0.336659   0.494426  11.00000   0.01445 ...')
+        []
+        >>> FindAtoms.is_atom(atomline = 'O1    0.120080   0.336659   0.494426  11.00000   0.01445 ...')
+        []
         """
-        atom = ''
         if re.search(atomregex, str(atomline)):        # search atoms
             atom = atomline.split()[:5]              # convert to list and use only first 5 columns
             if atom[0].upper() not in SHX_CARDS:      # exclude all non-atom cards
                 return atom
             else:
-                return False
+                return []
+        else:
+            return []
 
-    def get_resinum(self, resi):
+    @staticmethod
+    def get_resi_definition_dict(resi):
         """
         returns the residue number and class of a string like 'RESI TOL 1'
         or 'RESI 1 TOL'
@@ -198,10 +205,12 @@ class FindAtoms():
         :param resi: ['RESI', 'number', 'class']
         :type resi: list or string
 
-        >>> sorted(FindAtoms.get_resinum('', 'RESI 1 TOL').keys())
+        >>> sorted(FindAtoms.get_resi_definition_dict('RESI 1 TOL').keys())
         ['class', 'number']
-        >>> sorted(FindAtoms.get_resinum('', 'RESI 1 TOL').values())
+        >>> sorted(FindAtoms.get_resi_definition_dict('RESI 1 TOL').values())
         ['1', 'TOL']
+        >>> FindAtoms.get_resi_definition_dict('RESI 1 TOL')
+        {'class': 'TOL', 'number': '1'}
         """
         resi_dict = {
             'class' : None,
@@ -255,51 +264,50 @@ class FindAtoms():
         """
         atoms_to_delete = []
         frag_coords = self.get_atomcoordinates(frag_atoms)
-        atoms = self._residues
-        for i in atoms:
+        for resinum in self._residues:
             suffix = ''
-            if i != 0:
-                suffix = '_{}'.format(i)
-            # i is the resideue number
-            for y in atoms[i]:
-                if y[0].startswith('Q'):
+            if resinum != 0:
+                suffix = '_{}'.format(resinum)
+            # resinum is the resideue number
+            for atom in self._residues[resinum]:
+                if atom[0].startswith('Q'):
                     # ignore q peaks:
                     continue
-                if only_this and only_this != y[5]:
+                if only_this and only_this != atom[5]:
                     continue
-                # y[4] is the part number
-                if int(y[4]) == 0:
+                # atomlist[4] is the part number
+                # replace only in part 0:
+                if int(atom[4]) == 0:
                     for name in frag_coords:
                         # name is the atom name
-                        if name == y[0]:
+                        if atom[0]+suffix in frag_coords:
                             # do not delete the fitted fragment
-                            continue
+                            break
                         at1 = [float(x) for x in frag_coords[name]]
-                        at2 = [float(x) for x in y[1]]
+                        at2 = [float(x) for x in atom[1]]
                         resinum1 = self.get_atoms_resinumber(name)
-                        resinum2 = self.get_atoms_resinumber(y[0]+suffix)
+                        resinum2 = self.get_atoms_resinumber(atom[0]+suffix)
                         if at1 == at2 and resinum1 == resinum2:
                             # do not delete atoms on exactly the same position
                             # and same residue
-                            continue
+                            break
                         d = atomic_distance(at1, at2, cell)
                         # now get the atom types of the pair atoms and with that
                         # the covalence radius. 
                         if d < remdist:
-                            atoms_to_delete.append(y[0]+suffix) 
+                            atoms_to_delete.append(atom[0]+suffix)
         return sorted(atoms_to_delete)
-    
 
     def collect_residues(self):
-        '''
+        """
         find all atoms and sort them into residues
 
         residues is a dictionary which includes a dictionary for each residue
         which in turn includes a list of its atoms.
 
-        residues = { {'0': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number], 
+        residues = { {'0': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number],
                            ['C2', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number]},
-                     {'1': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number], 
+                     {'1': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number],
                      []} }
 
         for i in residues.keys():
@@ -307,13 +315,13 @@ class FindAtoms():
             for x in ats:
                 if 'C12' in x[0]:
                     print x #print C12 from all residues
-        :type linenumber: int
-        '''
+        """
         resi = False
         part = False
         partnum = '0'
         resiclass = None
         residues = {'0': []}
+        resinum = 0
         for num, i in enumerate(self._reslist):
             i = i.upper()
             # First collect the residue
@@ -325,8 +333,8 @@ class FindAtoms():
                 continue
             if i.startswith('RESI') and not re.match(r'^RESI\s+0', i):
                 resi = True
-                resinum = self.get_resinum(i.split())['number']
-                resiclass = self.get_resinum(i.split())['class']
+                resinum = self.get_resi_definition_dict(i.split())['number']
+                resiclass = self.get_resi_definition_dict(i.split())['class']
                 residues.update({resinum: []})
                 continue
             # Now collect the part:
@@ -361,13 +369,13 @@ class FindAtoms():
 
 
     def get_atoms_resiclass(self, atom):
-        '''
+        """
         returns the residue class of a given atom. C1 would be 'None'
         C1_1 would be 'CF3' for example
-
+        
         :param atom: an atom name with or without residue number like C1 or C1_1
         :type atom: string
-        '''
+        """
         num = self.get_atoms_resinumber(atom)
         atom = atom.split('_')[0]
         residue = self._residues[num]
@@ -377,13 +385,13 @@ class FindAtoms():
 
 
     def get_atoms_resinumber(self, atom):
-        '''
+        """
         returns the residue number of a given atom. C1 would be '0'
         C1_1 would be '1', ...
 
         :param atom: an atom name with or without residue number like C1 or C1_1
         :type atom: string
-        '''
+        """
         if '_' in atom:
             suffix = atom.split('_')
             resinum = suffix[-1].strip(string.ascii_letters) # we don't need the part here
@@ -821,6 +829,8 @@ if __name__ == '__main__':
     failed, attempted = doctest.testmod()#verbose=True)
     if failed == 0:
         print('passed all {} tests!'.format(attempted))
+    else:
+        print('{} of {} tests failed'.format(failed, attempted))
     sys.exit()
 
     ###########################################################
@@ -898,7 +908,7 @@ if __name__ == '__main__':
 
     #sys.exit()
 
-    #  print('Residue dict:', fa.get_resinum('RESI 1 TOL'.split()))
+    #  print('Residue dict:', fa.get_resi_definition_dict('RESI 1 TOL'.split()))
     #print( fa.get_atomcoordinates(['Fe1_1', 'C29', 'Q12']) )
     #  print('line number:', fa.get_atom_line_numbers(['C12', 'C333', 'Q12']))
     #

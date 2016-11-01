@@ -59,8 +59,7 @@ def check_file_exist(filename):
     File "foo.bar" not found!
     False
     >>> check_file_exist('empty.txt')
-    File "empty.txt" not found!
-    False
+    'zero'
 
     #>>> checkFileExist('../misc.py')
     #True
@@ -227,7 +226,7 @@ def sortedlistdir(directory):
     :param cmpfunc: compare funtion to sort
     :type cmpfunc: string
 
-    >>> sortedlistdir("./old")
+    >>> sortedlistdir("../old")
     ['dsr.py']
     """
     dirlist = os.listdir(directory)

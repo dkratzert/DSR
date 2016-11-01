@@ -98,6 +98,7 @@ class ResListEdit():
         '''
         returns cell parameters of the res file
         '''
+        cell = []
         for line in self._reslist:
             if line.startswith('CELL'):
                 cell = line.split()[2:8]
