@@ -36,25 +36,14 @@ from cf3fit import CF3
 from os.path import expanduser
 
 
-<<<<<<< HEAD
-VERSION = '193'
-=======
 VERSION = '195'
->>>>>>> master
 # dont forget to change version in Innoscript file, spec file and deb file.
 
 program_name = '\n'+((width//2)-9)*'-'+' D S R - v{} '.format(VERSION)+((width//2)-8)*'-'
 
 # TODO and ideas:
 '''
-<<<<<<< HEAD
-- Add auto updater
-
 - Add Rcomplete
-
-=======
-- Add Rcomplete
->>>>>>> master
 - Add an export header entry for ShelXle containing any warnings/errors from DSR. For example restraint errors.
 - Add a dummy CF3 group in db to be displayed in GUI
 
@@ -67,14 +56,11 @@ parameter is given a value greater than 15 or less than -15, it is interpreted a
 a free variable. A positive value (10k+p) is decoded as p times free variable number k [fv(k)],
 and a negative value (i.e. k and p both negative) means p times [fv(–k)–1].
 
-<<<<<<< HEAD
-=======
 - port to JANA?
   -> learn JANA
   -> What do I need to change?
   
 - make CF3, CF6, CF9 to a visible database fragment
->>>>>>> master
 '''
 
 class DSR():
@@ -95,63 +81,6 @@ class DSR():
         if self.options.external_restr:
             self.external = True
             self.res_file = self.options.external_restr
-<<<<<<< HEAD
-        if external_restr:
-            self.external = True
-            self.res_file = external_restr
-        if not export_fragment:
-            self.export_fragment = self.options.export_fragment
-        else:
-            self.export_fragment = export_fragment
-        if not export_clip:
-            self.export_clip = self.options.export_clip
-        else:
-            self.export_clip = export_clip
-        if not import_grade:
-            self.import_grade = self.options.import_grade
-        else:
-            self.import_grade = import_grade
-        if not export_all:
-            self.export_all = self.options.export_all
-        else:
-            self.export_all = self.export_all
-        if not list_db:
-            self.list_db = self.options.list_db
-        else:
-            self.list_db = list_db
-        if not list_db_csv:
-            self.list_db_csv = self.options.list_db_csv
-        else:
-            self.list_db_csv = list_db_csv
-        if not no_refine:
-            self.no_refine = self.options.no_refine
-        else:
-            self.no_refine = no_refine
-        if not invert:
-            self.invert = self.options.invert
-        else:
-            self.invert = invert
-        if not rigid:
-            self.rigid = self.options.rigid_group
-        else:
-            self.rigid = rigid
-        if not search_string:
-            self.search_string = self.options.search_string
-        else:
-            self.search_string = search_string
-        if not search_extern:
-            self.search_extern = self.options.search_extern
-        else:
-            self.search_extern = search_extern
-        if not head_csv:
-            self.head_csv = self.options.head_for_gui
-        else:
-            self.head_csv = head_csv
-        if self.invert:
-            if not any([self.res_file, self.external, self.import_grade,
-                       self.export_clip, self.export_all, self.export_fragment]):
-                self.options.error()
-=======
         self.export_fragment = self.options.export_fragment
         if self.export_fragment:
             self.res_file = self.options.export_fragment
@@ -192,7 +121,6 @@ class DSR():
             print(e)
             sys.exit()
         #################################
->>>>>>> master
         if self.head_csv:
             self.head_to_gui()
         #  List of database Fragments:
@@ -208,14 +136,11 @@ class DSR():
                 print('{};;{};;{};;{}'.format(i[0], i[1], i[2], i[3]))
             sys.exit()
         print(program_name)
-<<<<<<< HEAD
         ################
         if self.options.selfupdate:
             import selfupdate
             selfupdate.update_dsr()
             sys.exit()
-=======
->>>>>>> master
         ##############
         if self.list_db:
             self.list_dbentries()
@@ -262,77 +187,18 @@ class DSR():
         Exports current fragment header and atoms to the GUI
         '''
         atoms = []
-<<<<<<< HEAD
-        helpmsg = "*** Please ask daniel.kratzert@ac.uni-freiburg.de for help ***"
-        try:
-            gdb = global_DB(self.invert, fragment=self.head_csv)
-        except Exception as e:  # @UnusedVariable
-            print("*** Initializing the database failed ***")
-            print(helpmsg)
-            #print(e)
-            sys.exit()
-        try:
-            export = Export(self.head_csv, gdb, self.invert)
-        except:
-            print("*** Unable to export informations from DSR ***")
-            sys.exit()
-        try:
-            atoms = export.export_to_gui()
-        except:
-            print("*** Could not get atom information ***")
-            print(helpmsg)
-=======
         try:
             atoms = self.export.export_to_gui(self.fragment)
         except:
             print("*** Could not get atom information ***")
             print(self.helpmsg)
             sys.exit()
->>>>>>> master
         print("\n<atoms>")
         print(atoms)
         print("</atoms>")
         # prints most of the needed info:
-<<<<<<< HEAD
-        gdb.get_head_for_gui(self.head_csv)
-        sys.exit()
-    
-    def do_export_fragment(self):
-        '''
-        Exports the current fragment to a res file.
-        '''
-        from export import Export
-        gdb = global_DB(self.invert)
-        export = Export(self.export_fragment, gdb, self.invert)
-        export.write_res_file()
-        sys.exit()
-
-    def export_all_fragments(self):
-        '''
-        export all database entries at once
-        '''
-        from export import Export
-        gdb = global_DB(self.invert)
-        db = gdb.build_db_dict()
-        dbnames = list(db.keys())
-        for name in dbnames:
-            export = Export(name, gdb, self.invert, self.export_all)
-            export.write_res_file()
-        sys.exit(1)
-
-    def export_to_clipboard(self):
-        '''
-        Exports the current fragment to the clipboard.
-        '''
-        from export import Export
-        gdb = global_DB(self.invert)
-        export = Export(self.export_clip, gdb)
-        export.export_to_clip()
-        sys.exit(True)
-=======
         self.gdb.get_head_for_gui(self.fragment)
         sys.exit()
->>>>>>> master
 
     def list_dbentries(self):
         '''
@@ -376,14 +242,7 @@ class DSR():
         if not basefilename:
             print('*** Illegal option ***')
             sys.exit()
-<<<<<<< HEAD
-        gdb = global_DB(self.invert)
-        rl = resfile.ResList(self.res_file)
-        reslist = rl.get_res_list()
-        if len(reslist) == 0:
-=======
         if len(self.reslist) == 0:
->>>>>>> master
             print("*** The input file is empty. Can not proceed! ***")
             sys.exit()
         find_atoms = FindAtoms(self.reslist)
