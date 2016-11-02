@@ -136,6 +136,11 @@ class DSR():
                 print('{};;{};;{};;{}'.format(i[0], i[1], i[2], i[3]))
             sys.exit()
         print(program_name)
+        ################
+        if self.options.selfupdate:
+            import selfupdate
+            selfupdate.update_dsr()
+            sys.exit()
         ##############
         if self.list_db:
             self.list_dbentries()
@@ -370,8 +375,6 @@ if __name__ == '__main__':
     cp = cProfile.Profile()
     cp.enable(subcalls=True, builtins=True)
     """
-
-
     class LoggerWriter:
         def __init__(self, level):
             # self.level is really like using log.debug(message)
@@ -390,7 +393,7 @@ if __name__ == '__main__':
             # sys.stderr is the correct way to do it, but it seemed
             # to work properly for me.
             self.level(sys.stderr)
-
+    
     try:
         remove_file(reportlog)
         import logging
