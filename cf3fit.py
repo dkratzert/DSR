@@ -34,17 +34,17 @@ import string
 
 dfixr_130 = ['DFIX 1.328 Z F1 Z F2 Z F3 ', 
              'DFIX 2.125 F1 F2 F2 F3 F3 F1 ',
-             'SADI 0.1 Y F1 Y F2 Y F3 ',
+             'SADI 0.1   Y F1 Y F2 Y F3 ',
              'RIGU Y Z F1 F2 F3 ']
 
 dfixr_120 = ['DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 ', 
              'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 ',
-             'SADI 0.1 Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
+             'SADI 0.1   Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
              'RIGU Y Z F1 > F6']
 
 dfixr_120_split = ['DFIX 1.328 ZA F1 ZA F2 ZA F3  ZB F4 ZB F5 ZB F6 ', 
                    'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 ',
-                   'SADI 0.1 Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
+                   'SADI 0.1   Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
                    'SADI Y ZA Y ZB',
                    'EADP ZA ZB',
                    'RIGU Y ZA ZB F1 > F6']
@@ -58,17 +58,17 @@ dfixr_cf9 = ['SUMP 1 0.0001 1 {0} 1 {1} 1 {2}',
 
 sadir_130 = ['SADI 0.02 Z F1 Z F2 Z F3 ',
              'SADI 0.04 F1 F2 F2 F3 F3 F1 ',
-             'SADI 0.1 Y F1 Y F2 Y F3 ',
+             'SADI 0.1  Y F1 Y F2 Y F3 ',
              'RIGU Y Z F1 F2 F3 ']
 
 sadir_120 = ['SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 ',
              'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 ',
-             'SADI 0.1 Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
+             'SADI 0.1  Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
              'RIGU Y Z F1 > F6']
 
 sadir_120_split = ['SADI 0.02 ZA F1 ZA F2 ZA F3  ZB F4 ZB F5 ZB F6 ',
                    'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 ',
-                   'SADI 0.1 Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
+                   'SADI 0.1  Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
                    'SADI Y ZA Y ZB',
                    'EADP ZA ZB',
                    'RIGU Y ZA ZB F1 > F6']
@@ -76,7 +76,7 @@ sadir_120_split = ['SADI 0.02 ZA F1 ZA F2 ZA F3  ZB F4 ZB F5 ZB F6 ',
 sadir_cf9 = ['SUMP 1 0.0001 1 {0} 1 {1} 1 {2}',
              'SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 ',
              'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4  F7 F8 F8 F9 F9 F7 ',
-             'SADI 0.1 Y F1 Y F2 Y F3  Y F4 Y F5 Y F6  Y F7 Y F8 Y F9 ',
+             'SADI 0.1  Y F1 Y F2 Y F3  Y F4 Y F5 Y F6  Y F7 Y F8 Y F9 ',
              'RIGU Y Z F1 > F9']
 
 
@@ -212,7 +212,7 @@ class CF3(object):
         
     
     def cf3(self, afix=130):
-        '''
+        """
         create CF3 group on atom.
         Either define atom at startup or let dsrparser get the atom name.
         Y-Z-F1/F2/F3
@@ -223,11 +223,21 @@ class CF3(object):
         :type atom: string
         :param afix: afix number for the CF3 group
         :type afix: string
-        '''
+        """
+        # the pivot atom of the CF3 group:
+        targetatom = self.dsr_dict['target'][0]
+        if len(self.dsr_dict['target']) > 1:
+            print(('Using only first target atom {}.'.format(self.dsr_dict['target'][0])))
+        try:
+            atomline = self.fa.get_atom_line_numbers([targetatom])[0]
+        except IndexError:
+            print("\n*** Atom {} not found ***\n".format(targetatom))
+            sys.exit()
+        [uvals, c_coords] = self.make_pivot_isotropic(atomline)
         afix=str(afix)
         target_atom = self.dsr_dict['target'][0]
         if '_' in target_atom:
-            print('\nSorry, can not create a CF3 group inside a residue! \nThis would damage the original residue.')
+            print('\n*** Sorry, can not create a CF3 group inside a residue! \nThis would damage the residue. ***')
             sys.exit()
         if afix == '130':
             print('Generating CF3-Group at {}.'.format(target_atom))
@@ -246,30 +256,23 @@ class CF3(object):
                     restr = dfixr_120_split
         if self.resi.get_residue_class:
             restr = self.resi.format_restraints(restr)
-        # the pivot atom of the CF3 group:
-        atom = self.dsr_dict['target'][0]
-        if len(self.dsr_dict['target']) > 1:
-            print(('Using only first target atom {}.'\
-                            .format(self.dsr_dict['target'][0])))
-        atomline = self.fa.get_atom_line_numbers([atom])[0]
-        [uvals, c_coords] = self.make_pivot_isotropic(atomline)
         if afix == '120' and self.dsr_dict['split'] and uvals:
-            num = NumberScheme(self.reslist, [atom], False)
-            if len(atom) < 4:
+            num = NumberScheme(self.reslist, [targetatom], False)
+            if len(targetatom) < 4:
                 # in this case it is possible to add a character
                 alphabet = [i for i in string.ascii_uppercase]
-                splitat1 = self.add_chars(atom, alphabet)
-                splitat2 = self.add_chars(atom, alphabet)
+                splitat1 = self.add_chars(targetatom, alphabet)
+                splitat2 = self.add_chars(targetatom, alphabet)
             else:
                 splitat1 = num.get_fragment_number_scheme()[0]
                 splitat2 = num.get_fragment_number_scheme(extranames=[splitat1])[0]
             splitatoms = [splitat1, splitat2]
-            axes = calc_ellipsoid_axes(c_coords, uvals, self.cell)        
+            axes = calc_ellipsoid_axes(c_coords, uvals, self.cell)
         else:
             splitatoms = False
-        found = self.find_bonded_fluorine(atom)
+        found = self.find_bonded_fluorine(targetatom)
         for i in found:
-            print(('Deleting {}_{} from {}'.format(i[0], i[7], atom)))
+            print(('Deleting {}_{} from {}'.format(i[0], i[7], targetatom)))
         self.delete_bound_fluorine(found)
         fatoms = self.make_afix(afixnum=afix, linenumber=atomline)
         if not fatoms:
@@ -278,10 +281,10 @@ class CF3(object):
         # this is essential
         self.reslist = self.rl.get_res_list()
         # this is the bond around the CF3 group rotates
-        restr = self.format_cf3_restraints(afix, restr, atom, fatoms, splitatoms)
+        restr = self.format_cf3_restraints(afix, restr, targetatom, fatoms, splitatoms)
         # get position for the fluorine atoms and make sure the reslist is the newest:
         self.fa._reslist = self.reslist
-        atomline = self.fa.get_atom_line_numbers([atom])[0]
+        atomline = self.fa.get_atom_line_numbers([targetatom])[0]
         # add restraints to reslist:
         restr = ''.join(restr)
         if not self.dsr_dict['split']:
@@ -341,7 +344,7 @@ class CF3(object):
         print(('Generating threefold disordered CF3-Group at {}.'.format(self.dsr_dict['target'][0])))
         target_atom = self.dsr_dict['target'][0]
         if '_' in target_atom:
-            print('\nSorry, can not create a CF3 group inside a residue! \nThis would damage the original residue.')
+            print('\n*** Sorry, can not create a CF3 group inside a residue! \nThis would damage the residue. ***')
             sys.exit()
         if self.dsr_dict['dfix']:
             restr = dfixr_cf9
@@ -352,7 +355,11 @@ class CF3(object):
             restr = [i+'\n' for i in restr]
         if len(self.dsr_dict['target']) > 1:
             print('Using only first target target_atom {}.'.format(self.dsr_dict['target'][0]))
-        atomline = self.fa.get_atom_line_numbers([target_atom])[0]
+        try:
+            atomline = self.fa.get_atom_line_numbers([target_atom])[0]
+        except IndexError:
+            print("\n*** Atom {} not found. ***\n".format(target_atom))
+            sys.exit()
         found = self.find_bonded_fluorine(target_atom)
         for i in found:
             print(('Deleting {}_{} from {}'.format(i[0], i[7], target_atom)))

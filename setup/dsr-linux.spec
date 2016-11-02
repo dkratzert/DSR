@@ -2,7 +2,7 @@ Summary: DSR - A program for modelling of disordered solvents with SHELXL
 Name: DSR
 Provides: DSR
 Packager: dkratzert@gmx.de
-Version: 189
+Version: 195
 Release: 0
 Requires: python, xclip
 Prefix: /opt
@@ -63,10 +63,8 @@ mkdir -p %{buildroot}%{prefix}/DSR/mpmath/functions
 mkdir -p %{buildroot}%{prefix}/DSR/mpmath/libmp
 mkdir -p %{buildroot}%{prefix}/DSR/mpmath/matrices
 
-touch %{buildroot}%{prefix}/DSR/dsr_user_db.txt
 mkdir -p %{buildroot}/etc/profile.d
 chmod a+rw %{buildroot}%{prefix}/DSR/example
-chmod a+rw %{buildroot}%{prefix}/DSR/dsr_user_db.txt
 
 %post
 echo "DSR was installed in /opt/DSR"
@@ -91,6 +89,7 @@ install -m 644 options.py %{buildroot}%{prefix}/DSR/options.py
 install -m 644 terminalsize.py %{buildroot}%{prefix}/DSR/terminalsize.py
 install -m 644 resfile.py %{buildroot}%{prefix}/DSR/resfile.py
 install -m 644 cf3fit.py %{buildroot}%{prefix}/DSR/cf3fit.py
+install -m 644 selfupdate.py %{buildroot}%{prefix}/DSR/selfupdate.py
 install -m 644 elements.py %{buildroot}%{prefix}/DSR/elements.py
 install -m 644 restraints.py %{buildroot}%{prefix}/DSR/restraints.py
 install -m 644 resi.py %{buildroot}%{prefix}/DSR/resi.py
@@ -103,9 +102,11 @@ install -m 666 example/p21c.hkl %{buildroot}%{prefix}/DSR/example/p21c.hkl
 install -m 666 example/p21c.res %{buildroot}%{prefix}/DSR/example/p21c.res
 install -m 666 example/p21c_step0.res %{buildroot}%{prefix}/DSR/example/p21c_step0.res
 install -m 666 example/p21c_step1.res %{buildroot}%{prefix}/DSR/example/p21c_step1.res
-install -m 666 example/p21c_step2.res %{buildroot}%{prefix}/DSR/example/p21c_step2.res
+install -m 666 example/p21c_step2.ins %{buildroot}%{prefix}/DSR/example/p21c_step2.ins
 install -m 666 example/p21c_step3.res %{buildroot}%{prefix}/DSR/example/p21c_step3.res
-install -m 666 example/p21c-step2.ins %{buildroot}%{prefix}/DSR/example/p21c-step2.ins
+install -m 666 example/p21c_final.res %{buildroot}%{prefix}/DSR/example/p21c_final.res
+install -m 666 example/p21n_cf3.hkl %{buildroot}%{prefix}/DSR/example/p21n_cf3.hkl
+install -m 666 example/p21n_cf3.res %{buildroot}%{prefix}/DSR/example/p21n_cf3.res
 
 install -m 644 networkx/external/decorator/decorator3/_decorator3.py            %{buildroot}%{prefix}/DSR/networkx/external/decorator/decorator3/_decorator3.py
 install -m 644 networkx/external/decorator/decorator3/__init__.py               %{buildroot}%{prefix}/DSR/networkx/external/decorator/decorator3/__init__.py
@@ -492,17 +493,19 @@ dos2unix -q %{buildroot}%{prefix}/*
 %{prefix}/DSR/resi.py
 %{prefix}/DSR/refine.py
 %{prefix}/DSR/cf3fit.py
+%{prefix}/DSR/selfupdate.py
 %{prefix}/DSR/pyperclip.py
 %{prefix}/DSR/dsr_db.txt
-%{prefix}/DSR/dsr_user_db.txt
 #%{prefix}/DSR/manuals/DSR-manual.pdf
 %{prefix}/DSR/example/p21c.hkl
 %{prefix}/DSR/example/p21c.res
 %{prefix}/DSR/example/p21c_step0.res
 %{prefix}/DSR/example/p21c_step1.res
-%{prefix}/DSR/example/p21c_step2.res
+%{prefix}/DSR/example/p21c_step2.ins
 %{prefix}/DSR/example/p21c_step3.res
-%{prefix}/DSR/example/p21c-step2.ins
+%{prefix}/DSR/example/p21c_final.res
+%{prefix}/DSR/example/p21n_cf3.hkl
+%{prefix}/DSR/example/p21n_cf3.res
 %{prefix}/DSR/networkx/external/decorator/decorator3/_decorator3.py
 %{prefix}/DSR/networkx/external/decorator/decorator3/__init__.py
 %{prefix}/DSR/networkx/external/decorator/__init__.py

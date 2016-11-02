@@ -42,7 +42,7 @@ class DSR_Parser():
         try:
             self.dsr_dict = self.parse_dsr_line()
         except:
-            print("Parsing DSR line failed.")
+            print("*** Parsing DSR command failed. ***")
             logging.basicConfig(filename=misc.reportlog, filemode='w', level=logging.DEBUG)
             logging.info('DSR command line: {}'.format(self._dsr_string))
 
@@ -53,7 +53,7 @@ class DSR_Parser():
             return self.dsr_dict
         except AttributeError as e:
             #print(e)
-            print('No valid DSR command line found.')
+            print('*** No valid DSR command line found. ***')
             sys.exit()
     
     def find_dsr_command(self, line=False):
@@ -71,15 +71,15 @@ class DSR_Parser():
         try:
             line_number = int(indexnum[0])
         except(IndexError):
-            print(' no proper DSR command found! \n\n '
-                    'Have you really saved your .res file?\n')
+            print('*** no proper DSR command found! \n'
+                    'Have you really saved your .res file? ***\n')
             sys.exit()
         if int(line_number) > int(HKLF_endline):
-            print('A DSR command after HKLF is not allowed! '
-                    'Check line {}'.format(line_number+1))
+            print('*** A DSR command after HKLF is not allowed! '
+                    'Check line {} ***'.format(line_number+1))
             sys.exit()
         if len(indexnum) > 1:
-            print('Only one DSR command at once is allowed! Exiting...')
+            print('*** Only one DSR command at once is allowed! ***')
             sys.exit(-1)
         if line:  # returns the string
             dsr_str = str(self._reslist[line_number])
@@ -142,10 +142,10 @@ class DSR_Parser():
             atindex = self._dsr_list.index(start)+1
         except(ValueError):
             if start == 'WITH':
-                print('No source atoms given!')
+                print('*** No source atoms given! ***')
                 sys.exit(-1)
             if start == 'ON':
-                print('No target atoms given!')
+                print('*** No target atoms given! ***')
                 sys.exit(-1)
         atoms = []
         for i in self._dsr_list[atindex:]: # start at the position of the first atom
@@ -167,8 +167,8 @@ class DSR_Parser():
                 if i not in self._dsr_list:
                     raise Exception
             except:
-                print('\nNo "WITH" or "ON" statement in the dsr '\
-                        'command line found!')
+                print('\n*** No "WITH" or "ON" statement in the dsr '\
+                        'command line found! ***')
                 sys.exit()
 
 
@@ -192,12 +192,12 @@ class DSR_Parser():
         # get the fragment:
         fragment = self._dsr_list[3]
         if fragment in ['CF3', 'CF9'] and 'SPLIT' in self._dsr_list:
-            print('Illegal combination of CF3 or CF9 with SPLIT! \nOnly CF6 with SPLIT is alowed!')
+            print('*** Illegal combination of CF3 or CF9 with SPLIT! \nOnly CF6 with SPLIT is alowed! ***')
             sys.exit()
         # make sure the command is correct:
         command_list = ('PUT', 'REPLACE', 'ADD')
         if command not in command_list:
-            print('No proper command string found in DSR command line!\n')#, self._dsr_list
+            print('*** No proper put/replace string found in DSR command line! ***')#, self._dsr_list
             sys.exit(-1)
         # Source and target atoms:
         # In parenteses are one start und one to multiple stop conditions:
@@ -219,25 +219,26 @@ class DSR_Parser():
         try:
             float(part)
         except(ValueError):
-            print('Part without numerical value supplied.',
-                  'Please give a part number after PART in the DSR command.')
+            print('*** Part without numerical value supplied.',
+                  'Please give a part number after PART in the DSR command. ***')
             sys.exit(False)
-        if float(part) > 999:
-            print('only 99 parts allowed in SHELXL!')
+        if float(part) > 99:
+            print('*** only 99 parts allowed in SHELXL! ***')
             sys.exit(False)
         try:
             if len(part) > 4:
-                print('Illegal part number supplied: {}. Please give just one digit (positive or negative) in the DSR command.'.format(part))
+                print('*** Illegal part number supplied: {}. Please give just one digit '
+                      '(positive or negative) in the DSR command ***'.format(part))
                 sys.exit(False)
         except(TypeError):
             # no part specified
             pass
         occupancy = self.find_commands('OCC')
-        badocc_message = 'Occupancy without numerical value supplied. Please define occupancy value after OCC.'
+        badocc_message = '*** Occupancy without numerical value supplied. Please define occupancy value after OCC ***'
         badocc_status = False
         try:
-            if float(occupancy) > 999:
-                print('only 99 free variables allowed in SHELXL!')
+            if float(occupancy) > 99:
+                print('*** Only 99 free variables allowed in SHELXL! ***')
                 sys.exit()
         except(ValueError):
             badocc_status = True

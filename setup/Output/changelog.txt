@@ -1,5 +1,15 @@
 Recent changes
--189    Improved GRADE import. Fixed bug with calculated restraints. 
+-195    Slight speed improvement. Cleaner code (needs more cleaning). Fixed too 
+        optimistic replace mode in 194. External restraints shouuld work again.
+-194    Fixed ANSI escape codes appearing in ShelXle GUI. Improved updater.
+-193    Added auto updater to DSR. Run "dsr -u" to update to the most recent version.
+-192    Fixed strange characters in fragment list in Linux and other Small fixes.
+-191    Prevent ** NEGATIVE OCCUPANCY FOR ATOM XX  ** warning in case of wrong 
+        free variable values before fit. Added Isopropanole. Optimized examples.
+        Updated user manual. Fixed minor problem in case no shelxl executable is
+        found during fit in ShelXle.
+-190    Fixed TypeError when using split and cf6.
+-189    Improved GRADE import. Fixed bug regarding calculated FLAT restraints.
 -188    Fixed bug that produces  "dsr: error: unrecognized arguments: [...]" if
         SHELXL was located in a directory containing space characters.
         Fixed bug where "FVAR 1" ended up as 1000000.

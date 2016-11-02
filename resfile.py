@@ -98,6 +98,7 @@ class ResListEdit():
         '''
         returns cell parameters of the res file
         '''
+        cell = []
         for line in self._reslist:
             if line.startswith('CELL'):
                 cell = line.split()[2:8]
@@ -176,7 +177,7 @@ class ResListEdit():
         returns a list of FVAR occurences
         sys.exit() if no atom or FVAR found
         '''
-        fvarlines = misc.find_multi_lines(self._reslist, r'^FVAR.+[0-9]+')
+        fvarlines = misc.find_multi_lines(self._reslist, r'^FVAR')
         if not fvarlines:   # There is no FVAR in the res file after SHELXS!
             for num, i in enumerate(self._reslist):
                 if self._find_atoms.is_atom(i):
@@ -232,7 +233,7 @@ class ResListEdit():
         :param fvarlines:       list, list of line numbers where FVAR is located
                                       in the res file
         '''
-        fvar_list = self.get_fvarlist()
+        fvar_list = self.get_fvarlist()  # free variables in the res file
         varlen = self.get_fvar_count()
         occupancynumber = occupancynumber.strip('-')
         # how many numbers do we have?:
@@ -245,6 +246,11 @@ class ResListEdit():
         if difference > 0:
             for i in range(difference):
                 fvar_list.append(fvalue)   # if an fvar is missing, add a new one
+        else: # make sure the occupancy of the disoerder parts get not < 0:
+            if len(fvar_list)-(fvar-1) >= 0: # make sure
+                fvar_value = fvar_list[fvar-1]
+                if (float(occupancynumber)-(10*int(fvar)+float(fvar_value))) < 0:
+                    fvar_list[fvar - 1] = 0.5
         line_length = 7
         lines = []
         if varlen == 0:
