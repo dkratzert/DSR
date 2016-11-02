@@ -11,6 +11,7 @@
 #
 from __future__ import print_function
 import sys, re
+
 from resfile import ResList
 from dsrparse import DSR_Parser
 import string
@@ -91,22 +92,23 @@ class Restraints():
     needs atoms with numpart like C1_2b
     '''
 
-    def __init__(self, fragment, gdb):
-        fragment = fragment.lower()
+    def __init__(self, export, frag, gdb):
+        self.fragment = frag.lower()
         self.gdb = gdb
-        self.db = self.gdb.db_dict
-        self._atoms = [i[0] for i in self.db[fragment]['atoms']]
-        self._cell = self.gdb.get_unit_cell(fragment)
-        self.fragment = fragment
-        cart_coords = self.get_fragment_atoms_cartesian()
-        self.cart_coords = [[float(y) for y in i] for i in cart_coords]
-        self.atom_types = get_atomtypes(self.db[fragment]['atoms'])
+        self.export = export
+        self._atoms = [i[0] for i in self.gdb[self.fragment]['atoms']]
+        self._cell = self.gdb.get_unit_cell(self.fragment)
+        self.atom_types = get_atomtypes(self.gdb[self.fragment]['atoms'])
+        self.cart_coords = [[float(y) for y in i] for i in self.get_fragment_atoms_cartesian()]
         self._connectivity_table = self.get_conntable_from_atoms(
                                         self.cart_coords, self.atom_types, self._atoms)
         self.coords_dict = self.get_coords_dict()
         self._G = self.get_adjmatrix()
 
     def get_coords_dict(self):
+        """
+        Returns an ordered dictionary with coordinates of the fragment
+        """
         coords = OrderedDict({})
         for name, co in zip(self._atoms, self.cart_coords):
             coords[name] = co
@@ -119,9 +121,7 @@ class Restraints():
         :param fragment:
         :type fragment:
         '''
-        from export import Export
-        ex = Export(self.fragment, self.gdb, False)
-        atoms = ex.format_atoms_for_export()
+        atoms = self.export.format_atoms_for_export(self.fragment)
         coords = []
         for i in atoms:
             coords.append(i.split()[2:5])
@@ -178,7 +178,6 @@ class Restraints():
 
     def get_adjmatrix(self):
         return self.adjmatrix()
-
 
     def get_12_dfixes(self):
         '''
@@ -273,7 +272,7 @@ class Restraints():
             chunk = ring[i:i+size]
             if len(chunk) < 4:
                 chunk = ring[-size:]
-            chunks.append(chunk)
+            chunks.append(sorted(chunk))
         return chunks
 
     def make_flat_restraints(self):
@@ -303,7 +302,8 @@ class Restraints():
             chunks = self.get_overlapped_chunks(ring, 4)
             for chunk in chunks:
                 if self.is_flat(chunk):
-                    flats.append(chunk[:])
+                    if not chunk in flats:
+                        flats.append(chunk)
             if not flats:
                 return False
             newflats = []
@@ -334,8 +334,12 @@ class Restraints():
                                     del ch[-num]
                                     break  # finished, go to next flat
                             # only add if it really results in a flat composition:
-                            if self.is_flat(ch) and not ch in newflats:
-                                newflats.append(ch)
+                            ch.sort()
+                            if self.is_flat(ch):
+                                if ch in newflats:
+                                    pass
+                                else:
+                                    newflats.append(ch)
         return newflats
 
     def binds_to(self, a, b):
@@ -400,7 +404,7 @@ class ListFile():
         the current list file as list
         '''
         return self._listfile_list
-        
+
     def read_lst_file(self):
         '''
         reads the .lst file and returns it as list.
@@ -519,7 +523,7 @@ class ListFile():
 
     def get_afix_number_of_CF3(self):
         '''
-        returns the afix number of the atom where SHELXL prints the 
+        returns the afix number of the atom where SHELXL prints the
         difference density at 15 degree intervals
         '''
         regex_atom = r"^\sDifference\selectron\sdensity.*at\s15\sdegree"
@@ -528,7 +532,7 @@ class ListFile():
             return False
         at1 = self._listfile_list[line].split('.')[0].split()
         return at1[-1]
-    
+
     def get_bondvector(self, atom=None):
         '''
         get the bond vector in terms of atom names around which SHELXL
@@ -548,11 +552,11 @@ class ListFile():
                     return (i, atom)
                     break
         if not line:
-            return False
+            return ('', '')
         at1 = self._listfile_list[line].split('.')[0].split()[-3]
         at2 = self._listfile_list[line].split('.')[0].split()[-1]
         return (at1, at2)
-    
+
     def get_difference_density(self, averaged=False):
         '''
         returns the difference density values in 15 degree interval
@@ -569,17 +573,17 @@ class ListFile():
         else:
             nums = self._listfile_list[line+3].split()[4:]
         return [int(i) for i in nums]
-        
+
     def get_degree_of_highest_peak(self):
         '''
-        returns the position in degree of the highest peak in the 
+        returns the position in degree of the highest peak in the
         difference density. This point is assumed as an atom position.
         '''
         dens = self.get_difference_density(averaged=True)
         maximum = dens.index(max(dens))+1
         return maximum*15
-        
-        
+
+
 class Lst_Deviations():
     '''
     reads the deviations of the fitted group from the lst-file
@@ -626,7 +630,7 @@ if __name__ == '__main__':
     res_list = rl.get_res_list()
     dsrp = DSR_Parser(res_list, rl)
     dsr_dict = dsrp.get_dsr_dict
-    fragment = 'cpstar'
+    fragment = 'toluene'
     fragment= fragment.lower()
     invert = True
     rl = ResList(res_file)
@@ -644,8 +648,9 @@ if __name__ == '__main__':
     #fragment_atoms = [i[0] for i in dbatoms]
     fragment_atoms = format_atom_names(fragment_atoms, part, residue)
     #print(fragment_atoms)
-
-    restr = Restraints(fragment, gdb)
+    from export import Export
+    exp = Export(gdb)
+    restr = Restraints(exp, fragment, gdb)
     dfix_12 = restr.get_formated_12_dfixes()
     dfix_13 = restr.get_formated_13_dfixes()
     for i in dfix_12:
@@ -657,7 +662,7 @@ if __name__ == '__main__':
     #print(''.join(dfixes_13))
     sys.exit()
 
-    print(restr.binds_to('C1', 'O1'), 'it binds')
+    #print(restr.binds_to('C1', 'O1'), 'it binds')
 
     def make_eadp(fa, fragatoms, resi_class, wavelength=0.71):
         '''

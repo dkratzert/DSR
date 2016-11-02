@@ -2,13 +2,13 @@
 
 
 TMP="/tmp"
-#GIT="/cygdrive/c/Users/$USERNAME/Documents/GitHub/DSR"
-#GIT="/home/daniel/GitHub/DSR"
-GIT="/home/daniel/Downloads/DSR"
+GIT=$(pwd)
+#GIT="/home/daniel/devel/GitHub/DSR"
+#GIT="/home/daniel/Downloads/DSR"
 VERSION=$(cat $GIT/dsr.py|grep -e "VERSION ="|cut -d ' ' -f3|tr -d "\'")
 BUILDDIR="/usr/src/packages/BUILD/DSR-$VERSION"
 
-echo $VERSION
+echo "Version" $VERSION $(pwd)
 OUTFILE=DSR-$VERSION.tar
 
 FILES="afix.py
@@ -26,6 +26,7 @@ options.py
 resfile.py
 restraints.py
 cf3fit.py
+selfupdate.py
 terminalsize.py
 resi.py
 refine.py
@@ -33,14 +34,18 @@ pyperclip.py
 dsr_db.txt
 manuals/DSR-manual.pdf
 setup/dsr.sh
+setup/dsr-mac
+setup/dsr-linux
 dsr
 example/p21c.hkl
 example/p21c.res
 example/p21c_step0.res
 example/p21c_step1.res
-example/p21c_step2.res
+example/p21c_step2.ins
 example/p21c_step3.res
-example/p21c-step2.ins
+example/p21c_final.res
+example/p21n_cf3.hkl
+example/p21n_cf3.res
 "
 
 
@@ -51,7 +56,7 @@ touch $GIT/setup/Output/$OUTFILE
 
 TMPDIR=$TMP/DSR-$VERSION
 rm -r $TMPDIR
-mkdir $TMPDIR
+mkdir -p $TMPDIR
 mkdir $TMPDIR/example
 mkdir $TMPDIR/setup
 mkdir $TMPDIR/manuals
@@ -59,14 +64,14 @@ mkdir $TMPDIR/manuals
 for i in $FILES
 do
 #    cd $GIT/setup
-    cp ../$i $TMPDIR/$i
+    cp ./$i $TMPDIR/$i
     dos2unix $TMPDIR/$i -q
     echo "packe " $i
 done
 # copy networkx
-cp -r ../networkx $TMPDIR/
+cp -r ./networkx $TMPDIR/
 # and mpmath
-cp -r ../mpmath $TMPDIR/
+cp -r ./mpmath $TMPDIR/
 
 cd $TMP
 tar -rf $GIT/setup/Output/$OUTFILE DSR-$VERSION 2> /dev/null
@@ -74,6 +79,7 @@ tar -rf $GIT/setup/Output/$OUTFILE DSR-$VERSION 2> /dev/null
 gzip -f $GIT/setup/Output/$OUTFILE
 
 rm -r $BUILDDIR
+mkdir -p $BUILDDIR
 cp -r $TMPDIR/* $BUILDDIR
 # for debian:
 DEBDIR="/usr/src/packages/BUILD/dsr"

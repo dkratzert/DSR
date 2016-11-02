@@ -13,18 +13,40 @@ from __future__ import print_function
 import re, sys
 import string
 from atoms import Element
-from misc import find_line, get_atoms, find_multi_lines,\
+from misc import find_line, find_multi_lines,\
     atomic_distance
 from constants import atomregex, SHX_CARDS
 from atoms import atoms
-#from collections import OrderedDict
-#import textwrap
 
 
 __metaclass__ = type  # use new-style classes
 
+
+def get_atoms(atlist):
+    """
+    returns all atoms found in the input as list of lists
+    >>> get_atoms(['F8    4    0.349210   0.073474   0.519443 -21.00000   0.03106', 'foo'])
+    [['F8', '4', '0.349210', '0.073474', '0.519443']]
+    """
+    atoms = []
+    try:
+        atlist[0]
+    except:
+        return []
+    if isinstance(atlist[0], list):
+        for i in atlist:
+            atoms.append(i[:5])
+        return atoms
+    for i in atlist:
+        if re.match(atomregex, str(i)):  # search atoms
+            l = i.split()[:5]  # convert to list and use only first 5 columns
+            if l[0].upper() not in SHX_CARDS:  # exclude all non-atom cards
+                atoms.append(l)
+    return atoms
+
+
 def get_atomtypes(dbatoms):
-    '''
+    """
     find all atoms in a list of shelxl format atom lines.
     returns a list like ['N', 'C', 'C', 'C'].
 
@@ -46,7 +68,7 @@ def get_atomtypes(dbatoms):
     Traceback (most recent call last):
     ...
     KeyError
-    '''
+    """
     el = Element()
     found = []
     # find lines with atoms and see if they are in the atom list
@@ -61,20 +83,21 @@ def get_atomtypes(dbatoms):
             pass
         found.append(el.get_atomlabel(atom_name))
     if len(dbatoms) != len(found):    # do we really need this here??
-        print("One of the Atoms in the database entry is not correct! Exiting...")
+        print("*** One of the Atoms in the database entry is not correct! ***")
         raise KeyError
     return found
 
+
 def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
-    '''
+    """
     deletes the atoms in replace mode that are near the fragment atoms
-    
+
     :param rl: Reslist() instance
     :param reslist: .res file list
     :param resi: Resi() instance
     :param fragment_numberscheme: atom names of the fitting fragment
     :param cell: cell parameters
-    
+
     >>> from resfile import ResList
     >>> from dbfile import global_DB
     >>> from resfile import ResListEdit
@@ -93,8 +116,9 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     No residue number was given. Using residue number 4.
     >>> fragment_numberscheme = ['O1_1', 'C1_1', 'C2_1', 'F1_1', 'F2', 'F3', 'C3', 'F4', 'F5', 'F6', 'C4', 'F7', 'F8', 'F9']
     >>> cell = rle.get_cell()
-    >>> replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell)
-    '''
+
+    #>>> replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell)
+    """
     remdist=1.3
     from resfile import ResListEdit
     find_atoms = FindAtoms(reslist)
@@ -107,7 +131,7 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
         frag_at = fragment_numberscheme
     atoms_to_delete = find_atoms.find_atoms_to_replace(frag_at, cell, remdist)
     if atoms_to_delete:
-        print('Replacing following atoms (< {0} A near fragment):\n'.format(remdist), 
+        print('Replacing following atoms (< {0} A near fragment):\n'.format(remdist),
               ' '.join(sorted(set(atoms_to_delete))))
     target_lines = set(find_atoms.get_atom_line_numbers(atoms_to_delete))
     rle = ResListEdit(reslist, find_atoms)
@@ -120,9 +144,9 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
 
 
 class FindAtoms():
-    '''
+    """
     Finds Atoms and creates a data structure
-    '''
+    """
 
     def __init__(self, reslist):
         '''
@@ -133,52 +157,67 @@ class FindAtoms():
         try:
             self.sfac = self._reslist[sfacline[0]].split()[1:]
         except IndexError:
-            print("No SFAC card found in .res file.")
+            print("*** No SFAC card found in .res file ***")
             sys.exit()
         self.e2s = Elem_2_Sfac(self.sfac)
         self._residues = self.collect_residues()
 
     @property
     def atoms_as_residues(self):
-        '''
+        """
         returns   residues = {   #  0           1            2         3      4      5          6
-                            {'0': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number], 
+                            {'0': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number],
                            ['C2', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number]},
-                     {'1': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number], 
+                     {'1': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number],
                      []} }
-        '''
+        """
         return self._residues
 
-    def is_atom(self, atomline):
-        '''
+    @staticmethod
+    def is_atom(atomline):
+        """
         returns all atoms found in the input as list if they are real atoms
 
         :param atomline:  'O1    3    0.120080   0.336659   0.494426  11.00000   0.01445 ...'
-        '''
-        atom = ''
+        >>> FindAtoms.is_atom(atomline = 'O1    3    0.120080   0.336659   0.494426  11.00000   0.01445 ...')
+        ['O1', '3', '0.120080', '0.336659', '0.494426']
+        >>> FindAtoms.is_atom(atomline = 'O1    0.120080   0.336659   0.494426  11.00000   0.01445 ...')
+        []
+        >>> FindAtoms.is_atom(atomline = 'O1    0.120080   0.336659   0.494426  11.00000   0.01445 ...')
+        []
+        """
         if re.search(atomregex, str(atomline)):        # search atoms
             atom = atomline.split()[:5]              # convert to list and use only first 5 columns
             if atom[0].upper() not in SHX_CARDS:      # exclude all non-atom cards
                 return atom
             else:
-                return False
+                return []
+        else:
+            return []
 
-
-    def get_resinum(self, resi):
-        '''
+    @staticmethod
+    def get_resi_definition_dict(resi):
+        """
         returns the residue number and class of a string like 'RESI TOL 1'
         or 'RESI 1 TOL'
         {'class': 'TOL', 'number': '1'}
 
         :param resi: ['RESI', 'number', 'class']
         :type resi: list or string
-        '''
+
+        >>> sorted(FindAtoms.get_resi_definition_dict('RESI 1 TOL').keys())
+        ['class', 'number']
+        >>> sorted(FindAtoms.get_resi_definition_dict('RESI 1 TOL').values())
+        ['1', 'TOL']
+        >>> FindAtoms.get_resi_definition_dict('RESI 1 TOL')
+        {'class': 'TOL', 'number': '1'}
+        """
         resi_dict = {
             'class' : None,
             'number': None}
         try:
             resi.remove('RESI')
-        except(AttributeError):
+        except AttributeError:
             resi = resi.split()
             resi.remove('RESI')
         resi.sort()
@@ -190,75 +229,85 @@ class FindAtoms():
                 del resi[0]
         return resi_dict
     
-    def get_partnumber(self, partstring):
-        '''
+    @staticmethod
+    def get_partnumber(partstring):
+        """
         get the part number from a string like PART 1 oder PART 2 -21
-        '''
+        Parameters
+        ----------
+        partstring: string like 'PART 2 -21'
+
+        >>> FindAtoms.get_partnumber(partstring='PART 2 -21')
+        2
+        """
         partstring = partstring.upper()
         part = partstring.split()
         try:
             partnum = int(part[1])
         except(ValueError, IndexError):
-            print('Wrong PART definition found! Check your PART instructions.')
+            print('*** Wrong PART definition found! Check your PART instructions ***')
             partnum = 0
         return partnum
     
     def find_atoms_to_replace(self, frag_atoms, cell, remdist=1.2, only_this=None):
-        '''
-        this method looks around every atom of the fitted fragment and removes 
+        """
+        this method looks around every atom of the fitted fragment and removes
         atoms that are near a certain distance to improve the replace mode
 
         :param frag_atoms: atoms of the fitting fragment ['C1', '1', 'x', 'y', 'z']
         :param cell: unit cell parameters (list)
         :param remdist: distance below atoms shoud be deleted
-        '''
+
+        Parameters
+        ----------
+        only_this: replace only this special atom
+        """
         atoms_to_delete = []
         frag_coords = self.get_atomcoordinates(frag_atoms)
-        atoms = self._residues
-        for i in atoms:
+        for resinum in self._residues:
             suffix = ''
-            if i != 0:
-                suffix = '_{}'.format(i)
-            # i is the resideue number
-            for y in atoms[i]:
-                if y[0].startswith('Q'):
+            if resinum != 0:
+                suffix = '_{}'.format(resinum)
+            # resinum is the resideue number
+            for atom in self._residues[resinum]:
+                if atom[0].startswith('Q'):
                     # ignore q peaks:
                     continue
-                if only_this and only_this != y[5]:
+                if only_this and only_this != atom[5]:
                     continue
-                # y[4] is the part number
-                if int(y[4]) == 0:
+                # atomlist[4] is the part number
+                # replace only in part 0:
+                if int(atom[4]) == 0:
                     for name in frag_coords:
                         # name is the atom name
-                        if name == y[0]:
+                        if atom[0]+suffix in frag_coords:
                             # do not delete the fitted fragment
-                            continue
+                            break
                         at1 = [float(x) for x in frag_coords[name]]
-                        at2 = [float(x) for x in y[1]]
+                        at2 = [float(x) for x in atom[1]]
                         resinum1 = self.get_atoms_resinumber(name)
-                        resinum2 = self.get_atoms_resinumber(y[0]+suffix)
+                        resinum2 = self.get_atoms_resinumber(atom[0]+suffix)
                         if at1 == at2 and resinum1 == resinum2:
                             # do not delete atoms on exactly the same position
                             # and same residue
-                            continue
+                            break
                         d = atomic_distance(at1, at2, cell)
                         # now get the atom types of the pair atoms and with that
                         # the covalence radius. 
                         if d < remdist:
-                            atoms_to_delete.append(y[0]+suffix) 
+                            atoms_to_delete.append(atom[0]+suffix)
         return sorted(atoms_to_delete)
-    
 
     def collect_residues(self):
-        '''
+        """
         find all atoms and sort them into residues
 
         residues is a dictionary which includes a dictionary for each residue
         which in turn includes a list of its atoms.
 
-        residues = { {'0': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number], 
+        residues = { {'0': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number],
                            ['C2', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number]},
-                     {'1': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number], 
+                     {'1': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number],
                      []} }
 
         for i in residues.keys():
@@ -266,13 +315,13 @@ class FindAtoms():
             for x in ats:
                 if 'C12' in x[0]:
                     print x #print C12 from all residues
-        :type linenumber: int
-        '''
+        """
         resi = False
         part = False
         partnum = '0'
         resiclass = None
         residues = {'0': []}
+        resinum = 0
         for num, i in enumerate(self._reslist):
             i = i.upper()
             # First collect the residue
@@ -284,8 +333,8 @@ class FindAtoms():
                 continue
             if i.startswith('RESI') and not re.match(r'^RESI\s+0', i):
                 resi = True
-                resinum = self.get_resinum(i.split())['number']
-                resiclass = self.get_resinum(i.split())['class']
+                resinum = self.get_resi_definition_dict(i.split())['number']
+                resiclass = self.get_resi_definition_dict(i.split())['class']
                 residues.update({resinum: []})
                 continue
             # Now collect the part:
@@ -320,13 +369,13 @@ class FindAtoms():
 
 
     def get_atoms_resiclass(self, atom):
-        '''
+        """
         returns the residue class of a given atom. C1 would be 'None'
         C1_1 would be 'CF3' for example
-
+        
         :param atom: an atom name with or without residue number like C1 or C1_1
         :type atom: string
-        '''
+        """
         num = self.get_atoms_resinumber(atom)
         atom = atom.split('_')[0]
         residue = self._residues[num]
@@ -336,20 +385,20 @@ class FindAtoms():
 
 
     def get_atoms_resinumber(self, atom):
-        '''
+        """
         returns the residue number of a given atom. C1 would be '0'
         C1_1 would be '1', ...
 
         :param atom: an atom name with or without residue number like C1 or C1_1
         :type atom: string
-        '''
+        """
         if '_' in atom:
             suffix = atom.split('_')
             resinum = suffix[-1].strip(string.ascii_letters) # we don't need the part here
             if not resinum:
                 resinum = '0'
             if len(resinum) > 4:
-                print('Invalid residue number in', atom)
+                print('*** Invalid residue number in {}'.format(atom))
                 sys.exit(-1)
             return str(resinum)
         else:
@@ -357,9 +406,9 @@ class FindAtoms():
 
 
     def get_atomcoordinates(self, atoms):
-        '''
+        """
         finds an atom regardless if it is in a residue or not.
-        
+
         rerturns a dictionary {'C1': ['1.123', '0.7456', '3.245']}
 
         start with digit-> rest auch digit-> resinumber or alias
@@ -375,16 +424,15 @@ class FindAtoms():
 
         :param atoms: list of atoms like ['C1', 'Q2', 'C3_2', ...]
         :type atoms: list
-        '''
+        """
         atom_dict = {}
         for i in atoms:
             num = self.get_atoms_resinumber(i)
             try:
                 self._residues[num]
-            except(KeyError):
-                print('Atom "{}" not found in res file!!'.format(i))
+            except KeyError:
+                print('*** Atom "{}" not found in res file!! ***'.format(i))
                 break
-                #return
             for x in self._residues[num]:
                 if x[0].upper() == i.split('_')[0].upper():
                     single_atom = {i.upper(): x[1]}
@@ -392,20 +440,20 @@ class FindAtoms():
         for i in atoms:
             i = i.upper()
             if i not in list(atom_dict.keys()):
-                print('\nAtom "{}" not found in res file!'.format(i))
+                print('\n*** Atom "{}" not found in res file! ***'.format(i))
                 sys.exit(0)
         return atom_dict
 
     def get_atom_line_numbers(self, atoms):
-        '''
+        """
         returns the line numbers in the res_list of a given atom list
         one atom of self._residues[resinum]:
             ['C12', ['0.471727', '0.649578', '0.232054'], 98]
         returns a list like ['98', 'xx', ..]
         :param atoms: list of atom names
         :type atoms: list
-        :type lines: list of integers
-        '''
+        :return lines: list of integers
+        """
         # this is to make sure the atomlines are correct: 
         residues = self.collect_residues()
         lines = []
@@ -508,14 +556,14 @@ def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
     nsrc = len(db_source_atoms)
     ntrg = len(res_target_atoms)
     if nsrc != ntrg:
-        print('Number of source and target atoms/peaks is different!! '\
-                '({} and {} atoms/peaks)'.format(nsrc, ntrg))
+        print('*** Number of source and target atoms/peaks is different!! '\
+                '({} and {} atoms/peaks) ***'.format(nsrc, ntrg))
         sys.exit(False)
     # do the source atoms exist at all?:
     for i in db_source_atoms:
         i = i.upper()
         if i not in temp:
-            print('\nAtom {} not found in database entry! Exiting...\n'.format(i))
+            print('\n*** Atom {} not found in database entry! ***'.format(i))
             sys.exit(False)
     return True
 
@@ -587,7 +635,7 @@ class SfacTable():
         unitline = find_line(self._reslist, r'UNIT\s+[0-9]+')     # position of the UNIT card
         try:
             if sfacline[-1] > unitline:
-                print(' SFAC in line {} must be defined before UNIT!'.format(sfacline[-1]+1))
+                print('*** SFAC in line {} must be defined before UNIT! ***'.format(sfacline[-1]+1))
                 sys.exit()
         except():
             pass
@@ -613,14 +661,14 @@ class SfacTable():
         if regular_sfac_line_num:
             sfacline = regular_sfac_line_num
         if not sfacline:
-            print(' No SFAC card found! Can not proceed.')
+            print('*** No SFAC card found! Can not proceed ***')
             sys.exit()
         for i in self._db_atom_types:  # this is to compare the occurence of element type from resfile and db
             i = i.upper()
             if i not in sfac+explicit_scat:         # all atom types from db not already in sfac
                 sfac.append(i)        # get appended to sfac
             if i not in self.elements:
-                print('error, atom {} not valid'.format(i))
+                print('*** Error, atom {} not valid ***'.format(i))
                 sys.exit(False)
         for i in range(1, len(sfac+explicit_scat)+1):
             i = str(i)
@@ -776,14 +824,17 @@ class NumberScheme():
         return orglist
 
 
-
 if __name__ == '__main__':
-    
     import doctest
     failed, attempted = doctest.testmod()#verbose=True)
     if failed == 0:
         print('passed all {} tests!'.format(attempted))
+    else:
+        print('{} of {} tests failed'.format(failed, attempted))
     sys.exit()
+
+    ###########################################################
+
     from dsrparse import DSR_Parser
     from resfile import ResList
     from dbfile import global_DB
@@ -857,7 +908,7 @@ if __name__ == '__main__':
 
     #sys.exit()
 
-    #  print('Residue dict:', fa.get_resinum('RESI 1 TOL'.split()))
+    #  print('Residue dict:', fa.get_resi_definition_dict('RESI 1 TOL'.split()))
     #print( fa.get_atomcoordinates(['Fe1_1', 'C29', 'Q12']) )
     #  print('line number:', fa.get_atom_line_numbers(['C12', 'C333', 'Q12']))
     #
@@ -897,3 +948,6 @@ if __name__ == '__main__':
     bad_dbatoms = [['lO1', 3, '-0.01453', '1.66590', '1.66590'], ['C1', 1, '-0.00146', '0.26814', '0.06351']]
     print('test')
     #get_atomtypes(bad_dbatoms)
+
+
+

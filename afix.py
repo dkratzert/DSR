@@ -63,7 +63,7 @@ def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
     try:
         dfix_file = open(os.path.join(filepath, filename), 'w')  # open the ins file
     except(IOError):
-        print('Unable to write restraints file! Check directory write permissions.')
+        print('*** Unable to write restraints file! Check directory write permissions. ***')
         sys.exit(False)
     print('Restraints were written to "{}"'.format(os.path.join(filepath, filename)))
     for i in dbhead:            #modified reslist
@@ -147,8 +147,12 @@ class InsertAfix(object):
     def insert_dsr_warning(self):
         '''
         information to insert into .res-file
+        TODO: insert this text only once in the file and also the
+              comments from GRADE
         '''
-        return 'rem the following was inserted by DSR:\n'
+        txt = "rem the following was inserted by DSR:\n" \
+              "http://dx.doi.org/10.1107/S1600576715005580\n"
+        return txt
 
     def collect_all_restraints(self):
         '''
@@ -305,7 +309,7 @@ class InsertAfix(object):
                 try:
                     afix_list[n][2:5] =  coordinates[self.target_atoms[ind]]
                 except(IndexError):
-                    print('More source than target atoms present! Exiting...')
+                    print('*** More source than target atoms present! Exiting... ***')
                     sys.exit(False)
         newlist = []
         for i in afix_list:
