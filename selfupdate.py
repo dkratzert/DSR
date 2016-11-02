@@ -29,11 +29,7 @@ class DSRURLopener(urllib.FancyURLopener):
 urllib._urlopener = DSRURLopener()
 
 
-<<<<<<< HEAD
-def get_current_dsr_version():
-=======
 def get_current_dsr_version(silent=False):
->>>>>>> master
     """
     determines the current version of DSR on the web server
 
@@ -48,34 +44,21 @@ def get_current_dsr_version(silent=False):
     try:
         response = urllib.urlopen('{}/version.txt'.format(urlprefix))
     except IOError:
-<<<<<<< HEAD
-        print("*** Unable to connect to update server. No Update possible. ***")
-        sys.exit()
-=======
         if not silent:
             print("*** Unable to connect to update server. No Update possible. ***")
         return 0
->>>>>>> master
     version = response.readline().strip()
     return version
 
 
-<<<<<<< HEAD
-def is_update_needed():
-=======
 def is_update_needed(silent=False):
->>>>>>> master
     """
     Decides if an update of DSR is needed.
     :return: True/False
     >>> is_update_needed()
     False
     """
-<<<<<<< HEAD
-    version = get_current_dsr_version()
-=======
     version = get_current_dsr_version(silent)
->>>>>>> master
     if int(VERSION) < int(version):
         return True
     else:
@@ -91,18 +74,6 @@ def update_dsr(force=False, version=None):
     else:
         version = get_current_dsr_version()
     if force:
-<<<<<<< HEAD
-        get_update_package(version)
-        print('*** Finished updating to version {} ***'.format(version))
-        return True
-    if int(VERSION) < int(version):
-        print('*** Current available version of DSR is {}. Performing upate ***'.format(version))
-        get_update_package(version)
-        print('*** Finished updating to version {} ***'.format(version))
-        return True
-    if int(VERSION) >= int(version):
-        print('*** DSR is already up to date ***')
-=======
         status = get_update_package(version)
         if status:
             print('*** Finished updating to version {} ***'.format(version))
@@ -119,7 +90,6 @@ def update_dsr(force=False, version=None):
             return False
     if int(VERSION) >= int(version):
         print('*** DSR is already up to date (version {}) ***'.format(version))
->>>>>>> master
         return False
 
 
@@ -149,18 +119,6 @@ def post_update_things():
     dsrdir = os.environ["DSR_DIR"]
     plat = get_system()
     upath = os.path.join(dsrdir, "dsr")
-<<<<<<< HEAD
-    if plat == "win":
-        pass
-    elif plat == "mac":
-        shutil.copy2(os.path.abspath(os.path.join(dsrdir, "setup//dsr-mac")), upath)
-        st = os.stat(upath)
-        os.chmod(upath, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-    else:
-        shutil.copy2(os.path.abspath(os.path.join(dsrdir, "setup//dsr-linux")), upath)
-        st = os.stat(upath)
-        os.chmod(upath, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-=======
     try:
         if plat == "win":
             pass
@@ -174,7 +132,6 @@ def post_update_things():
             os.chmod(upath, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
     except IOError:  # Unable to write in this case
         print('*** Unable to perform update. Please run me with super-user rights, e.g.: "sudo /opt/DSR/dsr -u" ***')
->>>>>>> master
 
 
 def overwrite_dir(root_src_dir, root_dst_dir, move=True):
@@ -213,15 +170,9 @@ def get_update_package(version):
     True/False
     """
     try:
-<<<<<<< HEAD
-        dsrdir = os.environ["DSR_DIR"]
-    except KeyError:
-        print("*** DSR_DIR environment variable not set. Can not update DSR. ***" )
-=======
         dsrdir = os.path.dirname(os.path.realpath(__file__))
     except KeyError:
         print("*** Could not determine the location of DSR. Can not update. ***" )
->>>>>>> master
         sys.exit()
     response = urllib.urlopen('{}/DSR-{}.tar.gz'.format(urlprefix, version))
     with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
@@ -230,44 +181,18 @@ def get_update_package(version):
     try:
         with tarfile.open(tmpfile.name) as tarobj:
             tarobj.extractall(path=tmpdir)
-<<<<<<< HEAD
-    except tarfile.ReadError:
-        print('*** Cound not get update from server. If this problem persists, please update manually! ***')
-=======
     except tarfile.ReadError as e:
         print('*** Cound not get update from server. If this problem persists, please update manually! ***')
         print('***', e, '***')
->>>>>>> master
-        return False
-    os.remove(tmpfile.name)
-    try:
-        overwrite_dir(os.path.join(tmpdir, "DSR-{}".format(version)), dsrdir, move=False)
-    except OSError:
-<<<<<<< HEAD
         print('Unable to perform update. Please run me with super-user rights, e.g.: "sudo DSR_DIR=/opt/DSR /opt/DSR/dsr -u"')
-=======
         print(
             'Unable to perform update. Please run me with super-user rights, e.g.: "sudo /opt/DSR/dsr -u"')
->>>>>>> master
         sys.exit()
     shutil.rmtree(tmpdir, ignore_errors=True)  # cleanup the files
     post_update_things()
     return True
 
 
-<<<<<<< HEAD
-
-
-
-if __name__ == "__main__":
-    #import sys
-    #import doctest
-    #failed, attempted = doctest.testmod()  # verbose=True)
-    #if failed == 0:
-    #    print('passed all {} tests!'.format(attempted))
-    #print(is_update_needed())
-    update_dsr(force=True, version=193)
-=======
 if __name__ == "__main__":
     # import sys
     # import doctest
@@ -276,4 +201,3 @@ if __name__ == "__main__":
     #    print('passed all {} tests!'.format(attempted))
     print(is_update_needed(silent=True))
     # update_dsr(force=True, version=193)
->>>>>>> master

@@ -18,11 +18,6 @@ import os
 import atomhandling as at
 from atoms import Element
 from dbfile import global_DB
-<<<<<<< HEAD
-import copy
-=======
-from misc import wrap_headlines
->>>>>>> master
 from restraints import Restraints
 
 __metaclass__ = type  # use new-style classes
@@ -58,34 +53,10 @@ class Export():
         '''
         self.invert = invert
         self._gdb = gdb
-<<<<<<< HEAD
-        self._export_all = export_all
-        try:
-            self._db = self._gdb.build_db_dict()[self._fragment_name]
-        except(KeyError):
-            print('*** Fragment "{}" was not found in the database!! ***'.format(self._fragment_name))
-            sys.exit()
-        self._resi = self._gdb.get_resi_from_fragment(self._fragment_name)
-        self._comment = self._db['comment']
-        self._dbatoms = self._db['atoms']
-        self._clipatoms = copy.deepcopy(self._dbatoms)
-        self._atomtypes = at.get_atomtypes(self._dbatoms)
-        self._fragline = self._db['fragline']
-        cell = self._fragline[2:]
-        self._clipcell = self._fragline[2:]  # cell parameters for clipboard export
-        self._cell = self.format_calced_coords(cell)  # expands the cell of calculated structures
-        self._cellstring = ' {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f}'.format(*[float(i) for i in self._cell])
-        self._comment_regex = '^REM .*$'.upper()
-
-
-    def format_calced_coords(self, cell):
-        '''
-=======
 
     def format_calced_coords(self, cell, fragment):
         """
         TODO: make this crude hack more elegant!
->>>>>>> master
         In calculated structure the cell is 1 1 1 90 90 90. Shelxle has problems
         with that when growing. So the cell is expanded to 50 50 50
         >>> gdb = global_DB()
@@ -251,14 +222,9 @@ class Export():
         C6   1     2.3980   0.0060   0.0090
         C7   1     2.3940  -0.0040   1.3940
         FEND
-<<<<<<< HEAD
-        '''
-        import pyperclip
-=======
         """
         import pyperclip
         fragname = fragname.lower()
->>>>>>> master
         clip_text = []
         atoms = self.format_atoms_for_export(fragname)
         atoms = '\n'.join(atoms)
@@ -383,17 +349,10 @@ class Export():
             for line in self.export_resfile(fragment):
                 line = ''.join(line)
                 f.write(line)
-<<<<<<< HEAD
-            print('Database entry of "{}" successfully written to {}.'\
-                    ''.format(self._fragment_name, resfile))
-        except(IOError):
-            print('*** Could not write file {} ***'.format(resfile))
-=======
             print('Database entry of "{}" successfully written to {}.'.format(fragment, resfile))
         except IOError:
             print('*** Could not write file {} ***'.format(resfile))
             import sys
->>>>>>> master
             sys.exit(-1)
         f.close()
         print("Image creation is currently disabled, because PLATON and ImageMagic are causing troubles.")

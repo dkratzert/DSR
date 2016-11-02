@@ -50,11 +50,7 @@ def search_fragment_name(search_string, gdb):
     from misc import dice_coefficient
     db = gdb.db_dict
     names_list = []
-<<<<<<< HEAD
-    for i in frags:
-=======
     for i in db:
->>>>>>> master
         fragname = gdb.get_name_from_fragment(i)
         line_number = gdb.get_line_number_from_fragment(i)
         dbname = gdb.get_db_name_from_fragment(i)
@@ -189,14 +185,9 @@ class ReadDB():
             diff = c1 - c2
             duplicates = list(diff.elements())
             for i in duplicates:
-<<<<<<< HEAD
-                print('\nDuplicate database entry "{}" found! Please remove/rename '\
-                    'second entry\nand/or check all end tags in the database dsr_usr_db.txt or dsr_db.txt.\n'.format(duplicates.pop()))
-=======
                 print('\nDuplicate database entry "{}" found! Please remove/rename ' \
                       'second entry\nand/or check all end tags in the database dsr_usr_db.txt or dsr_db.txt.\n'.format(
                     duplicates.pop()))
->>>>>>> master
             sys.exit(False)
         # # sort lower-case:
         dbnames.sort(key=lambda x: x[0].lower())
@@ -293,22 +284,12 @@ class global_DB():
         [['tbu-c', 1723, 'dsr_db', 'Tert-butyl-C'], ...]
         '''
         fraglist = []
-<<<<<<< HEAD
-        fragments = self._dbentry_dict.keys()
-        for frag in fragments:
-            comment = self.get_name_from_fragment(frag)
-            line = [frag, 
-                    self.get_line_number_from_fragment(frag), 
-                    self.get_db_name_from_fragment(frag), 
-                    comment, 
-=======
         for frag in self._db_all_dict:
             comment = self.get_name_from_fragment(frag)
             line = [frag,
                     self.get_line_number_from_fragment(frag),
                     self.get_db_name_from_fragment(frag),
                     comment,
->>>>>>> master
                     make_sortkey(comment)]
             fraglist.append(line)
         fraglist.sort(key=lambda x: x[4].lower())
@@ -453,13 +434,8 @@ class global_DB():
         print("<cell>\n", '1;;1;;1;;90;;90;;90', "\n</cell>")
         print("<residue>\n", self.get_resi_from_fragment(fragment), "\n</residue>")
         print("<dbtype>\n", self.get_db_name_from_fragment(fragment), "\n</dbtype>")
-<<<<<<< HEAD
-        print("<restr>\n", ';;'.join(self.db_dict[fragment]['head']), '\n</restr>')
-        self.check_consistency(fragment) # too many critical errors with GUI
-=======
         print("<restr>\n", ';;'.join(self._db_all_dict[fragment]['head']), '\n</restr>')
         self.check_consistency(fragment)  # too many critical errors with GUI
->>>>>>> master
         self.check_db_header_consistency(fragment)
         if not self.check_sadi_consistence(fragment):
             sys.exit()
@@ -479,19 +455,6 @@ class global_DB():
                 continue
             if not dbentry[i]:
                 if i == 'head':
-<<<<<<< HEAD
-                    print('*** Restraints in the header of database entry "{}" ({}) missing! Check your Database! ***'\
-                            .format(fragment, self.get_name_from_fragment(fragment)))
-                    return False
-                else:
-                    print('*** Values for "{}" in database entry "{}" missing! Check your Database! ***'\
-                          .format(str.upper(i), fragment))
-                    return False
-        if len(dbentry['fragline']) != 8:
-            print('*** The line starting with "FRAG" in the database entry of {} is '\
-                'not correct.\n  Are the cell parameters really correct? '\
-                '"FRAG 17 a b c alpha beta gamma" ***\n'.format(fragment))
-=======
                     print('*** Restraints in the header of database entry "{}" ({}) missing! Check your Database! ***' \
                           .format(fragment, self.get_name_from_fragment(fragment)))
                     return False
@@ -503,7 +466,6 @@ class global_DB():
             print('*** The line starting with "FRAG" in the database entry of {} is ' \
                   'not correct.\n  Are the cell parameters really correct? ' \
                   '"FRAG 17 a b c alpha beta gamma" ***\n'.format(fragment))
->>>>>>> master
             sys.exit(False)
         return True
 
@@ -535,13 +497,8 @@ class global_DB():
         while dbatoms:
             at = dbatoms.pop()
             if at in dbatoms:
-<<<<<<< HEAD
-                print('*** Duplicate atom {0} in database entry "{1}" ({2}) '\
-                    'found! Check your database... ***'.format(at, fragment, self.get_name_from_fragment(fragment)))
-=======
                 print('*** Duplicate atom {0} in database entry "{1}" ({2}) ' \
                       'found! Check your database... ***'.format(at, fragment, self.get_name_from_fragment(fragment)))
->>>>>>> master
                 sys.exit(-1)
 
     def check_db_header_consistency(self, fragment):
@@ -618,14 +575,8 @@ class global_DB():
                         del line[0]  # delete standard deviation
                 except(IndexError):
                     return False
-<<<<<<< HEAD
                 if len(line)%2 == 1: # test for uneven atoms count
                     print('*** Inconsistent SADI restraint line {} of "{}". Not all atoms form a pair ***'.format(num, fragment))
-=======
-                if len(line) % 2 == 1:  # test for uneven atoms count
-                    print('*** Inconsistent SADI restraint line {} of "{}". Not all atoms form a pair ***'.format(num,
-                                                                                                                  fragment))
->>>>>>> master
                 pairs = pairwise(line)
                 distances = []
                 pairlist = []
@@ -650,26 +601,17 @@ class global_DB():
                         print("\nFragment {}:".format(fragment))
                         for x in outliers:
                             pair = ' '.join(pairlist[x])
-<<<<<<< HEAD
-                            print('*** Suspicious deviation in atom pair "{}" ({:4.3f} A, median: {:4.3f}) of SADI line {} ***'.format(pair, distances[x], median(distances), num+1))
-=======
                             print(
                                 '*** Suspicious deviation in atom pair "{}" ({:4.3f} A, median: {:4.3f}) of SADI line {} ***'.format(
                                     pair, distances[x], median(distances), num + 1))
->>>>>>> master
                             print(restr[num][:60], '...')
                             return False
                 if stdev > 2.5 * float(dev):
                     print("\nFragment {}:".format(fragment))
-<<<<<<< HEAD
-                    print('*** Suspicious restraints in SADI line {} with high standard deviation {:4.3f} (median length: {:4.3f} A) ***'.format(num+1, stdev, median(distances)))
-                    print(' '.join(prefixes+line))
-=======
                     print(
                         '*** Suspicious restraints in SADI line {} with high standard deviation {:4.3f} (median length: {:4.3f} A) ***'.format(
                             num + 1, stdev, median(distances)))
                     print(' '.join(prefixes + line))
->>>>>>> master
                     return False
         return True
 
@@ -720,13 +662,8 @@ class global_DB():
             if fragline:
                 pass
         except(UnboundLocalError):
-<<<<<<< HEAD
-            print('*** Error. No cell parameters found in the database entry '\
-                    'of "{}" ***'.format(fragment))
-=======
             print('*** Error. No cell parameters found in the database entry ' \
                   'of "{}" ***'.format(fragment))
->>>>>>> master
             print('*** Please add these parameters! ***')
             sys.exit(False)
         return (nhead, fragline, comment)
