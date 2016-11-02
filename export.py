@@ -18,7 +18,6 @@ import os
 import atomhandling as at
 from atoms import Element
 from dbfile import global_DB
-from misc import wrap_headlines
 from restraints import Restraints
 
 __metaclass__ = type  # use new-style classes

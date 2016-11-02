@@ -375,6 +375,12 @@ class FindAtoms():
         
         :param atom: an atom name with or without residue number like C1 or C1_1
         :type atom: string
+        >>> res_file = 'p21c.res'
+        >>> rl = ResList(res_file)
+        >>> reslist = rl.get_res_list()
+        >>> fa = FindAtoms(reslist)
+        >>> fa.get_atoms_resiclass('C2_4')
+        
         """
         num = self.get_atoms_resinumber(atom)
         atom = atom.split('_')[0]

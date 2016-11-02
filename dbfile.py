@@ -575,9 +575,8 @@ class global_DB():
                         del line[0]  # delete standard deviation
                 except(IndexError):
                     return False
-                if len(line) % 2 == 1:  # test for uneven atoms count
-                    print('*** Inconsistent SADI restraint line {} of "{}". Not all atoms form a pair ***'.format(num,
-                                                                                                                  fragment))
+                if len(line)%2 == 1: # test for uneven atoms count
+                    print('*** Inconsistent SADI restraint line {} of "{}". Not all atoms form a pair ***'.format(num, fragment))
                 pairs = pairwise(line)
                 distances = []
                 pairlist = []

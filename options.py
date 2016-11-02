@@ -205,12 +205,10 @@ class OptionsParser():
         return self._options
 
 
-
-
 if __name__ == '__main__':
-    optparse = OptionsParser()
+    optparse = OptionsParser('188')
     print(optparse.res_file)
-    print(optparse.parse_commandline())
+    #print(optparse.parse_commandline())
     optparse.parser.print_help()
 
 
