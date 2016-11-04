@@ -181,8 +181,8 @@ class ReadDB():
             diff = c1 - c2
             duplicates = list(diff.elements())
             for i in duplicates:
-                print('\nDuplicate database entry "{}" found! Please remove/rename ' \
-                      'second entry\nand/or check all end tags in the database dsr_usr_db.txt or dsr_db.txt.\n'.format(
+                print('\n**** Duplicate database entry "{}" found! Please remove/rename ' \
+                      'second entry\nand/or check all end tags in the database dsr_usr_db.txt or dsr_db.txt. ****'.format(
                     duplicates.pop()))
             sys.exit(False)
         # # sort lower-case:
@@ -442,7 +442,7 @@ class global_DB():
         check if the fragline makes sense and if the fragment_dict is complete
         '''
         fragment = fragment.lower()
-        if fragment in ['cf3', 'cf6', 'cf9']:
+        if fragment in ['cf3', 'cf6', 'cf9', 'cf6 split']:
             return True
         try:
             dbentry = self._db_all_dict[fragment]
