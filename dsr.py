@@ -246,16 +246,11 @@ class DSR():
         dsr_dict = dsrp.get_dsr_dict
         fvarlines = rle.find_fvarlines()
         self.fragment = dsrp.fragment.lower()
-        if self.fragment in ['cf3', 'cf6', 'cf9']:
-            dbhead = 'RESI CF3'
-            db_residue_string = 'CF3'
-            db_atom_types = ['C', 'F']
-        else:
-            dbhead = self.gdb.get_head_from_fragment(self.fragment)        # this is only executed once
-            db_residue_string = self.gdb.get_resi_from_fragment(self.fragment)
-            dbatoms = self.gdb.get_atoms_from_fragment(self.fragment)      # only the atoms of the dbentry as list
-            # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
-            db_atom_types = get_atomtypes(dbatoms)
+        dbhead = self.gdb.get_head_from_fragment(self.fragment)        # this is only executed once
+        db_residue_string = self.gdb.get_resi_from_fragment(self.fragment)
+        dbatoms = self.gdb.get_atoms_from_fragment(self.fragment)      # only the atoms of the dbentry as list
+        # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
+        db_atom_types = get_atomtypes(dbatoms)
         sf = SfacTable(self.reslist, db_atom_types)
         sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
         resi = Resi(self.reslist, dsr_dict, dbhead, db_residue_string, find_atoms)
