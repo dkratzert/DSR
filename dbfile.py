@@ -441,8 +441,11 @@ class global_DB():
         '''
         check if the fragline makes sense and if the fragment_dict is complete
         '''
+        fragment = fragment.lower()
+        if fragment in ['cf3', 'cf6', 'cf9']:
+            return True
         try:
-            dbentry = self._db_all_dict[fragment.lower()]
+            dbentry = self._db_all_dict[fragment]
         except KeyError:
             print("Fragment {} not found in the database.".format(fragment))
             sys.exit()

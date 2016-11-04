@@ -48,7 +48,7 @@
 ########################################################################################
 
 <CF3>
-rem Name: CF3 group(ordered)
+rem Name: CF3 group (ordered)
 rem Src: Will be calulated by DSR
 REM This is a dummy entry. The coordinates are arbitrary.
 RESI CF3
@@ -64,6 +64,7 @@ rem Name: CF3 group (2-fold disordered)
 rem Src: Will be calulated by DSR
 REM This is a dummy entry. The coordinates are arbitrary.
 RESI CF3
+FREE F1A F2A
 FRAG 17 17.2012   6.5879  17.8587   90.000   98.492   90.000
 C1    1    0.672247    1.534237    0.267407
 F1A   3    0.695166    1.624919    0.332856
@@ -71,7 +72,7 @@ F2A   3    0.635283    1.666115    0.219061
 F3A   3    0.734208    1.462630    0.240423
 F4A   3    0.681272    1.544191    0.195371
 F5A   3    0.741155    1.502995    0.309166
-F6A   3    0.642230    1.706479    0.287804  
+F6A   3    0.642230    1.706479    0.287804
 </CF6>
 
 <CF9>
