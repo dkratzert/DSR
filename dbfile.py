@@ -171,10 +171,6 @@ class ReadDB():
             for num, line in enumerate(self._databases[db]):
                 if re.match(regex, line):
                     frag = [str(line.strip('<> \n\r')).upper(), num + 1, db]  # stripping spaces is important here!
-                    if frag[0] in ['CF3', 'CF6', 'CF9']:
-                        print('\nWarning, {} is a reserved fragment name. Ignoring database entry {}.'.format(frag[0],
-                                                                                                              frag[0]))
-                        continue
                     dbnames.append(frag)
         nameset = []
         for i in dbnames:
@@ -445,8 +441,11 @@ class global_DB():
         '''
         check if the fragline makes sense and if the fragment_dict is complete
         '''
+        fragment = fragment.lower()
+        if fragment in ['cf3', 'cf6', 'cf9']:
+            return True
         try:
-            dbentry = self._db_all_dict[fragment.lower()]
+            dbentry = self._db_all_dict[fragment]
         except KeyError:
             print("Fragment {} not found in the database.".format(fragment))
             sys.exit()
