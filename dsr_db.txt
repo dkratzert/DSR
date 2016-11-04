@@ -47,51 +47,7 @@
 #   in the SHELXL file automatically.
 ########################################################################################
 
-<CF3>
-rem Name: CF3 group (ordered)
-rem Src: Will be calulated by DSR
-REM This is a dummy entry. The coordinates are arbitrary.
-RESI CF3
-FRAG 17 17.2012   6.5879  17.8587   90.000   98.492   90.000
-C1    1    0.090610   -0.303414    0.513850
-F1    3    0.045281   -0.252567    0.561932
-F2    3    0.129932   -0.463873    0.548990
-F3    3    0.055789   -0.388160    0.454486
-</CF3>
 
-<CF6>
-rem Name: CF3 group (2-fold disordered)
-rem Src: Will be calulated by DSR
-REM This is a dummy entry. The coordinates are arbitrary.
-RESI CF3
-FREE F1A F2A
-FRAG 17 17.2012   6.5879  17.8587   90.000   98.492   90.000
-C1    1    0.672247    1.534237    0.267407
-F1A   3    0.695166    1.624919    0.332856
-F2A   3    0.635283    1.666115    0.219061
-F3A   3    0.734208    1.462630    0.240423
-F4A   3    0.681272    1.544191    0.195371
-F5A   3    0.741155    1.502995    0.309166
-F6A   3    0.642230    1.706479    0.287804
-</CF6>
-
-<CF9>
-rem Name: CF3 group (3-fold disordered)
-rem Src: Will be calulated by DSR
-REM This is a dummy entry. The coordinates are arbitrary.
-RESI CF3
-FRAG 17 17.2012   6.5879  17.8587   90.000   98.492   90.000
-C1   1    0.672247    1.534237    0.267407
-F1A   3     0.694920   1.530820   0.199490
-F2A   3     0.737569   1.531412   0.317401
-F3A   3     0.639595   1.714812   0.273935
-F4A   3     0.730291   1.477153   0.230622
-F5A   3     0.706071   1.613950   0.332444
-F6A   3     0.635723   1.685941   0.227761
-F7A   3     0.747134   1.477387   0.277189
-F8A   3     0.667378   1.686381   0.315278
-F9A   3     0.657572   1.613277   0.198360
-</CF9>
 
 <isoprop>
 rem Name: Isopropanole, Propan-2-ol, C3H8O
@@ -2534,6 +2490,68 @@ O2   8     1.331912    0.208002    0.660509
 O3   8     0.068545   -1.201825   -0.896794
 O4   8    -1.050637   -0.218292    1.049695
 </ClO4>
+
+
+<CF3>
+REM This is a dummy entry. The coordinates are arbitrary.
+rem Name: CF3 group (ordered)
+rem Src: Will be calulated by DSR
+RESI CF3
+FRAG 17 17.2012   6.5879  17.8587   90.000   98.492   90.000
+C1    1    0.090610   -0.303414    0.513850
+F1    3    0.045281   -0.252567    0.561932
+F2    3    0.129932   -0.463873    0.548990
+F3    3    0.055789   -0.388160    0.454486
+</CF3>
+
+<CF6>
+REM This is a dummy entry. The coordinates are arbitrary.
+rem Name: CF3 group (2-fold disordered)
+rem Src: Will be calulated by DSR
+RESI CF3
+FRAG 17 17.2012   6.5879  17.8587   90.000   98.492   90.000
+C1    1    0.672247    1.534237    0.267407
+F1A   3    0.695166    1.624919    0.332856
+F2A   3    0.635283    1.666115    0.219061
+F3A   3    0.734208    1.462630    0.240423
+F4A   3    0.681272    1.544191    0.195371
+F5A   3    0.741155    1.502995    0.309166
+F6A   3    0.642230    1.706479    0.287804
+</CF6>
+
+<CF6 SPLIT>
+REM This is a dummy entry. The coordinates are arbitrary.
+rem Name: CF3 group (2-fold disordered, split position)
+rem Src: Fragment will be calulated by DSR
+RESI CF3
+FRAG 17 17.2012   6.5879  17.8587   90.000   98.492   90.000
+C1A   1    0.073561   -0.274014    0.510039    21.0000     0.04
+F1A   3    0.010105   -0.270331    0.458501    21.0000     0.04
+F2A   3    0.053220   -0.248222    0.577837    21.0000     0.04
+F3A   3    0.109303   -0.450634    0.507463    21.0000     0.04
+C1B   1    0.107660   -0.332814    0.517661   -21.0000     0.04
+F4B   3    0.139080   -0.434593    0.578322   -21.0000     0.04
+F5B   3    0.095965   -0.456703    0.458986   -21.0000     0.04
+F6B   3    0.039882   -0.254291    0.529360   -21.0000     0.04
+</CF6 SPLIT>
+
+<CF9>
+REM This is a dummy entry. The coordinates are arbitrary.
+rem Name: CF3 group (3-fold disordered)
+rem Src: Fragment will be calulated by DSR
+RESI CF3
+FRAG 17 17.2012   6.5879  17.8587   90.000   98.492   90.000
+C1   1    0.672247    1.534237    0.267407
+F1A   3     0.694920   1.530820   0.199490
+F2A   3     0.737569   1.531412   0.317401
+F3A   3     0.639595   1.714812   0.273935
+F4A   3     0.730291   1.477153   0.230622
+F5A   3     0.706071   1.613950   0.332444
+F6A   3     0.635723   1.685941   0.227761
+F7A   3     0.747134   1.477387   0.277189
+F8A   3     0.667378   1.686381   0.315278
+F9A   3     0.657572   1.613277   0.198360
+</CF9>
 
 
 # Crystal sponge guest molecules:
