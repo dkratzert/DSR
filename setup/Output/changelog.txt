@@ -1,4 +1,7 @@
 Recent changes
+-196    Improved C20, C60 and C70 fragments. Now they all have restraints and
+        optimized geometry. Fixed case sensitivity bug. Improved FLAT restraints.
+        Added CF3, CF6 and CF9 fragments as dummys to the database.
 -195    Slight speed improvement. Cleaner code (needs more cleaning). Fixed too 
         optimistic replace mode in 194. External restraints shouuld work again.
 -194    Fixed ANSI escape codes appearing in ShelXle GUI. Improved updater.
