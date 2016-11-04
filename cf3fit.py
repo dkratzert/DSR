@@ -226,8 +226,11 @@ class CF3(object):
         """
         # the pivot atom of the CF3 group:
         targetatom = self.dsr_dict['target'][0]
+        if targetatom.startswith("Q"):
+            print("*** Only carbon atoms allowed for CF3-groups! ***")
+            sys.exit()
         if len(self.dsr_dict['target']) > 1:
-            print(('Using only first target atom {}.'.format(self.dsr_dict['target'][0])))
+            print(('Using only first target atom {}.'.format(targetatom)))
         try:
             atomline = self.fa.get_atom_line_numbers([targetatom])[0]
         except IndexError:
@@ -341,8 +344,11 @@ class CF3(object):
         '''
         create disorderd CF3 group on three positions.
         '''
-        print(('Generating threefold disordered CF3-Group at {}.'.format(self.dsr_dict['target'][0])))
         target_atom = self.dsr_dict['target'][0]
+        if target_atom.startswith("Q"):
+            print("*** Only carbon atoms allowed for CF3-groups! ***")
+            sys.exit()
+        print('Generating threefold disordered CF3-Group at {}.'.format(target_atom))
         if '_' in target_atom:
             print('\n*** Sorry, can not create a CF3 group inside a residue! \nThis would damage the residue. ***')
             sys.exit()
