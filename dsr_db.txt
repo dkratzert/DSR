@@ -2519,22 +2519,6 @@ F5A   3    0.741155    1.502995    0.309166
 F6A   3    0.642230    1.706479    0.287804
 </CF6>
 
-<CF6 SPLIT>
-REM This is a dummy entry. The coordinates are arbitrary.
-rem Name: CF3 group (2-fold disordered, split position)
-rem Src: Fragment will be calulated by DSR
-RESI CF3
-FRAG 17 17.2012   6.5879  17.8587   90.000   98.492   90.000
-C1A   1    0.073561   -0.274014    0.510039    21.0000     0.04
-F1A   3    0.010105   -0.270331    0.458501    21.0000     0.04
-F2A   3    0.053220   -0.248222    0.577837    21.0000     0.04
-F3A   3    0.109303   -0.450634    0.507463    21.0000     0.04
-C1B   1    0.107660   -0.332814    0.517661   -21.0000     0.04
-F4B   3    0.139080   -0.434593    0.578322   -21.0000     0.04
-F5B   3    0.095965   -0.456703    0.458986   -21.0000     0.04
-F6B   3    0.039882   -0.254291    0.529360   -21.0000     0.04
-</CF6 SPLIT>
-
 <CF9>
 REM This is a dummy entry. The coordinates are arbitrary.
 rem Name: CF3 group (3-fold disordered)
