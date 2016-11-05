@@ -100,7 +100,7 @@ class dsrrunTest(unittest.TestCase):
         """
         print('{}'.format(nummer) * 10, 'start:')
         if nummer > 1:
-            misc.copy_file('test-data/beispiel/{}.hkl'.format(nummer), 'test-data/beispiel/{}.hkl'.format(nummer))
+            misc.copy_file('test-data/beispiel/1.hkl'.format(nummer), 'test-data/beispiel/{}.hkl'.format(nummer))
         system('{0} {1} ./test-data/beispiel/{2}.res'.format(self.dsr, parameter, nummer))
         with open('./test-data/beispiel/{}.res'.format(nummer)) as txt:
             a = txt.readlines()[8:]
