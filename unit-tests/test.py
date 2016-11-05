@@ -90,12 +90,12 @@ class doctestsTest(unittest.TestCase):
 class dsrrunTest(unittest.TestCase):
     def setUp(self):
         #unittest.TestCase.setUp(self)
-        self.maxDiff = None
+        #self.maxDiff = 20
         # remove this to view the results:
         misc.remove_file('*.fcf')
-        #self.dsr = '/Applications/DSR/dsr'
+        self.dsr = '/Applications/DSR/dsr'
         #self.dsr = 'D:\Programme\DSR\dsr'
-        self.dsr = misc.which('dsr')
+        #self.dsr = misc.which('dsr')
 
         #1 -r resi cf3 part 2 occ -31
         #2 -r resi cf3 part 2 occ -31 dfix
@@ -115,31 +115,33 @@ class dsrrunTest(unittest.TestCase):
         resi cf3 PART 2 occ -31
         """
         print('1'*10)
-        #misc.copy_file('test-data/beispiel/1.ins', 'test-data/beispiel/1a.res')
-        #misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/1a.hkl')
         system('{} -r ./test-data/beispiel/1.res'.format(self.dsr))
         with open('./test-data/beispiel/1.res') as txt:
-            erster = txt.readlines()
+            a = txt.readlines()[8:]
         with open('./test-data/beispiel/1-erg.res') as txt2:
-            erster_erg = txt2.readlines()
-        self.assertEqual(erster, erster_erg)
+            b = txt2.readlines()[8:]
+        misc.remove_file('./test-data/beispiel/*.fcf')
+        print('1 test:')
+        self.assertEqual(a, b)
+        print('1' * 10, "ende")
 
-    @unittest.skip(" skipping2 ")
+    #@unittest.skip(" skipping2 ")
     def testrun_run2(self):
         """
-        regular dsr run with
+        regular -r dsr run with
         resi cf3 dfix =
             PART 2 occ -31
         """
-        print('2' * 10)
-        misc.copy_file('test-data/beispiel/2.ins', 'test-data/beispiel/2a.res')
-        misc.copy_file('test-data/beispiel/2.hkl', 'test-data/beispiel/2a.hkl')
-        system("{} -r ./test-data/beispiel/2a.res".format(self.dsr))
-        with open('./test-data/beispiel/2a.res') as txt:
-            zweiter = txt.readlines()
-        with open('./test-data/beispiel/2a-erg.res') as txt2:
-            zweiter_erg = txt2.readlines()
-        self.assertEqual(zweiter, zweiter_erg)
+        print('2'*10)
+        system('{} -r ./test-data/beispiel/2.res'.format(self.dsr))
+        with open('./test-data/beispiel/2.res') as txt:
+            a = txt.readlines()[8:]
+        with open('./test-data/beispiel/2-erg.res') as txt2:
+            b = txt2.readlines()[8:]
+        misc.remove_file('./test-data/beispiel/*.fcf')
+        print('2 test:')
+        self.assertEqual(a, b)
+        print('2' * 10, "ende")
 
     @unittest.skip(" skipping3 ")
     def testrun_run3(self):
