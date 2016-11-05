@@ -90,7 +90,7 @@ class dsrrunTest(unittest.TestCase):
         # rigid
         # -s
 
-    def dsr_runtest(self, nummer=99, parameter='-r'):
+    def dsr_runtest(self, nummer=99, parameter='-r', external_file=''):
         """
         runs a test where the whole dsr is started with different input files
         and compares the result with optimal output
@@ -106,11 +106,19 @@ class dsrrunTest(unittest.TestCase):
             a = txt.readlines()[8:]
         with open('./test-data/beispiel/{}-erg.res'.format(nummer)) as txt2:
             b = txt2.readlines()[8:]
+        if external_file:
+            with open('./test-data/beispiel/{}.dfix'.format(external_file)) as ext:
+                c = ext.readlines()
+            with open('./test-data/beispiel/{}-erg.dfix'.format(nummer)) as ext2:
+                d = ext.readlines()
         misc.remove_file('./test-data/beispiel/*.fcf')
         print('{} test:'.format(nummer))
         if nummer > 1:
             misc.remove_file('./test-data/beispiel/{}.hkl'.format(nummer))
+        #misc.remove_file('./test-data/beispiel/{}.res'.format(nummer))
+        #misc.remove_file('./test-data/beispiel/{}.ins'.format(nummer))
         self.assertEqual(a, b)
+        self.assertEqual(c, d)
         print('{}'.format(nummer) * 10, "ende")
 
     #@unittest.skip(" skipping1 ")
@@ -131,7 +139,6 @@ class dsrrunTest(unittest.TestCase):
         self.maxDiff = None
         self.dsr_runtest(2, '-r')
 
-
     #@unittest.skip(" skipping3 ")
     def testrun_run3(self):
         """
@@ -141,7 +148,7 @@ class dsrrunTest(unittest.TestCase):
         self.maxDiff = None
         self.dsr_runtest(3, '-r')
 
-    @unittest.skip(" skipping4 ")
+    #@unittest.skip(" skipping4 ")
     def testrun_run4(self):
         """
         external -re restraints with:
@@ -149,7 +156,7 @@ class dsrrunTest(unittest.TestCase):
             PART 2 occ -31
         """
         self.maxDiff = None
-        self.dsr_runtest(4, '-re')
+        self.dsr_runtest(4, '-re', external_file='dsr_CF3_4_4')
 
     @unittest.skip(" skipping5 ")
     def testrun_run5(self):
