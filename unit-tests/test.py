@@ -220,7 +220,7 @@ class dsrrunTest(unittest.TestCase):
         -r -t
         """
         self.maxDiff = None
-        self.dsr_runtest(10, '-t -r', limit_end=332)
+        self.dsr_runtest(10, '-t -r', limit_end=300)
 
 db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
                'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
