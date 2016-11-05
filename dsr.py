@@ -260,9 +260,9 @@ class DSR():
             cf3 = CF3(rle, find_atoms, self.reslist, self.fragment, sfac_table,
                       basefilename, dsr_dict, resi, self.res_file, self.options)
             if self.fragment == 'cf3':
-                cf3.cf3()
+                cf3.cf3(afix=130)
             if self.fragment == 'cf6':
-                cf3.cf3('120')
+                cf3.cf3(afix=120)
             if self.fragment == 'cf9':
                 cf3.cf9()
             print('\nFinished...')

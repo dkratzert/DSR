@@ -143,19 +143,20 @@ class CF3(object):
             self.rle.remove_line(i, rem=False, remove=True, frontspace=False)
     
     def format_cf3_restraints(self, afix, restr, atom, fatoms, splitatoms=False):
-        '''
+        """
         replaces the dummy atom names in the restraint lists with the real names
         :param afix: string of the afix number
         :param restr: restraints
         :param atom: pivot atom
         :param fatoms: fluorine atoms
-        '''
+        """
         Y, Z = self.lf.get_bondvector(atom)
         Y = remove_partsymbol(Y)
         Z = remove_partsymbol(Z)
+        replacelist = ()
         if afix == '130':
             F1, F2, F3 = fatoms
-            replacelist = ('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3)
+            replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3))
         if afix == '120' and splitatoms:
             F1, F2, F3, F4, F5, F6 = fatoms
             ZA, ZB = splitatoms
@@ -166,7 +167,7 @@ class CF3(object):
             replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3), 
                            ('F4', F4), ('F5', F5), ('F6', F6))
         # replace dummy atoms in restraint list with real atom names:
-        for old, new in (replacelist):
+        for old, new in replacelist:
             restr = [i.replace(old, new) for i in restr]
         restr = wrap_headlines(restr, 77)
         return restr
@@ -209,8 +210,33 @@ class CF3(object):
             if not atom+char in [i[0] for i in self.atomlist]:
                 del alphabet[0]
                 return atom+char
-        
-    
+
+    def prepare_cf3(self):
+        """
+        prepares some things before CF3 group is generated
+        :return: list
+        """
+        targetatom = self.dsr_dict['target'][0]
+        if targetatom.startswith("Q"):
+            print("*** Only carbon atoms allowed for CF3-groups! ***")
+            sys.exit()
+        if len(self.dsr_dict['target']) > 1:
+            print('Using only first target atom {}.'.format(targetatom))
+        try:
+            atomline = self.fa.get_atom_line_numbers([targetatom])[0]
+        except IndexError:
+            print("\n*** Atom {} not found ***\n".format(targetatom))
+            sys.exit()
+        if '_' in targetatom:
+            print('\n*** Sorry, can not create a CF3 group inside a residue! '
+                  '\nThis would damage the residue. ***')
+            sys.exit()
+        found = self.find_bonded_fluorine(targetatom)
+        for i in found:
+            print('Deleting {}_{} from {}'.format(i[0], i[7], targetatom))
+        self.delete_bound_fluorine(found)
+        return atomline
+
     def cf3(self, afix=130):
         """
         create CF3 group on atom.
@@ -225,31 +251,18 @@ class CF3(object):
         :type afix: string
         """
         # the pivot atom of the CF3 group:
+        atomline = self.prepare_cf3()
+        afix = str(afix)
         targetatom = self.dsr_dict['target'][0]
-        if targetatom.startswith("Q"):
-            print("*** Only carbon atoms allowed for CF3-groups! ***")
-            sys.exit()
-        if len(self.dsr_dict['target']) > 1:
-            print(('Using only first target atom {}.'.format(targetatom)))
-        try:
-            atomline = self.fa.get_atom_line_numbers([targetatom])[0]
-        except IndexError:
-            print("\n*** Atom {} not found ***\n".format(targetatom))
-            sys.exit()
         [uvals, c_coords] = self.make_pivot_isotropic(atomline)
-        afix=str(afix)
-        target_atom = self.dsr_dict['target'][0]
-        if '_' in target_atom:
-            print('\n*** Sorry, can not create a CF3 group inside a residue! \nThis would damage the residue. ***')
-            sys.exit()
+        restr = ['']
         if afix == '130':
-            print('Generating CF3-Group at {}.'.format(target_atom))
+            print('Generating CF3-Group at {}.'.format(targetatom))
             restr = sadir_130
             if self.dsr_dict['dfix']:
                 restr = dfixr_130
         if afix == '120':
-            print(('Generating twofold disordered CF3-Group at {}.'\
-                            .format(self.dsr_dict['target'][0])))
+            print('Generating twofold disordered CF3-Group at {}.'.format(targetatom))
             restr = sadir_120
             if self.dsr_dict['split']:
                 restr = sadir_120_split
@@ -257,8 +270,6 @@ class CF3(object):
                 restr = dfixr_120
                 if self.dsr_dict['split']:
                     restr = dfixr_120_split
-        if self.resi.get_residue_class:
-            restr = self.resi.format_restraints(restr)
         if afix == '120' and self.dsr_dict['split'] and uvals:
             num = NumberScheme(self.reslist, [targetatom], False)
             if len(targetatom) < 4:
@@ -273,11 +284,7 @@ class CF3(object):
             axes = calc_ellipsoid_axes(c_coords, uvals, self.cell)
         else:
             splitatoms = False
-        found = self.find_bonded_fluorine(targetatom)
-        for i in found:
-            print(('Deleting {}_{} from {}'.format(i[0], i[7], targetatom)))
-        self.delete_bound_fluorine(found)
-        fatoms = self.make_afix(afixnum=afix, linenumber=atomline)
+        fatoms = self.make_afix(afixnum=int(afix), linenumber=atomline)
         if not fatoms:
             return False
         self.do_refine_cycle(self.rl, self.reslist)
@@ -307,7 +314,7 @@ class CF3(object):
                             axes[1][1], axes[1][2], -float(self.dsr_dict['occupancy']))
             dummy = ''
             splb = False
-            # put all togeter to build up the atoms:
+            # put all together to build up the atoms:
             for line, splatom in zip(id_lines, [at1, at2, dummy]):
                 # restraints should never be placed in this reslist[line]:
                 self.reslist[line] = ' '.join(self.reslist[line].split()[1:3])+'\n'
@@ -340,36 +347,18 @@ class CF3(object):
         self.rl.write_resfile(self.reslist, '.res')
         return fatoms
 
+
     def cf9(self):
-        '''
+        """
         create disorderd CF3 group on three positions.
-        '''
+        """
+        atomline = self.prepare_cf3()
         target_atom = self.dsr_dict['target'][0]
-        if target_atom.startswith("Q"):
-            print("*** Only carbon atoms allowed for CF3-groups! ***")
-            sys.exit()
         print('Generating threefold disordered CF3-Group at {}.'.format(target_atom))
-        if '_' in target_atom:
-            print('\n*** Sorry, can not create a CF3 group inside a residue! \nThis would damage the residue. ***')
-            sys.exit()
         if self.dsr_dict['dfix']:
             restr = dfixr_cf9
         else:
-            restr = sadir_cf9 
-        if self.resi.get_residue_class:
-            restr = self.resi.format_restraints(restr)
-            restr = [i+'\n' for i in restr]
-        if len(self.dsr_dict['target']) > 1:
-            print('Using only first target target_atom {}.'.format(self.dsr_dict['target'][0]))
-        try:
-            atomline = self.fa.get_atom_line_numbers([target_atom])[0]
-        except IndexError:
-            print("\n*** Atom {} not found. ***\n".format(target_atom))
-            sys.exit()
-        found = self.find_bonded_fluorine(target_atom)
-        for i in found:
-            print(('Deleting {}_{} from {}'.format(i[0], i[7], target_atom)))
-        self.delete_bound_fluorine(found)
+            restr = sadir_cf9
         # make a copy to find fluorine positions:
         ####################################################
         reslist_copy = self.reslist[:]
@@ -394,7 +383,7 @@ class CF3(object):
         replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3),
                             ('F4', F4), ('F5', F5), ('F6', F6), ('F7', F7), 
                             ('F8', F8), ('F9', F9))
-        for old, new in (replacelist):
+        for old, new in replacelist:
             restr = [i.replace(old, new) for i in restr]
         ########################################################
         # add restraints to reslist:
@@ -425,9 +414,7 @@ class CF3(object):
         restr = wrap_headlines(restr, 77)
         restr = ''.join(restr).format(fcount+1, fcount+2, fcount+3)
         # place the restraints:
-        self.reslist[atomline] = (self.reslist[atomline]
-                                    +self.startm
-                                    +restr)
+        self.reslist[atomline] = (self.reslist[atomline]+self.startm+restr)
         at1 = self.lf.get_single_coordinate(Y)
         at2 = self.lf.get_single_coordinate(Z)
         coords = []
@@ -440,7 +427,7 @@ class CF3(object):
         # join all together:
         atoms_cf9 = '\n'.join(atoms_cf9).format(self.e2s.elem_2_sfac('F'),
                                         fcount+1, fcount+2, fcount+3, *coords)
-        self.reslist[atomline] = self.reslist[atomline]+atoms_cf9   
+        self.reslist[atomline] += atoms_cf9
         self.reslist[self.rle.find_fvarlines()[0]] = fvar
         shx = ShelxlRefine(self.reslist, self.basefilename, self.fa, self.options)
         shx.set_refinement_cycles('8')
@@ -448,11 +435,13 @@ class CF3(object):
         return fatoms
  
     def make_afix(self, afixnum, linenumber, resioff=False):
-        '''
+        """
         create an afix to build a CF3 or CH3 group
+        :param resioff: bool
+        :param linenumber:
         :param afixnum: afix number
-        :type afixnum: string
-        '''
+        :type afixnum: int
+        """
         resistr = ''
         resi0 = ''
         if self.dsr_dict['occupancy']:
@@ -511,11 +500,8 @@ class CF3(object):
         else:
             print('Only AFIX 130 and 120 are implemented yet.')
             return False
-        # insert the afix:
-        self.reslist[linenumber] = self.reslist[linenumber]\
-                                        + afix.format(afixnum, sfac, occ, 
-                                            #this ID is to recognize this line later:
-                                            self.rand_id ) 
+        # insert the afix (the rand_id is to recognize this line later):
+        self.reslist[linenumber] += afix.format(afixnum, sfac, occ, self.rand_id)
         if str(afixnum) == '120':
             return numberscheme_120
         if str(afixnum) == '130':
@@ -523,11 +509,11 @@ class CF3(object):
 
         
     def do_refine_cycle(self, rl, reslist):
-        '''
-        runs a shelxl cycle with L.S. 0 
+        """
+        runs a shelxl cycle with L.S. 0
         :param rl: reslist object
         :param reslist: res file as list
-        '''
+        """
         shx = ShelxlRefine(reslist, self.basefilename, self.fa, self.options)
         acta_lines = shx.remove_acta_card()
         shx.set_refinement_cycles('0')
@@ -541,23 +527,22 @@ class CF3(object):
         shx.restore_acta_card(acta_lines)
         shx.set_refinement_cycles('8')
         rl.write_resfile(reslist, '.res')
-    
-    
+
     def rotate_atom_around_bond(self, ratom, at1, at2, delta=10):
-        '''
+        """
         R = T**-1*Rx**-1*Ry**-1*Rz*Ry*Rx*T
-        
+
         1 translate object to origin
         2 rotate around x in xz plane
         3 rotate around y in z axis
         4 rotate aound z with delta angle
         5 transform back with inverse of 1-3
-        
+
         v = P2 - P1
         |v| = sqrt(vx**2+vy**2+vz**2)
         u = v/|v| = (a, b, c), |u| = 1
         a = (x2-x1)/|v| b = (x2-y1)/|v| c = ...
-        '''
+        """
         ratom = frac_to_cart(ratom, self.cell)
         at1 = frac_to_cart(at1, self.cell)
         at2 = frac_to_cart(at2, self.cell)
@@ -621,19 +606,18 @@ class CF3(object):
         v = cart_to_frac(v[:3], self.cell)
         v = [round(i, 6) for i in v]
         return v 
-    
-    
+
     def make_cf3_thorus(self, atom=None):
-        '''
+        """
         This method was just an experiment. The CF9 method is sufficient.
-        
+
         Creates a thorus of isotropic fluorine atoms around the central
-        atom of a cf3 group. The occupancy is estimated from the 
+        atom of a cf3 group. The occupancy is estimated from the
         residual density values in the lst file.
-        
+
         :param atom: central atom of the cf3 group
         :type atom: string
-        '''
+        """
         coords = []
         if not atom:
             atom = self.dsr_dict['target'][0]
