@@ -175,8 +175,7 @@ class dsrrunTest(unittest.TestCase):
         self.maxDiff = None
         self.dsr_runtest(6, '-re')
 
-
-    @unittest.skip(" skipping 7")
+    #@unittest.skip(" skipping 7")
     def testrun_run7(self):
         """
         rigid
