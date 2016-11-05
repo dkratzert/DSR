@@ -165,9 +165,9 @@ class dsrrunTest(unittest.TestCase):
         -re resi cf3 part 2 occ -31 dfix
         """
         self.maxDiff = None
-        self.dsr_runtest(5, '-re')
+        self.dsr_runtest(5, '-re', external_file='dsr_CF3_4_5_dfx')
 
-    @unittest.skip(" skipping6 ")
+    #@unittest.skip(" skipping6 ")
     def testrun_run6(self):
         """
         -re   PART 2 occ -31
