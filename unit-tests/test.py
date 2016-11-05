@@ -214,6 +214,15 @@ class dsrrunTest(unittest.TestCase):
         misc.remove_file('toluene.res')
         print('9' * 10, 'ende')
 
+
+    def testrun_run10(self):
+        """
+        invert fragment
+        -r -i
+        """
+        self.maxDiff = None
+        self.dsr_runtest(10, '-i -r')
+
 db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
                'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
                'SADI 0.04 C2 C3 C3 C4 C2 C4', 'SADI 0.04 O1 C2 O1 C3 O1 C4',
