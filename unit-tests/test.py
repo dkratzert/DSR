@@ -119,7 +119,8 @@ class dsrrunTest(unittest.TestCase):
         #misc.remove_file('./test-data/beispiel/{}.res'.format(nummer))
         misc.remove_file('./test-data/beispiel/{}.ins'.format(nummer))
         self.assertEqual(a, b)
-        self.assertEqual(c, d)
+        if external_file:
+            self.assertEqual(c, d)
         print('{}'.format(nummer) * 10, "ende")
 
     #@unittest.skip(" skipping1 ")
@@ -184,19 +185,34 @@ class dsrrunTest(unittest.TestCase):
         self.maxDiff = None
         self.dsr_runtest(7, '-g -r')
 
-    @unittest.skip(" skipping 8")
+    #@unittest.skip(" skipping 8")
     def testrun_8(self):
         """
         dsr -s tol
 
         """
-        system("{} -s tol > test-data\search.txt".format(self.dsr))
-        with open('test-data\search.txt') as txt:
+        print('8'*10, 'start')
+        system("{} -s tol > search.txt".format(self.dsr))
+        with open('search.txt') as txt:
             se = txt.readlines()
-        with open('test-data\search-erg.txt') as txt2:
+        with open('search-erg.txt') as txt2:
             se_erg = txt2.readlines()
-        misc.remove_file('test-data\search.txt')
+        misc.remove_file('search.txt')
+        print('8' * 10, 'ende')
 
+    def testrun_9(self):
+        """
+        dsr -e tol
+
+        """
+        print('9' * 10, 'start')
+        system("{} -e tolUene".format(self.dsr))
+        with open('toluene.res') as txt:
+            ex = txt.readlines()
+        with open('toluene-erg.res') as txt2:
+            ex_erg = txt2.readlines()
+        misc.remove_file('toluene.res')
+        print('9' * 10, 'ende')
 
 db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
                'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
