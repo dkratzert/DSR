@@ -92,30 +92,10 @@ class dsrrunTest(unittest.TestCase):
         #unittest.TestCase.setUp(self)
         self.maxDiff = None
         # remove this to view the results:
-        misc.remove_file(os.path.relpath('test-data/beispiel/1a.res'))
-        misc.remove_file(os.path.relpath('test-data/beispiel/2a.res'))
-        misc.remove_file(os.path.relpath('test-data/beispiel/3a.res'))
-        misc.remove_file(os.path.relpath('test-data/beispiel/4a.res'))
-        misc.remove_file(os.path.relpath('test-data/beispiel/5a.res'))
-        misc.remove_file(os.path.relpath('test-data/beispiel/6a.res'))
-        misc.remove_file(os.path.relpath('test-data/beispiel/7a.res'))
-        misc.remove_file('test-data/beispiel/dsr_CF3_4_5a.dfix')
-        misc.remove_file('test-data/beispiel/dsr_CF3_4_5a_dfx.dfix')
-        misc.remove_file('test-data/beispiel/dsr_CF3_4_4a.dfix')
-        ######################################
-        # remove this to view the input for dsr:
-        misc.remove_file('test-data/beispiel/1a.ins')
-        misc.remove_file('test-data/beispiel/2a.ins')
-        misc.remove_file('test-data/beispiel/3a.ins')
-        misc.remove_file('test-data/beispiel/4a.ins')
-        misc.remove_file('test-data/beispiel/5a.ins')
-        misc.remove_file('test-data/beispiel/6a.ins')
-        misc.remove_file('test-data/beispiel/7a.ins')
-        ##################################################
         misc.remove_file('*.fcf')
         #self.dsr = '/Applications/DSR/dsr'
-        self.dsr = 'D:\Programme\DSR\dsr'
-        #self.dsr = misc.which('dsr')
+        #self.dsr = 'D:\Programme\DSR\dsr'
+        self.dsr = misc.which('dsr')
 
         #1 -r resi cf3 part 2 occ -31
         #2 -r resi cf3 part 2 occ -31 dfix
@@ -128,20 +108,19 @@ class dsrrunTest(unittest.TestCase):
         # -s
 
 
-    @unittest.skip(" skipping1 ")
+    #@unittest.skip(" skipping1 ")
     def testrun_run1(self):
         """
         regular dsr run with
         resi cf3 PART 2 occ -31
         """
         print('1'*10)
-        misc.copy_file('test-data/beispiel/1.ins', 'test-data/beispiel/1a.res')
-        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/1a.hkl')
-        system('{} -r ./test-data/beispiel/1a.res'.format(self.dsr))
-        #call([self.dsr, "-r", "./test-data/beispiel/1a.res"])
-        with open('./test-data/beispiel/1a.res') as txt:
+        #misc.copy_file('test-data/beispiel/1.ins', 'test-data/beispiel/1a.res')
+        #misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/1a.hkl')
+        system('{} -r ./test-data/beispiel/1.res'.format(self.dsr))
+        with open('./test-data/beispiel/1.res') as txt:
             erster = txt.readlines()
-        with open('./test-data/beispiel/1a-erg.res') as txt2:
+        with open('./test-data/beispiel/1-erg.res') as txt2:
             erster_erg = txt2.readlines()
         self.assertEqual(erster, erster_erg)
 
