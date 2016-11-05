@@ -7,18 +7,17 @@
 # test PART and OCC without parameter value supplied
 # test file without H atoms in replacemode
 import doctest
-import os
 import sys
 import unittest
 from os import system
 
 import afix
 import atomhandling
-import dbfile
 import dsrparse
 import elements
 import export
 import misc
+import networkx
 from afix import InsertAfix
 from atomhandling import get_atomtypes, FindAtoms, check_source_target, \
     rename_dbhead_atoms, SfacTable, Elem_2_Sfac, NumberScheme
@@ -35,19 +34,7 @@ from restraints import format_atom_names
 print(sys.version)
 
 
-def foo():
-    """
-    >>> dsr = 'D:\Programme\DSR\dsr'
-    >>> misc.remove_file(os.path.relpath('test-data/beispiel/4a.res'))
-    >>> misc.copy_file('test-data/beispiel/4.ins', 'test-data/beispiel/4a.res')
-    >>> misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/4a.hkl')
-    >>> misc.remove_file('test-data/beispiel/4a.ins')
-    >>> system("{} -re ./test-data/beispiel/4a.res".format(dsr))
-    0
-    """
-    pass
-
-class doctestsTest(unittest.TestCase):
+class doctestsTeest(unittest.TestCase):
 
     failed, attempted = doctest.testmod(dsr)  # , verbose=True)
     if failed == 0:
@@ -77,8 +64,6 @@ class doctestsTest(unittest.TestCase):
     if failed == 0:
         print('passed all {} tests in elements!'.format(attempted))
 
-    import networkx
-
     failed, attempted = doctest.testmod(networkx)  # verbose=True)
     if failed == 0:
         print('passed all {} tests in networkx!'.format(attempted))
@@ -89,10 +74,8 @@ class doctestsTest(unittest.TestCase):
 
 class dsrrunTest(unittest.TestCase):
     def setUp(self):
-        #unittest.TestCase.setUp(self)
         #self.maxDiff = 20
         # remove this to view the results:
-        misc.remove_file('*.fcf')
         self.dsr = '/Applications/DSR/dsr'
         #self.dsr = 'D:\Programme\DSR\dsr'
         #self.dsr = misc.which('dsr')
@@ -107,6 +90,28 @@ class dsrrunTest(unittest.TestCase):
         # rigid
         # -s
 
+    def dsr_runtest(self, nummer=99, parameter='-r'):
+        """
+        runs a test where the whole dsr is started with different input files
+        and compares the result with optimal output
+        :param nummer: res file number
+        :param parameter: dsr command line parameter
+        :return: None
+        """
+        print('{}'.format(nummer) * 10, 'start:')
+        if nummer > 1:
+            misc.copy_file('test-data/beispiel/{}.hkl'.format(nummer), 'test-data/beispiel/{}.hkl'.format(nummer))
+        system('{0} {1} ./test-data/beispiel/{2}.res'.format(self.dsr, parameter, nummer))
+        with open('./test-data/beispiel/{}.res'.format(nummer)) as txt:
+            a = txt.readlines()[8:]
+        with open('./test-data/beispiel/{}-erg.res'.format(nummer)) as txt2:
+            b = txt2.readlines()[8:]
+        misc.remove_file('./test-data/beispiel/*.fcf')
+        print('{} test:'.format(nummer))
+        if nummer > 1:
+            misc.remove_file('./test-data/beispiel/{}.hkl'.format(nummer))
+        self.assertEqual(a, b)
+        print('{}'.format(nummer) * 10, "ende")
 
     #@unittest.skip(" skipping1 ")
     def testrun_run1(self):
@@ -114,16 +119,7 @@ class dsrrunTest(unittest.TestCase):
         regular dsr run with
         resi cf3 PART 2 occ -31
         """
-        print('1'*10)
-        system('{} -r ./test-data/beispiel/1.res'.format(self.dsr))
-        with open('./test-data/beispiel/1.res') as txt:
-            a = txt.readlines()[8:]
-        with open('./test-data/beispiel/1-erg.res') as txt2:
-            b = txt2.readlines()[8:]
-        misc.remove_file('./test-data/beispiel/*.fcf')
-        print('1 test:')
-        self.assertEqual(a, b)
-        print('1' * 10, "ende")
+        self.dsr_runtest(1, '-r')
 
     #@unittest.skip(" skipping2 ")
     def testrun_run2(self):
@@ -132,18 +128,9 @@ class dsrrunTest(unittest.TestCase):
         resi cf3 dfix =
             PART 2 occ -31
         """
-        print('2'*10)
-        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/2.hkl')
-        system('{} -r ./test-data/beispiel/2.res'.format(self.dsr))
-        with open('./test-data/beispiel/2.res') as txt:
-            a = txt.readlines()[8:]
-        with open('./test-data/beispiel/2-erg.res') as txt2:
-            b = txt2.readlines()[8:]
-        misc.remove_file('./test-data/beispiel/*.fcf')
-        misc.remove_file('./test-data/beispiel/2.hkl')
-        print('2 test:')
-        self.assertEqual(a, b)
-        print('2' * 10, "ende")
+        self.maxDiff = None
+        self.dsr_runtest(2, '-r')
+
 
     #@unittest.skip(" skipping3 ")
     def testrun_run3(self):
@@ -151,80 +138,34 @@ class dsrrunTest(unittest.TestCase):
         regular run with:
          occ -31 PART 2
         """
-        print('3'*10)
-        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/3.hkl')
-        system('{} -r ./test-data/beispiel/3.res'.format(self.dsr))
-        with open('./test-data/beispiel/3.res') as txt:
-            a = txt.readlines()[8:]
-        with open('./test-data/beispiel/3-erg.res') as txt2:
-            b = txt2.readlines()[8:]
-        misc.remove_file('./test-data/beispiel/*.fcf')
-        misc.remove_file('./test-data/beispiel/2.hkl')
-        print('3 test:')
-        self.assertEqual(a, b)
-        print('3' * 10, "ende")
+        self.maxDiff = None
+        self.dsr_runtest(3, '-r')
 
     @unittest.skip(" skipping4 ")
     def testrun_run4(self):
         """
-        external restraints with:
+        external -re restraints with:
         resi cf3 =
             PART 2 occ -31
         """
-        print('4' * 10)
-        misc.copy_file('test-data/beispiel/4.ins', 'test-data/beispiel/4a.res')
-        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/4a.hkl')
-        system("{} -re ./test-data/beispiel/4a.res".format(self.dsr))
-        with open('./test-data/beispiel/4a.res') as txt:
-            vierter = txt.readlines()
-        with open('./test-data/beispiel/4a-erg.res') as txt2:
-            vierter_erg = txt2.readlines()
-        with open('./test-data/beispiel/dsr_CF3_4_4a.dfix') as txt4:
-            vierter_dfix = txt4.readlines()
-        with open('./test-data/beispiel/dsr_CF3_4_4a-erg.dfix') as txt4e:
-            vierter_dfixerg = txt4e.readlines()
-        self.assertEqual(vierter, vierter_erg)
-        self.assertEqual(vierter_dfix, vierter_dfixerg)
+        self.maxDiff = None
+        self.dsr_runtest(4, '-re')
 
     @unittest.skip(" skipping5 ")
     def testrun_run5(self):
         """
         -re resi cf3 part 2 occ -31 dfix
         """
-        print('5' * 10)
-        misc.copy_file('test-data/beispiel/5.ins', 'test-data/beispiel/5a.res')
-        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/5a.hkl')
-        system("{} -re ./test-data/beispiel/5a.res".format(self.dsr))
-        with open('./test-data/beispiel/5a.res') as txt:
-            fuenf = txt.readlines()
-        with open('./test-data/beispiel/5a-erg.res') as txt2:
-            fuenf_erg = txt2.readlines()
-        with open('./test-data/beispiel/dsr_CF3_4_5a_dfx.dfix') as txt3:
-            fuenf_dfix = txt3.readlines()
-        with open('./test-data/beispiel/dsr_CF3_4_5a_dfx-erg.dfix') as txt3:
-            fuenf_dfixerg = txt3.readlines()
-        self.assertEqual(fuenf, fuenf_erg)
-        self.assertEqual(fuenf_dfix, fuenf_dfixerg)
+        self.maxDiff = None
+        self.dsr_runtest(2, '-re')
 
     @unittest.skip(" skipping6 ")
     def testrun_run6(self):
         """
         -re   PART 2 occ -31
         """
-        print('6'*10)
-        misc.copy_file('test-data/beispiel/6.ins', 'test-data/beispiel/6a.res')
-        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/6a.hkl')
-        system("{} -re ./test-data/beispiel/6a.res".format(self.dsr))
-        with open('./test-data/beispiel/6a.res') as txt:
-            fuenf = txt.readlines()
-        with open('./test-data/beispiel/6a-erg.res') as txt2:
-            fuenf_erg = txt2.readlines()
-        with open('./test-data/beispiel/dsr_1_6a.dfix') as txt3:
-            fuenf_dfix = txt3.readlines()
-        with open('./test-data/beispiel/dsr_1_6a-erg.dfix') as txt3:
-            fuenf_dfixerg = txt3.readlines()
-        self.assertEqual(fuenf, fuenf_erg)
-        self.assertEqual(fuenf_dfix, fuenf_dfixerg)
+        self.maxDiff = None
+        self.dsr_runtest(6, '-re')
 
 
     @unittest.skip(" skipping 7")
@@ -233,15 +174,8 @@ class dsrrunTest(unittest.TestCase):
         rigid
 
         """
-        print('7' * 10)
-        misc.copy_file('test-data/beispiel/7.ins', 'test-data/beispiel/7a.res')
-        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/7a.hkl')
-        system("{} -r ./test-data/beispiel/7a.res -g".format(self.dsr))
-        with open('./test-data/beispiel/7a.res') as txt:
-            fuenf = txt.readlines()
-        with open('./test-data/beispiel/7a-erg.res') as txt2:
-            fuenf_erg = txt2.readlines()
-        self.assertEqual(fuenf, fuenf_erg)
+        self.maxDiff = None
+        self.dsr_runtest(7, '-g -r')
 
     @unittest.skip(" skipping 8")
     def testrun_8(self):
