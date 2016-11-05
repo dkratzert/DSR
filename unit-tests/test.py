@@ -133,12 +133,14 @@ class dsrrunTest(unittest.TestCase):
             PART 2 occ -31
         """
         print('2'*10)
+        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/2.hkl')
         system('{} -r ./test-data/beispiel/2.res'.format(self.dsr))
         with open('./test-data/beispiel/2.res') as txt:
             a = txt.readlines()[8:]
         with open('./test-data/beispiel/2-erg.res') as txt2:
             b = txt2.readlines()[8:]
         misc.remove_file('./test-data/beispiel/*.fcf')
+        misc.remove_file('./test-data/beispiel/2.hkl')
         print('2 test:')
         self.assertEqual(a, b)
         print('2' * 10, "ende")
