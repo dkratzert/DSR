@@ -109,14 +109,15 @@ class dsrrunTest(unittest.TestCase):
         if external_file:
             with open('./test-data/beispiel/{}.dfix'.format(external_file)) as ext:
                 c = ext.readlines()
-            with open('./test-data/beispiel/{}-erg.dfix'.format(nummer)) as ext2:
-                d = ext.readlines()
+            with open('./test-data/beispiel/{}-erg.dfix'.format(external_file)) as ext2:
+                d = ext2.readlines()
+            misc.remove_file('./test-data/beispiel/{}.dfix'.format(external_file))
         misc.remove_file('./test-data/beispiel/*.fcf')
         print('{} test:'.format(nummer))
         if nummer > 1:
             misc.remove_file('./test-data/beispiel/{}.hkl'.format(nummer))
         #misc.remove_file('./test-data/beispiel/{}.res'.format(nummer))
-        #misc.remove_file('./test-data/beispiel/{}.ins'.format(nummer))
+        misc.remove_file('./test-data/beispiel/{}.ins'.format(nummer))
         self.assertEqual(a, b)
         self.assertEqual(c, d)
         print('{}'.format(nummer) * 10, "ende")
@@ -158,13 +159,13 @@ class dsrrunTest(unittest.TestCase):
         self.maxDiff = None
         self.dsr_runtest(4, '-re', external_file='dsr_CF3_4_4')
 
-    @unittest.skip(" skipping5 ")
+    #@unittest.skip(" skipping5 ")
     def testrun_run5(self):
         """
         -re resi cf3 part 2 occ -31 dfix
         """
         self.maxDiff = None
-        self.dsr_runtest(2, '-re')
+        self.dsr_runtest(5, '-re')
 
     @unittest.skip(" skipping6 ")
     def testrun_run6(self):
