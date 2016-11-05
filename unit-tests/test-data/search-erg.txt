@@ -1,9 +1,9 @@
 
-------------------------------- D S R - v185 --------------------------------
+------------------------------------------- D S R - v196 --------------------------------------------
  Fragment          | Full name, Comments                      | Line number
--------------------------------------------------------------------------------
- fugcl             | tobi                                     | 339
- toluene           | Toluene, C7H8                            | 628
- tbu-o             | tert-Butanol (or tert-Butoxy)            | 1948
- pfadamo           | Perfluoroadamantol, C10O1F15             | 579
- ethanol           | Ethanol, C2H6O                           | 1136
+--------------------------------------------------------------------------------------------------------
+ toluene           | Toluene, C7H8                            | 797
+ pro               | PROLINE                                  | 4380
+ ile               | ISOLEUCINE                               | 4152
+ tbu-o             | tert-Butanol (or tert-Butoxy)            | 2115
+ pyr               | PYRROLYSINE                              | 3717
