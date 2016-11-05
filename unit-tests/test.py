@@ -90,7 +90,7 @@ class dsrrunTest(unittest.TestCase):
         # rigid
         # -s
 
-    def dsr_runtest(self, nummer=99, parameter='-r', external_file=''):
+    def dsr_runtest(self, nummer=99, parameter='-r', external_file='', limit_start=8, limit_end=-1):
         """
         runs a test where the whole dsr is started with different input files
         and compares the result with optimal output
@@ -103,9 +103,9 @@ class dsrrunTest(unittest.TestCase):
             misc.copy_file('test-data/beispiel/1.hkl'.format(nummer), 'test-data/beispiel/{}.hkl'.format(nummer))
         system('{0} {1} ./test-data/beispiel/{2}.res'.format(self.dsr, parameter, nummer))
         with open('./test-data/beispiel/{}.res'.format(nummer)) as txt:
-            a = txt.readlines()[8:]
+            a = txt.readlines()[limit_start:limit_end]
         with open('./test-data/beispiel/{}-erg.res'.format(nummer)) as txt2:
-            b = txt2.readlines()[8:]
+            b = txt2.readlines()[limit_start:limit_end]
         if external_file:
             with open('./test-data/beispiel/{}.dfix'.format(external_file)) as ext:
                 c = ext.readlines()
@@ -217,10 +217,10 @@ class dsrrunTest(unittest.TestCase):
     def testrun_run10(self):
         """
         invert fragment
-        -r -i
+        -r -t
         """
         self.maxDiff = None
-        self.dsr_runtest(10, '-t -r')
+        self.dsr_runtest(10, '-t -r', limit_end=332)
 
 db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
                'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
