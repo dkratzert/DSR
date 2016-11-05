@@ -145,21 +145,24 @@ class dsrrunTest(unittest.TestCase):
         self.assertEqual(a, b)
         print('2' * 10, "ende")
 
-    @unittest.skip(" skipping3 ")
+    #@unittest.skip(" skipping3 ")
     def testrun_run3(self):
         """
         regular run with:
          occ -31 PART 2
         """
-        print('3' * 10)
-        misc.copy_file('test-data/beispiel/3.ins', 'test-data/beispiel/3a.res')
-        misc.copy_file('test-data/beispiel/3.hkl', 'test-data/beispiel/3a.hkl')
-        system("{} -r ./test-data/beispiel/3a.res".format(self.dsr))
-        with open('./test-data/beispiel/3a.res') as txt:
-            dritter = txt.readlines()
-        with open('./test-data/beispiel/3a-erg.res') as txt2:
-            dritter_erg = txt2.readlines()
-        self.assertEqual(dritter, dritter_erg)
+        print('3'*10)
+        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/3.hkl')
+        system('{} -r ./test-data/beispiel/3.res'.format(self.dsr))
+        with open('./test-data/beispiel/3.res') as txt:
+            a = txt.readlines()[8:]
+        with open('./test-data/beispiel/3-erg.res') as txt2:
+            b = txt2.readlines()[8:]
+        misc.remove_file('./test-data/beispiel/*.fcf')
+        misc.remove_file('./test-data/beispiel/2.hkl')
+        print('3 test:')
+        self.assertEqual(a, b)
+        print('3' * 10, "ende")
 
     @unittest.skip(" skipping4 ")
     def testrun_run4(self):
