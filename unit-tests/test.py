@@ -34,42 +34,42 @@ from restraints import format_atom_names
 print(sys.version)
 
 
-class doctestsTeest(unittest.TestCase):
+class doctestsTest(unittest.TestCase):
+    def testrun_doctest(self):
+        failed, attempted = doctest.testmod(dsr)  # , verbose=True)
+        if failed == 0:
+            print('passed all {} tests in dsr!'.format(attempted))
 
-    failed, attempted = doctest.testmod(dsr)  # , verbose=True)
-    if failed == 0:
-        print('passed all {} tests in dsr!'.format(attempted))
+        failed, attempted = doctest.testmod(afix)  # , verbose=True)
+        if failed == 0:
+            print('passed all {} tests in misc!'.format(attempted))
 
-    failed, attempted = doctest.testmod(afix)  # , verbose=True)
-    if failed == 0:
-        print('passed all {} tests in misc!'.format(attempted))
+        failed, attempted = doctest.testmod(dsrparse)  # , verbose=True)
+        if failed == 0:
+            print('passed all {} tests in misc!'.format(attempted))
 
-    failed, attempted = doctest.testmod(dsrparse)  # , verbose=True)
-    if failed == 0:
-        print('passed all {} tests in misc!'.format(attempted))
+        failed, attempted = doctest.testmod(export)  # , verbose=True)
+        if failed == 0:
+            print('passed all {} tests in misc!'.format(attempted))
 
-    failed, attempted = doctest.testmod(export)  # , verbose=True)
-    if failed == 0:
-        print('passed all {} tests in misc!'.format(attempted))
+        failed, attempted = doctest.testmod(dsrparse)  # , verbose=True)
+        if failed == 0:
+            print('passed all {} tests in misc!'.format(attempted))
 
-    failed, attempted = doctest.testmod(dsrparse)  # , verbose=True)
-    if failed == 0:
-        print('passed all {} tests in misc!'.format(attempted))
+        failed, attempted = doctest.testmod(misc)  # , verbose=True)
+        if failed == 0:
+            print('passed all {} tests in misc!'.format(attempted))
 
-    failed, attempted = doctest.testmod(misc)  # , verbose=True)
-    if failed == 0:
-        print('passed all {} tests in misc!'.format(attempted))
+        failed, attempted = doctest.testmod(elements)  # verbose=True)
+        if failed == 0:
+            print('passed all {} tests in elements!'.format(attempted))
 
-    failed, attempted = doctest.testmod(elements)  # verbose=True)
-    if failed == 0:
-        print('passed all {} tests in elements!'.format(attempted))
-
-    failed, attempted = doctest.testmod(networkx)  # verbose=True)
-    if failed == 0:
-        print('passed all {} tests in networkx!'.format(attempted))
-    failed, attempted = doctest.testmod(networkx.classes.graph)  # verbose=True)
-    if failed == 0:
-        print('passed all {} tests in networkx.classes.graph!'.format(attempted))
+        failed, attempted = doctest.testmod(networkx)  # verbose=True)
+        if failed == 0:
+            print('passed all {} tests in networkx!'.format(attempted))
+        failed, attempted = doctest.testmod(networkx.classes.graph)  # verbose=True)
+        if failed == 0:
+            print('passed all {} tests in networkx.classes.graph!'.format(attempted))
 
 
 class dsrrunTest(unittest.TestCase):
@@ -102,11 +102,11 @@ class dsrrunTest(unittest.TestCase):
         :param parameter: dsr command line parameter
         :return: None
         """
-        print('{}'.format(nummer) * 10, 'start:')
-        if nummer > 1:
-            misc.copy_file('test-data/beispiel/1.hkl'.format(nummer), 'test-data/beispiel/{}.hkl'.format(nummer))
-        system('{0} {1} ./test-data/beispiel/{2}.res'.format(self.dsr, parameter, nummer))
-        with open('./test-data/beispiel/{}.res'.format(nummer)) as txt:
+        print('{} '.format(nummer) * 10, 'start:')
+        misc.copy_file('test-data/beispiel/1.hkl'.format(nummer), 'test-data/beispiel/{}a.hkl'.format(nummer))
+        misc.copy_file('test-data/beispiel/{}.res'.format(nummer), 'test-data/beispiel/{}a.res'.format(nummer))
+        system('{0} {1} ./test-data/beispiel/{2}a.res'.format(self.dsr, parameter, nummer))
+        with open('./test-data/beispiel/{}a.res'.format(nummer)) as txt:
             a = txt.readlines()[limit_start:limit_end]
         with open('./test-data/beispiel/{}-erg.res'.format(nummer)) as txt2:
             b = txt2.readlines()[limit_start:limit_end]
@@ -116,16 +116,15 @@ class dsrrunTest(unittest.TestCase):
             with open('./test-data/beispiel/{}-erg.dfix'.format(external_file)) as ext2:
                 d = ext2.readlines()
             misc.remove_file('./test-data/beispiel/{}.dfix'.format(external_file))
-        misc.remove_file('./test-data/beispiel/*.fcf')
         print('{} test:'.format(nummer))
-        if nummer > 1:
-            misc.remove_file('./test-data/beispiel/{}.hkl'.format(nummer))
-        #misc.remove_file('./test-data/beispiel/{}.res'.format(nummer))
-        misc.remove_file('./test-data/beispiel/{}.ins'.format(nummer))
+        misc.remove_file('./test-data/beispiel/{}a.hkl'.format(nummer))
+        misc.remove_file('./test-data/beispiel/{}a.res'.format(nummer))
+        misc.remove_file('./test-data/beispiel/{}a.ins'.format(nummer))
+        misc.remove_file('./test-data/beispiel/*.fcf')
         self.assertEqual(a, b)
         if external_file:
             self.assertEqual(c, d)
-        print('{}'.format(nummer) * 10, "ende")
+        print('{} '.format(nummer) * 10, "ende")
 
     #@unittest.skip(" skipping1 ")
     def testrun_run1(self):
@@ -162,7 +161,7 @@ class dsrrunTest(unittest.TestCase):
             PART 2 occ -31
         """
         self.maxDiff = None
-        self.dsr_runtest(4, '-re', external_file='dsr_CF3_4_4')
+        self.dsr_runtest(4, '-re', external_file='dsr_CF3_4_4a')
 
     #@unittest.skip(" skipping5 ")
     def testrun_run5(self):
@@ -170,7 +169,7 @@ class dsrrunTest(unittest.TestCase):
         -re resi cf3 part 2 occ -31 dfix
         """
         self.maxDiff = None
-        self.dsr_runtest(5, '-re', external_file='dsr_CF3_4_5_dfx')
+        self.dsr_runtest(5, '-re', external_file='dsr_CF3_4_5a_dfx')
 
     #@unittest.skip(" skipping6 ")
     def testrun_run6(self):
@@ -178,7 +177,7 @@ class dsrrunTest(unittest.TestCase):
         -re   PART 2 occ -31
         """
         self.maxDiff = None
-        self.dsr_runtest(6, '-re')
+        self.dsr_runtest(6, '-re', external_file='dsr_1_6a')
 
     #@unittest.skip(" skipping 7")
     def testrun_run7(self):
