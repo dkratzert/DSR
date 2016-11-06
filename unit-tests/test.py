@@ -191,6 +191,26 @@ class dsrrunTest(unittest.TestCase):
         """
         self.dsr_runtest(11, '-r')
 
+    def testrun_run12(self):
+        """
+        regular dsr run without fit with
+        resi cf3 PART 2 occ -31
+        """
+        print('12 ' * 10, 'start:')
+        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/12a.hkl')
+        misc.copy_file('test-data/beispiel/12.res', 'test-data/beispiel/12a.res')
+        system('{0} -n -r ./test-data/beispiel/12a.res'.format(self.dsr))
+        with open('./test-data/beispiel/12a.ins') as txt:
+            a = txt.readlines()[8:]
+        with open('./test-data/beispiel/12a-erg.ins') as txt2:
+            b = txt2.readlines()[8:]
+        misc.remove_file('./test-data/beispiel/12a.hkl')
+        misc.remove_file('./test-data/beispiel/12a.res')
+        misc.remove_file('./test-data/beispiel/12a.ins')
+        misc.remove_file('./test-data/beispiel/*.fcf')
+        self.assertEqual(a, b)
+
+
 db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
                'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
                'SADI 0.04 C2 C3 C3 C4 C2 C4', 'SADI 0.04 O1 C2 O1 C3 O1 C4',
