@@ -87,8 +87,12 @@ class dsrrunTest(unittest.TestCase):
         #5 -re resi cf3 part 2 occ -31 dfix
         #6 -re part 2 occ -31
 
-        # rigid
-        # -s
+        #7 rigid
+        #8 -s
+        #9 -e toliene
+        #10 -r -t
+        #11 -r replace
+        #12 -r resi replace
 
     def dsr_runtest(self, nummer=99, parameter='-r', external_file='', limit_start=8, limit_end=-1):
         """
@@ -221,6 +225,13 @@ class dsrrunTest(unittest.TestCase):
         """
         self.maxDiff = None
         self.dsr_runtest(10, '-t -r', limit_end=300)
+
+    def testrun_run11(self):
+        """
+        regular dsr run with
+        replace resi PART 0
+        """
+        self.dsr_runtest(11, '-r')
 
 db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
                'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
