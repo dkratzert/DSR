@@ -153,28 +153,28 @@ class dsrrunTest(unittest.TestCase):
         dsr -s tol
 
         """
-        print('8'*10, 'start')
+        print('8 '*10, 'start')
         system("{} -s tol > search.txt".format(self.dsr))
         with open('search.txt') as txt:
             se = txt.readlines()
         with open('search-erg.txt') as txt2:
             se_erg = txt2.readlines()
-        misc.remove_file('search.txt')
-        print('8' * 10, 'ende')
+        misc.remove_file('./search.txt')
+        print('8 ' * 10, 'ende')
 
     def testrun_9(self):
         """
         dsr -e tol
 
         """
-        print('9' * 10, 'start')
+        print('9 ' * 10, 'start')
         system("{} -e tolUene".format(self.dsr))
         with open('toluene.res') as txt:
             ex = txt.readlines()
         with open('toluene-erg.res') as txt2:
             ex_erg = txt2.readlines()
         misc.remove_file('toluene.res')
-        print('9' * 10, 'ende')
+        print('9 ' * 10, 'ende')
 
     def testrun_run10(self):
         """
