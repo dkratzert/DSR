@@ -268,7 +268,7 @@ SIMU O1A > F9A
 RIGU O1A > F9A
 
 REM The restraints for this moiety are in this file:
-+dsr_1_6.dfix
++dsr_1_6a.dfix
 PART 2 -31
 O1A   3    0.077864    0.235782    0.401108   -31.00000    0.04000
 C1A   1    0.032052    0.233931    0.335391   -31.00000    0.04000

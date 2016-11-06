@@ -266,7 +266,7 @@ PART 0
 
 RESI 4 CF3
 REM The restraints for residue CF3 are in this file:
-+dsr_CF3_4_5_dfx.dfix
++dsr_CF3_4_5a_dfx.dfix
 PART 2 -31
 O1    3    0.077864    0.235782    0.401108   -31.00000    0.04000
 C1    1    0.032052    0.233931    0.335391   -31.00000    0.04000
