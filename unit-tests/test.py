@@ -53,10 +53,13 @@ class dsrrunTest(unittest.TestCase):
         #11 -r replace
         #12 -r resi replace
 
-    def dsr_runtest(self, nummer=99, parameter='-r', external_file='', limit_start=8, limit_end=-1):
+    def dsr_runtest(self, nummer=99, parameter='-r', external_file='', 
+                    limit_start=6, limit_end=-1, ending='res'):
         """
         runs a test where the whole dsr is started with different input files
         and compares the result with optimal output
+        :type nummer: int
+        :type external_file: sting
         :param nummer: res file number
         :param parameter: dsr command line parameter
         :return: None
@@ -65,9 +68,9 @@ class dsrrunTest(unittest.TestCase):
         misc.copy_file('test-data/beispiel/1.hkl'.format(nummer), 'test-data/beispiel/{}a.hkl'.format(nummer))
         misc.copy_file('test-data/beispiel/{}.res'.format(nummer), 'test-data/beispiel/{}a.res'.format(nummer))
         system('{0} {1} ./test-data/beispiel/{2}a.res'.format(self.dsr, parameter, nummer))
-        with open('./test-data/beispiel/{}a.res'.format(nummer)) as txt:
+        with open('./test-data/beispiel/{}a.{}'.format(nummer, ending)) as txt:
             a = txt.readlines()[limit_start:limit_end]
-        with open('./test-data/beispiel/{}-erg.res'.format(nummer)) as txt2:
+        with open('./test-data/beispiel/{}-erg.{}'.format(nummer, ending)) as txt2:
             b = txt2.readlines()[limit_start:limit_end]
         if external_file:
             with open('./test-data/beispiel/{}.dfix'.format(external_file)) as ext:
@@ -196,20 +199,8 @@ class dsrrunTest(unittest.TestCase):
         regular dsr run without fit with
         resi cf3 PART 2 occ -31
         """
-        print('12 ' * 10, 'start:')
-        misc.copy_file('test-data/beispiel/1.hkl', 'test-data/beispiel/12a.hkl')
-        misc.copy_file('test-data/beispiel/12.res', 'test-data/beispiel/12a.res')
-        system('{0} -n -r ./test-data/beispiel/12a.res'.format(self.dsr))
-        with open('./test-data/beispiel/12a.ins') as txt:
-            a = txt.readlines()[8:]
-        with open('./test-data/beispiel/12a-erg.ins') as txt2:
-            b = txt2.readlines()[8:]
-        misc.remove_file('./test-data/beispiel/12a.hkl')
-        misc.remove_file('./test-data/beispiel/12a.res')
-        misc.remove_file('./test-data/beispiel/12a.ins')
-        misc.remove_file('./test-data/beispiel/*.fcf')
-        self.assertEqual(a, b)
-
+        self.dsr_runtest(12, ending='ins', parameter='-n -r')
+    
 
 db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
                'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
