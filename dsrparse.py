@@ -175,6 +175,16 @@ class DSR_Parser():
     def parse_dsr_line(self):
         '''returns the different parameters from the dsr command as dict
         It needs find_commands() and find_atoms() to parse the line.
+        
+        >>> from resfile import ResList, ResListEdit
+        >>> res_file = 'p21c.res'
+        >>> rl = ResList(res_file)
+        >>> reslist = rl.get_res_list()
+        >>> rle = ResListEdit(reslist, res_file)
+        >>> #dsr_line = dsrp.get_dsr_dict
+        >>> dsrp = DSR_Parser(reslist, rle)
+        >>> dsrp.get_dsr_dict
+        {'resi': ['CF3'], 'source': ['O1', 'C1', 'C2', 'C3', 'C4'], 'part': '2', 'command': 'PUT', 'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'], 'fragment': 'OC(CF3)3', 'dfix': False, 'occupancy': '-31', 'split': False}
         '''
         cf3 = False
         source = None
@@ -327,6 +337,19 @@ class DSR_Parser():
 
 #for testing:
 if __name__ == '__main__':
+    
+    import doctest
+
+    failed, attempted = doctest.testmod()  # verbose=True)
+    if failed == 0:
+        print('passed all {} tests!'.format(attempted))
+    else:
+        print('{} of {} tests failed'.format(failed, attempted))
+    
+    
+    sys.exit()
+    
+    ########################################################
     from resfile import ResList, ResListEdit
     res_file = 'p21c.res'
     rl = ResList(res_file)

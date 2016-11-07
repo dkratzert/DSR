@@ -208,9 +208,8 @@ class OptionsParser():
 
 
 if __name__ == '__main__':
-    optparse = OptionsParser()
+    optparse = OptionsParser('version 999')
     print(optparse.res_file)
-    print(optparse.parse_commandline())
     optparse.parser.print_help()
 
 

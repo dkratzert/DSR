@@ -34,7 +34,7 @@ def get_current_dsr_version(silent=False):
     determines the current version of DSR on the web server
 
     >>> get_current_dsr_version()
-    '193'
+    '195'
 
     Returns
     -------
@@ -198,10 +198,10 @@ def get_update_package(version):
 
 
 if __name__ == "__main__":
-    # import sys
-    # import doctest
-    # failed, attempted = doctest.testmod()  # verbose=True)
-    # if failed == 0:
-    #    print('passed all {} tests!'.format(attempted))
-    print(is_update_needed(silent=True))
-    # update_dsr(force=True, version=193)
+    import doctest
+
+    failed, attempted = doctest.testmod()  # verbose=True)
+    if failed == 0:
+        print('passed all {} tests!'.format(attempted))
+    else:
+        print('{} of {} tests failed'.format(failed, attempted))

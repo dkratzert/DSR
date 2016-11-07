@@ -35,8 +35,8 @@ class dsrrunTest(unittest.TestCase):
     def setUp(self):
         #self.maxDiff = 20
         # remove this to view the results:
-        self.dsr = '/Applications/DSR/dsr'
-        #self.dsr = 'D:\Programme\DSR\dsr'
+        #self.dsr = '/Applications/DSR/dsr'
+        self.dsr = 'D:\Programme\DSR\dsr'
         #self.dsr = misc.which('dsr')
 
         #1 -r resi cf3 part 2 occ -31
@@ -45,7 +45,6 @@ class dsrrunTest(unittest.TestCase):
         #4 -re resi cf3 part 2 occ -31
         #5 -re resi cf3 part 2 occ -31 dfix
         #6 -re part 2 occ -31
-
         #7 rigid
         #8 -s
         #9 -e toliene
@@ -235,40 +234,15 @@ cells = ['10.5086', '20.9035', '20.5072', '90', '94.13', '90']
 
 class doctestsTest(unittest.TestCase):
     def testrun_doctest(self):
-        failed, attempted = doctest.testmod(dsr)  # , verbose=True)
-        if failed == 0:
-            print('passed all {} tests in dsr!'.format(attempted))
+        for name in [dsr, afix, dsrparse, export, misc, elements, networkx, 
+                     atomhandling, networkx.classes.graph, dsrparse]:
+            failed, attempted = doctest.testmod(name)  # , verbose=True)
+            if failed == 0:
+                print('passed all {} tests in {}!'.format(attempted, name.__name__))
+            else:
+                print('{} of {} tests failed in {}'.format(failed, attempted, name.__name__))
+      
 
-        failed, attempted = doctest.testmod(afix)  # , verbose=True)
-        if failed == 0:
-            print('passed all {} tests in misc!'.format(attempted))
-
-        failed, attempted = doctest.testmod(dsrparse)  # , verbose=True)
-        if failed == 0:
-            print('passed all {} tests in misc!'.format(attempted))
-
-        failed, attempted = doctest.testmod(export)  # , verbose=True)
-        if failed == 0:
-            print('passed all {} tests in misc!'.format(attempted))
-
-        failed, attempted = doctest.testmod(dsrparse)  # , verbose=True)
-        if failed == 0:
-            print('passed all {} tests in misc!'.format(attempted))
-
-        failed, attempted = doctest.testmod(misc)  # , verbose=True)
-        if failed == 0:
-            print('passed all {} tests in misc!'.format(attempted))
-
-        failed, attempted = doctest.testmod(elements)  # verbose=True)
-        if failed == 0:
-            print('passed all {} tests in elements!'.format(attempted))
-
-        failed, attempted = doctest.testmod(networkx)  # verbose=True)
-        if failed == 0:
-            print('passed all {} tests in networkx!'.format(attempted))
-        failed, attempted = doctest.testmod(networkx.classes.graph)  # verbose=True)
-        if failed == 0:
-            print('passed all {} tests in networkx.classes.graph!'.format(attempted))
 
 class ElementsTest(unittest.TestCase):
     def setUp(self):
@@ -660,7 +634,8 @@ class dbfileTest(unittest.TestCase):
         rdb = ReadDB(main_dbpath="db1_dublicate.TXT")
         with self.assertRaises(SystemExit):
             rdb.find_db_tags()
-
+    
+    @unittest.skip("")
     def testrun_ReadDB(self):
         main_dbpath = "./db1_klein.TXT"
         user_dbpath = "./db2_klein.TXT"
