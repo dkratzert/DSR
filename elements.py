@@ -2637,7 +2637,12 @@ def word_wrap(text, linelen=80, indent=0, joinstr="\n"):
 
 
 if __name__ == "__main__":
-    for ele in ELEMENTS:
-        print(repr(ele), '\n')
+    #for ele in ELEMENTS:
+    #    print(repr(ele), '\n')
     import doctest
-    doctest.testmod(verbose=False)
+
+    failed, attempted = doctest.testmod()  # verbose=True)
+    if failed == 0:
+        print('passed all {} tests!'.format(attempted))
+    else:
+        print('{} of {} tests failed'.format(failed, attempted))

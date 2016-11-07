@@ -419,16 +419,18 @@ class ShelxlRefine():
 if __name__ == '__main__':
     from atomhandling import FindAtoms
     from restraints import ListFile
+    import options
     res_file = 'p21c.res'
     rl = ResList(res_file)
     res_list = rl.get_res_list()
     find_atoms = FindAtoms(res_list)
     #lf = ListFile('p21c')
     #lst_file = lf.read_lst_file()
-    shx = ShelxlRefine(res_list, 'testfile', find_atoms)
+    options = options.OptionsParser('program_name dsr')
+    shx = ShelxlRefine(res_list, 'testfile', find_atoms, options)
 
 
     #print(shx.afix_is_closed(110))
     #print(shx.remove_afix())
     #shx.set_refinement_cycles()
-    #shx.run_shelxl()
+    shx.run_shelxl()
