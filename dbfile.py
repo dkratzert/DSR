@@ -43,7 +43,7 @@ def invert_dbatoms_coordinates(atoms):
     return atoms
 
 
-def search_fragment_name(search_string, gdb):
+def search_fragment_name(search_string, gdb, numresults=6):
     '''
     searches the Name: comments in the database for a given name
     '''
@@ -60,8 +60,8 @@ def search_fragment_name(search_string, gdb):
         db_entry = i[1]
         coefficient = dice_coefficient(search_string, db_entry)
         search_results[coefficient] = i
-    # select the best 5 results:
-    selected_results = [search_results[i] for i in sorted(search_results)[0:5]]
+    # select the best n results:
+    selected_results = [search_results[i] for i in sorted(search_results)[0:numresults]]
     return selected_results
 
 
