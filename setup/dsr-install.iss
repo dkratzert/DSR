@@ -125,6 +125,7 @@ Type: filesandordirs; Name: "{app}\setup"
 [Dirs]
 Name: "{app}\example"; Permissions: authusers-full
 Name: "{app}\manual"
+Name: "{app}\."; Permissions: authusers-full
 
 [Code]
 const
