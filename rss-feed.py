@@ -34,6 +34,7 @@ item = r"""
     <item>
       <title> {} </title>
       <description>{}</description>
+      <link>https://www.xs3.uni-freiburg.de/research/dsr</link>
     </item>
 """
 
