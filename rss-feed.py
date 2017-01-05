@@ -62,21 +62,20 @@ def get_textblocks(lines, occ):
     parses textblocks from changelog
     """
     itemlist = OrderedDict()
-    entry = []
-    for num, i in enumerate(occ):
+    for num, i in enumerate(occ, 1):
         try:
-            rawitem = ' '.join(lines[num+1:num+2]).strip()
-            if rawitem.startswith('-'):
-                if entry:
-                    itemlist[num] = ' '.join(entry)
-                entry.clear()
-                line = rawitem.split(' ')
-                version = line[0].strip('-')
-                rawitem = ' '.join(line[1:]) # text
+            rawitem = ' '.join([l.strip() for l in lines[i:occ[num]]])
+            print(rawitem)
         except IndexError:
             print('index error')
             pass
-        entry.append(rawitem)
+        if rawitem.startswith('-'):
+            rawitem = rawitem.replace('\t', ' ')
+            line = rawitem.split(' ')
+            version = line[0].strip('-')
+            entry = ' '.join(line[1:]) # text
+            #print(version, entry)
+            itemlist[version] = entry
     return itemlist
 
 def xml_creator(items):
