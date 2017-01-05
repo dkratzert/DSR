@@ -65,14 +65,16 @@ def get_textblocks(lines, occ):
     for num, i in enumerate(occ, 1):
         try:
             rawitem = ' '.join([l.strip() for l in lines[i:occ[num]]])
-            print(rawitem)
+            #print(rawitem)
         except IndexError:
-            print('index error')
-            pass
+            #print('index error')
+            rawitem = ' '.join([l.strip() for l in lines[i:]])
         if rawitem.startswith('-'):
             rawitem = rawitem.replace('\t', ' ')
             line = rawitem.split(' ')
             version = line[0].strip('-')
+            if num == 1:
+                print('Newest version:', version)
             entry = ' '.join(line[1:]) # text
             #print(version, entry)
             itemlist[version] = entry
@@ -89,10 +91,16 @@ def xml_creator(items):
     rss = rss+foot
     return rss
 
+def filewriter(rss):
+    with open(os.path.abspath('./feed.rss'), 'w') as f:
+        f.write(rss)
+
 
 if __name__ == "__main__":
     filedata = readfile(feedpath)
     occ = versionsearcher(filedata)
     items = get_textblocks(filedata, occ)
     rss = xml_creator(items)
-    print(rss)
+    #print(rss)
+    filewriter(rss)
+    print("new feed written")
