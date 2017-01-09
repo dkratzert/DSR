@@ -47,6 +47,40 @@
 #   in the SHELXL file automatically.
 ########################################################################################
 
+
+<dce>
+rem Name: 1,2-Dichloroethane (flat), DCE, Ethylene dichloride, C2H4Cl2
+rem Src: CCDC IVAHEU
+RESI DCE
+RIGU CL1 > CL2
+SIMU CL1 > CL2
+SADI 0.02 CL1 C1 CL2 C2
+SADI 0.04 Cl1 C2 Cl2 C1
+DFIX 1.471 C1 C2
+FRAG 17 1 1 1 90 90 90
+Cl1   17     5.56277    0.17443    6.77637
+C1    6      4.43508    0.61098    8.04319
+C2    6      4.17196   -0.61098    8.92915
+Cl2   17     3.04427   -0.17443   10.19596
+</dce>
+
+<dce2>
+rem Name: 1,2-Dichloroethane (angled), DCE, Ethylene dichloride, C2H4Cl2
+rem Src: CCDC BUHXUZ
+RESI DCE
+RIGU CL1 > CL2
+SIMU CL1 > CL2
+SADI 0.02 CL1 C1 CL2 C2
+SADI 0.04 Cl1 C2 Cl2 C1
+DFIX 1.471 C1 C2
+FRAG 17 1 1 1 90 90 90
+Cl1   17     0.93368    4.51606   26.34032
+C1    6      1.37188    3.98348   24.69602
+C2    6      0.36001    4.39393   23.68050
+Cl2   17    -1.19315    3.56767   23.90879
+</dce2>
+
+
 <tmeda1>
 rem Name: Tetramethylethylenediamine coordinated, TMEDA, C6H16N2
 rem Src: CCDC EVUGAF
