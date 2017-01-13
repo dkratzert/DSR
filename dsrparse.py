@@ -41,8 +41,9 @@ class DSR_Parser():
         self._dsr_list = misc.makelist(self._dsr_string)
         try:
             self.dsr_dict = self.parse_dsr_line()
-        except:
+        except Exception as e:
             print("*** Parsing DSR command failed. ***")
+            print(e)
             logging.basicConfig(filename=misc.reportlog, filemode='w', level=logging.DEBUG)
             logging.info('DSR command line: {}'.format(self._dsr_string))
 
@@ -246,8 +247,10 @@ class DSR_Parser():
         occupancy = self.find_commands('OCC')
         badocc_message = '*** Occupancy without numerical value supplied. Please define occupancy value after OCC ***'
         badocc_status = False
+        num = occupancy.split('.')   
+        fvar = abs(int(num[0]))//10 
         try:
-            if float(occupancy) > 99:
+            if float(fvar) > 99:
                 print('*** Only 99 free variables allowed in SHELXL! ***')
                 sys.exit()
         except(ValueError):
