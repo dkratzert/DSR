@@ -36,7 +36,7 @@ from cf3fit import CF3
 from os.path import expanduser
 
 
-VERSION = '196'
+VERSION = '197'
 # dont forget to change version in Innoscript file, spec file and deb file.
 
 program_name = '\n'+((width//2)-9)*'-'+' D S R - v{} '.format(VERSION)+((width//2)-8)*'-'
@@ -45,7 +45,6 @@ program_name = '\n'+((width//2)-9)*'-'+' D S R - v{} '.format(VERSION)+((width//
 '''
 - Add Rcomplete
 - Add an export header entry for ShelXle containing any warnings/errors from DSR. For example restraint errors.
-- Add a dummy CF3 group in db to be displayed in GUI
 
 From SHELXL user guide:
 A free variable is a refinable parameter that can be used to impose a variety of additional
@@ -60,7 +59,6 @@ and a negative value (i.e. k and p both negative) means p times [fv(–k)–1].
   -> learn JANA
   -> What do I need to change?
   
-- make CF3, CF6, CF9 to a visible database fragment
 '''
 
 class DSR():
