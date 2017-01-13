@@ -1208,8 +1208,25 @@ if __name__ == '__main__':
     failed, attempted = doctest.testmod()  # verbose=True)
     if failed == 0:
         print('passed all {} tests!'.format(attempted))
-    
 
 
+def get_overlapped_chunks(ring, size):
+    '''
+    returns a list of chunks of size 'size' which overlap with one field.
+    If the last chunk is smaller than size, the last 'size' chunks are returned as last chunk.
+    '''
+    chunks = []
+    for i in range(0, len(ring)-size+3, 3):
+        chunk = ring[i:i+size]
+        if len(chunk) < 4:
+            chunk = ring[-size:]
+        chunks.append(sorted(chunk))
+    return chunks
 
-    
+
+def chunks(l, n):
+    """returns successive n-sized chunks from l."""
+    out = []
+    for i in range(0, len(l), n):
+        out.append(l[i:i + n])
+    return out
