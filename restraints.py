@@ -10,17 +10,20 @@
 # ----------------------------------------------------------------------------
 #
 from __future__ import print_function
-import sys, re
 
-from resfile import ResList
-from dsrparse import DSR_Parser
-import string
-import misc
-from collections import OrderedDict
-from atomhandling import get_atomtypes
-from misc import distance, vol_tetrahedron, flatten
-from elements import ELEMENTS
 import os
+import re
+import string
+import sys
+from collections import OrderedDict
+
+import misc
+from atomhandling import get_atomtypes
+from dsrparse import DSR_Parser
+from elements import ELEMENTS
+from misc import distance, vol_tetrahedron, flatten, get_overlapped_chunks
+from resfile import ResList
+
 # all upper case for case insensitivity:
 alphabet = [ i for i in string.ascii_uppercase ]
 import networkx as nx
@@ -262,19 +265,6 @@ class Restraints():
                                                    c2[0], c2[1], c2[2])))
         return dist_13
 
-    def get_overlapped_chunks(self, ring, size):
-        '''
-        returns a list of chunks of size 'size' which overlap with one field.
-        If the last chunk is smaller than size, the last 'size' chunks are returned as last chunk.
-        '''
-        chunks = []
-        for i in range(0, len(ring)-size+3, 3):
-            chunk = ring[i:i+size]
-            if len(chunk) < 4:
-                chunk = ring[-size:]
-            chunks.append(sorted(chunk))
-        return chunks
-
     def make_flat_restraints(self):
         """
         searches for rings in the graph G, splits it in 4-member chunks and tests if
@@ -299,7 +289,7 @@ class Restraints():
                         neighbors.append(i)
             if len(ring) < 4:
                 continue # only proceed if ring is bigger than 3 atoms
-            chunks = self.get_overlapped_chunks(ring, 4)
+            chunks = get_overlapped_chunks(ring, 4)
             for chunk in chunks:
                 if self.is_flat(chunk):
                     if not chunk in flats:

@@ -10,6 +10,9 @@
 # ----------------------------------------------------------------------------
 #
 from __future__ import print_function
+
+import textwrap
+
 import misc
 import sys
 import os
@@ -243,31 +246,22 @@ class ResListEdit():
         if fvar == 0:
             fvar = 1
         difference = (fvar - varlen)
-        if difference > 0:
-            for i in range(difference):
-                fvar_list.append(fvalue)   # if an fvar is missing, add a new one
-        else: # make sure the occupancy of the disoerder parts get not < 0:
-            if len(fvar_list)-(fvar-1) >= 0: # make sure
-                fvar_value = fvar_list[fvar-1]
-                if (float(occupancynumber)-(10*int(fvar)+float(fvar_value))) < 0:
-                    fvar_list[fvar - 1] = 0.5
-        line_length = 7
-        lines = []
-        if varlen == 0:
-            varlen = difference
-        sumvarlen = varlen+difference
+        if fvar > 1:
+            if difference > 0:
+                for i in range(difference):
+                    fvar_list.append(fvalue)   # if an fvar is missing, add a new one
+            else: # make sure the occupancy of the disoerder parts get not < 0:
+                if len(fvar_list)-(fvar-1) >= 0: # make sure
+                    fvar_value = fvar_list[fvar-1]
+                    if (float(occupancynumber)-(10*int(fvar)+float(fvar_value))) < 0:
+                        fvar_list[fvar - 1] = 0.5
+        lines = misc.chunks(fvar_list, 7)
         if len(fvar_list) != 0:
             for line in self.fvarlines:
                 self.remove_line(line, remove=True) # removes the old FVAR
-        for i in range(0, sumvarlen, line_length):
-            try:
-                l = 'FVAR  '+' '.join( "{:<8.5f}".format(float(x)) for x in fvar_list[i:i+line_length] )
-            except ValueError:
-                print('Warning! Non-numerical value in FAR line.')
-            lines.append(l)
-            fvars = '\n'.join(lines)
-            fvars = fvars+'\n'
-        self._reslist[self.fvarlines[0]] = fvars
+        fvars = [' '.join(i) for i in lines]
+        fvars = ['FVAR '+i for i in fvars]
+        self._reslist[self.fvarlines[0]] = ' \n'.join(fvars)
         return fvars
 
     def get_fvar_count(self):
