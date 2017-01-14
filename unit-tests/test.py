@@ -37,8 +37,9 @@ class dsrrunTest(unittest.TestCase):
         #self.maxDiff = 20
         # remove this to view the results:
         #self.dsr = '/Applications/DSR/dsr'
-        self.dsr = 'D:\Programme\DSR\dsr'
-        #self.dsr = misc.which('dsr')
+        #self.dsr = 'D:\Programme\DSR\dsr'
+        self.dsr = r'"{}"'.format(misc.which('dsr')[-1])
+        print(self.dsr)
 
         #1 -r resi cf3 part 2 occ -31
         #2 -r resi cf3 part 2 occ -31 dfix
