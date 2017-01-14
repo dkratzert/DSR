@@ -50,7 +50,6 @@ class DSR_Parser():
     @property
     def get_dsr_dict(self):
         try:
-            self.dsr_dict
             return self.dsr_dict
         except AttributeError as e:
             #print(e)
@@ -187,10 +186,8 @@ class DSR_Parser():
         >>> dsrp.get_dsr_dict
         {'resi': ['CF3'], 'source': ['O1', 'C1', 'C2', 'C3', 'C4'], 'part': '2', 'command': 'PUT', 'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'], 'fragment': 'OC(CF3)3', 'dfix': False, 'occupancy': '-31', 'split': False}
         '''
-        cf3 = False
         source = None
-        if self._dsr_list[3] in ['CF3', 'CF6', 'CF9']:
-            cf3 = True
+        if self.cf3_active:
             splitatom = False
             if 'SPLIT' in self._dsr_list:
                 splitatom = True
@@ -212,7 +209,7 @@ class DSR_Parser():
             sys.exit(-1)
         # Source and target atoms:
         # In parenteses are one start und one to multiple stop conditions:
-        if not cf3:
+        if not self.cf3_active:
             # we need no soure atoms for cf3 groups
             source = self.find_atoms('WITH', 'ON')
         target = self.find_atoms('ON', 'PART', 'OCC', 'RESI', 'DFIX', 'SPLIT', '')
@@ -271,16 +268,19 @@ class DSR_Parser():
             'occupancy': occupancy,
             'resi': residue,
             'split': splitatom
-            };
+            }
         return dsr_dict
 
-    
-    
-    def special_cf3_parser(self):
-        '''
-        parses the command line in case we want a cf3 group an a carbon atom
-        '''
-        pass
+    @property
+    def cf3_active(self):
+        """
+        Does it have the CF3-Group keyword?
+        :return: True/False
+        """
+        cf = False
+        if self._dsr_list[3] in ['CF3', 'CF6', 'CF9']:
+            cf = True
+        return cf
 
     @property
     def fragment(self):

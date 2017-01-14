@@ -237,7 +237,7 @@ class CF3(object):
         self.delete_bound_fluorine(found)
         return atomline
 
-    def cf3(self, afix=130):
+    def cf3(self, afix='130'):
         """
         create CF3 group on atom.
         Either define atom at startup or let dsrparser get the atom name.
