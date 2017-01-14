@@ -247,14 +247,15 @@ class DSR_Parser():
         occupancy = self.find_commands('OCC')
         badocc_message = '*** Occupancy without numerical value supplied. Please define occupancy value after OCC ***'
         badocc_status = False
-        num = occupancy.split('.')   
-        fvar = abs(int(num[0]))//10 
-        try:
-            if float(fvar) > 99:
-                print('*** Only 99 free variables allowed in SHELXL! ***')
-                sys.exit()
-        except(ValueError):
-            badocc_status = True
+        if occupancy != False:
+            num = occupancy.split('.')
+            fvar = abs(int(num[0]))//10
+            try:
+                if float(fvar) > 99:
+                    print('*** Only 99 free variables allowed in SHELXL! ***')
+                    sys.exit()
+            except(ValueError):
+                badocc_status = True
         if 'OCC' in self._dsr_list and not occupancy:
             badocc_status = True
         if badocc_status:
