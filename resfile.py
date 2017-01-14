@@ -254,7 +254,8 @@ class ResListEdit():
                 if len(fvar_list)-(fvar-1) >= 0: # make sure
                     fvar_value = fvar_list[fvar-1]
                     if (float(occupancynumber)-(10*int(fvar)+float(fvar_value))) < 0:
-                        fvar_list[fvar - 1] = 0.5
+                        fvar_list[fvar - 1] = '0.5'
+        fvar_list = [str(x) for x in fvar_list]
         lines = misc.chunks(fvar_list, 7)
         if len(fvar_list) != 0:
             for line in self.fvarlines:
