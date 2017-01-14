@@ -201,6 +201,15 @@ class dsrrunTest(unittest.TestCase):
         resi cf3 PART 2 occ -31
         """
         self.dsr_runtest(12, ending='ins', parameter='-n -r')
+
+    #@unittest.skip(" skipping 13")
+    def testrun_run13(self):
+        """
+        99 FVARS
+
+        """
+        self.maxDiff = None
+        self.dsr_runtest(13, '-r')
     
 
 db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
