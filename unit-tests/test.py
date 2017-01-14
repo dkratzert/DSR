@@ -6,7 +6,8 @@ import doctest
 import sys
 import unittest
 from os import system
-
+import os
+sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import afix
 import atomhandling
 import dsrparse
