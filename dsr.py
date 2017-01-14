@@ -254,13 +254,13 @@ class DSR():
         resi = Resi(self.reslist, dsr_dict, dbhead, db_residue_string, find_atoms)
         # line where the dsr command is found in the resfile:
         dsr_line_number = dsrp.find_dsr_command(line=False)
-        if self.fragment in ['cf3', 'cf6', 'cf9']:
+        if dsrp.cf3_active:
             cf3 = CF3(rle, find_atoms, self.reslist, self.fragment, sfac_table,
                       basefilename, dsr_dict, resi, self.res_file, self.options)
             if self.fragment == 'cf3':
-                cf3.cf3(afix=130)
+                cf3.cf3(afix='130')
             if self.fragment == 'cf6':
-                cf3.cf3(afix=120)
+                cf3.cf3(afix='120')
             if self.fragment == 'cf9':
                 cf3.cf9()
             print('\nFinished...')

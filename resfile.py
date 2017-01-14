@@ -262,7 +262,7 @@ class ResListEdit():
                 self.remove_line(line, remove=True) # removes the old FVAR
         fvars = [' '.join(i) for i in lines]
         fvars = ['FVAR '+i for i in fvars]
-        self._reslist[self.fvarlines[0]] = ' \n'.join(fvars)
+        self._reslist[self.fvarlines[0]] = ' \n'.join(fvars)+' \n'
         return fvars
 
     def get_fvar_count(self):
