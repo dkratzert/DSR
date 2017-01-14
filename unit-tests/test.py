@@ -55,7 +55,7 @@ class dsrrunTest(unittest.TestCase):
         #12 -r resi replace
 
     def dsr_runtest(self, nummer=99, parameter='-r', external_file='', 
-                    limit_start=6, limit_end=-1, ending='res'):
+                    limit_start=6, limit_end=-1, ending='res', remlines = []):
         """
         runs a test where the whole dsr is started with different input files
         and compares the result with optimal output
@@ -84,6 +84,9 @@ class dsrrunTest(unittest.TestCase):
         misc.remove_file('./test-data/beispiel/{}a.res'.format(nummer))
         misc.remove_file('./test-data/beispiel/{}a.ins'.format(nummer))
         misc.remove_file('./test-data/beispiel/*.fcf')
+        for line in remlines:
+            del a[line]
+            del b[line]
         self.assertEqual(a, b)
         if external_file:
             self.assertEqual(c, d)
@@ -200,7 +203,7 @@ class dsrrunTest(unittest.TestCase):
         regular dsr run without fit with
         resi cf3 PART 2 occ -31
         """
-        self.dsr_runtest(12, ending='ins', parameter='-n -r')
+        self.dsr_runtest(12, ending='ins', parameter='-n -r',  remlines = [290, 305])
 
     #@unittest.skip(" skipping 13")
     def testrun_run13(self):
