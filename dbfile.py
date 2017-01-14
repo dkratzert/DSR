@@ -181,8 +181,8 @@ class ReadDB():
             diff = c1 - c2
             duplicates = list(diff.elements())
             for i in duplicates:
-                print('\n**** Duplicate database entry "{}" found! Please remove/rename ' \
-                      'second entry\nand/or check all end tags in the database dsr_usr_db.txt or dsr_db.txt. ****'.format(
+                print('\n*** Duplicate database entry "{}" found! Please remove/rename ' \
+                      'second entry\nand/or check all end tags in the database dsr_usr_db.txt or dsr_db.txt. ***'.format(
                     duplicates.pop()))
             sys.exit(False)
         # # sort lower-case:
