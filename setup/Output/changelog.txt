@@ -1,6 +1,7 @@
 Recent changes
--197    Added Dichloroethane and TMEDA fragments, RSS-Feed, unit tests, more search
-        results.
+-197    Fixed bug that prevents using more than nine free variables. Added
+        Dichloroethane and TMEDA fragments, RSS-Feed, unit tests, more search
+        results. 
 -196    Improved C20, C60 and C70 fragments. Now they all have restraints and
         optimized geometry. Fixed case sensitivity bug. Improved FLAT restraints.
         Added CF3, CF6 and CF9 fragments as dummys to the database.
