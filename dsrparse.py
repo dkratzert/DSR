@@ -233,8 +233,8 @@ class DSR_Parser():
             print('*** Part without numerical value supplied.',
                   'Please give a part number after PART in the DSR command. ***')
             sys.exit(False)
-        if float(part) > 99:
-            print('*** only 99 parts allowed in SHELXL! ***')
+        if float(part) > 999:
+            print('*** only 999 parts allowed in SHELXL! ***')
             sys.exit(False)
         try:
             if len(part) > 4:
