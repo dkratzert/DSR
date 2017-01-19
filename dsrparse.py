@@ -183,8 +183,19 @@ class DSR_Parser():
         >>> rle = ResListEdit(reslist, res_file)
         >>> #dsr_line = dsrp.get_dsr_dict
         >>> dsrp = DSR_Parser(reslist, rle)
-        >>> dsrp.get_dsr_dict
-        {'resi': ['CF3'], 'source': ['O1', 'C1', 'C2', 'C3', 'C4'], 'part': '2', 'command': 'PUT', 'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'], 'fragment': 'OC(CF3)3', 'dfix': False, 'occupancy': '-31', 'split': False}
+        >>> dic = dsrp.get_dsr_dict
+        >>> l = sorted(dic)
+        >>> for i in l:
+        ...     print('{}: '.format(i), dic[i])
+        command:  PUT
+        dfix:  False
+        fragment:  OC(CF3)3
+        occupancy:  -31
+        part:  2
+        resi:  ['CF3']
+        source:  ['O1', 'C1', 'C2', 'C3', 'C4']
+        split:  False
+        target:  ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7']
         '''
         source = None
         if self.cf3_active:
