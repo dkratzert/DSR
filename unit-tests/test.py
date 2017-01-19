@@ -31,6 +31,16 @@ from restraints import format_atom_names
 print(sys.version)
 
 
+class doctestsTest(unittest.TestCase):
+    def testrun_doctest(self):
+        for name in [dsr, afix, dsrparse, export, misc, elements, networkx, 
+                     atomhandling, networkx.classes.graph, dsrparse]:
+            failed, attempted = doctest.testmod(name)  # , verbose=True)
+            if failed == 0:
+                print('passed all {} tests in {}!'.format(attempted, name.__name__))
+            else:
+                msg = '!!!!!!!!!!!!!!!! {} of {} tests failed in {}  !!!!!!!!!!!!!!!!!!!!!!!!!!!'.format(failed, attempted, name.__name__)
+                self.assertFalse(failed, msg)
 
 class dsrrunTest(unittest.TestCase):
     def setUp(self):
@@ -81,8 +91,9 @@ class dsrrunTest(unittest.TestCase):
             misc.remove_file('./test-data/beispiel/{}.dfix'.format(external_file))
         print('{} test:'.format(nummer))
         misc.remove_file('./test-data/beispiel/{}a.hkl'.format(nummer))
-        misc.remove_file('./test-data/beispiel/{}a.res'.format(nummer))
         misc.remove_file('./test-data/beispiel/{}a.ins'.format(nummer))
+        misc.remove_file('./test-data/beispiel/{}a.res'.format(nummer))
+        misc.remove_file('./test-data/beispiel/{}a.lst'.format(nummer))
         misc.remove_file('./test-data/beispiel/*.fcf')
         for line in remlines:
             del a[line]
@@ -175,6 +186,7 @@ class dsrrunTest(unittest.TestCase):
 
         """
         print('9 ' * 10, 'start')
+        print("{} -e tolUene".format(self.dsr))
         system("{} -e tolUene".format(self.dsr))
         with open('toluene.res') as txt:
             ex = txt.readlines()
@@ -245,16 +257,6 @@ coord2 = (-0.362398, 0.278516, 0.447770)  # F10 6.052A
 cell = [10.5086, 20.9035, 20.5072, 90, 94.13, 90]
 cells = ['10.5086', '20.9035', '20.5072', '90', '94.13', '90']
 
-
-class doctestsTest(unittest.TestCase):
-    def testrun_doctest(self):
-        for name in [dsr, afix, dsrparse, export, misc, elements, networkx, 
-                     atomhandling, networkx.classes.graph, dsrparse]:
-            failed, attempted = doctest.testmod(name)  # , verbose=True)
-            if failed == 0:
-                print('passed all {} tests in {}!'.format(attempted, name.__name__))
-            else:
-                print('!!!!!!!!!!!!!!!! {} of {} tests failed in {}  !!!!!!!!!!!!!!!!!!!!!!!!!!!'.format(failed, attempted, name.__name__))
       
 
 
