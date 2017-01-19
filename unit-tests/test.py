@@ -254,7 +254,7 @@ class doctestsTest(unittest.TestCase):
             if failed == 0:
                 print('passed all {} tests in {}!'.format(attempted, name.__name__))
             else:
-                print('{} of {} tests failed in {}'.format(failed, attempted, name.__name__))
+                print('!!!!!!!!!!!!!!!! {} of {} tests failed in {}  !!!!!!!!!!!!!!!!!!!!!!!!!!!'.format(failed, attempted, name.__name__))
       
 
 
