@@ -47,6 +47,27 @@
 #   in the SHELXL file automatically.
 ########################################################################################
 
+<26dcb>
+rem Name: 2,6-Dichlorobenzene, C6H3Cl2
+rem Src: CCDC IRUDUW
+RESI DCB
+RIGU CL1 > C6
+SIMU CL1 > C6
+FLAT CL1 > C6
+SADI 0.02 C2 Cl2 C6 Cl1
+SADI 0.04 C1 Cl1 C5 Cl1 C1 Cl2 C3 Cl2
+SADI 0.02 C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1
+SADI 0.04 C1 C3 C3 C5 C5 C1 C2 C4 C4 C6 C6 C2
+FRAG 17 1 1 1 90 90 90
+Cl1   17     3.75835    4.89899    8.61530
+Cl2   17     2.79635    8.97662    5.19815
+C1    6      3.37299    6.97909    6.93077
+C2    6      3.76181    8.22300    6.41408
+C3    6      4.89314    8.88350    6.86932
+C4    6      5.64670    8.31598    7.88906
+C5    6      5.28914    7.09168    8.43388
+C6    6      4.16246    6.44065    7.95446
+</26dcb>
 
 <dce>
 rem Name: 1,2-Dichloroethane (flat), DCE, Ethylene dichloride, C2H4Cl2
