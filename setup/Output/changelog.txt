@@ -1,4 +1,5 @@
 Recent changes
+-197-1  2,6-Dichlorobenzene added.
 -197    Fixed bug that prevents using more than nine free variables. Added
         Dichloroethane and TMEDA fragments, RSS-Feed, unit tests, more search
         results. 
