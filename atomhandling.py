@@ -663,6 +663,8 @@ class SfacTable():
         if not sfacline:
             print('*** No SFAC card found! Can not proceed ***')
             sys.exit()
+        sfac = [x.upper() for x in sfac]
+        explicit_scat = [x.upper() for x in explicit_scat]
         for i in self._db_atom_types:  # this is to compare the occurence of element type from resfile and db
             i = i.upper()
             if i not in sfac+explicit_scat:         # all atom types from db not already in sfac
@@ -671,7 +673,7 @@ class SfacTable():
                 print('*** Error, atom {} not valid ***'.format(i))
                 sys.exit(False)
         for i in range(1, len(sfac+explicit_scat)+1):
-            i = str(i)
+            i = str(i).upper()
             unit.append(i)
         # now the sfac and unit tables are written to the resfile
         self._reslist[sfacline] = 'SFAC  {}\n'.format('  '.join(sfac))
