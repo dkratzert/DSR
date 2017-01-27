@@ -5,7 +5,7 @@ CELL 0.71073 10.5086 20.9035 20.5072 90 94.13 90
 ZERR 4 0.0003 0.0005 0.0005 0 0.001 0
 LATT 1
 SYMM -X,0.5+Y,0.5-Z
-SFAC  C  H  O  F  Al  Ga
+SFAC  C  H  O  F  AL  GA
 UNIT  1  2  3  4  5  6
 LIST 6 ! automatically inserted. Change 6 to 4 for CHECKCIF!!
 
