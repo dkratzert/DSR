@@ -329,7 +329,7 @@ class InsertAfix(object):
         atoms = '\n'.join(newlist)
         afixnumber = '179'   # makes afix 179 default
         if self.part:
-            part = 'PART '+str(self.part)+' '+str(occ_part)+'\n'
+            part = 'PART '+str(self.part)+' '+str(occ_part)
             part2 = 'PART 0'
         else:
             part = ''
@@ -353,17 +353,23 @@ class InsertAfix(object):
             else:
                 self._dbhead = ''
         else:
-            afixtag = '\n'+'REM '+self.rand_id_afix
+            afixtag = 'REM '+self.rand_id_afix
             self._dbhead = ''.join(self._dbhead)
-        afix = self._dbhead\
-                +part\
-                +'AFIX '+str(afixnumber)\
-                +afixtag\
-                +'\n'+atoms\
-                +'\nAFIX 0'\
-                +afixtag\
-                +'\n'+part2\
-                +'\n'+resi_end+'\n\n'
+        afix = '{0}{1}\n' \
+               'AFIX {2}\n' \
+               '{3}\n' \
+               '{4}\n' \
+               'AFIX 0\n' \
+               '{5}\n' \
+               '{6}\n' \
+               '{7}\n\n'.format(self._dbhead,    # 0
+                                part,            # 1
+                                str(afixnumber), # 2
+                                afixtag,         # 3
+                                atoms,           # 4
+                                afixtag,         # 5
+                                part2,           # 6
+                                resi_end)        # 7
         return afix
 
 
