@@ -142,7 +142,7 @@ class ReadDB():
             with open(filepath, 'r') as f:
                 for line in f:
                     if line.startswith('#'):
-                        line = ''
+                        continue
                     dblist.append(line)
         except(IOError) as e:
             print(e)
@@ -326,17 +326,19 @@ class global_DB():
     def db_dict(self):
         return self._db_all_dict
 
-    def get_residue_from_head(self, head, fragment=''):
-        '''
+    @staticmethod
+    def get_residue_from_head(head, fragment=''):
+        """
         extracts the residue from the head
         and returns just the first string after RESI
+        :param fragment: fragment name
         :param head: ['line1\n', 'line2\n', '...']
         :type head: list of strings
         :return residue class
-        '''
+        """
         for index, line in enumerate(head):
             line = line.upper()
-            if line.startswith('RESI'):
+            if line[:4] == 'RESI':  # faster than startswith()?
                 resiline = line.split()
                 del head[index]  # remove resi from head
                 for n, i in enumerate(resiline):
@@ -350,7 +352,7 @@ class global_DB():
         return False
 
     def get_fragment_atoms(self, fragment, db_name, line):
-        '''
+        """
         returns the atoms of a fragment as list
         [['C1', '1', '7.600', '-1.044', '4.188'], [...]]
         :param fragment: db fragment name
@@ -366,35 +368,36 @@ class global_DB():
         [['C1', '1', '0.880000', '-0.330900', '0.267190'], ['C2', '1', '0.786200', '-0.377700', '0.238080'],
         ['C3', '1', '0.760600', '-0.318400', '0.192570'], ['C4', '1', '0.829200', '-0.212200', '0.175520'],
         ['C5', '1', '0.923200', '-0.164400', '0.204000'], ['C6', '1', '0.948800', '-0.223200', '0.249920']]
-        '''
-        fragment = fragment.lower()
+        """
         atoms = []
         end = False
-        regex = re.escape(r'</{}>'.format(fragment))
+        regex = r'</{}>'.format(fragment.lower())
         for i in self._db_plain_dict[db_name][int(line):]:
-            i = i.strip('\n\r')
-            if re.match(regex, i.lower()):  # find the endtag of db entry
+            i = i.lower()
+            #if i.startswith(regex):  # find the endtag of db entry
+            if i[:len(regex)] == regex:
                 end = True
                 break
             if re.search(atomregex, str(i)):  # search atoms
                 l = i.split()[:5]  # convert to list and use only first 5 columns
-                if l[0].upper() not in SHX_CARDS:  # exclude all non-atom cards
+                l[0] = l[0].upper()
+                if l[0] not in SHX_CARDS:  # exclude all non-atom cards
                     atoms.append(l)
         if not atoms:
-            print('Database entry of "{}" in line {} of "{}.txt" is corrupt. No atoms found!'.format(fragment, line,
-                                                                                                     db_name))
-            print('Have you really followed the syntax?')
+            print('*** Database entry of "{}" in line {} of "{}.txt" is corrupt. '
+                  'No atoms found! ***'.format(fragment, line, db_name))
+            print('*** Have you really followed the syntax? ***')
             sys.exit(False)
         if not end:
-            print('Could not find end of dbentry for fragment ' \
-                  '"{}" in line {} of "{}.txt". Check your database.'.format(fragment, line, db_name))
+            print('*** Could not find end of dbentry for fragment "{}" in line {} of "{}.txt". '
+                  'Check your database. ***'.format(fragment, line, db_name))
             sys.exit(False)
         if self.invert:
             atoms = invert_dbatoms_coordinates(atoms)
         return atoms
 
     def get_head_for_gui(self, fragment):
-        '''
+        """
         returns header information of the specific fragment:
         tag, Name/comment, source, cell, residue, dbtype, restr, atoms
         >>> gdb = global_DB(invert=False)
@@ -421,7 +424,7 @@ class global_DB():
         <restr>
          SADI 0.02 C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1;;SADI 0.04 C1 C5 C1 C5 C4 C2 C4 C6 C6 C2 C5 C3;;FLAT C1 > C6;;SIMU C1 > C6;;RIGU C1 > C6
         </restr>
-        '''
+        """
         fragment = fragment.lower()
         print("<tag>\n", fragment, "\n</tag>")
         print("<comment>\n", self.get_name_from_fragment(fragment), "\n</comment>")
@@ -462,9 +465,8 @@ class global_DB():
                           .format(str.upper(i), fragment))
                     return False
         if len(dbentry['fragline']) != 8:
-            print('*** The line starting with "FRAG" in the database entry of {} is ' \
-                  'not correct.\n  Are the cell parameters really correct? ' \
-                  '"FRAG 17 a b c alpha beta gamma" ***\n'.format(fragment))
+            print('*** The line starting with "FRAG" in the database entry of {} is not correct.\n  '
+                  'Are the cell parameters really correct? "FRAG 17 a b c alpha beta gamma" ***\n'.format(fragment))
             sys.exit(False)
         return True
 
@@ -575,8 +577,8 @@ class global_DB():
                 except(IndexError):
                     return False
                 if len(line) % 2 == 1:  # test for uneven atoms count
-                    print('*** Inconsistent SADI restraint line {} of "{}". Not all atoms form a pair ***'.format(num,
-                                                                                                                  fragment))
+                    print('*** Inconsistent SADI restraint line {} of "{}". '
+                          'Not all atoms form a pair ***'.format(num, fragment))
                 pairs = pairwise(line)
                 distances = []
                 pairlist = []
@@ -602,15 +604,15 @@ class global_DB():
                         for x in outliers:
                             pair = ' '.join(pairlist[x])
                             print(
-                                '*** Suspicious deviation in atom pair "{}" ({:4.3f} A, median: {:4.3f}) of SADI line {} ***'.format(
-                                    pair, distances[x], median(distances), num + 1))
+                                '*** Suspicious deviation in atom pair "{}" ({:4.3f} A, median: {:4.3f}) of '
+                                'SADI line {} ***'.format(pair, distances[x], median(distances), num + 1))
                             print(restr[num][:60], '...')
                             return False
                 if stdev > 2.5 * float(dev):
                     print("\nFragment {}:".format(fragment))
                     print(
-                        '*** Suspicious restraints in SADI line {} with high standard deviation {:4.3f} (median length: {:4.3f} A) ***'.format(
-                            num + 1, stdev, median(distances)))
+                        '*** Suspicious restraints in SADI line {} with high standard deviation {:4.3f} '
+                        '(median length: {:4.3f} A) ***'.format(num + 1, stdev, median(distances)))
                     print(' '.join(prefixes + line))
                     return False
         return True
@@ -636,6 +638,7 @@ class global_DB():
              fragline, # line with frag command e.g. 'FRAG 17 1 1 1 90 90 90'
               comment: # comment lines from the head
         '''
+        fragline = ''
         fragment = fragment.lower()
         head = []
         nhead = []
@@ -647,7 +650,7 @@ class global_DB():
             head.append(i)
         for line in head:
             line = line.strip(' \n\r')
-            line = ' '.join(line.split())
+            #line = ' '.join(line.split())
             if line.upper().startswith('REM'):
                 comment.append(line.split()[1:])
                 line = ''
@@ -658,10 +661,7 @@ class global_DB():
         nhead = unwrap_head_lines(nhead)
         if not comment:
             comment = ['']
-        try:
-            if fragline:
-                pass
-        except(UnboundLocalError):
+        if not fragline:
             print('*** Error. No cell parameters found in the database entry ' \
                   'of "{}" ***'.format(fragment))
             print('*** Please add these parameters! ***')
