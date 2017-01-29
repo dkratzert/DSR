@@ -212,8 +212,7 @@ class DSR():
             line = ' {:<17}| {:<5}| {:<11}| {}'.format(*line)
             print(line[:width - 1])
         print('\n {} Fragments in the database(s).'.format(num),
-              '\n Feel free to add more fragments to "{}dsr_user_db.txt"' \
-              '\n and please mail them to dkratzert@gmx.de.'.format(dbdir + os.path.sep))
+              '\n Feel free to add more fragments to "{}dsr_user_db.txt"'.format(dbdir + os.path.sep))
         for fragment in fragnames:
             self.gdb.check_consistency(fragment)
             self.gdb.check_db_atom_consistency(fragment)
@@ -221,14 +220,14 @@ class DSR():
             self.gdb.check_sadi_consistence(fragment)
         from selfupdate import is_update_needed
         if is_update_needed():
-            print("\n*** An update for DSR is available. You can update with 'DSR -r' ***")
+            print("\n*** An update for DSR is available. You can update with 'dsr -u' ***")
         sys.exit()
 
 
     def main(self):
-        '''
+        """
         main object to run DSR as command line program
-        '''
+        """
         # The database content:
         dbatoms = []
         basefilename = resfile.filename_wo_ending(self.res_file)

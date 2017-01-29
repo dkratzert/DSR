@@ -81,8 +81,10 @@ def make_sortkey(full_name):
     """
     Algorythm inspired by W. Sage J. Chem. Inf: Comput. Sci. 1983, 23, 186-197
     """
+    keylist = []
     full_name = ''.join(e for e in full_name if e not in ('{}()[],'))
-    full_name = full_name.split(',')[0].lower()
+    full_name = full_name.split(' ')[0].lower()
+    numbers = ''.join(e for e in full_name if e in r'0123456789')
     if full_name.startswith('tert-'):
         full_name = full_name[4:]
     if full_name.startswith('sec-'):
@@ -103,12 +105,17 @@ def make_sortkey(full_name):
         full_name = full_name[1:]
     if full_name.startswith('n-'):
         full_name = full_name[1:]
+    if full_name.startswith('nn-'):
+        full_name = full_name[1:]
+    if full_name.startswith('nnn-'):
+        full_name = full_name[1:]
     if full_name.startswith('m-'):
         full_name = full_name[1:]
     if full_name.startswith('i-'):
         full_name = full_name[1:]
     full_name = ''.join(e for e in full_name if e not in ('+-_.\'1234567890, '))
-    return full_name
+    keylist = [full_name, numbers]
+    return keylist
 
 
 __metaclass__ = type  # use new-style classes
@@ -282,13 +289,16 @@ class global_DB():
         fraglist = []
         for frag in self._db_all_dict:
             comment = self.get_name_from_fragment(frag)
+            key = make_sortkey(comment)
             line = [frag,
                     self.get_line_number_from_fragment(frag),
                     self.get_db_name_from_fragment(frag),
                     comment,
-                    make_sortkey(comment)]
+                    key[0],
+                    key[1]]
             fraglist.append(line)
-        fraglist.sort(key=lambda x: x[4].lower())
+        fraglist.sort(key=lambda x: (x[4], x[5]))
+        #fraglist.sort(key=lambda x: x[4].lower())
         return fraglist
 
     def build_db_dict(self):
