@@ -57,7 +57,7 @@ def search_fragment_name(search_string, gdb, numresults=6):
         names_list.append([i, fragname, line_number, dbname])
     search_results = {}
     for i in names_list:
-        db_entry = i[1]
+        db_entry = make_sortkey(i[1])[0]
         coefficient = dice_coefficient(search_string, db_entry)
         search_results[coefficient] = i
     # select the best n results:
