@@ -36,9 +36,9 @@ __metaclass__ = type  # use new-style classes
 
 
 def remove_duplicate_bonds(bonds):
-    '''
+    """
     removes duplicates from [(at1, at2, 1.324), (at2, at1, 1.324)]
-    '''
+    """
     new_bonds = []
     pairs = []
     for k in bonds:
@@ -50,13 +50,13 @@ def remove_duplicate_bonds(bonds):
 
 
 def format_atom_names(atoms, part='', resinum=''):
-    '''
+    """
     needs a list of atoms ['C1', 'C2', 'O1', ..] with part number and a residue number.
     returns a list with atoms like ['C1_4b', 'C2_4b', 'O1_4b', ..]
     :param atoms:  list of plain atom names
     :param part:  string, part number
     :param resinum: string, residue number
-    '''
+    """
     part = str(part)
     resinum = str(resinum)
     if not resinum:
