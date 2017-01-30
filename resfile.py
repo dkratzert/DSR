@@ -11,8 +11,6 @@
 #
 from __future__ import print_function
 
-import textwrap
-
 import misc
 import sys
 import os

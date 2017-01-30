@@ -26,7 +26,6 @@ from resfile import ResList
 
 # all upper case for case insensitivity:
 alphabet = [ i for i in string.ascii_uppercase ]
-import networkx as nx
 
 # note: parts    1, 2, 3 are _a, _b, _c
 # note: residue number 1, 2, 3 are _1, _2, _3
@@ -88,13 +87,12 @@ def format_atom_names(atoms, part='', resinum=''):
 
 
 class Restraints():
-    '''
+    """
     returns an adjacence matrix for all atoms in the .lst file.
     edge property is the bond length
 
     needs atoms with numpart like C1_2b
-    '''
-
+    """
     def __init__(self, export, frag, gdb):
         self.fragment = frag.lower()
         self.gdb = gdb
@@ -131,9 +129,10 @@ class Restraints():
         return coords
 
     def adjmatrix(self):
-        '''
+        """
         create a distance matrix for the atom coordinates
-        '''
+        """
+        import networkx as nx
         G=nx.Graph()
         for i in self._connectivity_table:
             atom1 = i[0]
@@ -201,7 +200,7 @@ class Restraints():
         dfix_restraints = self.get_12_dfixes()
         dfix_restraints = remove_duplicate_bonds(dfix_restraints)
         for n, i in enumerate(dfix_restraints, 1):  # @UnusedVariable
-            dfix_formated.append('DFIX {:<7.4f}{:<4s} {:<4s}\n'.format(i[2], \
+            dfix_formated.append('DFIX {:<7.4f}{:<4s} {:<4s}\n'.format(i[2],
                 misc.remove_partsymbol(i[0]), misc.remove_partsymbol(i[1])))
         return dfix_formated
 
@@ -275,6 +274,7 @@ class Restraints():
 
         TODO: Make a doctest!!
         """
+        import networkx as nx
         list_of_rings = nx.cycle_basis(self._G)
         if not list_of_rings:
             return False
@@ -358,9 +358,9 @@ class Restraints():
             return False
 
     def get_formated_flats(self):
-        '''
+        """
         formats the FLAT restraints and removes the part symbol
-        '''
+        """
         flats = self.make_flat_restraints()
         if not flats:
             return []
@@ -524,13 +524,14 @@ class ListFile():
         return at1[-1]
 
     def get_bondvector(self, atom=None):
-        '''
+        """
         get the bond vector in terms of atom names around which SHELXL
         calculates the difference density in 15 degree interval
         Y-Z-F1/F2/F3
         at1 = Y
         at2 = Z
-        '''
+        """
+        import networkx as nx
         regex = r'^.*is clockwise looking down'
         line = misc.find_line(self.read_lst_file(), regex)
         if not line and atom:

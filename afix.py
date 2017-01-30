@@ -10,18 +10,13 @@
 # ----------------------------------------------------------------------------
 #
 from __future__ import print_function
-from atomhandling import Elem_2_Sfac, rename_dbhead_atoms, FindAtoms,\
-    get_atomtypes, NumberScheme, SfacTable
+from atomhandling import Elem_2_Sfac, rename_dbhead_atoms
 import misc
 import os
 import sys
 import constants
 import fnmatch
-from resfile import ResList, ResListEdit
-from dsrparse import DSR_Parser
-from dbfile import global_DB
 from constants import RESTRAINT_CARDS
-from resi import Resi
 from misc import id_generator
 
 
@@ -29,14 +24,14 @@ __metaclass__ = type  # use new-style classes
 
 
 def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
-    '''
+    """
     write the restraints to an external file
     :param filename:     filename of database file
     :param dbhead:       database header
     :param resi_class:   SHELXL residue class
     :param resi_number:  SHELXL residue number
     :return filename:    full file name where restraints will be written
-    '''
+    """
     number = '1'
     files = []
     # find a unique number for the restraint file:
@@ -57,8 +52,7 @@ def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
     if not resi_number and resi_class:       # only residue class known
         filename = 'dsr_'+resi_class+'_'+filename
     if os.path.isfile(os.path.abspath(filename)):
-        print('Previous restraint file found.'\
-            ' Using restraints from "{}"'.format(filename))
+        print('Previous restraint file found. Using restraints from "{}"'.format(filename))
         return filename
     try:
         dfix_file = open(os.path.join(filepath, filename), 'w')  # open the ins file
@@ -66,22 +60,22 @@ def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
         print('*** Unable to write restraints file! Check directory write permissions. ***')
         sys.exit(False)
     print('Restraints were written to "{}"'.format(os.path.join(filepath, filename)))
-    for i in dbhead:            #modified reslist
-        dfix_file.write("%s" %i)    #write the new file
+    for i in dbhead:            # modified reslist
+        dfix_file.write("%s" %i)    # write the new file
     dfix_file.close()
     return filename
 
 def add_residue_to_dfix(dfix_head, resinum):
-    '''
+    """
     Add a residue to a list of DFIX/DANG restraints
-    DFIX 1.234 C1 C2 -> DFIX 1.234 C1_4 C2_4 
+    DFIX 1.234 C1 C2 -> DFIX 1.234 C1_4 C2_4
     >>> add_residue_to_dfix(['DFIX 1.456 C1 C2', 'DFIX 1.212 C3 C4'], 4)
     ['DFIX  1.456  C1_4  C2_4\\n', 'DFIX  1.212  C3_4  C4_4\\n']
     >>> add_residue_to_dfix(['DFIX 1.456 C1 C2', 'DFIX 1.212 C3 C4'], '5')
     ['DFIX  1.456  C1_5  C2_5\\n', 'DFIX  1.212  C3_5  C4_5\\n']
     >>> add_residue_to_dfix(['FLAT C6 C1 C2 C3', 'FLAT  C7  C1  C2  C3'], '2')
     ['FLAT  C6_2  C1_2  C2_2  C3_2\\n', 'FLAT  C7_2  C1_2  C2_2  C3_2\\n']
-    '''
+    """
     newhead = []
     for line in dfix_head:
         line = line.split()
@@ -97,11 +91,11 @@ def add_residue_to_dfix(dfix_head, resinum):
     return newhead
 
 class InsertAfix(object):
-    '''
+    """
     methods for the AFIX entry
     - dbhead is modified by Resi() if residues are used!
       RESI num class ist inserted there
-    '''
+    """
 
     def __init__(self, reslist, dbatoms, fragment_atom_types, dbhead, dsr_line_dict, sfac_table,
                 find_atoms, numberscheme, options, dfix_head=False):

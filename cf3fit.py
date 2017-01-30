@@ -23,7 +23,7 @@ from restraints import ListFile
 from elements import ELEMENTS
 from misc import atomic_distance, frac_to_cart, cart_to_frac,\
     id_generator, shift, remove_partsymbol, find_multi_lines, wrap_headlines,\
-    calc_ellipsoid_axes, flatten
+    calc_ellipsoid_axes
 from math import radians, sqrt
 import sys
 from resfile import ResList, ResListEdit
