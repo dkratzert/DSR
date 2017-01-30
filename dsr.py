@@ -32,7 +32,6 @@ from afix import InsertAfix
 from terminalsize import get_terminal_size
 from refine import ShelxlRefine
 import resfile
-from cf3fit import CF3
 from os.path import expanduser
 
 
@@ -254,6 +253,7 @@ class DSR():
         # line where the dsr command is found in the resfile:
         dsr_line_number = dsrp.find_dsr_command(line=False)
         if dsrp.cf3_active:
+            from cf3fit import CF3
             cf3 = CF3(rle, find_atoms, self.reslist, self.fragment, sfac_table,
                       basefilename, dsr_dict, resi, self.res_file, self.options)
             if self.fragment == 'cf3':
