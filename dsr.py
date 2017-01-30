@@ -22,12 +22,8 @@ from misc import reportlog, remove_file, find_line,\
 from dbfile import global_DB, search_fragment_name
 from dsrparse import DSR_Parser
 from dbfile import ImportGRADE, print_search_results
-from atomhandling import SfacTable, get_atomtypes, check_source_target,\
-    set_final_db_sfac_types, replace_after_fit
-from atomhandling import FindAtoms, NumberScheme
 from resi import Resi
-from restraints import ListFile, Lst_Deviations
-from restraints import Restraints
+from restraints import ListFile, Lst_Deviations, Restraints
 from afix import InsertAfix
 from terminalsize import get_terminal_size
 from refine import ShelxlRefine
@@ -57,13 +53,14 @@ and a negative value (i.e. k and p both negative) means p times [fv(–k)–1].
 - port to JANA?
   -> learn JANA
   -> What do I need to change?
-  
+
 '''
 
+
 class DSR():
-    '''
+    """
     main class
-    '''
+    """
     def __init__(self, options):
         """
         """
@@ -140,10 +137,10 @@ class DSR():
             result = search_fragment_name(self.search_string, self.gdb)
             print_search_results(result)
             sys.exit()
-        ## Export !all! fragments
+        # Export !all! fragments
         if self.export_all:
             self.export.export_all_fragments()
-        ## Export one fragment
+        # Export one fragment
         if self.export_fragment:
             self.fragment = self.export_fragment
             try:
@@ -157,7 +154,7 @@ class DSR():
             except() as e:
                 print(e)
             sys.exit()
-        ## Import a GRADE fragment
+        # Import a GRADE fragment
         if self.import_grade:
             mog = ImportGRADE(self.import_grade, self.invert)
             mog.write_user_database()
@@ -175,9 +172,9 @@ class DSR():
 ###############################################################################
 
     def head_to_gui(self):
-        '''
+        """
         Exports current fragment header and atoms to the GUI
-        '''
+        """
         atoms = []
         try:
             atoms = self.export.export_to_gui(self.fragment)
@@ -193,9 +190,9 @@ class DSR():
         sys.exit()
 
     def list_dbentries(self):
-        '''
+        """
         list all entries in the db.
-        '''
+        """
         dbdir = expanduser('~')
         fragnames = []
         num = 0
@@ -222,13 +219,13 @@ class DSR():
             print("\n*** An update for DSR is available. You can update with 'dsr -u' ***")
         sys.exit()
 
-
     def main(self):
         """
         main object to run DSR as command line program
         """
-        # The database content:
         dbatoms = []
+        # The database content:
+        import atomhandling
         basefilename = resfile.filename_wo_ending(self.res_file)
         if not basefilename:
             print('*** Illegal option ***')
@@ -236,7 +233,7 @@ class DSR():
         if len(self.reslist) == 0:
             print("*** The input file is empty. Can not proceed! ***")
             sys.exit()
-        find_atoms = FindAtoms(self.reslist)
+        find_atoms = atomhandling.FindAtoms(self.reslist)
         rle = resfile.ResListEdit(self.reslist, find_atoms)
         dsrp = DSR_Parser(self.reslist, rle)
         dsr_dict = dsrp.get_dsr_dict
@@ -246,8 +243,8 @@ class DSR():
         db_residue_string = self.gdb.get_resi_from_fragment(self.fragment)
         dbatoms = self.gdb.get_atoms_from_fragment(self.fragment)      # only the atoms of the dbentry as list
         # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
-        db_atom_types = get_atomtypes(dbatoms)
-        sf = SfacTable(self.reslist, db_atom_types)
+        db_atom_types = atomhandling.get_atomtypes(dbatoms)
+        sf = atomhandling.SfacTable(self.reslist, db_atom_types)
         sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
         resi = Resi(self.reslist, dsr_dict, dbhead, db_residue_string, find_atoms)
         # line where the dsr command is found in the resfile:
@@ -273,10 +270,10 @@ class DSR():
             rle.set_free_variables(dsrp.occupancy)
         fragline = self.gdb.get_fragline_from_fragment(self.fragment)  # full string of FRAG line
         dbhead = resi.remove_resi(dbhead)
-        ### corrects the atom type according to the previous defined global sfac table:
-        dbatoms = set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table)
+        # corrects the atom type according to the previous defined global sfac table:
+        dbatoms = atomhandling.set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table)
 
-        ## Insert FRAG ... FEND entry:
+        # Insert FRAG ... FEND entry:
         rle.insert_frag_fend_entry(dbatoms, fragline, fvarlines)
 
         print('Inserting {} into res File.'.format(self.fragment))
@@ -286,8 +283,8 @@ class DSR():
         print('Target atoms: {}'.format(', '.join(dsrp.target)))
 
         # several checks if the atoms in the dsr command line are consistent
-        check_source_target(dsrp.source, dsrp.target, dbatoms)
-        num = NumberScheme(self.reslist, dbatoms, resi.get_resinumber)
+        atomhandling.check_source_target(dsrp.source, dsrp.target, dbatoms)
+        num = atomhandling.NumberScheme(self.reslist, dbatoms, resi.get_resinumber)
         # returns also the atom names if residue is active
         fragment_numberscheme = num.get_fragment_number_scheme()
         print('Fragment atom names: {}'.format(', '.join(fragment_numberscheme)))
@@ -302,7 +299,8 @@ class DSR():
                           sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
         afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfix', resi)
         if dsr_line_number < fvarlines[-1]:
-            print('\n*** Warning! The DSR command line MUST NOT appear before FVAR or the first atom in the .res file! ***')
+            print('\n*** Warning! The DSR command line MUST NOT appear before FVAR '
+                  'or the first atom in the .res file! ***')
             print('*** Can not proceed... ***\n')
             sys.exit()
         self.reslist[dsr_line_number] = self.reslist[dsr_line_number] + '\n' + afix_entry
@@ -337,16 +335,16 @@ class DSR():
             reslist[plusline-1] = reslist[plusline-1][4:]
             remove_line(reslist, plusline, remove=True)
         if dsrp.command == 'REPLACE':
-            reslist, find_atoms = replace_after_fit(self.rl, reslist, resi,
+            reslist, find_atoms = atomhandling.replace_after_fit(self.rl, reslist, resi,
                                                     fragment_numberscheme, cell)
         shx = ShelxlRefine(reslist, basefilename, find_atoms, self.options)
         shx.restore_acta_card(acta_lines)
         try:
-            if cycles != None:
+            if cycles:
                 shx.set_refinement_cycles(cycles) # restores last LS value
             else:
                 shx.set_refinement_cycles(8)
-        except(IndexError):
+        except IndexError:
             print('*** Unable to set refinement cycles ***')
         if not self.options.rigid_group:
             shx.remove_afix(afix.rand_id_afix)   # removes the afix 9
@@ -380,7 +378,7 @@ if __name__ == '__main__':
         logging.info('Python version: {}'.format(sys.version))
         try:
             logging.info('Platform: {} {}, {}'.format(platform.system(),
-                               platform.release(), ' '.join(platform.uname())))
+                                                      platform.release(), ' '.join(platform.uname())))
         except:
             print("*** Can not write logfile ***")
             pass
@@ -388,9 +386,8 @@ if __name__ == '__main__':
         ch = logging.StreamHandler()
         logger.addHandler(ch)
         print('\n')
-        print('*** Congratulations! You found a bug in DSR. Please send the file ***\n'\
-              '*** "dsr_bug_report.log" and the .res file (if possible) to dkratzert@gmx.de\n ***'
-              )
+        print('*** Congratulations! You found a bug in DSR. Please send the file ***\n'
+              '*** "dsr_bug_report.log" and the .res file (if possible) to dkratzert@gmx.de\n ***')
         #.format(os.path.dirname(os.path.realpath(reportlog))+os.sep ))
         logger.exception(e)
     """
