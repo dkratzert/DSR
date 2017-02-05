@@ -451,16 +451,16 @@ class global_DB():
         self.check_db_atom_consistency(fragment)
 
     def check_consistency(self, fragment):
-        '''
+        """
         check if the fragline makes sense and if the fragment_dict is complete
-        '''
+        """
         fragment = fragment.lower()
         if fragment in ['cf3', 'cf6', 'cf9']:
             return True
         try:
             dbentry = self._db_all_dict[fragment]
         except KeyError:
-            print("Fragment {} not found in the database.".format(fragment))
+            print("*** Fragment {} not found in the database. ***".format(fragment))
             sys.exit()
         for i in dbentry:
             if i == 'comment':
@@ -475,8 +475,8 @@ class global_DB():
                           .format(str.upper(i), fragment))
                     return False
         if len(dbentry['fragline']) != 8:
-            print('*** The line starting with "FRAG" in the database entry of {} is not correct.\n  '
-                  'Are the cell parameters really correct? "FRAG 17 a b c alpha beta gamma" ***\n'.format(fragment))
+            print('*** The line starting with "FRAG" in the database entry of {} is not correct. ***\n '
+                  '*** Are the cell parameters really correct? "FRAG 17 a b c alpha beta gamma" ***\n'.format(fragment))
             sys.exit(False)
         return True
 
@@ -556,7 +556,7 @@ class global_DB():
         return status
 
     def check_sadi_consistence(self, fragment):
-        '''
+        """
         check if same distance restraints make sense. Each length of an atom
         pair is tested agains the standard deviation of all distances.
         For a large standard deviation, the list is tested for outliers.
@@ -564,7 +564,7 @@ class global_DB():
         :param restraints: restraints list
         :param fragment: frag name
         :param factor: factor for confidence interval
-        '''
+        """
         fragment = fragment.lower()
         atoms = self._db_all_dict[fragment]['atoms']
         restr = self._db_all_dict[fragment]['head']
@@ -616,14 +616,14 @@ class global_DB():
                             print(
                                 '*** Suspicious deviation in atom pair "{}" ({:4.3f} A, median: {:4.3f}) of '
                                 'SADI line {} ***'.format(pair, distances[x], median(distances), num + 1))
-                            print(restr[num][:60], '...')
+                            print('*** '+restr[num][:60]+'... ***')
                             return False
                 if stdev > 2.5 * float(dev):
                     print("\nFragment {}:".format(fragment))
                     print(
                         '*** Suspicious restraints in SADI line {} with high standard deviation {:4.3f} '
                         '(median length: {:4.3f} A) ***'.format(num + 1, stdev, median(distances)))
-                    print(' '.join(prefixes + line))
+                    print('*** ' + ' '.join(prefixes + line) + ' ***')
                     return False
         return True
 
