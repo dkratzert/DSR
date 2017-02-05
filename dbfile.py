@@ -549,7 +549,8 @@ class global_DB():
             atom = atom.upper()
             if atom not in atoms:
                 status = False
-                print('\n*** Unknown atom "{}" in restraints of "{}". ***'.format(atom, fragment))
+                print('\n*** Unknown atom "{}" in restraints of "{}: {}". ***'.format(atom, fragment,
+                                                                                      self.get_name_from_fragment(fragment)))
         if not status:
             print('*** Check database entry. ***\n')
             sys.exit(status)
