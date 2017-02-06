@@ -16,6 +16,8 @@ from pprint import pprint
 import misc
 
 feedpath = os.path.abspath("setup/Output/changelog.txt")
+outpath = 'W:/htdocs/data/feed.rss'
+#outpath = './feed.rss'
 
 head = r"""
 <?xml version="1.0" encoding="utf-8"?>
@@ -93,7 +95,7 @@ def xml_creator(items):
     return rss
 
 def filewriter(rss):
-    with open(os.path.abspath('./feed.rss'), 'w') as f:
+    with open(os.path.abspath(outpath), 'w') as f:
         f.write(rss)
 
 

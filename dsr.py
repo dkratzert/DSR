@@ -31,7 +31,7 @@ import resfile
 from os.path import expanduser
 
 
-VERSION = '197'
+VERSION = '198'
 # dont forget to change version in Innoscript file, spec file and deb file.
 
 program_name = '\n'+((width//2)-9)*'-'+' D S R - v{} '.format(VERSION)+((width//2)-8)*'-'
