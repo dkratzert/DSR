@@ -225,7 +225,51 @@ class dsrrunTest(unittest.TestCase):
         """
         self.maxDiff = None
         self.dsr_runtest(13, '-r')
-    
+
+    #@unittest.skip(" skipping 14")
+    def testrun_run14(self):
+        """
+        without occ and fvar
+
+        """
+        self.maxDiff = None
+        self.dsr_runtest(14, '-r')
+
+    #@unittest.skip(" skipping 15")
+    def testrun_run15(self):
+        """
+        without occ and fvar without resi cf3
+
+        """
+        self.maxDiff = None
+        self.dsr_runtest(15, '-r')
+
+    #@unittest.skip(" skipping 16")
+    def testrun_run16(self):
+        """
+        without occ and fvar with resi alone
+
+        """
+        self.maxDiff = None
+        self.dsr_runtest(16, '-r')
+
+    # @unittest.skip(" skipping 17")
+    def testrun_run17(self):
+        """
+        resi occ -31 without FVAR
+
+        """
+        self.maxDiff = None
+        self.dsr_runtest(17, '-r')
+
+    #@unittest.skip(" skipping 18")
+    def testrun_run18(self):
+        """
+        occ -31 without FVAR
+
+        """
+        self.maxDiff = None
+        self.dsr_runtest(18, '-r')
 
 db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
                'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
