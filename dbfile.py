@@ -328,7 +328,7 @@ class global_DB():
                 'name': i[0]
             }
         if not db_dict:
-            print('No database dsr_db.txt found!\n')
+            print('*** No database dsr_db.txt found! ***\n')
             sys.exit()
         return db_dict
 
@@ -357,7 +357,7 @@ class global_DB():
                 try:
                     return resiline[1].upper()
                 except(IndexError):
-                    print('Invalid residue definition in database entry {}.'.format(fragment))
+                    print('*** Invalid residue definition in database entry {}. ***'.format(fragment))
                     sys.exit(False)
         return False
 
