@@ -38,6 +38,8 @@ program_name = '\n'+((width//2)-9)*'-'+' D S R - v{} '.format(VERSION)+((width//
 
 # TODO and ideas:
 '''
+- Add API for GUIs to user manual (or make programmers guide)
+
 - Add Rcomplete
 - Add an export header entry for ShelXle containing any warnings/errors from DSR. For example restraint errors.
 

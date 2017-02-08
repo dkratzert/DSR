@@ -189,8 +189,7 @@ def get_update_package(version):
     try:
         overwrite_dir(os.path.join(tmpdir, "DSR-{}".format(version)), dsrdir, move=False)
     except OSError:
-        print(
-            'Unable to perform update. Please run me with super-user rights, e.g.: "sudo /opt/DSR/dsr -u"')
+        print('*** Unable to perform update. Please run me with super-user rights, e.g.: "sudo /opt/DSR/dsr -u" ***')
         sys.exit()
     shutil.rmtree(tmpdir, ignore_errors=True)  # cleanup the files
     post_update_things()
