@@ -49,7 +49,7 @@
 
 <SBF6>
 rem Name: Hexafluoroantimony, [SbF6]-, SbF6
-rem Src: Stefan Meyer
+rem Src: Stefan Meyer, Freiburg
 RESI SBF6
 SADI 0.02 SB1 F1 SB1 F2 SB1 F3 SB1 F4 SB1 F5 SB1 F6
 SADI 0.04 F1 F2 F1 F3 F1 F4 F1 F5 F2 F3 F2 F5 F2 F6 F3 F4 F3 F6 F4 F5 F4 F6 F5 F6
@@ -201,7 +201,7 @@ C6    1   0.959100   1.180900  -0.055170   1.00000   0.05000
 
 <cod>
 rem Name: 1,5-cyclooctadiene, COD, C8H12
-rem Src: Miriam Schwab
+rem Src: Miriam Schwab, Freiburg
 RESI COD
 SIMU C1 > C8
 RIGU C1 > C8
@@ -304,7 +304,7 @@ C4      1  0.236200  0.523300  0.446300  1.000000 0.05000
 
 <ptbu>
 rem Name: tris-(tert-butyle)-phosphane, C12H27P
-rem Src: Miriam Schwab
+rem Src: Miriam Schwab, Freiburg
 RESI PTBU
 DFIX 1.9 P1 C1 P1 C5 P1 C9
 SADI 0.02 C1 C2 C1 C3 C1 C4 C5 C6 C5 C7 C5 C8 C9 C10 C9 C11 C9 C12
@@ -331,7 +331,7 @@ C12 6 1.62800 12.03400 13.82200
 
 <imi>
 REM Name: N-methylimidazole, 1-methylimidazole, C4H6N2
-REM Source: Daniel Kratzert
+REM Source: Daniel Kratzert, Freiburg
 rem Restraints from atom connectivities:
 DFIX 1.3477 C2   C3
 DFIX 1.3815 C2   N1
@@ -359,7 +359,7 @@ C4    6     1.45100   11.69500   17.38100
 
 <dma>
 REM Name: N,N-dimethylacetylamide, C4H9NO, DMA
-REM Src: Grade
+REM Src: Produced by Grade Web Server http://grade.globalphasing.org
 DFIX  1.220 0.005 C2 O1
 DFIX  1.497 0.005 C2 C3
 DFIX  1.322 0.005 C2 N4
@@ -858,7 +858,7 @@ C70   1    -0.00000  0.00019 -0.07159  11.00000  0.04000
 
 <PFADAMO>
 REM Name: Perfluoroadamantol, C10O1F15
-REM Source: Olaf Petersen
+REM Source: Olaf Petersen, Freiburg
 DFIX 1.329 O1 C1
 SADI C1 C2 C1 C3 C1 C4
 SADI C2 C9 C3 C7 C4 C5
@@ -1290,6 +1290,7 @@ F2  1  -2.377336 -1.372555 0.000000
 <PFAnion>
 RESI AlPF
 REM Name: [Al{OC(CF3)3}4]- PF-Anion
+REM Source: P. J. Malinowski, Freiburg
 DFIX 1.72 0.03 Al1 O1 Al1 O2 Al1 O3 Al1 O4
 SADI 0.04 O1 O2 O1 O3 O1 O4 O2 O3 O2 O4 O3 O4
 SADI 0.05 Al1 C1 Al1 C5 Al1 C9 Al1 C13
@@ -1430,7 +1431,7 @@ C2   1    1.00302        0.15990        0.00000
 
 <pyridine>
 rem Name: Pyridine, C5H5N
-rem Src: EPEXED
+rem Src: CCDC EPEXED
 RESI PYRI
 SADI N1 C1 N1 C5
 SADI C1 C2 C2 C3 C3 C4 C4 C5
@@ -1566,7 +1567,7 @@ C9      1 -0.262100  0.777900  0.447520  1.000000 0.05000
 
 <Eicosan>
 REM Name: n-Eicosan, C20H42 
-REM Src: Nils Trapp
+REM Src: Nils Trapp, ETH Zurich
 RESI EICO
 SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C7 C7 C8 C8 C9 C9 C10 C10 C11 C11 C12 =
      C12 C13 C13 C14 C14 C15 C15 C16 C16 C17 C17 C18 C18 C19 C19 C20
@@ -1706,7 +1707,7 @@ C2   1  0.000000  0.000000 -1.176783
 
 
 <NSiMe3>
-rem Src: Daniel Kratzert
+rem Src: Daniel Kratzert, Freiburg
 REM Name: Trimethylsilyl-N, C3H10OSi, N-TMS
 RESI NSI
 SADI Si1 C1 Si1 C2 Si1 C3
@@ -1725,7 +1726,7 @@ C3    1    0.001505    0.299282    0.171842
 
 
 <Hexa>
-rem Src: Daniel Kratzert
+rem Src: Daniel Kratzert, Freiburg
 REM Name: Hexamethyldisilazane, C6H19NSi2
 RESI HEXA
 SADI N1 Si1 N1 Si2
@@ -1792,7 +1793,7 @@ C8    2  0.554900  0.316400  0.069100
 
 <NBt4+>
 REM Name: Tetrabuthylammonium, C16H36N+, Nbt4+, bt4N+
-REM Src: John Bacsa
+REM Src: John Bacsa, Emory
 SADI  0.02 N1 C1 N1 C2 N1 C3 N1 C4
 SADI  0.02 C1 C5 C5 C9 C9 C13 C4 C8 C8 C12 C12 C16 C3 C7 C7 C11 C11 C15 C2 C6 =
   C6 C10 C10 C14
@@ -2351,7 +2352,7 @@ C3    6     -1.292738   -0.614241    0.000006
 
 
 <Ethylac>
-rem Src: Daniel Kratzert
+rem Src: Daniel Kratzert, Freiburg
 rem Name: Ethyl acetate, C4H8O2
 RESI ETAC
 SIMU O1 > C4
@@ -2374,7 +2375,7 @@ C4    1    0.34314   0.86040   0.95545
 
 
 <Triflate>
-rem Src: Daniel Kratzert
+rem Src: Daniel Kratzert, Freiburg
 rem Name: Trifluoromethanesulfonate, CF3SO3-, Triflate
 RESI TRIF
 SIMU C1 > O3
@@ -2400,7 +2401,7 @@ O3    3    0.80703   0.27957   0.36326
 
 <N-Adamantane>
 rem Name: Adamantane-N, C10H15N
-rem Src: Daniel Kratzert
+rem Src: Daniel Kratzert, Freiburg
 RESI NADA
 SADI N1 C2 N1 C3 N1 C4
 SADI C1 C2 C1 C3 C1 C4  C5 C6 C6 C7 C7 C8 C8 C9 C9 C10 C10 C5
@@ -2426,7 +2427,7 @@ C10  2   -0.058852  0.386127  0.561687
 
 
 <Adamantane>
-rem Src: Daniel Kratzert
+rem Src: Daniel Kratzert, Freiburg
 REM Name: Adamantane, C10H16
 RESI CADA
 SADI C1 C2 C1 C3 C1 C4 C5 C6 C6 C7 C7 C8 C8 C9 C9 C10 C10 C5 =
@@ -2606,7 +2607,7 @@ O4   8    -1.050637   -0.218292    1.049695
 <CF3>
 REM This is a dummy entry. The coordinates are arbitrary.
 rem Name: CF3 group (ordered)
-rem Src: Will be calulated by DSR
+rem Src: Fragment will be calulated by DSR
 RESI CF3
 FRAG 17 17.2012   6.5879  17.8587   90.000   98.492   90.000
 C1    1    0.090610   -0.303414    0.513850
@@ -2618,7 +2619,7 @@ F3    3    0.055789   -0.388160    0.454486
 <CF6>
 REM This is a dummy entry. The coordinates are arbitrary.
 rem Name: CF3 group (2-fold disordered)
-rem Src: Will be calulated by DSR
+rem Src: Fragment will be calulated by DSR
 RESI CF3
 FRAG 17 17.2012   6.5879  17.8587   90.000   98.492   90.000
 C1    1    0.672247    1.534237    0.267407
@@ -2653,7 +2654,7 @@ F9A   3     0.657572   1.613277   0.198360
 
 <26DPA>
 REM Name: 2,6-Diisopropylaniline, [(CH3)2CH]2C6H3NH2
-REM Source: GRADE import
+REM Source: Produced by Grade Web Server http://grade.globalphasing.org
 RESI DPA1
 DFIX 1.310 0.030 C1 N1
 DFIX 1.407 0.028 C1 C2
@@ -2713,7 +2714,7 @@ C12    1       2.327    -0.384    -1.088
 
 
 <Cinnamald>
-REM Source: GRADE import
+REM Source: Produced by Grade Web Server http://grade.globalphasing.org
 REM Name: Cinnamaldehyde, C9H8O
 RESI CNA1
 DFIX 1.215 0.014 C9 O1
@@ -2762,7 +2763,7 @@ C9     1       2.224    -1.798     2.293
 
 
 <Vanillin>
-REM SOURCE: GRADE IMPORT (modified)
+REM SOURCE: Produced by Grade Web Server http://grade.globalphasing.org (modified)
 REM Name: Vanillin, 4-Hydroxy-3-methoxybenzaldehyde, C8H8O3
 RESI VAN1
 DFIX 1.425 0.015 C8 O3
@@ -2809,7 +2810,7 @@ C8    1     -1.787     0.203     1.433
 
 
 <p-Toluidin>
-REM Source: GRADE import
+REM Source: Produced by Grade Web Server http://grade.globalphasing.org
 REM Name: 4-Nitrobenzaldehyde, C7H5NO3, p-Toluidin
 RESI NBA1
 DFIX 1.221 0.014 N1 O1
@@ -2865,7 +2866,7 @@ C7     1       2.686     1.692    -0.149
 
 <cubane_dicarbox>
 REM Name: Dimethyl cubane-1,4-dicarboxylate,  C12H12O4
-REM Source: GRADE import
+REM Source: Produced by Grade Web Server http://grade.globalphasing.org
 RESI DCA1
 DFIX 1.198 0.011 C9 O1
 DFIX 1.329 0.013 C9 O2
@@ -2953,7 +2954,7 @@ C12    1      -3.867     3.389     1.923
 
 
 <9-bromphen>
-REM Source: GRADE import
+REM Source: Produced by Grade Web Server http://grade.globalphasing.org
 REM Name: 9-Bromophenanthrene, C14H9Br
 RESI BPA1
 DFIX 1.899 0.016 BR1 C1
