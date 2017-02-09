@@ -18,7 +18,7 @@ from export import Export
 from options import OptionsParser
 from constants import width, sep_line
 from misc import reportlog, remove_file, find_line,\
-    remove_line
+    remove_line, wrap_headlines
 from dbfile import global_DB, search_fragment_name
 from dsrparse import DSR_Parser
 from dbfile import ImportGRADE, print_search_results
@@ -305,7 +305,13 @@ class DSR():
                   'or the first atom in the .res file! ***')
             print('*** Can not proceed... ***\n')
             sys.exit()
-        self.reslist[dsr_line_number] = self.reslist[dsr_line_number] + '\n' + afix_entry
+        import textwrap
+        source = textwrap.wrap("REM Restraints for Fragment {} from: {}. "
+                               "Please cite doi:10.1107/S1600576715005580".format(
+                                    self.gdb.get_name_from_fragment(self.fragment),
+                                    self.gdb.get_src_from_fragment(self.fragment) ),
+                               width=74, subsequent_indent='REM ')
+        self.reslist[dsr_line_number] = self.reslist[dsr_line_number] + '\n' + '\n'.join(source) + '\n'+ afix_entry
         # write to file:
         shx = ShelxlRefine(self.reslist, basefilename, find_atoms, self.options)
         acta_lines = shx.remove_acta_card()
