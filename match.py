@@ -13,7 +13,15 @@ Based on the work of Paul J. Besl:
 
 from random import randint
 
-import numpy as np
+import sys
+
+from misc import determinante
+
+numpy_on = False
+if numpy_on:
+    import numpy as np
+else:
+    import mpmath as np
 
 bestFit = None
 
@@ -42,14 +50,19 @@ def match_point_clouds(cloud1, cloud2, threshold=1, maxiter=0):
     in 'cloud1' and a transformation matrix that transforms
     'cloud2' to the coordinate system of 'cloud1'.
     """
-
+    #print('###', cloud1)
+    #print('#####', cloud2)
     R_old = 0
     iteration = 0
     cloud1 = center(list(cloud1))
     cloud2 = center(list(cloud2))
     ref_cloud = list(cloud2)
-    quatx = np.array([1, 0, 0, 0])
+    if numpy_on:
+        quatx = np.array([1, 0, 0, 0])
+    else:
+        quatx = np.matrix([[1], [0], [0], [0]])
     while True:
+        print(cloud1, cloud2)
         matchlist = map_clouds(cloud1, cloud2)
         quat, R = get_quaternion(cloud1, cloud2, matchlist)
         cloud2 = rotate_by_quaternion(cloud2, quat)
@@ -78,11 +91,12 @@ def center(cloud):
     :param cloud: List of numpy arrays.
 
     :return: List of numpy arrays representing 'cloud' moved to its center of mass.
+
     """
-    c = sum(cloud) / len(cloud)
-    # ===========================================================================
-    # print c
-    #===========================================================================
+    s = sum(cloud)
+    l = len(cloud)
+    c = s / l
+    #print(c, '####')
     return [p - c for p in cloud]
 
 
@@ -189,7 +203,12 @@ def map_clouds(cloud1, cloud2):
     for coord1 in cloud1:
         best_dist = 999
         for i, coord2 in enumerate(cloud2):
-            dist = abs(np.linalg.norm(coord1 - coord2))
+            if numpy_on:
+                dist = abs(np.linalg.norm(coord1 - coord2))
+            else:
+                #print('coord1:', coord1)
+                #print('coord2:', coord2)
+                dist = abs(np.norm(coord1 - coord2))
             if dist < best_dist:
                 best_hit = i
                 best_dist = dist
@@ -209,7 +228,13 @@ def get_quaternion(lst1, lst2, matchlist):
     M = np.matrix([[0, 0, 0], [0, 0, 0], [0, 0, 0]])
 
     for i, coord1 in enumerate(lst1):
-        x = np.matrix(np.outer(coord1, lst2[matchlist[i]]))
+        print(i, coord1, lst2[matchlist[i]], '***')
+        if numpy_on:
+            x = np.matrix(np.outer(coord1, lst2[matchlist[i]]))
+        else:
+            x = np.matrix(coord1.T*lst2[matchlist[i]])
+        print(x)
+        sys.exit()
         M = M + x
 
     N11 = float(M[0][:, 0] + M[1][:, 1] + M[2][:, 2])
@@ -256,8 +281,22 @@ def rotate_by_matrix(cloud, rotmat):
     """
     Rotates the points in 'cloud' by the transformation represented
     by the rotation matrix 'rotmat'.
+    cloud: 3x3 matrix-> no, list of arrays
+    rotmat 3x3 matrix-> yes
     """
-    return [np.array(np.dot(coord, rotmat).tolist())[0] for coord in cloud]
+    if numpy_on:
+        m = []
+        for coord in cloud:
+            l = np.dot(coord, rotmat).tolist()[0]
+            m.append(l)
+        m = np.array(m)
+        #print(m)
+        return [np.array(np.dot(coord, rotmat).tolist())[0] for coord in cloud]
+    else:
+        m = []
+        m = [(coord.T*rotmat) for coord in cloud]
+        #print(m, 'mmmm')
+    return m
 
 
 def get_rotation_matrix_from_quaternion(q):
@@ -332,29 +371,43 @@ def test_match_clouds():
     """
     Function for testing the functionality of the module.
     >>> test_match_clouds()
-    ('No solutions:', 0)
-    ('wrong solution:', 100)
-    ('Cycles:', 100)
-    ('Success:', 0.0, '%')
     """
     def random_coord():
-        return np.array([randint(1, 100), randint(1, 100), randint(1, 100)])
+        if numpy_on:
+            rand = np.array([randint(1, 100), randint(1, 100), randint(1, 100)])
+        else:
+            rand = np.matrix([randint(1, 100), randint(1, 100), randint(1, 100)])
+        return rand
 
     no = 0
     wrong = 0
-    tries = 100
+    tries = 500
     for _ in range(tries):
         sample_cloud = [random_coord(),
                         random_coord(),
                         random_coord(),
                         random_coord(),
                         random_coord(),
-                        random_coord() ]
+                        random_coord(),
+                        random_coord(),
+                        random_coord(),
+                        random_coord(),
+                        random_coord(),
+                        random_coord(),
+                        random_coord(),
+                        random_coord(),
+                        random_coord(),
+                        random_coord(),
+                        random_coord(),
+                        random_coord(), ]
         sample_cloud = center(sample_cloud)
+
         angle = 23. * np.pi / 180
+
         sample_rotmat = np.matrix([[np.cos(angle), -np.sin(angle), 0],
                                    [np.sin(angle), np.cos(angle), 0],
                                    [0, 0, 1]])
+
         rotated_cloud = rotate_by_matrix(sample_cloud, sample_rotmat)
         xx = match_point_clouds(sample_cloud, rotated_cloud, threshold=2)
         x = xx[0]
@@ -398,6 +451,8 @@ def test_match_clouds():
 
 
 if __name__ == '__main__':
+    test_match_clouds()
+    sys.exit()
     #import sys
     import doctest
     failed, attempted = doctest.testmod()  # verbose=True)
