@@ -91,8 +91,8 @@ class dsrrunTest(unittest.TestCase):
             misc.remove_file('./test-data/beispiel/{}.dfix'.format(external_file))
         print('{} test:'.format(nummer))
         misc.remove_file('./test-data/beispiel/{}a.hkl'.format(nummer))
-        #misc.remove_file('./test-data/beispiel/{}a.ins'.format(nummer))
-        #misc.remove_file('./test-data/beispiel/{}a.res'.format(nummer))
+        misc.remove_file('./test-data/beispiel/{}a.ins'.format(nummer))
+        misc.remove_file('./test-data/beispiel/{}a.res'.format(nummer))
         misc.remove_file('./test-data/beispiel/{}a.lst'.format(nummer))
         misc.remove_file('./test-data/beispiel/*.fcf')
         for line in remlines:
@@ -270,6 +270,15 @@ class dsrrunTest(unittest.TestCase):
         """
         self.maxDiff = None
         self.dsr_runtest(18, '-r')
+
+    #@unittest.skip(" skipping 18")
+    def testrun_run19(self):
+        """
+        occ -31 without FVAR
+
+        """
+        self.maxDiff = None
+        self.dsr_runtest(19, '-re', external_file='dsr_1_19a')
 
 db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
                'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
