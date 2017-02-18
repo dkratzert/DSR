@@ -1,6 +1,6 @@
 TITL p21c in P2(1)/c
-    test-data/beispiel/11.res
-    created by SHELXL-2016/6 at 08:32:31 on 06-Nov-2016
+    test-data/beispiel/11a.res
+    created by SHELXL-2016/6 at 15:31:21 on 18-Feb-2017
 CELL 0.71073 10.5086 20.9035 20.5072 90 94.13 90
 ZERR 4 0.0003 0.0005 0.0005 0 0.001 0
 LATT 1
