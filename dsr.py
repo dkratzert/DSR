@@ -163,6 +163,8 @@ class DSR():
             sys.exit(1)
         if not any(list(vars(self.options.all_options).values())+[self.res_file]):
             self.options.error()
+        if self.res_file == False:
+            self.options.error()
         self.rl = resfile.ResList(self.res_file)
         self.reslist = self.rl.get_res_list()
         self.main()
