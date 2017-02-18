@@ -91,8 +91,8 @@ class dsrrunTest(unittest.TestCase):
             misc.remove_file('./test-data/beispiel/{}.dfix'.format(external_file))
         print('{} test:'.format(nummer))
         misc.remove_file('./test-data/beispiel/{}a.hkl'.format(nummer))
-        misc.remove_file('./test-data/beispiel/{}a.ins'.format(nummer))
-        misc.remove_file('./test-data/beispiel/{}a.res'.format(nummer))
+        #misc.remove_file('./test-data/beispiel/{}a.ins'.format(nummer))
+        #misc.remove_file('./test-data/beispiel/{}a.res'.format(nummer))
         misc.remove_file('./test-data/beispiel/{}a.lst'.format(nummer))
         misc.remove_file('./test-data/beispiel/*.fcf')
         for line in remlines:
@@ -215,7 +215,7 @@ class dsrrunTest(unittest.TestCase):
         regular dsr run without fit with
         resi cf3 PART 2 occ -31
         """
-        self.dsr_runtest(12, ending='ins', parameter='-n -r',  remlines = [290, 305])
+        self.dsr_runtest(12, ending='ins', parameter='-n -r',  remlines = [293, 308])
 
     #@unittest.skip(" skipping 13")
     def testrun_run13(self):

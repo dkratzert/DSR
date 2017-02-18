@@ -264,6 +264,9 @@ F9    4    0.058836    0.122805    0.319484    31.00000    0.06663
 RESI 0
 PART 0
 
+REM Restraints for Fragment oc(cf3)3, Nonafluoro-tert-butoxy, [(CF3)3CO]-
+REM from: TURBOMOLE V6.0 B-P86/def-SV(P). Please cite
+REM doi:10.1107/S1600576715005580
 RESI 4 CF3
 REM The restraints for residue CF3 are in this file:
 +dsr_CF3_4_4a.dfix

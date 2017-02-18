@@ -1,6 +1,6 @@
 TITL p21c in P2(1)/c
-    2.res
-    created by SHELXL-2016/6 at 12:27:15 on 05-Nov-2016
+    test-data/beispiel/5a.res
+    created by SHELXL-2016/6 at 15:31:29 on 18-Feb-2017
 CELL 0.71073 10.5086 20.9035 20.5072 90 94.13 90
 ZERR 4 0.0003 0.0005 0.0005 0 0.001 0
 LATT 1
@@ -268,43 +268,8 @@ REM Restraints for Fragment oc(cf3)3, Nonafluoro-tert-butoxy, [(CF3)3CO]-
 REM from: TURBOMOLE V6.0 B-P86/def-SV(P). Please cite
 REM doi:10.1107/S1600576715005580
 RESI 4 CF3
-DFIX  1.3424  F1_4  C2_4
-DFIX  1.3416  F2_4  C2_4
-DFIX  1.3586  F3_4  C2_4
-DFIX  1.3396  F4_4  C3_4
-DFIX  1.3573  F5_4  C3_4
-DFIX  1.3432  F6_4  C3_4
-DFIX  1.3453  F7_4  C4_4
-DFIX  1.3490  F8_4  C4_4
-DFIX  1.3384  F9_4  C4_4
-DFIX  1.5732  C3_4  C1_4
-DFIX  1.5730  C2_4  C1_4
-DFIX  1.3986  C1_4  O1_4
-DFIX  1.5669  C1_4  C4_4
-DANG  2.4312  O1_4  C3_4
-DANG  2.4270  O1_4  C2_4
-DANG  2.3711  O1_4  C4_4
-DANG  2.3961  C1_4  F4_4
-DANG  2.3905  C1_4  F5_4
-DANG  2.4301  C1_4  F6_4
-DANG  2.4107  C1_4  F1_4
-DANG  2.3806  C1_4  F3_4
-DANG  2.4305  C1_4  F2_4
-DANG  2.3953  C1_4  F8_4
-DANG  2.3926  C1_4  F9_4
-DANG  2.4014  C1_4  F7_4
-DANG  2.5833  C2_4  C3_4
-DANG  2.5811  C2_4  C4_4
-DANG  2.1758  F1_4  F3_4
-DANG  2.1801  F1_4  F2_4
-DANG  2.1875  F2_4  F3_4
-DANG  2.5834  C3_4  C4_4
-DANG  2.1728  F4_4  F5_4
-DANG  2.1816  F4_4  F6_4
-DANG  2.1897  F5_4  F6_4
-DANG  2.1822  F7_4  F8_4
-DANG  2.1726  F7_4  F9_4
-DANG  2.1846  F8_4  F9_4
+REM The restraints for residue CF3 are in this file:
++dsr_CF3_4_5a_dfx.dfix
 PART 2 -31
 O1    3    0.077864    0.235782    0.401108   -31.00000    0.04000
 C1    1    0.032052    0.233931    0.335391   -31.00000    0.04000
@@ -324,7 +289,7 @@ PART 0
 RESI 0
 
 REM rem dsr put oc(cf3)3 with o1 c1 c2 c3 c4 on O1_3 c1_3 q6 Q4 q7 resi cf3
-REM !dfix PART 2 occ -31
+REM !PART 2 occ -31 dfix
 
 AFIX   0
 HKLF 4
@@ -334,7 +299,7 @@ HKLF 4
 
 REM  p21c in P2(1)/c
 REM R1 =  0.1556 for    7085 Fo > 4sig(Fo)  and  0.2015 for all   10786 data
-REM    758 parameters refined using   1956 restraints
+REM    758 parameters refined using   1919 restraints
 
 END  
      
