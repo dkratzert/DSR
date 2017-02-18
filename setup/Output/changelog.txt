@@ -1,4 +1,7 @@
 Recent changes
+-199    Added documentation how to control DSR with an external user interface.
+        Hexamethyl benzene fragment added. DSR inserts a comment about the origin
+        of the fragment into the res file.
 -198    Fixed some error messages. Added Leucine and Lysine. Improved search behavior.
         Improved sorting of fragment list. Added [SbF6]-. SFAC names are now case insensitive.
 -197-1  2,6-Dichlorobenzene added.
