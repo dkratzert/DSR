@@ -219,7 +219,7 @@ class DSR():
             self.gdb.check_db_header_consistency(fragment)
             self.gdb.check_sadi_consistence(fragment)
         from selfupdate import is_update_needed
-        if is_update_needed():
+        if is_update_needed(silent=True):
             print("\n*** An update for DSR is available. You can update with 'dsr -u' ***")
         sys.exit()
 
