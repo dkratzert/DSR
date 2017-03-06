@@ -15,18 +15,26 @@ import os
 import shutil
 import tarfile
 import tempfile
-import urllib
 import sys
+import urllib
 
 from dsr import VERSION
 
 urlprefix = "http://www.xs3-data.uni-freiburg.de/data"
 
 # changes the user-agent of the http request:
-class DSRURLopener(urllib.FancyURLopener):
-    version = "DSR-updater"
+try:
+    class DSRURLopener(urllib.FancyURLopener):
+        version = "DSR-updater"
+    urllib._urlopener = DSRURLopener()
+except AttributeError:  # in case of Python3:
+    import urllib.request
 
-urllib._urlopener = DSRURLopener()
+    class DSRURLopener(urllib.request.FancyURLopener):
+        version = "DSR-updater"
+    urllib.request._urlopener = DSRURLopener()
+
+
 
 
 def get_current_dsr_version(silent=False):
@@ -41,13 +49,18 @@ def get_current_dsr_version(silent=False):
     version number
     :type: int
     """
+    import socket
+    socket.setdefaulttimeout(3)
     try:
-        response = urllib.urlopen('{}/version.txt'.format(urlprefix))
+        try:
+            response = urllib.urlopen('{}/version.txt'.format(urlprefix))
+        except AttributeError:  # incase of Python 3:
+            response = urllib.request.urlopen('{}/version.txt'.format(urlprefix))
     except IOError:
         if not silent:
             print("*** Unable to connect to update server. No Update possible. ***")
         return 0
-    version = response.readline().strip()
+    version = response.readline().decode('ascii').strip()
     return version
 
 
