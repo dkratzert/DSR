@@ -16,24 +16,27 @@ import shutil
 import tarfile
 import tempfile
 import sys
-import urllib
 
 from dsr import VERSION
 
 urlprefix = "http://www.xs3-data.uni-freiburg.de/data"
 
 # changes the user-agent of the http request:
+# Python 2 and 3: alternative 4
 try:
-    class DSRURLopener(urllib.FancyURLopener):
-        version = "DSR-updater"
-    urllib._urlopener = DSRURLopener()
-except AttributeError:  # in case of Python3:
-    import urllib.request
+    # Python 3:
+    from urllib.parse import urlparse, urlencode
+    from urllib.request import urlopen, Request, FancyURLopener
+    from urllib.error import HTTPError
+except ImportError:
+    # Python 2:
+    from urlparse import urlparse
+    from urllib import urlencode, FancyURLopener
+    from urllib2 import urlopen, Request, HTTPError
 
-    class DSRURLopener(urllib.request.FancyURLopener):
-        version = "DSR-updater"
-    urllib.request._urlopener = DSRURLopener()
-
+class DSRURLopener(FancyURLopener):
+    version = "DSR-updater"
+_urlopener = DSRURLopener()
 
 
 
@@ -42,7 +45,7 @@ def get_current_dsr_version(silent=False):
     determines the current version of DSR on the web server
 
     >>> get_current_dsr_version()
-    '195'
+    '199'
 
     Returns
     -------
@@ -53,9 +56,9 @@ def get_current_dsr_version(silent=False):
     socket.setdefaulttimeout(3)
     try:
         try:
-            response = urllib.urlopen('{}/version.txt'.format(urlprefix))
+            response = urlopen('{}/version.txt'.format(urlprefix))
         except AttributeError:  # incase of Python 3:
-            response = urllib.request.urlopen('{}/version.txt'.format(urlprefix))
+            response = urlopen('{}/version.txt'.format(urlprefix))
     except IOError:
         if not silent:
             print("*** Unable to connect to update server. No Update possible. ***")
@@ -81,6 +84,8 @@ def is_update_needed(silent=False):
 def update_dsr(force=False, version=None):
     """
     Updates the running DSR to the current version on the web server.
+    #>>> update_dsr(force=True)
+    #True
     """
     if version:
         version = version
@@ -181,13 +186,16 @@ def get_update_package(version):
     Returns
     -------
     True/False
+
+    >>> get_update_package('199')
+    True
     """
     try:
         dsrdir = os.path.dirname(os.path.realpath(__file__))
     except KeyError:
         print("*** Could not determine the location of DSR. Can not update. ***" )
         sys.exit()
-    response = urllib.urlopen('{}/DSR-{}.tar.gz'.format(urlprefix, version))
+    response = urlopen('{}/DSR-{}.tar.gz'.format(urlprefix, version))
     with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
         tmpfile.write(response.read())
     tmpdir = tempfile.mkdtemp()  # a temporary directory
