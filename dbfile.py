@@ -1069,9 +1069,9 @@ class ImportGRADE():
         writes content of existing dsr_user_db.txt and the imported GRADE entry to
         the dsr_user_db.txt
         '''
-        fragments = list(self._db.keys())
+        fragments = list(self._db)
         imported_entry = self.bild_grade_db_entry()
-        grade_db_names = list(imported_entry.keys())
+        grade_db_names = list(imported_entry)
         user_db_names = []
         for i in fragments:
             if self._db[i]['db'] == 'dsr_user_db':
@@ -1102,7 +1102,7 @@ class ImportGRADE():
                 for i in fragments:
                     name = i
                     if self._db[i]['db'] == 'dsr_user_db':
-                        # userdb = list(self._db[i].keys())
+                        # userdb = list(self._db[i])
                         atomlist = self._db[i]['atoms']
                         head = '\n'.join([''.join(x) for x in self._db[i]['head']])
                         atoms = '\n'.join(['{:<6}{:<2}{:>8.3f}{:>8.3f}{:>8.3f}' \
@@ -1134,7 +1134,7 @@ if __name__ == '__main__':
     sys.exit()
     gdb = global_DB(invert=False)
     db = gdb.build_db_dict()
-    dbnames = list(db.keys())
+    dbnames = list(db)
 
     for names in dbnames:
         # fragment = 'pfanion'

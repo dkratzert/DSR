@@ -205,7 +205,7 @@ class FindAtoms():
         :param resi: ['RESI', 'number', 'class']
         :type resi: list or string
 
-        >>> sorted(FindAtoms.get_resi_definition_dict('RESI 1 TOL').keys())
+        >>> sorted(list(FindAtoms.get_resi_definition_dict('RESI 1 TOL'))
         ['class', 'number']
         >>> sorted(FindAtoms.get_resi_definition_dict('RESI 1 TOL').values())
         ['1', 'TOL']
@@ -310,7 +310,7 @@ class FindAtoms():
                      {'1': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number],
                      []} }
 
-        for i in residues.keys():
+        for i in list(residues):
             ats = residues[i]
             for x in ats:
                 if 'C12' in x[0]:
@@ -439,7 +439,7 @@ class FindAtoms():
                     atom_dict.update(single_atom)
         for i in atoms:
             i = i.upper()
-            if i not in list(atom_dict.keys()):
+            if i not in list(atom_dict):
                 print('\n*** Atom "{}" not found in res file! ***'.format(i))
                 sys.exit(0)
         return atom_dict

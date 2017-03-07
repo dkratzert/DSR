@@ -48,7 +48,7 @@ class Resi(object):
         self._find_atoms = find_atoms
         self._dbhead = dbhead
         self._atoms_in_reslist = self._find_atoms.collect_residues()
-        self._residues_in_res = sorted(self._atoms_in_reslist.keys())
+        self._residues_in_res = sorted(list(self._atoms_in_reslist))
         self._dsr_dict = dsr_line_dict.copy()
         self._dsr_command_resi_list = self._dsr_dict['resi']
         if self._dsr_command_resi_list:
@@ -264,7 +264,7 @@ class Resi(object):
                     add atom to at_list
             compare for residue if fragment atom list fits to at_list
         '''
-        for num in list(self._atoms_in_reslist.keys()):
+        for num in list(self._atoms_in_reslist):
             print(num, len(self._atoms_in_reslist[num]), self._atoms_in_reslist[num][:][0][3], \
                     [i[0] for i in self._atoms_in_reslist[num][:]])
 
