@@ -538,7 +538,7 @@ class ListFile():
             conn = self.read_conntable()
             G = nx.Graph(conn)
             nb = G[atom]
-            for i in nb.keys():
+            for i in list(nb):
                 if i[0] == 'C':
                     return (i, atom)
                     break
