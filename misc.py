@@ -231,7 +231,7 @@ def sortedlistdir(directory):
     """
     try:
         dirlist = os.listdir(directory)
-    except WindowsError:
+    except (OSError, shutil.WindowsError):
         return False
     dirlist.sort()
     return dirlist
@@ -335,6 +335,7 @@ def remove_line(reslist, linenum, rem=False, remove=False, frontspace=False):
     The default is a space character in front of the line (frontspace).
     This removes the line in the next refinement cycle. "rem" writes rem
     in front of the line and "remove" clears the line.
+    :param reslist: .res file list
     :param linenum: integer, line number
     :param rem:     True/False, activate comment with 'REM' in front
     :param remove:  True/False, remove the line
@@ -359,7 +360,7 @@ def remove_line(reslist, linenum, rem=False, remove=False, frontspace=False):
 
 
 def find_multi_lines(inputlist, regex):
-    '''
+    """
     returns the index number of all lines where regex is found in the inputlist
     ! this method is case insensitive !
     >>> input = ['Hallo blub', 'foo bar blub', '123', '1 blub 2 3 4']
@@ -372,7 +373,7 @@ def find_multi_lines(inputlist, regex):
     Traceback (most recent call last):
         ...
     TypeError: expected string or ...
-    '''
+    """
     reg = re.compile(regex, re.IGNORECASE)
     foundlist = []
     for i, string in enumerate(inputlist):
@@ -384,17 +385,17 @@ def find_multi_lines(inputlist, regex):
 
 
 def remove_file(filename, exit_dsr=False, terminate=False):
-    '''
+    """
     removes the file "filename" from disk
     program exits when exit is true
     platon gets terminated if terminate is true
 
     >>> remove_file('foobar')
-    '''
+    """
     if os.path.isfile(filename):
         try:
             os.remove(filename)
-        except(WindowsError, OSError):
+        except(shutil.WindowsError, OSError):
             print('can not delete {}'.format(filename))
             # print 'unable to cleanup ins {} files!'.format(file)
             if terminate:
@@ -403,13 +404,14 @@ def remove_file(filename, exit_dsr=False, terminate=False):
             if exit_dsr:
                 sys.exit(0)
 
+
 def copy_file(source, target):
-    '''
-    Copy a file from source to target. Source can be a single file or 
-    a directory. Target can be a single file or a directory. 
+    """
+    Copy a file from source to target. Source can be a single file or
+    a directory. Target can be a single file or a directory.
     :param source: list or string
     :param target: string
-    '''
+    """
     target_path = os.path.dirname(target)
     source_file = os.path.basename(source)
     listcopy = False
@@ -432,10 +434,10 @@ def copy_file(source, target):
 
 
 def make_directory(dirpath):
-    '''
+    """
     create a directory with all subdirs from the last existing path
     :param dirpath: string
-    '''
+    """
     try:
         os.makedirs(dirpath)
     except(IOError, OSError):
@@ -477,7 +479,8 @@ def unwrap_head_lines(headlines):
     """
     if a line is wrapped like "SADI C1 C2 =\n", "  C3 C4" or "SADI C1 C2=\n", "  C3 C4"
     this function returns "SADI C1 C2 C3 C4"
-
+    :type headlines: list
+    :param headlines: list of strings from a res file
     >>> unwrap_head_lines(["SADI C1 C2 =\\n", "  C3 C4"])
     ['SADI C1 C2 C3 C4']
     >>> unwrap_head_lines(['foo bar this is =\\n   text to wrap. =\\n   blah bub\\n'])
@@ -506,13 +509,15 @@ def unwrap_head_lines(headlines):
     return new_head
 
 
-def makelist(string):
+def makelist(strng):
     """
-    returns an upper-case list from a text string
+    returns an upper-case list from a text strng
+    :type string: basestring
+    :param strng: converts space separated string into an upper case list
     >>> makelist('hello world!')
     ['HELLO', 'WORLD!']
     """
-    stringlist = [i.upper() for i in string.split()]
+    stringlist = [i.upper() for i in strng.split()]
     return stringlist
 
 
@@ -583,6 +588,7 @@ def remove_partsymbol(atom):
             else:
                 atom = prefix + '_' + suffix
     return atom
+
 
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     """
