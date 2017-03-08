@@ -13,12 +13,10 @@
 from __future__ import print_function
 import sys
 import os
-
 from export import Export
 from options import OptionsParser
 from constants import width, sep_line
-from misc import reportlog, remove_file, find_line,\
-    remove_line, wrap_headlines
+from misc import reportlog, remove_file, find_line, remove_line
 from dbfile import global_DB, search_fragment_name
 from dsrparse import DSR_Parser
 from dbfile import ImportGRADE, print_search_results
