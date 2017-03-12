@@ -13,22 +13,21 @@
 from __future__ import print_function
 import sys
 import os
-from options import OptionsParser
+from dbfile import global_DB, search_fragment_name
 from constants import width, sep_line
 from misc import reportlog, remove_file, find_line, remove_line
-from dbfile import global_DB, search_fragment_name
+from options import OptionsParser
+from os.path import expanduser
+from terminalsize import get_terminal_size
 from dsrparse import DSR_Parser
 from dbfile import ImportGRADE, print_search_results
 from resi import Resi
 from restraints import ListFile, Lst_Deviations, Restraints
 from afix import InsertAfix
-from terminalsize import get_terminal_size
 from refine import ShelxlRefine
 from resfile import ResList, filename_wo_ending, ResListEdit
-from os.path import expanduser
 
-
-VERSION = '199'
+VERSION = '200'
 # dont forget to change version in Innoscript file, spec file and deb file.
 
 program_name = '\n'+((width//2)-9)*'-'+' D S R - v{} '.format(VERSION)+((width//2)-8)*'-'
