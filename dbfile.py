@@ -156,10 +156,10 @@ class ReadDB():
         return dblist
 
     def getDB_files_dict(self):
-        '''
+        """
         returns the database as dictionary. Each file has its own key.
         {'dsr-db': ('line1\n', 'line2\n', '...'), 'dsr-user-db': ('line1\n', 'line2\n', '...')}
-        '''
+        """
         db_dict = {}
         dblist = self.read_db_data(self.maindb)
         db_dict['dsr_db'] = dblist
@@ -169,9 +169,9 @@ class ReadDB():
         return db_dict
 
     def find_db_tags(self):
-        '''
+        """
         This method returns all fragment name tags in the database
-        '''
+        """
         regex = r'^<[^/].*>'  # regular expression for db tag.
         dbnames = []
         for db in self._databases:
@@ -198,19 +198,19 @@ class ReadDB():
 
 
 class global_DB():
-    '''
+    """
     creates a final dictionary where all dbs are included
-    '''
+    """
 
     def __init__(self, invert=False, maindb=None, userdb=None):
-        '''
+        """
         self._db_tags: ['12-DICHLOROBENZ', 590, 'dsr_db']
-        
+
         self._db_plain_dict: dictionary with plain text of the individual databases
                   {'dsr_db': ['# Fragment database of DSR.py\n', '#\n',
                               '# Some Fragments are from geometry optimizations with Gaussian 03:\n',
                               '#  Gaussian 03, Revision B.04,\n', '#  M. J. Frisch, et. al. Gaussian, ...}
-        
+
         self._db_all_dict: dictionary with the individial fragments
                   {'benzene':
                     {'comment': ['Source: GRADE import', 'Name: Benzene, C6H6'],
@@ -237,15 +237,15 @@ class global_DB():
                      {'comment': ...
         :param invert: inverts the coordinates of a fragment
         :type invert:  boolean
-        :param maindb:  directory where the main database is located. 
+        :param maindb:  directory where the main database is located.
                         Default location is the users home directory.
         :type maindb:   string
-        :param userdb:  directory where the user database is located. 
+        :param userdb:  directory where the user database is located.
                         Default is the users home directory.
         :type userdb:   string
         :param dbnames: file names of the databases
         :type dbnames:  string
-        '''
+        """
         if userdb is None:
             # using the environment variable turned out to be too complicated.
             # DSR_DB_DIR is now deprecated!
@@ -282,10 +282,10 @@ class global_DB():
             sys.exit()
 
     def list_fragments(self):
-        '''
+        """
         list all fragments in the db as list of lists
         [['tbu-c', 1723, 'dsr_db', 'Tert-butyl-C'], ...]
-        '''
+        """
         fraglist = []
         for frag in self._db_all_dict:
             comment = self.get_name_from_fragment(frag)
@@ -302,9 +302,9 @@ class global_DB():
         return fraglist
 
     def build_db_dict(self):
-        '''
+        """
         returns the global db dictionary
-        '''
+        """
         db_dict = {}
         for i in self._db_tags:
             fragment = i[0].lower()

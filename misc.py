@@ -18,8 +18,6 @@ import shutil
 import string
 from math import cos, sqrt, radians, sin
 
-import mpmath as mpm
-
 alphabet = string.ascii_uppercase
 
 __metaclass__ = type  # use new-style classes
@@ -658,7 +656,7 @@ def frac_to_cart(frac_coord, cell):
     Converts fractional coordinates to cartesian coodinates
     :param frac_coord: [float, float, float]
     :param cell:       [float, float, float, float, float, float]
-
+    >>> import mpmath as mpm
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     >>> coord1 = (-0.186843,   0.282708,   0.526803)
     >>> print(frac_to_cart(coord1, cell))
@@ -669,7 +667,6 @@ def frac_to_cart(frac_coord, cell):
     [ 5.90959]
     [ 10.7752]
     """
-    # from math import cos, sin, sqrt, radians
     a, b, c, alpha, beta, gamma = cell
     x, y, z = frac_coord
     alpha = radians(alpha)
@@ -691,7 +688,7 @@ class A(object):
     """
     orthogonalization matrix
     e.g. converts fractional coordinates to cartesian coodinates
-
+    >>> import mpmath as mpm
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     >>> coord = (-0.186843,   0.282708,   0.526803)
     >>> A = A(cell).orthogonal_matrix
@@ -705,7 +702,7 @@ class A(object):
     [ 0.282708]
     [ 0.526803]
     """
-    def __init__(self, cell):        
+    def __init__(self, cell):
         self.a, self.b, self.c, alpha, beta, gamma = cell
         self.V = vol_unitcell(self.a, self.b, self.c, alpha, beta, gamma)
         self.alpha = radians(alpha)
@@ -714,10 +711,11 @@ class A(object):
     
     @property
     def orthogonal_matrix(self):
-        '''
+        """
         Converts von fractional to cartesian.
         Invert the matrix to do the opposite.
-        '''
+        """
+        import mpmath as mpm
         Am = mpm.matrix([ [self.a, self.b * cos(self.gamma), self.c * cos(self.beta) ],
                      [0, self.b * sin(self.gamma),
                         (self.c * (cos(self.alpha) - cos(self.beta) * cos(self.gamma)) / sin(self.gamma))],
@@ -730,7 +728,7 @@ def cart_to_frac(cart_coord, cell):
     converts cartesian coordinates to fractional coordinates
     :param cart_coord: [float, float, float]
     :param cell:       [float, float, float, float, float, float]
-
+    >>> import mpmath as mpm
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     >>> A = A(cell).orthogonal_matrix
     >>> coords = [-2.74150542399906, 5.909586678, 10.7752007008937]
@@ -1049,7 +1047,7 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     Name type  x      y      z    occ     U11 U22 U33 U23 U13 U12
     F3    4    0.210835   0.104067   0.437922  21.00000   0.07243   0.03058 =
        0.03216  -0.01057  -0.01708   0.03014
-
+    >>> import mpmath as mpm
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     >>> coords = [0.210835,   0.104067,   0.437922]
     >>> uvals = [0.07243, 0.03058, 0.03216, -0.01057, -0.01708, 0.03014]
@@ -1058,7 +1056,6 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     [(0.24765096, 0.11383281, 0.43064756), (0.17401904, 0.09430119, 0.44519644)]
     >>> calc_ellipsoid_axes(coords, uvals, cell, longest=False)
     [[(0.24765096, 0.11383281, 0.43064756), (0.218406, 0.09626142, 0.43746127), (0.21924358, 0.10514684, 0.44886868)], [(0.17401904, 0.09430119, 0.44519644), (0.203264, 0.11187258, 0.43838273), (0.20242642, 0.10298716, 0.42697532)]]
-
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     >>> coords = [0.210835,   0.104067,   0.437922]
     >>> uvals = [0.07243, -0.03058, 0.03216, -0.01057, -0.01708, 0.03014]
@@ -1097,6 +1094,7 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
 
     """
     from misc import A
+    import mpmath as mpm
     probability += 1
     # Uij is symmetric:
     if len(uvals) != 6:
