@@ -215,6 +215,19 @@ def flatten(nested):
     return result
 
 
+def flatten2(lis):
+    """
+    Given a list, possibly nested to any level, return it flattened.
+    From: http://code.activestate.com/recipes/578948-flattening-an-arbitrarily-nested-list-in-python/
+    """
+    new_lis = []
+    for item in lis:
+        if type(item) == type([]):
+            new_lis.extend(flatten2(item))
+        else:
+            new_lis.append(item)
+    return new_lis
+
 def sortedlistdir(directory):
     """
     returns a sorted list of files in directory directory.
