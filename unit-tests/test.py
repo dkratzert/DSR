@@ -42,7 +42,7 @@ class doctestsTest(unittest.TestCase):
                 msg = '!!!!!!!!!!!!!!!! {} of {} tests failed in {}  !!!!!!!!!!!!!!!!!!!!!!!!!!!'.format(failed, attempted, name.__name__)
                 self.assertFalse(failed, msg)
 
-class dsrrunTest(unittest.TestCase):
+class dsr_complete_runs_Test(unittest.TestCase):
     def setUp(self):
         #self.maxDiff = 20
         # remove this to view the results:
@@ -64,8 +64,8 @@ class dsrrunTest(unittest.TestCase):
         #11 -r replace
         #12 -r resi replace
 
-    def dsr_runtest(self, nummer=99, parameter='-r', external_file='', 
-                    limit_start=6, limit_end=-1, ending='res', remlines = []):
+    def dsr_runtest(self, nummer=99, parameter='-r', external_file='', hkl = 1,
+                    limit_start=6, limit_end=-1, ending='res', remlines=None):
         """
         runs a test where the whole dsr is started with different input files
         and compares the result with optimal output
@@ -75,8 +75,10 @@ class dsrrunTest(unittest.TestCase):
         :param parameter: dsr command line parameter
         :return: None
         """
+        if remlines is None:
+            remlines = []
         print('{} '.format(nummer) * 10, 'start:')
-        misc.copy_file('test-data/beispiel/1.hkl'.format(nummer), 'test-data/beispiel/{}a.hkl'.format(nummer))
+        misc.copy_file('test-data/beispiel/{}.hkl'.format(hkl), 'test-data/beispiel/{}a.hkl'.format(nummer))
         misc.copy_file('test-data/beispiel/{}.res'.format(nummer), 'test-data/beispiel/{}a.res'.format(nummer))
         system('{0} {1} ./test-data/beispiel/{2}a.res'.format(self.dsr, parameter, nummer))
         with open('./test-data/beispiel/{}a.{}'.format(nummer, ending)) as txt:
@@ -279,6 +281,30 @@ class dsrrunTest(unittest.TestCase):
         """
         self.maxDiff = None
         self.dsr_runtest(19, '-re', external_file='dsr_1_19a')
+
+    def testrun_run20(self):
+        """
+        rem dsr put CF6 on C22 split
+
+        """
+        self.maxDiff = None
+        self.dsr_runtest(20, '-r', hkl=20)
+
+    def testrun_run21(self):
+        """
+        rem dsr put CF3 on C22
+
+        """
+        self.maxDiff = None
+        self.dsr_runtest(21, '-r', hkl=20)
+
+    def testrun_run22(self):
+        """
+        rem dsr put CF9 on C1
+
+        """
+        self.maxDiff = None
+        self.dsr_runtest(22, '-r', hkl=20)
 
 db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
                'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',

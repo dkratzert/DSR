@@ -1,4 +1,5 @@
 Recent changes
+-200    Startup speed improvements.
 -199    Added documentation how to control DSR with an external user interface.
         Hexamethyl benzene fragment added. DSR inserts a comment about the origin
         of the fragment into the res file.
