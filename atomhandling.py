@@ -21,6 +21,7 @@ from atoms import atoms
 
 __metaclass__ = type  # use new-style classes
 
+atreg = re.compile(atomregex)
 
 def get_atoms(atlist):
     """
@@ -38,7 +39,7 @@ def get_atoms(atlist):
             atoms.append(i[:5])
         return atoms
     for i in atlist:
-        if re.match(atomregex, str(i)):  # search atoms
+        if atreg.match(str(i)):  # search atoms
             l = i.split()[:5]  # convert to list and use only first 5 columns
             if l[0].upper() not in SHX_CARDS:  # exclude all non-atom cards
                 atoms.append(l)
@@ -186,7 +187,7 @@ class FindAtoms():
         >>> FindAtoms.is_atom(atomline = 'O1    0.120080   0.336659   0.494426  11.00000   0.01445 ...')
         []
         """
-        if re.search(atomregex, str(atomline)):        # search atoms
+        if atreg.match(str(atomline)):        # search atoms
             atom = atomline.split()[:5]              # convert to list and use only first 5 columns
             if atom[0].upper() not in SHX_CARDS:      # exclude all non-atom cards
                 return atom
@@ -504,7 +505,7 @@ class FindAtoms():
                     continue
                 if line.startswith('HKLF'):
                     break # stop in this case because the file has ended anyway
-                if re.match(atomregex, line) and not afix:
+                if atreg.match(line) and not afix:
                     # stop if next line is an atom and we are not inside an "AFIX MN"
                     if str(line.split()[1]) == str(hydrogen_sfac):
                         print('Deleted {0} atom {1}'.format(name, atom))
