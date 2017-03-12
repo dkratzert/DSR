@@ -311,8 +311,7 @@ class Export():
         try:
             f = open(resfile, 'w')
             for line in self.export_resfile(fragment):
-                line = ''.join(line)
-                f.write(line)
+                f.write(''.join(line))
             print('Database entry of "{}" successfully written to {}.'.format(fragment, resfile))
         except IOError:
             print('*** Could not write file {} ***'.format(resfile))
