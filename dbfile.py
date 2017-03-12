@@ -406,6 +406,48 @@ class global_DB():
             atoms = invert_dbatoms_coordinates(atoms)
         return atoms
 
+    def get_head_lines(self, fragment, db, line):
+        """
+        return the head of the dbentry , the FRAG line and the comment of the
+        fragment as list of strings
+        [['RESI CBZ', 'SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1',
+        'SADI Cl1 C2 Cl1 C6',
+        'FLAT Cl1 > C6', 'SIMU Cl1 > C6', 'RIGU Cl1 > C6'], [FRAG 17 1 1 1 90 90 90],
+        [['Src:', 'pbe1pbe/6-311++G(3df,3pd),', 'Ilia', 'A.', 'Guzei'],
+        ['Name:', '1,2-Dichlorobenzene,', 'C6H4Cl2']] ]
+        #####
+        [list, list, dict]
+        :param fragment: fragment name
+        :type fragment:  string
+        :param db:  database name e.g. dsr_db or dsr_user_db
+        :type db: string
+        :param line: line number where dbentry is located in the db file
+        :type line: string
+        :return head, # new head with unwrapped lines
+        """
+        fragment = fragment.lower()
+        head = []
+        comment = []
+        for i in self._db_plain_dict[db][int(line):]:
+            i = i.strip(' \n\r')
+            if i.upper().startswith('REM'):
+                comment.append(i.split()[1:])
+                continue
+            if i.upper().startswith('FRAG'):  # collect the fragline
+                fragline = i
+                break
+            head.append(i.upper())
+        if not comment:
+            comment = ['']
+        if not fragline:
+            print('*** Error. No cell parameters found in the database entry ' \
+                  'of "{}" ***'.format(fragment))
+            print('*** Please add these parameters! ***')
+            sys.exit(False)
+        # nhead is list of strings
+        head = unwrap_head_lines(head)
+        return head, fragline, comment
+
     def get_head_for_gui(self, fragment):
         """
         returns header information of the specific fragment:
@@ -628,55 +670,6 @@ class global_DB():
                     return False
         return True
 
-    def get_head_lines(self, fragment, db, line):
-        """
-        return the head of the dbentry , the FRAG line and the comment of the
-        fragment as list of strings
-        [['RESI CBZ', 'SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1',
-        'SADI Cl1 C2 Cl1 C6',
-        'FLAT Cl1 > C6', 'SIMU Cl1 > C6', 'RIGU Cl1 > C6'], [FRAG 17 1 1 1 90 90 90],
-        [['Src:', 'pbe1pbe/6-311++G(3df,3pd),', 'Ilia', 'A.', 'Guzei'],
-        ['Name:', '1,2-Dichlorobenzene,', 'C6H4Cl2']] ]
-        #####
-        [list, list, dict]
-        :param fragment: fragment name
-        :type fragment:  string
-        :param db:  database name e.g. dsr_db or dsr_user_db
-        :type db: string
-        :param line: line number where dbentry is located in the db file
-        :type line: string
-        :return nhead, # new head with unwrapped lines
-             fragline, # line with frag command e.g. 'FRAG 17 1 1 1 90 90 90'
-              comment: # comment lines from the head
-        """
-        fragline = ''
-        fragment = fragment.lower()
-        head = []
-        nhead = []
-        comment = []
-        for i in self._db_plain_dict[db][int(line):]:
-            if i.upper().startswith('FRAG'):  # collect the fragline
-                fragline = i.rstrip(' \n\r')
-                break
-            head.append(i)
-        for line in head:
-            line = line.strip(' \n\r')
-            if line.upper().startswith('REM'):
-                comment.append(line.split()[1:])
-                continue
-            line = line.upper()
-            nhead.append(line)
-        # nhead is list of strings
-        nhead = unwrap_head_lines(nhead)
-        if not comment:
-            comment = ['']
-        if not fragline:
-            print('*** Error. No cell parameters found in the database entry ' \
-                  'of "{}" ***'.format(fragment))
-            print('*** Please add these parameters! ***')
-            sys.exit(False)
-        return nhead, fragline, comment
-
     def search_for_error_response(self, fragment):
         """
         searches for a fragment name in the db as response to an invalid fragment name.
@@ -744,23 +737,24 @@ class global_DB():
         return head
 
     def get_resi_from_fragment(self, fragment):
-        '''
+        """
         returns the residue name of the dbentry of fragment
         can be either class or class + number.
         convention is only class.
-        '''
+        """
         return self._db_all_dict[fragment.lower()]['resi']
 
     def get_name_from_fragment(self, fragment):
-        '''
+        """
         returns the first comment line of the dbentry of a fragment
         if a line with "rem Name:" is present, this line is used as comment.
         :param fragment: actual fragment name
         :type fragment: string
-        '''
+        """
         comment = self._db_all_dict[fragment.lower()]['comment']
+        regex = re.compile(r'.*[n|N]ame:.*')
         for i in comment:
-            if re.match(r'.*[n|N]ame:.*', i):
+            if regex.match(i):
                 i = i.split(' ', 1)[1:]
                 comment = i
                 break
