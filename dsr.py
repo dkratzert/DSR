@@ -13,7 +13,6 @@
 from __future__ import print_function
 import sys
 import os
-from export import Export
 from options import OptionsParser
 from constants import width, sep_line
 from misc import reportlog, remove_file, find_line, remove_line
@@ -108,7 +107,14 @@ class DSR():
             print(self.helpmsg)
             print(e)
             sys.exit()
+        #  List of database Fragments:
+        if self.list_db_csv:
+            print('DSR version: {}'.format(VERSION))
+            for i in self.gdb.list_fragments():
+                print('{};;{};;{};;{}'.format(i[0], i[3], i[1], i[2]))
+            sys.exit()
         try:
+            from export import Export
             self.export = Export(gdb=self.gdb, invert=self.invert)
         except Exception as e:
             print("*** Unable to export informations from DSR ***")
@@ -117,13 +123,6 @@ class DSR():
         #################################
         if self.head_csv:
             self.head_to_gui()
-        #  List of database Fragments:
-        if self.list_db_csv:
-            print('DSR version: {}'.format(VERSION))
-            frags = self.gdb.list_fragments()
-            for i in frags:
-                print('{};;{};;{};;{}'.format(i[0], i[3], i[1], i[2]))
-            sys.exit()
         if self.search_extern:
             result = search_fragment_name(self.search_extern, self.gdb, numresults=8)
             for i in result:

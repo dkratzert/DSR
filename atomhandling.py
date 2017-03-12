@@ -12,16 +12,14 @@
 from __future__ import print_function
 import re, sys
 import string
-from atoms import Element
-from misc import find_line, find_multi_lines,\
-    atomic_distance
+from atoms import Element, atoms
+from misc import find_line, find_multi_lines, atomic_distance
 from constants import atomregex, SHX_CARDS
-from atoms import atoms
 
+atreg = re.compile(atomregex)
 
 __metaclass__ = type  # use new-style classes
 
-atreg = re.compile(atomregex)
 
 def get_atoms(atlist):
     """

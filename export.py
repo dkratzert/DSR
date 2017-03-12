@@ -13,7 +13,6 @@
 from __future__ import print_function
 
 import copy
-import os
 
 import atomhandling as at
 from atoms import Element
@@ -25,7 +24,7 @@ __metaclass__ = type  # use new-style classes
 
 
 class Export():
-    '''
+    """
     This class implements the export of a database entry to a .res file.
     Included are the minimal informations which are needed to get a valid res file.
     e.g.:
@@ -44,14 +43,13 @@ class Export():
     C7   1  0.221500  0.430400  0.060360  11.00   0.04
     HKLF 4
     END
-    '''
+    """
 
     def __init__(self, gdb, invert=False):
-        '''
-
+        """
         :param fragment_name: string, name of the database fragment
         :param invert:        bool, should the coordinates be inverted?
-        '''
+        """
         self.invert = invert
         self._gdb = gdb
 
@@ -117,7 +115,7 @@ class Export():
             print("Fragment inverted.")
         try:
             from dsr import VERSION
-        except(ImportError):
+        except ImportError:
             VERSION = ''
         sfac = []
         res_export = []
@@ -126,32 +124,27 @@ class Export():
         for i in at.get_atomtypes(atoms):  # build sfac table from atomtypes
             if i not in sfac:
                 sfac.append(i)
-
         atlist = []
         for i in at.get_atomtypes(atoms):  # atomtypes in the db_entry
             for y, x in enumerate(sfac):
                 if x == i:
                     atlist.append(y + 1)
-
         for n, i in enumerate(atlist):
             atoms[n][1] = i
-
         # build the UNIT table:
         unit = []
         for i in sfac:
             unit.append('1 ')  # no matter what number
-
-        ## Now put all infos together:
+        # Now put all infos together:
         for i in atoms:
-            i[0] = i[0] + ' '  # more space for long atom names
+            i[0] += ' '  # more space for long atom names
             i.append('11.00   0.04')  # make it a full qualified atom line with occupancy and U value
-
         final_atomlist = [('{:4.4s} {:4.2s} {:>8.5f}  {:>8.5f}  {:>8.5f}   11.0   0.04\n'.format(
             str(i[0]), str(i[1]), float(i[2]), float(i[3]), float(i[4]))) for i in atoms]
         res_export.append('TITL ' + fragname + '\n')  # title card with fragment name
         try:
             res_export.append('REM This file was exported by DSR version {}\n'.format(VERSION))
-        except(NameError):
+        except NameError:
             pass
         res_export.append('REM ' + '\nREM '.join(comment) + '\n')
         res_export.append('CELL 0.71073 ' + cellstring + '\n')  # the cell with wavelength
@@ -266,7 +259,7 @@ class Export():
         fragname = fragname.lower()
         try:
             tst = self.copy_to_clipboard(fragname)
-        except(AttributeError) as e:
+        except AttributeError as e:
             tst = False
             print(e)
         if tst:
@@ -278,7 +271,6 @@ class Export():
     def export_to_gui(self, fragname):
         """
         exports atoms to output for the DSRGui
-
         >>> gdb = global_DB(invert=False)
         >>> exp = Export(gdb=gdb, invert=False)
         >>> print(exp.export_to_gui(fragname="toluene")) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF +ELLIPSIS
@@ -298,7 +290,7 @@ class Export():
         returns True if file can be opened
         returns False if file is locked
         """
-        if not '.' in ending:
+        if '.' not in ending:
             ending = '.' + ending
         arg = base + ending
         try:
@@ -327,131 +319,6 @@ class Export():
             import sys
             sys.exit(-1)
         f.close()
-        print("Image creation is currently disabled, because PLATON and ImageMagic are causing troubles.")
-        #self.make_image(fragment)
-
-    def make_image(self, fragname):
-        from shutil import copyfile
-        import time
-        import misc
-        import subprocess
-        '''
-        Draws an ellipsoid plot of the molecule. This method depends on PLATON 
-        from Ton Spek. The windows version of Platon needs some special care 
-        because of its nasty output window.
-        This method tries to kill the platon process and removes all leftorver 
-        file in case something goes wrong during the image drawing process.
-        '''
-        fragname = fragname.lower()
-        plat = None
-        resfile = str(fragname) + '.res'
-        insfile = str(fragname) + '.ins'
-        info = None
-        commandline = 'platon -O {}'.format(insfile).split()
-        try:
-            info = subprocess.STARTUPINFO()
-            info.dwFlags = 1
-            info.wShowWindow = 0
-        except(AttributeError):
-            pass
-        misc.remove_file(insfile)  # platon runs faster if no ins file is present!
-        misc.remove_file(fragname + '.png', exit_dsr=True)
-        if not misc.which('platon'):
-            print('*** Could not write a .png image. No PLATON executable in PATH found. ***')
-            return None
-        try:
-            copyfile(resfile, insfile)
-        except(IOError):
-            print('*** Unable to write .ins file for plotting! ***')
-            return None
-        try:
-            plat = subprocess.Popen(commandline, stdin=subprocess.PIPE,
-                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, startupinfo=info)
-            timeticks = 0
-            psfile = fragname + '.ps'
-            while not os.path.isfile(psfile):
-                timeticks = timeticks + 1
-                time.sleep(0.01)
-                # give PLATON 15s to draw the picture
-                if timeticks > 1500:
-                    print('PLATON run took too long to execute. Killing Platon...')
-                    try:
-                        plat.terminate()
-                    except:
-                        sys.exit()
-                    break
-            size1 = os.stat(psfile).st_size
-            size2 = 99999999
-            timeticks = 0
-            while size1 < size2:
-                timeticks = timeticks + 1
-                size2 = os.stat(psfile).st_size
-                time.sleep(0.1)
-                # give the system 3s to store the picture
-                if timeticks > 30:
-                    try:
-                        plat.terminate()
-                    except:
-                        pass
-                    break
-        except() as e:
-            print('unable to run platon!', e)
-            extensions = ('.bin', '.def', '.hkp', '.ins', '.pjn', '_pl.spf',
-                          '.lis', '.res', '.sar', '.sum', '.eld', '.out')
-            try:
-                plat.terminate()
-            except:
-                pass
-            for i in extensions:
-                # clean all the leftover files
-                misc.remove_file(fragname + i)
-            sys.exit()
-        misc.remove_file('platon.out', terminate=plat)
-        extensions = ('.lis', '.eld', '.def', '.pjn', '_pl.spf')
-        for i in extensions:
-            misc.remove_file(fragname + i)
-        misc.remove_file(insfile)
-        # test for convert from ImageMagic
-        plat.terminate()
-
-
-    def convert_eps_to_png(self, plat, fragname, psfile):
-        """
-        Convert to png
-        ImageMagic from APEX causes problems
-        """
-        fragname = fragname.lower()
-        import misc
-        if misc.which('montage'):  # i check for montage, because windows also ha a convert.exe
-            pass
-        else:
-            print('Could not write a .ps and .png image. ImageMagic is not installed.')
-            plat.terminate()
-            return
-        try:
-            convert = 'convert'
-            options_convert = '-crop 84%x90%+40%+40% -rotate 90 -trim'
-            print('converting from .ps to .png')
-            files = '"{}.ps" "{}.png"'.format(fragname, fragname)
-            image_commandline = '{} {} {}'.format(convert, options_convert, files)
-            conv = os.popen(image_commandline)
-            conv.close()
-            # were we successful?
-            if os.path.isfile(fragname + '.png'):
-                print('success!')
-                # in case of success remove the postscript file
-                misc.remove_file(psfile, terminate=plat)
-            else:
-                print('Unable to write .png file. Is PLATON and ImageMagic installed?')
-                plat.terminate()
-                misc.remove_file(fragname + '.lis')
-                misc.remove_file(fragname + '.eld')
-                misc.remove_file(fragname + '_pl.spf')
-        except(EnvironmentError) as e:
-            print('unable to convert postscript file', e)
-        misc.remove_file(fragname + '.lis')
-        misc.remove_file(fragname + '.eld')
-        misc.remove_file(fragname + '_pl.spf')
 
 
 if __name__ == '__main__':
@@ -469,32 +336,6 @@ if __name__ == '__main__':
 
     ##############################################################################
 
-
-
-
-    # from dbfile import global_DB
-    gdb = global_DB()
-    db = gdb.build_db_dict()['toluene']
-
-    # export = Export('toluene')
-    # export.export_to_clip()
-
-    from pngcanvas import PNGCanvas
-
-    BUFSIZE = 8 * 1024  # Taken from filecmp module
-    HEIGHT = WIDTH = 512
-    c = PNGCanvas(WIDTH, HEIGHT, color=(0xff, 0, 0, 0xff))
-    c.rectangle(0, 0, WIDTH - 1, HEIGHT - 2)
-    c.rectangle(100, 100, 10, 10)
-    c.filled_rectangle(100, 100, 10, 10)
-    c.color = bytearray((0, 0, 0, 0xff))
-    c.line(0, 0, WIDTH - 1, HEIGHT - 1)
-    c.line(50, 50, 50, HEIGHT - 30)
-    #      .|------|
-    # atom1--|------|atom2
-    #       |------|
-    with open('reference.png', 'wb+') as reference:
-        reference.write(c.dump())
 
     #    reference.close()
     #    http://en.wikipedia.org/wiki/Molecular_graphics
@@ -522,13 +363,3 @@ if __name__ == '__main__':
     #        #drawLine (color1, x1, y1, xMid, yMid)
     #    }
 
-
-
-
-    # for i in export.export_resfile():
-    #    print(i.strip('\n'))
-    # import pyperclip
-    # pyperclip.setcb('The text to be copied to the clipboard.')
-    # spam = pyperclip.getcb()
-    # export.write_res_file()
-    # export.make_image(debug=True)
