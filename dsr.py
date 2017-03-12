@@ -25,7 +25,7 @@ from restraints import ListFile, Lst_Deviations, Restraints
 from afix import InsertAfix
 from terminalsize import get_terminal_size
 from refine import ShelxlRefine
-import resfile
+from resfile import ResList, filename_wo_ending, ResListEdit
 from os.path import expanduser
 
 
@@ -163,7 +163,7 @@ class DSR():
             self.options.error()
         if self.res_file == False:
             self.options.error()
-        self.rl = resfile.ResList(self.res_file)
+        self.rl = ResList(self.res_file)
         self.reslist = self.rl.get_res_list()
         self.main()
         time2 = time.clock()
@@ -228,7 +228,7 @@ class DSR():
         dbatoms = []
         # The database content:
         import atomhandling
-        basefilename = resfile.filename_wo_ending(self.res_file)
+        basefilename = filename_wo_ending(self.res_file)
         if not basefilename:
             print('*** Illegal option ***')
             sys.exit()
@@ -236,7 +236,7 @@ class DSR():
             print("*** The input file is empty. Can not proceed! ***")
             sys.exit()
         find_atoms = atomhandling.FindAtoms(self.reslist)
-        rle = resfile.ResListEdit(self.reslist, find_atoms)
+        rle = ResListEdit(self.reslist, find_atoms)
         dsrp = DSR_Parser(self.reslist, rle)
         dsr_dict = dsrp.get_dsr_dict
         fvarlines = rle.find_fvarlines()
@@ -345,7 +345,7 @@ class DSR():
         lfd.print_LS_fit_deviations()
         cell = rle.get_cell()
         # open res file again to restore 8 refinement cycles:
-        self.rl = resfile.ResList(self.res_file)
+        self.rl = ResList(self.res_file)
         reslist = self.rl.get_res_list()
         # remove the "REM " instriction bevore the +dfixfile instruction
         plusline = find_line(reslist, "REM "+afix.rand_id_dfx)
