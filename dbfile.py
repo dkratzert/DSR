@@ -24,15 +24,16 @@ from misc import atomic_distance, nalimov_test, std_dev, median, pairwise, \
 from copy import deepcopy
 from os.path import expanduser
 from misc import touch
+atreg = re.compile(atomregex)
 
 
 def invert_dbatoms_coordinates(atoms):
-    '''
+    """
     Inverts SHELXL atom coordinates like
     [[C1  1  0.44  0.21  -1.23 ][ ...]]
 
     :param atoms: list of atom list
-    '''
+    """
     for line in atoms:
         try:
             inv_coord = [str(-float(i)) for i in line[-3:]]
@@ -126,10 +127,10 @@ __metaclass__ = type  # use new-style classes
 # dsr_user_db.txt if this file exists, all its content is also read in.
 
 class ReadDB():
-    '''
+    """
     reads in the system and user db files (self._db_file_names) and makes
     a dictionary of them.
-    '''
+    """
 
     def __init__(self, main_dbpath='./dsr_db.txt', user_dbpath='./dsr_usr_db.txt'):
         self.maindb = main_dbpath
@@ -151,7 +152,7 @@ class ReadDB():
                     if line.startswith('#'):
                         continue
                     dblist.append(line)
-        except(IOError) as e:
+        except IOError as e:
             print(e)
         return dblist
 
@@ -172,11 +173,11 @@ class ReadDB():
         """
         This method returns all fragment name tags in the database
         """
-        regex = r'^<[^/].*>'  # regular expression for db tag.
+        regex = re.compile(r'^<[^/].*>')  # regular expression for db tag.
         dbnames = []
         for db in self._databases:
             for num, line in enumerate(self._databases[db]):
-                if re.match(regex, line):
+                if regex.match(line):
                     frag = [str(line.strip('<> \n\r')).upper(), num + 1, db]  # stripping spaces is important here!
                     dbnames.append(frag)
         nameset = []
@@ -381,16 +382,15 @@ class global_DB():
         """
         atoms = []
         end = False
-        regex = r'</{}>'.format(fragment.lower())
+        regex = r'</{}>'.format(fragment.upper())
         for i in self._db_plain_dict[db_name][int(line):]:
-            i = i.lower()
-            #if i.startswith(regex):  # find the endtag of db entry
+            i = i.upper()
+            # find the endtag of db entry:
             if i[:len(regex)] == regex:
                 end = True
                 break
-            if re.search(atomregex, str(i)):  # search atoms
+            if atreg.match(str(i)):  # search atoms
                 l = i.split()[:5]  # convert to list and use only first 5 columns
-                l[0] = l[0].upper()
                 if l[0] not in SHX_CARDS:  # exclude all non-atom cards
                     atoms.append(l)
         if not atoms:
@@ -629,13 +629,13 @@ class global_DB():
         return True
 
     def get_head_lines(self, fragment, db, line):
-        '''
-        return the head of the dbentry , the FRAG line and the comment of the 
+        """
+        return the head of the dbentry , the FRAG line and the comment of the
         fragment as list of strings
         [['RESI CBZ', 'SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1',
         'SADI Cl1 C2 Cl1 C6',
-        'FLAT Cl1 > C6', 'SIMU Cl1 > C6', 'RIGU Cl1 > C6'], [FRAG 17 1 1 1 90 90 90], 
-        [['Src:', 'pbe1pbe/6-311++G(3df,3pd),', 'Ilia', 'A.', 'Guzei'], 
+        'FLAT Cl1 > C6', 'SIMU Cl1 > C6', 'RIGU Cl1 > C6'], [FRAG 17 1 1 1 90 90 90],
+        [['Src:', 'pbe1pbe/6-311++G(3df,3pd),', 'Ilia', 'A.', 'Guzei'],
         ['Name:', '1,2-Dichlorobenzene,', 'C6H4Cl2']] ]
         #####
         [list, list, dict]
@@ -648,7 +648,7 @@ class global_DB():
         :return nhead, # new head with unwrapped lines
              fragline, # line with frag command e.g. 'FRAG 17 1 1 1 90 90 90'
               comment: # comment lines from the head
-        '''
+        """
         fragline = ''
         fragment = fragment.lower()
         head = []
@@ -661,10 +661,8 @@ class global_DB():
             head.append(i)
         for line in head:
             line = line.strip(' \n\r')
-            #line = ' '.join(line.split())
             if line.upper().startswith('REM'):
                 comment.append(line.split()[1:])
-                line = ''
                 continue
             line = line.upper()
             nhead.append(line)
@@ -677,14 +675,14 @@ class global_DB():
                   'of "{}" ***'.format(fragment))
             print('*** Please add these parameters! ***')
             sys.exit(False)
-        return (nhead, fragline, comment)
+        return nhead, fragline, comment
 
     def search_for_error_response(self, fragment):
-        '''
+        """
         searches for a fragment name in the db as response to an invalid fragment name.
         :param fragment: the fragment
         :type fragment: string
-        '''
+        """
         result = search_fragment_name(fragment, self)
         print('Do you mean one of these?:\n')
         print_search_results(result)
