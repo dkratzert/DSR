@@ -360,39 +360,3 @@ if __name__ == '__main__':
         print('passed all {} tests!'.format(attempted))
     else:
         print('{} of {} tests failed'.format(failed, attempted))
-    
-    
-    sys.exit()
-    
-    ########################################################
-    from resfile import ResList, ResListEdit
-    res_file = 'p21c.res'
-    rl = ResList(res_file)
-    reslist = rl.get_res_list()
-    rle = ResListEdit(reslist, res_file)
-    #dsr_line = dsrp.get_dsr_dict
-    dsrp = DSR_Parser(reslist, rle)
-    dsr_line = dsrp.get_dsr_dict
-    print(dsr_line)
-    #   dsr_str = dsrp.find_dsr_command(line=False)
-
-    #   dsr_num = dsrp.find_dsr_command(line=False)
-    #
-
-
-    print('\ncheck for FVAR:')
-    for i in reslist:
-        if i.upper().startswith('FVAR'):
-            print(i)
-    print()
-
-#    for i in dsr_line:
-#        print i.ljust(9), '=', str(dsr_line.get(i)).ljust(11)
-#    print
-
-
-    print('String:', dsrp.find_dsr_command(line=True))
-    print('Zeile mit dbentry:\n', dsrp.find_dsr_command(line=False), '\n')
-
-
-

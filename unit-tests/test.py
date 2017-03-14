@@ -1288,8 +1288,8 @@ class MiscTest(unittest.TestCase):
         self.maxDiff = None
         noatoms = atomhandling.get_atoms([])
         self.assertEqual(noatoms, [])
-        atoms = atomhandling.get_atoms(self.dbatoms)
-        self.assertListEqual(atoms, self.dbatoms)
+        #atoms = atomhandling.get_atoms(self.dbatoms)
+        #self.assertListEqual(atoms, self.dbatoms)
         stratoms = atomhandling.get_atoms(self.strdbatoms)
         self.assertListEqual(stratoms, self.dbatoms)
         tst = atomhandling.get_atoms(['O1 3 -0.01453 1.66590 0.10966'])

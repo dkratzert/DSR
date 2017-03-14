@@ -681,71 +681,8 @@ class CF3(object):
         print(d)
     
 if __name__ == '__main__':
-    from resi import Resi
-    options = OptionsParser('183')
-    #res_file = options.res_file
-    #res_file = '/tmp/mlcp57.res' 
-    res_file = 'p21n_cf3.res'
-    invert = options.invert
-    basefilename = resfile.filename_wo_ending(res_file)
-    basefilename = 'p21n_cf3'
-    gdb = global_DB(invert)
-    rl = resfile.ResList(res_file)
-    reslist = rl.get_res_list()
-    find_atoms = FindAtoms(reslist)
-    rle = ResListEdit(reslist, find_atoms)
-    fvarlines = rle.find_fvarlines()
-    dsrp = DSR_Parser(reslist, rle)
-    dsr_dict = dsrp.get_dsr_dict
-    dsr_line_number = dsrp.find_dsr_command(line=False)
-    fvarlines = rle.find_fvarlines()
-    if dsrp.occupancy:
-        rle.set_free_variables(dsrp.occupancy)
-    fragment = dsrp.fragment.lower()
-    sf = SfacTable(reslist, ['C', 'F'])
-    sfac_table = sf.set_sfac_table() 
-
-    resi = Resi(reslist, dsr_dict, dbhead='RESI CF3', db_residue_string='CF3', find_atoms=find_atoms)
-
-
-    ####################################################
-    
-    
-    cf3 = CF3(rle, find_atoms, reslist, fragment, sfac_table, basefilename, dsr_dict, resi, res_file)
-    
-    if fragment == 'cf3':
-        cf3.cf3()
-    if fragment == 'cf6':
-        cf3.cf3('120')
-    if fragment == 'cf9':
-        cf3.cf9()
-
-    #cf3.make_cf3_thorus()
-
-
-   
-    #dsrp.find_dsr_command()
-
-
-    print('finished...')
-    ####################################################
-    
-    #cr = ELEMENTS['C'].covrad
-    #fr = ELEMENTS['F'].covrad
-    #print(cr+fr+0.16)
-    
-    
-    #cf3.cf6('atom')
-    # apply to more than one atom:
-    #for at in atomlist:
-    #    cf3.cf3('atom')
-    
-    
-            #self.conntable = restr.get_conntable_from_atoms(coords, 
-        #                               [i[5] for i in atomlist], # types C, N, O
-        #                               [i[0]+'_'+i[7] for i in atomlist], # names C1, N2, O1_3
-        #                               extra_param=0.16)
-"""
+    pass
+    """
 
     for i in range(0, 360, 10):
         co = cf3.rotate_atom_around_bond(F1A, C22, C19, delta=i)
@@ -759,5 +696,4 @@ if __name__ == '__main__':
         co = cf3.rotate_atom_around_bond(F1A, C22, C19, delta=i)
         #co = cf3.rotate_fluorine_atom(F1A, C22, C19, alpha=i)
         print('F{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  10.08  -1.5'.format(i, *co))
-"""
-        
+    """
