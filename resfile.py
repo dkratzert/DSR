@@ -164,7 +164,9 @@ class ResListEdit():
         return lines
 
     def getAll(self):
-        """returns the whole resfile as list"""
+        """
+        returns the whole resfile as list
+        """
         return self._reslist
 
     def find_fvarlines(self):
@@ -260,9 +262,9 @@ class ResListEdit():
         return fvars
 
     def get_fvar_count(self):
-        '''
+        """
         returns the last used free variable defined with FVAR
-        '''
+        """
         fvars = len(self.get_fvarlist())
         if not fvars:
             fvars = 0
@@ -270,56 +272,6 @@ class ResListEdit():
 
 # for testing
 if __name__ == '__main__':
-    from dbfile import global_DB
-    from atomhandling import FindAtoms
-    invert = True
-    res_file = 'p21c.res'
-    res_list = ResList(res_file)
-    reslist =  res_list.get_res_list()
-    find_atoms = FindAtoms(reslist)
-    rle = ResListEdit(reslist, find_atoms)
-    fvarlines = rle.find_fvarlines()
-    gdb = global_DB(invert)
-    db = gdb.build_db_dict()
-    fragment = 'toluene'
-    dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
-    dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
-
-    fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
-    rle.insert_frag_fend_entry(dbatoms, fragline, fvarlines)
-    rle.set_free_variables('91.1234')
-
-    for num, i in  enumerate(reslist):
-        print(num+1, ''.join(i.strip('\n\r')))
-        if num > 15:
-            break
-    print()
-
-    reslist = rle.add_line(3, 'Hallo Welt!!!!!!!!!!!!!')
-
-    print()
-    for num, i in  enumerate(reslist):
-        print(num+1, ''.join(i.strip('\n')))
-        if num > 15:
-            break
-
-
-    reslist = rle.add_line(2, 'xghrzdg###################fdghgfdgh')
-
-
-    print()
-    for n, i in enumerate(reslist):
-        print(n+1, ''.join(i.strip('\n')))
-        if n > 5:
-            break
-
-    res_list.write_resfile(reslist, '.tst')
-
-    print('\n########################################\n')
-
-    for i in rle.list_lines(15, 33):
-        print(i.strip('\n'))
-
-    print(misc.ll_to_string(dbatoms))
+    pass
 
 

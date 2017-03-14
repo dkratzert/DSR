@@ -373,33 +373,7 @@ if __name__ == '__main__':
     if failed == 0:
         print('passed all {} tests!'.format(attempted))
         
-###################################################################        
-    sys.exit()
-    res_file = 'p21c.res'
-    invert = True
-    rl = ResList(res_file)
-    reslist = rl.get_res_list()
-    dsrp = DSR_Parser(reslist, rl)
-    dsr_dict = dsrp.get_dsr_dict
-    find_atoms = FindAtoms(reslist)
-    rle = ResListEdit(reslist, find_atoms)
-    gdb = global_DB(invert)
-    db = gdb.build_db_dict()
-    fragment = 'pph3'
-    fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
-    dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
-    dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
-    print(dbhead)
 
-    resi = True #gdb.get_resi_from_fragment(fragment)
-    dbtypes = get_atomtypes(dbatoms)
-    #resi = Resi(reslist, dsr_dict, dbhead, residue, find_atoms)
-    #dbhead = resi.make_resihead()
-    resi = Resi(reslist, dsr_dict, dbhead, 'RESI PPH3', find_atoms)
-    sf = SfacTable(reslist, dbtypes)
-    sfac_table = sf.set_sfac_table()
-    num = NumberScheme(reslist, dbatoms, resi)
-    numberscheme = num.get_fragment_number_scheme()
 
 
 

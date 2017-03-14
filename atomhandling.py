@@ -30,12 +30,8 @@ def get_atoms(atlist):
     atoms = []
     try:
         atlist[0]
-    except:
+    except IndexError:
         return []
-    if isinstance(atlist[0], list):
-        for i in atlist:
-            atoms.append(i[:5])
-        return atoms
     for i in atlist:
         if atreg.match(str(i)):  # search atoms
             l = i.split()[:5]  # convert to list and use only first 5 columns
@@ -308,12 +304,6 @@ class FindAtoms():
                            ['C2', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number]},
                      {'1': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number],
                      []} }
-
-        for i in list(residues):
-            ats = residues[i]
-            for x in ats:
-                if 'C12' in x[0]:
-                    print x #print C12 from all residues
         """
         resi = False
         part = False
@@ -354,7 +344,7 @@ class FindAtoms():
                 if atom:
                     sfac = atom[1]
                     elem = self.e2s.sfac_2_elem(sfac)
-                    residues[resinum].append([atom[0], [float(i) for i in atom[2:5]], num, 
+                    residues[resinum].append([atom[0], [float(y) for y in atom[2:5]], num,
                                               resiclass, partnum, elem, sfac])
             else:
                 atom = self.is_atom(i)
@@ -362,10 +352,9 @@ class FindAtoms():
                 if atom:
                     sfac = atom[1]
                     elem = self.e2s.sfac_2_elem(sfac)
-                    residues[resinum].append([atom[0], [float(i) for i in atom[2:5]], num, 
+                    residues[resinum].append([atom[0], [float(x) for x in atom[2:5]], num,
                                               resiclass, partnum, elem, sfac])
         return residues
-
 
     def get_atoms_resiclass(self, atom):
         """
@@ -381,7 +370,6 @@ class FindAtoms():
         if atom in residue[1]:
             #  atom-name  class
             return residue[1][3]
-
 
     def get_atoms_resinumber(self, atom):
         """
@@ -467,7 +455,7 @@ class FindAtoms():
         return lines
 
     def remove_adjacent_hydrogens(self, atoms, sfac_table, atype='H'):
-        '''
+        """
         if an atom is replaced, its hydrogen atoms are deleted
         this method searches for the first afix behind the atom,
         deletes all lines until AFIX 0, HKLF or the 10th line appears.
@@ -476,7 +464,7 @@ class FindAtoms():
         -TODO: create global connectivity table to find atom connections in CF3 CH3 groups
         :param atoms:   list   list of non-Hydrogen atoms
         :param sfac_table: list of atom types ['C', 'H', 'N', ...]
-        '''
+        """
         delcount = []
         if atype == 'H':
             name = "hydrogen"
@@ -485,7 +473,7 @@ class FindAtoms():
         lines = self.get_atom_line_numbers(atoms)
         try:
             hydrogen_sfac = sfac_table.index(type)+1
-        except(ValueError):
+        except ValueError:
             hydrogen_sfac = False
             return
         for i in lines:
@@ -498,8 +486,7 @@ class FindAtoms():
                 try:
                     line = self._reslist[i+n+1].upper()
                     atom = line.split()[0].upper()
-                    #print('Zeile:', i, 'range:', n, 'line:', line)
-                except(IndexError):
+                except IndexError:
                     continue
                 if line.startswith('HKLF'):
                     break # stop in this case because the file has ended anyway
@@ -513,50 +500,45 @@ class FindAtoms():
                     else:
                         break
                 if line.startswith('AFIX') and afix and line.split()[1] != '0':
-                    #print('next afix begins', i)
                     afix = False
                     # stop also if next "AFIX mn" begins
                     break
                 if line.startswith('AFIX') and line.split()[1] != '0':
-                    #print('AFIX MN starts:', line, 'linenumber:', i+n+1)
                     self._reslist[i+n+1] = ''
                     afix = True # turn on afix flag if first "AFIX mn" is found
                     continue
                 if line.startswith('AFIX') and line.split()[1] == '0':
-                    #print('AFIX 0:', line)
                     afix = False # turn of afix flag if afix is closed with "AFIX 0"
                     self._reslist[i+n+1] = ''
                     continue
                 if afix:
                     try:
-                        #print('Atom:', atom)
                         if atom in SHX_CARDS:
                             continue
                         # delete the hydrogen atom
                         self._reslist[i+n+1] = ''
                         print('Deleted {0} atom {1}'.format(name, atom))
                         delcount.append(atom)
-                    except(IndexError):
+                    except IndexError:
                         continue
         return delcount
 
 
-
 def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
-    '''
+    """
     several checks if the atoms in the dsr command line are consistent
     :param db_source_atoms:   ['C1', 'O1', 'C2', ...]
     :param res_target_atoms:  ['C1', 'Q2', 'C3_2', ...]
     :param dbatoms:           [['C1', 1, '-0.00146', '0.26814', '0.06351'],
                                ['C2', 1, '-1.13341', '-0.23247', '-0.90730'], ...]]
-    '''
+    """
     temp = [i[0].upper() for i in dbatoms]
     # check if source and target are of same length:
     nsrc = len(db_source_atoms)
     ntrg = len(res_target_atoms)
     if nsrc != ntrg:
-        print('*** Number of source and target atoms/peaks is different!! '\
-                '({} and {} atoms/peaks) ***'.format(nsrc, ntrg))
+        print('*** Number of source and target atoms/peaks is different!! '
+              '({} and {} atoms/peaks) ***'.format(nsrc, ntrg))
         sys.exit(False)
     # do the source atoms exist at all?:
     for i in db_source_atoms:
@@ -566,8 +548,9 @@ def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
             sys.exit(False)
     return True
 
+
 def rename_dbhead_atoms(new_atoms, old_atoms, dbhead):
-    '''
+    """
     returns the dbentry header with the old atom names replaced by the new
     number scheme
 
@@ -575,7 +558,7 @@ def rename_dbhead_atoms(new_atoms, old_atoms, dbhead):
     :param old_atoms: ['C1', 'O1', 'C2', ...]
     :param dbhead:    [SAME F5A F6A F6A F4A F7A F8A F8A F9A F9A F7A\n', 'SIMU O1A > F9A\n',
                 'RIGU O1A > F9A\n']
-    '''
+    """
     new = list(reversed(new_atoms))
     headneu = []
     for line in dbhead:
@@ -589,7 +572,7 @@ def rename_dbhead_atoms(new_atoms, old_atoms, dbhead):
 
 
 def set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table):
-    '''
+    """
     corrects the sfac types of the dbentry according to sfac card of the
     res file
     :param db_atom_types: element names of each atom in the database entry
@@ -599,7 +582,7 @@ def set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table):
     :type dbatoms: list
     :param sfac_table: list of scattering factors from SHELXL
     :type sfac_table: list
-    '''
+    """
     e2s = Elem_2_Sfac(sfac_table)
     atype = list(reversed(db_atom_types))
     for line in dbatoms:                    # go through db entry
@@ -609,27 +592,27 @@ def set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table):
 
 
 class SfacTable():
-    '''
+    """
     Combines the atomtypes of the resfile SFAC and the dbentry to a global
     SFAC table for the new res file.
-    '''
+    """
 
     def __init__(self, reslist, dbatom_types):
-        '''
+        """
 
         :param reslist:  SHELXL .res file as list
         :param fragment_atom_types:  list ['N', 'C', 'C', 'C']
         :param res_file_name: str file name like 'p21c.res'
-        '''
+        """
         self._reslist = reslist
         self._db_atom_types = dbatom_types
         self.elements = [x.upper() for x in atoms]
 
 
     def set_sfac_table(self):
-        '''
+        """
         sets the new global sfac table in the res file
-        '''
+        """
         sfacline = find_multi_lines(self._reslist, r'SFAC\s+[a-zA-Z]+')  # position of the SFAC card
         unitline = find_line(self._reslist, r'UNIT\s+[0-9]+')     # position of the UNIT card
         try:
@@ -684,19 +667,26 @@ class SfacTable():
 
 class Elem_2_Sfac():
     def __init__(self, sfac_table):
-        '''
+        """
         SFAC2Element and vice versa conversion
         :param sfac_table: SFAC table of the res file.
         :type sfac_table: list
-        '''
+        """
         self._sfac_table = sfac_table
 
     def elem_2_sfac(self, atom_type):
-        '''
+        """
         returns an sfac-number for the element given in "atom_type"
         :param atom_type: string 'C'
         :type atom_type: string
-        '''
+
+        >>> el = Elem_2_Sfac(['Ca', 'H', 'C', 'BR'])
+        >>> el.elem_2_sfac('Br')
+        4
+        >>> el.elem_2_sfac('c')
+        3
+        >>> el.elem_2_sfac('Ar')
+        """
         for num, element in enumerate(self._sfac_table, 1):
             if atom_type.upper() == element.upper():
                 return num         # return sfac number
@@ -704,13 +694,26 @@ class Elem_2_Sfac():
 
 
     def sfac_2_elem(self, sfacnum):
-        '''
+        """
         returns an element and needs an sfac-number
         :param sfacnum: string like '2'
-        '''
+        >>> el = Elem_2_Sfac(['Ca', 'H', 'C', 'BR'])
+        >>> el.sfac_2_elem(1)
+        'CA'
+        >>> el.sfac_2_elem(2)
+        'H'
+        >>> el.sfac_2_elem(3)
+        'C'
+        >>> el.sfac_2_elem(4)
+        'BR'
+        >>> el.sfac_2_elem(5)
+
+        >>> el.sfac_2_elem(0)
+
+        """
         try:
             sfacnum = int(sfacnum)
-        except:
+        except ValueError:
             return False
         for num, element in enumerate(self._sfac_table, 1):
             if sfacnum == num:
@@ -723,20 +726,19 @@ class Elem_2_Sfac():
 
 
 class NumberScheme():
-    '''
+    """
     This class needs a dbentry and the resfile contents to generate a unique
     numbering scheme for the dbentry.
     It essentially adds a letter from the alphabet to the atom name and iterates
     over the names until the names are unique.
-    '''
+    """
 
     def __init__(self, reslist, dbatome, resi=False):
-        '''
-        
+        """
         :param reslist: resfile as list
         :param dbatome: list of atoms as list
         :param resi: residue True or false
-        '''
+        """
         self.__resi = resi
         self._reslist = reslist
         self.__rlist = []
@@ -754,16 +756,18 @@ class NumberScheme():
         # sorted atomlist:
         self.__atomtype = sorted(self.__atyp[:])
 
-
     def _get_number_of_at_in_type(self, atomtype, check):
-        '''returns the number of atoms which have the same type'''
+        """
+        returns the number of atoms which have the same type
+        """
         num = 0  # @UnusedVariable
         num = atomtype.count(check)
         return num
 
-
     def _generate_numbers(self, atype, num, suffix = ''):
-        '''generates numberscheme'''
+        """
+        generates numberscheme
+        """
         atlist = []
         if num == 1:   # in case of only one atom of this type
             atlist.append("%s%s%s"%(atype, num, suffix))
@@ -772,9 +776,10 @@ class NumberScheme():
             atlist.append("%s%s%s"%(atype, str(i), suffix))
         return atlist
 
-
     def _contains(self, atomlist, rlist):
-        '''checks if one of the atoms in the list exist in resfile'''
+        """
+        checks if one of the atoms in the list exist in resfile
+        """
         x = [e for e in atomlist if e in '\n'.join(rlist)]
         if x:
             return False
@@ -783,13 +788,13 @@ class NumberScheme():
 
 
     def get_fragment_number_scheme(self, extranames=[]):
-        '''
+        """
         returns a list of atoms of length len(self.__dbatome) whith a
-        naming scheme which fits into the resfile. extraname is a list of atoms 
+        naming scheme which fits into the resfile. extraname is a list of atoms
         which should be also excluded from the new names.
         :param extranames: list of excluding atoms e.g. ['O1A']
         :type extranems: list
-        '''
+        """
         self.__rlist.extend(extranames)
         if self.__resi:
             print('RESI instruction is enabled. Leaving atom numbers as they are.')
@@ -834,121 +839,7 @@ if __name__ == '__main__':
         print('{} of {} tests failed'.format(failed, attempted))
     sys.exit()
 
-    ###########################################################
 
-    from dsrparse import DSR_Parser
-    from resfile import ResList
-    from dbfile import global_DB
-    from resfile import ResListEdit
-    res_file = 'p21c.res'
-    res_list = ResList(res_file)
-    reslist =  res_list.get_res_list()
-    find_atoms = FindAtoms(reslist)
-    rle = ResListEdit(reslist, find_atoms)
-    gdb = global_DB()
-    db = gdb.build_db_dict()
-
-    #resiopt = dsr_dict['resi']
-    resiopt = False
-
-    fragment = 'oc(cf3)3'
-    #fragment = 'PFA1'
-    #fragline = gdb.get_fragline_from_fragment(fragment)
-    dbatoms = gdb.get_atoms_from_fragment(fragment)
-    #dbhead = gdb.get_head_from_fragment(fragment)
-
-    dsrp = DSR_Parser(reslist, rle)
-    dsr_dict = dsrp.get_dsr_dict
-    num = NumberScheme(reslist, dbatoms, resiopt)
-    # das printet auch auf bilschirm:
-    numbers = num.get_fragment_number_scheme(extranames=['O1A'])
-
-    print(numbers)
-
-    #  dbtypes = get_atomtypes(dbatoms)
-
-
-    print('\n')
-
-    #   misc.wrap_headlines(dbhead)
-
-    #  newnames = rename_dbhead_atoms(numbers, dbatoms, dbhead)
-
-    #print(newnames)
-    #for i in dbhead:
-    #    print(i.strip('\n'))
-
-
-#    import misc
-#    filename = 'testfile.txt'
-#    misc.remove_file(filename)
-#    try:
-#        dfix_file = open(filename, 'w')  # open the ins file
-#    except(IOError):
-#        print('Unable to write res file!')
-#        sys.exit(-1)
-#    for i in dbhead:            #modified reslist
-#        dfix_file.write("%s" %i)    #write the new file
-#    dfix_file.close()
-
-
-    #sys.exit()
-
-    fa = FindAtoms(reslist)
- #   
-  #  atoms = fa.atoms_as_residues
-   # for i in atoms:
-    #    for y in atoms[i]:
-     #       print(y)
-    #sys.exit()
-
-    # this might be used to find nearest atoms in same class to make eadp
-    # print(fa.get_atoms_resiclass('C1_2'))
-
-    SFAC = ['C', 'H', 'N']
-
-    #sys.exit()
-
-    #  print('Residue dict:', fa.get_resi_definition_dict('RESI 1 TOL'.split()))
-    #print( fa.get_atomcoordinates(['Fe1_1', 'C29', 'Q12']) )
-    #  print('line number:', fa.get_atom_line_numbers(['C12', 'C333', 'Q12']))
-    #
-    res_target_atoms = ['c37', 'c5']
-    target_lines = fa.get_atom_line_numbers(res_target_atoms)
-    for i in target_lines:
-        i = int(i)
-        rle.remove_line(i, rem=False, remove=False, frontspace=True)
-    fa.remove_adjacent_hydrogens(res_target_atoms, SFAC)
-    #
-
-    for i in reslist[105:115]:
-        print(i.strip('\n'))
-    #
-    #  print('get_atomtypes', get_atomtypes(dbatoms))
-    #  print()
-    #  print('get_atomcoordinates:')
-    #  coord = fa.get_atomcoordinates(['C1', 'C22', 'C28', 'Q1'])
-    #  for i in coord:
-    #      print('{}:\t{:<9} {:<9} {:<9}'.format(i, *coord[i]))
-    #  print('jhdgfd')
-    #
-    #  dsrp = DSR_Parser(reslist)
-    #  dsr_dict = dsrp.get_dsr_dict
-
-    print(check_source_target(dsr_dict.get('source'), dsr_dict.get('target'), dbatoms))
-
-    #print dbatoms
-    num = NumberScheme(reslist, dbatoms, dsr_dict['resi'])
-    num.get_fragment_number_scheme()
-
-    dbtypes = get_atomtypes(dbatoms)
-    sfac = SfacTable(reslist, dbtypes)
-    print('sfac table:')
-    print(sfac.set_sfac_table())
-    print('######')
-    bad_dbatoms = [['lO1', 3, '-0.01453', '1.66590', '1.66590'], ['C1', 1, '-0.00146', '0.26814', '0.06351']]
-    print('test')
-    #get_atomtypes(bad_dbatoms)
 
 
 
