@@ -538,7 +538,7 @@ def which(name, flags=os.X_OK, exts=['.exe', '.EXE', '.bat']):
 
     On MS-Windows the only flag that has any meaning is os.F_OK. Any other
     flags will be ignored.
-    >>> which('dsr.bat') # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF +ELLIPSIS
+    #>>> which('dsr.bat') # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF +ELLIPSIS
     ['d:\\\Programme\\\DSR\\\dsr.bat']
     """
     result = []

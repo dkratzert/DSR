@@ -200,7 +200,7 @@ class FindAtoms():
         :param resi: ['RESI', 'number', 'class']
         :type resi: list or string
 
-        >>> sorted(list(FindAtoms.get_resi_definition_dict('RESI 1 TOL'))
+        >>> sorted(list(FindAtoms.get_resi_definition_dict('RESI 1 TOL')))
         ['class', 'number']
         >>> sorted(FindAtoms.get_resi_definition_dict('RESI 1 TOL').values())
         ['1', 'TOL']
