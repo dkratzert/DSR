@@ -110,7 +110,6 @@ class Export():
         # expands the cell of calculated structures:
         cell, atoms = self.format_calced_coords(cell=cell, fragment=fragname)
         cellstring = ' {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f}'.format(*[float(i) for i in cell])
-        print('Exporting "{0}" to {0}.res'.format(fragname))
         if self.invert:
             print("Fragment inverted.")
         try:
