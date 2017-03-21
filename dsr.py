@@ -139,6 +139,7 @@ class DSR():
             self.export.export_all_fragments()
         # Export one fragment
         if self.export_fragment:
+            print('Exporting "{0}" to {0}.res'.format(self.fragment))
             self.fragment = self.export_fragment
             try:
                 self.export.write_res_file(self.fragment)
