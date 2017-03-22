@@ -5,7 +5,6 @@ dsrsaves/*
 *.ps
 .idea/
 .olex/
-/manuals/*.pdf
 /setup/*.exe
 /setup/Output/*.tar.gz
 /setup/Output/*.exe
