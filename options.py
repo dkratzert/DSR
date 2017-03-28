@@ -79,6 +79,8 @@ class OptionsParser():
                                  help=SUPPRESS, default=False)
         self.parser.add_argument("-n", dest="no_refine", action="store_true",
                                  help="do not refine after fragment transfer", default=False)
+        self.parser.add_argument("-target", dest="target", nargs='+', type=float,
+                                 help=SUPPRESS, default=False)
         self._options = self.parser.parse_args()
 
     def error(self):
@@ -157,10 +159,14 @@ class OptionsParser():
         return self._options.invert
 
     @property
+    def target_coords(self):
+        return self._options.target
+
+    @property
     def shelxl_ex(self):
-        '''
+        """
         Option to define the path of the shelxl executable
-        '''
+        """
         spath = ''
         if self._options.shelxl_ex:
             spath = r' '.join(self._options.shelxl_ex)

@@ -15,7 +15,7 @@ import elements
 import export
 import misc
 import networkx
-from afix import InsertAfix
+from afix import Afix
 from atomhandling import get_atomtypes, FindAtoms, check_source_target, \
     rename_dbhead_atoms, SfacTable, Elem_2_Sfac, NumberScheme
 from atoms import Element, atoms
@@ -633,9 +633,9 @@ class insertAfixTest(unittest.TestCase):
 
     def testrun_afix(self):
         self.maxDiff = None
-        afix = InsertAfix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead, \
-                          self.dsr_dict, self.sfac_table, self.find_atoms, \
-                          self.numberscheme, options = {'rigid_group': False})
+        afix = Afix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead, \
+                    self.dsr_dict, self.sfac_table, self.find_atoms, \
+                    self.numberscheme, options = {'rigid_group': False})
         afix_extern_entry = afix.build_afix_entry(True, 'dsr_CF3_p21c.dfix', self.resi)
         # afix_intern_entry = afix.build_afix_entry(False, 'TEST', self.resi)
         # self.assertEqual(afix_intern_entry, self.intern)
@@ -666,8 +666,8 @@ class removeDublicatesAfixTest(unittest.TestCase):
         self.resi = 'CCF3'  # gdb.get_resi_from_fragment(fragment)
         self.num = NumberScheme(self.reslist, self.dbatoms, self.resi)
         self.numberscheme = self.num.get_fragment_number_scheme()
-        self.afix = InsertAfix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead, \
-                               self.dsr_dict, self.sfac_table, self.find_atoms, self.numberscheme, {'rigid_group': False})
+        self.afix = Afix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead, \
+                         self.dsr_dict, self.sfac_table, self.find_atoms, self.numberscheme, {'rigid_group': False})
         self.db_testhead = ['SADI_CCF3 C1 C2 C1 C3 C1 C4',
                             'SADI_CCF3 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ',
                             'REM test']
