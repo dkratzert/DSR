@@ -523,12 +523,12 @@ class global_DB():
         return True
 
     def get_sum_formula(self, fragment):
-        '''
+        """
         returns the sum formula of a fragment
         as string like 'SI4 C9 O1'
         :param fragment: fragment name
         :type fragment: string
-        '''
+        """
         fragment = fragment.lower()
         try:
             types = get_atomtypes(self._db_all_dict[fragment]['atoms'])
@@ -541,9 +541,10 @@ class global_DB():
         return formula
 
     def check_db_atom_consistency(self, fragment):
-        '''This method is for atoms only (without db header)!
-          check the db for duplicates:
-        '''
+        """
+        This method is for atoms only (without db header)!
+        check the db for duplicates:
+        """
         fragment = fragment.lower()
         dbatoms = [i[0].upper().strip() for i in self.get_atoms_from_fragment(fragment)]
         # check for duplicates:
@@ -555,11 +556,11 @@ class global_DB():
                 sys.exit(-1)
 
     def check_db_header_consistency(self, fragment):
-        '''
+        """
         - Checks if the Atomnames in the restraints of the dbhead are also in
           the list of the atoms of the respective dbentry.
         - Checks wether restraints cards are vaid.
-        '''
+        """
         fragment = fragment.lower()
         restraints = self._db_all_dict[fragment]['head']
         atoms = self.get_atoms_from_fragment(fragment)

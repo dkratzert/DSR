@@ -20,7 +20,7 @@ import logging
 __metaclass__ = type  # use new-style classes
 
 class DSR_Parser():
-    '''
+    """
     handles the parsing of the DSR command
 
     This Class should have the reslist object as input and
@@ -28,12 +28,12 @@ class DSR_Parser():
 
     Additionally the FVAR line in the reslist gets corrected by set_fvar() at
     the end of parse_dsr_line().
-    '''
+    """
     def __init__(self, reslist, rle):
-        '''
+        """
         :param reslist: list of strings of .res file
         :param rle:  ResList() object
-        '''
+        """
         self._reslist = reslist
         self._rle = rle
         self._dsr_regex = '^rem\s{1,5}DSR\s{1,5}.*'
@@ -57,14 +57,14 @@ class DSR_Parser():
             sys.exit()
     
     def find_dsr_command(self, line=False):
-        '''
+        """
         line = False  -> Line number
         line = True  -> Text string
         find the lines with a DSR command entry and return its line number as
         default or the text string when line is set to True
         :param line: bool
-        '''
-        HKLF_endline = misc.find_line(self._reslist, r'^HKLF\s+[1-6]')
+        """
+        hklf_endline = misc.find_line(self._reslist, r'^HKLF\s+[1-6]')
         dsr_str = ''
         multiline = False
         indexnum = misc.find_multi_lines(self._reslist, self._dsr_regex)
@@ -74,7 +74,7 @@ class DSR_Parser():
             print('*** no proper DSR command found! \n'
                     'Have you really saved your .res file? ***\n')
             sys.exit()
-        if int(line_number) > int(HKLF_endline):
+        if int(line_number) > int(hklf_endline):
             print('*** A DSR command after HKLF is not allowed! '
                     'Check line {} ***'.format(line_number+1))
             sys.exit()
@@ -108,19 +108,18 @@ class DSR_Parser():
             #if len(dsrlines) > 1:
             #    dsrlines[0] = dsrlines[0]+' ='
             dsrlines = '\n'.join(dsrlines)
-            dsrlines = dsrlines+'\n'
-            self._reslist[line_number] = '' # delete old line
+            dsrlines += '\n'
+            self._reslist[line_number] = ''  # delete old line
             if multiline:
-                self._reslist[line_number+1] = '' # delete old line
+                self._reslist[line_number+1] = ''  # delete old line
             self._reslist[line_number] = dsrlines
             return line_number                     # return the line index number
 
-
     def find_commands(self, command):
-        '''
+        """
         returns the value of the input string argument as string
         :param command: string
-        '''
+        """
         # hier vielleicht sogar mit match, damit OCCC nicht gültig ist
         if command in self._dsr_list:
             try:
@@ -132,15 +131,14 @@ class DSR_Parser():
             cnum = False
         return cnum
 
-
     def find_atoms(self, start, *stop):
-        '''
+        """
         returns the source and target atoms between a single start argument
         and one or several stop arguments
-        '''
+        """
         try:
             atindex = self._dsr_list.index(start)+1
-        except(ValueError):
+        except ValueError:
             if start == 'WITH':
                 print('*** No source atoms given! ***')
                 sys.exit(-1)
@@ -155,12 +153,11 @@ class DSR_Parser():
                 break
         return atoms
 
-
     def minimal_requirements(self):
-        '''
+        """
         Checks if minimal requirements of the dsr command are met.
         E.g. the WITH and ON command
-        '''
+        """
         check = ('WITH', 'ON')
         for i in check:
             try:
@@ -171,11 +168,11 @@ class DSR_Parser():
                         'command line found! ***')
                 sys.exit()
 
-
     def parse_dsr_line(self):
-        '''returns the different parameters from the dsr command as dict
+        """
+        returns the different parameters from the dsr command as dict
         It needs find_commands() and find_atoms() to parse the line.
-        
+
         >>> from resfile import ResList, ResListEdit
         >>> res_file = 'p21c.res'
         >>> rl = ResList(res_file)
@@ -196,7 +193,7 @@ class DSR_Parser():
         source:  ['O1', 'C1', 'C2', 'C3', 'C4']
         split:  False
         target:  ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7']
-        '''
+        """
         source = None
         if self.cf3_active:
             splitatom = False

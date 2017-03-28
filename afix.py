@@ -90,7 +90,19 @@ def add_residue_to_dfix(dfix_head, resinum):
         newhead.append(line)
     return newhead
 
-class InsertAfix(object):
+
+def insert_dsr_warning():
+    """
+    information to insert into .res-file
+    TODO: insert this text only once in the file and also the
+          comments from GRADE
+    """
+    txt = "rem the following was inserted by DSR:\n" \
+          "http://dx.doi.org/10.1107/S1600576715005580\n"
+    return txt
+
+
+class Afix(object):
     """
     methods for the AFIX entry
     - dbhead is modified by Resi() if residues are used!
@@ -98,8 +110,8 @@ class InsertAfix(object):
     """
 
     def __init__(self, reslist, dbatoms, fragment_atom_types, dbhead, dsr_line_dict, sfac_table,
-                find_atoms, numberscheme, options, dfix_head=False):
-        '''
+                 find_atoms, numberscheme, options, dfix_head=False):
+        """
         :param reslist:      list of the .res file
         :type reslist: list
         :param dbatoms:      list of the atoms in the database entry
@@ -119,7 +131,7 @@ class InsertAfix(object):
         :param find_atoms:   FindAtoms() object
         :param numberscheme: atoms numbering scheme like: ['O1A', 'C1A', 'C2A', 'F1A', 'F2A', 'F3A', 'C3A']
 
-        '''
+        """
         self._reslist = reslist
         self._find_atoms = find_atoms
         self._dbatoms = dbatoms
@@ -137,22 +149,11 @@ class InsertAfix(object):
         self.rand_id_dfx = id_generator(size=7)
         self.rand_id_afix = id_generator(size=7)
 
-
-    def insert_dsr_warning(self):
-        '''
-        information to insert into .res-file
-        TODO: insert this text only once in the file and also the
-              comments from GRADE
-        '''
-        txt = "rem the following was inserted by DSR:\n" \
-              "http://dx.doi.org/10.1107/S1600576715005580\n"
-        return txt
-
     def collect_all_restraints(self):
-        '''
+        """
         collects all restraints in the resfile and returns a list with them
         [['RIGU_CF3', 'O1', '>', 'F9'], '...']
-        '''
+        """
         all_restraints =[]
         for n, resline in enumerate(self._reslist):
             resline = resline.strip(' \n\r')
@@ -166,14 +167,14 @@ class InsertAfix(object):
                 line = 0
                 while resline[-1] == '=':
                     resline = resline[:-1]+self._reslist[n+line+1].split()
-                    line = line + 1
+                    line += 1
                     if not resline[-1] == '=':
                         break
                     if line > 500:
                         break
                 all_restraints.append(resline)
         return all_restraints
-    
+
     def remove_duplicate_restraints(self, dbhead, residue_class=''):
         """
         removes restraints from the header which are already
@@ -220,6 +221,13 @@ class InsertAfix(object):
                 others.append(' '.join(headline)+'\n')
         return [distance, others]
 
+    def combine_names_and_coordinates(self):
+        atoms = {}
+        chunk = misc.chunks(self.options.target_coords, 3)
+        for num, at in enumerate(self.target_atoms):
+            atoms[at] = chunk[num]
+        return atoms
+
     def build_afix_entry(self, external_restraints, dfx_file_name, resi):
         """
         build an afix entry with atom coordinates from the target atoms
@@ -235,7 +243,7 @@ class InsertAfix(object):
         new_atomnames = list(reversed(self.numberscheme)) # i reverse it to pop() later
         if resi.get_residue_class:
             self._dbhead = resi.format_restraints(self._dbhead)
-            self._dbhead = self.remove_duplicate_restraints(self._dbhead, 
+            self._dbhead = self.remove_duplicate_restraints(self._dbhead,
                                                             resi.get_residue_class)
             if not external_restraints:
                 self._dbhead += ['RESI {} {}'.format(
@@ -282,7 +290,11 @@ class InsertAfix(object):
             self._dbhead = misc.wrap_headlines(self._dbhead)
         # list of atom types in reverse order
         reversed_fragm_atom_types = list(reversed(self._fragment_atom_types))
-        coordinates = self._find_atoms.get_atomcoordinates(self.target_atoms)
+        if self.options.target_coords:
+            # {'C1': ['1.123', '0.7456', '3.245']}
+            coordinates = self.combine_names_and_coordinates()
+        else:
+            coordinates = self._find_atoms.get_atomcoordinates(self.target_atoms)
         occ = ''
         occ_part = self.occ
         if not self.occ:
@@ -309,7 +321,7 @@ class InsertAfix(object):
             if i[0].upper() in self.source_atoms:
                 ind = self.source_atoms.index(i[0].upper())
                 try:
-                    afix_list[n][2:5] =  coordinates[self.target_atoms[ind]]
+                    afix_list[n][2:5] = coordinates[self.target_atoms[ind]]
                 except IndexError:
                     print('*** More source than target atoms present! Exiting... ***')
                     sys.exit(False)
@@ -372,7 +384,7 @@ if __name__ == '__main__':
     failed, attempted = doctest.testmod()#verbose=True)
     if failed == 0:
         print('passed all {} tests!'.format(attempted))
-        
+
 
 
 

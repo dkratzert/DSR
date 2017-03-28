@@ -23,7 +23,7 @@ from dsrparse import DSR_Parser
 from dbfile import ImportGRADE, print_search_results
 from resi import Resi
 from restraints import ListFile, Lst_Deviations, Restraints
-from afix import InsertAfix
+from afix import Afix
 from refine import ShelxlRefine
 from resfile import ResList, filename_wo_ending, ResListEdit
 
@@ -295,8 +295,8 @@ class DSR():
             dfix_13 = restr.get_formated_13_dfixes()
             flats = restr.get_formated_flats()
             dfix_head = dfix_12+dfix_13+flats
-        afix = InsertAfix(self.reslist, dbatoms, db_atom_types, dbhead, dsr_dict,
-                          sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
+        afix = Afix(self.reslist, dbatoms, db_atom_types, dbhead, dsr_dict,
+                    sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
         afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfix', resi)
         if dsr_line_number < fvarlines[-1]:
             print('\n*** Warning! The DSR command line MUST NOT appear before FVAR '
