@@ -1,5 +1,6 @@
 Recent changes
--200    Startup speed improvements.
+-200    Startup speed improvements. Added possibility to define target position 
+        of atoms as coordinates.
 -199    Added documentation how to control DSR with an external user interface.
         Hexamethyl benzene fragment added. DSR inserts a comment about the origin
         of the fragment into the res file.
