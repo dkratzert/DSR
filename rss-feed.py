@@ -16,8 +16,8 @@ from pprint import pprint
 import misc
 
 feedpath = os.path.abspath("setup/Output/changelog.txt")
-outpath = 'W:/htdocs/data/feed.rss'
-#outpath = './feed.rss'
+#outpath = 'W:/htdocs/data/feed.rss'
+outpath = './feed.rss'
 
 head = r"""
 <?xml version="1.0" encoding="utf-8"?>
