@@ -160,7 +160,11 @@ class OptionsParser():
 
     @property
     def target_coords(self):
-        return self._options.target
+        target = self._options.target
+        if target and len(target) % 3 > 0:
+            print("*** Number of target coordinates have to be triplets. [x y z x y z ...] ***")
+            sys.exit()
+        return
 
     @property
     def shelxl_ex(self):

@@ -224,6 +224,9 @@ class Afix(object):
     def combine_names_and_coordinates(self):
         atoms = {}
         chunk = misc.chunks(self.options.target_coords, 3)
+        if len(chunk) != len(self.target_atoms):
+            print("*** Different number of target atoms and target coordinates! Can not proceed. ***")
+            sys.exit()
         for num, at in enumerate(self.target_atoms):
             atoms[at] = chunk[num]
         return atoms
