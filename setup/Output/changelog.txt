@@ -1,4 +1,6 @@
 Recent changes
+-200-1  Added missing python27.dll in Windows package. Fixes "unknown error" in 
+        ShelXle GUI.
 -200    Startup speed improvements. Added possibility to define target position 
         of atoms as coordinates (-target option“).
 -199    Added documentation how to control DSR with an external user interface.
