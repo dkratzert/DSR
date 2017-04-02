@@ -176,11 +176,13 @@ def overwrite_dir(root_src_dir, root_dst_dir, move=True):
     return True
 
 
-def get_update_package(version):
+def get_update_package(version, destdir=None, post=True):
     """
     Downloads the current DSR distribution from the web server and
     updates the files.
 
+    :param post: Defines if post_update_things() should be executed
+    :param destdir: Optional destdir instead of DSR_DIR
     :type version: int or string
 
     Returns
@@ -208,12 +210,16 @@ def get_update_package(version):
         return False
     os.remove(tmpfile.name)
     try:
-        overwrite_dir(os.path.join(tmpdir, "DSR-{}".format(version)), dsrdir, move=False)
+        if not destdir:
+            overwrite_dir(os.path.join(tmpdir, "DSR-{}".format(version)), dsrdir, move=False)
+        else:
+            overwrite_dir(os.path.join(tmpdir, "DSR-{}".format(version)), destdir, move=False)
     except OSError:
         print('*** Unable to perform update. Please run me with super-user rights, e.g.: "sudo /opt/DSR/dsr -u" ***')
         sys.exit()
     shutil.rmtree(tmpdir, ignore_errors=True)  # cleanup the files
-    post_update_things()
+    if post:
+        post_update_things()
     return True
 
 
