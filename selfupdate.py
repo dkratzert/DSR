@@ -155,9 +155,10 @@ def post_update_things():
 def overwrite_dir(root_src_dir, root_dst_dir, move=True):
     """
     Moves the content of scrdir over destdir and overwrites all files.
-
-    :param src_dir: source directory
-    :param dst_dir: target directory
+    
+    :param move: move directory instead of copying it
+    :param root_src_dir: source directory
+    :param root_dst_dir: target directory
     :return: True/False
     """
     for src_dir, dirs, files in os.walk(root_src_dir):
