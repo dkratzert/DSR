@@ -1,51 +1,47 @@
 import os
 import subprocess
-import sys
-
 import time
-
 import dsr
 import misc
-
-try:
-    src = os.path.abspath(sys.argv[1])
-except IndexError:
-    print("You have to provide the path to the deploy directory as first argument")
-    sys.exit()
+import selfupdate
 
 volname = "DSR-"+dsr.VERSION
-dmgname = volname+".dmg"
-dmgtmp = volname+"-tmp.dmg"
-dsrbat = os.path.join(src, "DSR", "dsr")
-print(dsrbat)
+dmgname = os.path.abspath("../setup/Output/{}.dmg".format(volname))
+skeldmg = os.path.abspath("../setup/Output/DSR-skel-rw.dmg")
+finaltmpdmg = os.path.abspath("../setup/Output/DSR-tmp-rw.dmg")
 
-# use tar.gz file instead of directory
-# use DSR/setup/output as target directory
+print('Mounting .dmg file for mac deployment')
+print(finaltmpdmg+"\n")
 
-misc.copy_file(os.path.join(src, "DSR", "setup", "dsr-mac"), dsrbat)
-subprocess.call(["chmod", "755", dsrbat])
+# Make copy of skeleton dmg file:
+misc.copy_file(skeldmg, finaltmpdmg)
 
-misc.remove_file(dmgtmp)
+mountcommmand = ["hdiutil", "attach", "-readwrite", "-noverify", "-noautoopen", finaltmpdmg]
+renamecommand = ["diskutil", "rename", "DSR-install", "DSR-{}".format(dsr.VERSION)]
+unmountcommmand = ["hdiutil", "detach", "/volumes/DSR-{}".format(dsr.VERSION)]
+convertfinal = ["hdiutil", "convert", finaltmpdmg, "-format", "UDZO", "-imagekey", "zlib-level=9", "-o", dmgname]
 
-command_line = ["hdiutil", "create", dmgtmp, "-srcfolder", src, "-fs", "HFS+",
-                "-format", "UDRW", "-size", "20M", "-volname", volname]
-# Maybejust use the DSR-skel instead of create:
-print('Creating .dmg file for mac deployment')
-print("\n"+' '.join(command_line)+"\n")
-subprocess.call(command_line)
-# mount the image:
-mountcommmand = ["hdiutil", "attach", "-readwrite", "-noverify", "-noautoopen", dmgtmp]
-unmountcommmand = ["hdiutil", "detach", "/volumes/{}".format(volname)]
+# Mount the image, unmount first, just in case:
+subprocess.call(unmountcommmand)
+p = subprocess.Popen(mountcommmand, stdout=subprocess.PIPE)
+line = p.stdout.readlines()
 
-subprocess.call(mountcommmand)
+# Download .tar.gz package from web server and extract to mounted volume:
+selfupdate.get_update_package(version=dsr.VERSION, destdir='/volumes/DSR-install/DSR', post=False)
 
-# do modification stuff here
-time.sleep(1)
+# Do modification stuff here:
+misc.copy_file("/volumes/DSR-install/DSR/setup/dsr-mac", "/volumes/DSR-install/DSR/dsr")
+subprocess.call(["chmod", "755", "/volumes/DSR-install/DSR/dsr"])
+
+# Rename the volume:
+subprocess.call(renamecommand)
+
 subprocess.call(unmountcommmand)
 time.sleep(1)
+
 # convert to compressed image:
-convertfinal = ["hdiutil", "convert", dmgtmp, "-format", "UDZO", "-imagekey", "zlib-level=9", "-o", dmgname]
-print("\n"+' '.join(convertfinal))
 subprocess.call(convertfinal)
-misc.remove_file(dmgtmp)
+
+# Clean temporary image:
+misc.remove_file(finaltmpdmg)
 
