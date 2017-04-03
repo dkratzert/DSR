@@ -25,6 +25,24 @@ __metaclass__ = type  # use new-style classes
 reportlog = 'dsr_bug_report.log'
 
 
+def extract_tarfile(file, targetdir):
+    """
+    Extracts .tar.gz "file" to "targetdir"
+    :param file: .tar.gz file
+    :param targetdir: target directory
+    :return: bool for sucess
+    """
+    import tarfile
+    try:
+        with tarfile.open(file) as tarobj:
+            tarobj.extractall(path=targetdir)
+    except tarfile.ReadError as e:
+        print('*** Could not extract tarfile ***')
+        print('***', e, '***')
+        return False
+    return True
+
+
 def join_floats(float_list, places=3,):
     """
     >>> l = [1.23456789123456, 1, 2, 3, 3.45, 5.6543, 1,3456]

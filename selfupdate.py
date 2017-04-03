@@ -206,7 +206,7 @@ def get_update_package(version, destdir=None, post=True):
         with tarfile.open(tmpfile.name) as tarobj:
             tarobj.extractall(path=tmpdir)
     except tarfile.ReadError as e:
-        print('*** Cound not get update from server. If this problem persists, please update manually! ***')
+        print('*** Could not get update from server. If this problem persists, please update manually! ***')
         print('***', e, '***')
         return False
     os.remove(tmpfile.name)
