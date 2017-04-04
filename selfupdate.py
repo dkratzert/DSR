@@ -152,7 +152,7 @@ def post_update_things():
         print('*** Unable to perform update. Please run me with super-user rights, e.g.: "sudo /opt/DSR/dsr -u" ***')
 
 
-def overwrite_dir(root_src_dir, root_dst_dir, move=True):
+def move_dir(root_src_dir, root_dst_dir, move=True):
     """
     Moves the content of scrdir over destdir and overwrites all files.
     
@@ -212,9 +212,9 @@ def get_update_package(version, destdir=None, post=True):
     os.remove(tmpfile.name)
     try:
         if not destdir:
-            overwrite_dir(os.path.join(tmpdir, "DSR-{}".format(version)), dsrdir, move=False)
+            move_dir(os.path.join(tmpdir, "DSR-{}".format(version)), dsrdir, move=False)
         else:
-            overwrite_dir(os.path.join(tmpdir, "DSR-{}".format(version)), destdir, move=False)
+            move_dir(os.path.join(tmpdir, "DSR-{}".format(version)), destdir, move=False)
     except OSError:
         print('*** Unable to perform update. Please run me with super-user rights, e.g.: "sudo /opt/DSR/dsr -u" ***')
         sys.exit()
