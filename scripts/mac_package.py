@@ -36,7 +36,7 @@ print('Mounting .dmg file for mac deployment')
 print(finaltmpdmg+"\n")
 subprocess.call(mountcommmand)
 
-
+"""
 # use instead of direct file opening below:
 # Download .tar.gz package from web server and extract to mounted volume:
 try:
@@ -54,7 +54,7 @@ tmpdir = tempfile.mkdtemp()  # a temporary directory
 misc.extract_tarfile(inputfile, tmpdir)
 selfupdate.move_dir(tmpdir+"/DSR-{}".format(version), '/Volumes/DSR-install/DSR')
 # end
-"""
+
 #########################################################
 #  Do modification stuff here:
 misc.copy_file("/Volumes/DSR-install/DSR/setup/dsr-mac", "/Volumes/DSR-install/DSR/dsr")
