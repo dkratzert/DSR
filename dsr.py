@@ -34,7 +34,7 @@ program_name = '\n'+((width//2)-9)*'-'+' D S R - v{} '.format(VERSION)+((width//
 
 # TODO and ideas:
 '''
-- Add API for GUIs to user manual (or make programmers guide)
+- Improve search algorithm
 
 - Add Rcomplete
 
