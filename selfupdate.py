@@ -55,10 +55,7 @@ def get_current_dsr_version(silent=False):
     import socket
     socket.setdefaulttimeout(3)
     try:
-        try:
-            response = urlopen('{}/version.txt'.format(urlprefix))
-        except AttributeError:  # incase of Python 3:
-            response = urlopen('{}/version.txt'.format(urlprefix))
+        response = urlopen('{}/version.txt'.format(urlprefix))
     except IOError:
         if not silent:
             print("*** Unable to connect to update server. No Update possible. ***")
