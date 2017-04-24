@@ -96,7 +96,9 @@ class dsr_complete_runs_Test(unittest.TestCase):
         misc.remove_file('./test-data/beispiel/{}a.ins'.format(nummer))
         misc.remove_file('./test-data/beispiel/{}a.res'.format(nummer))
         misc.remove_file('./test-data/beispiel/{}a.lst'.format(nummer))
-        misc.remove_file('./test-data/beispiel/*.fcf')
+        misc.remove_file('./test-data/beispiel/{}a.fcf'.format(nummer))
+        misc.remove_file('./test-data/beispiel/{}.fcf'.format(nummer))
+        print("parameter:", parameter)
         for line in remlines:
             del a[line]
             del b[line]
@@ -305,6 +307,15 @@ class dsr_complete_runs_Test(unittest.TestCase):
         """
         self.maxDiff = None
         self.dsr_runtest(22, '-r', hkl=20)
+
+    def testrun_run23(self):
+        """
+        REM DSR PUT TOLUENE WITH C2 C3 C5 ON Q1 Q2 Q1 PART -1 OCC 10.5 RESI TOL
+        1.0005, 0.5447, 0.5342, 0.9314, 0.5395, 0.5126, 0.9995, 0.4553, 0.4658
+        """
+        self.maxDiff = None
+        self.dsr_runtest(23, '-target 1.0005 0.5447 0.5342 0.9314 0.5395 0.5126 0.9995 0.4553 0.4658 -r')
+
 
 db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
                'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',

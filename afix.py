@@ -142,8 +142,8 @@ class Afix(object):
         self.numberscheme = numberscheme
         self.part = dsr_line_dict['part']
         self.occ = dsr_line_dict['occupancy']
-        self.source_atoms = dsr_line_dict['source']
-        self.target_atoms = dsr_line_dict['target']
+        self.source_atoms = dsr_line_dict['source']  # list
+        self.target_atoms = dsr_line_dict['target']  # list
         self._dfix = dsr_line_dict['dfix']
         self.options = options
         self.rand_id_dfx = id_generator(size=7)
@@ -222,13 +222,23 @@ class Afix(object):
         return [distance, others]
 
     def combine_names_and_coordinates(self):
+        """
+        Combines the target atom names with the coordinates from the -target option.
+        Douplicate q-peak names are explicitely allowed here for special positions.
+        Therefore, the target atoms are named DUM0, DUM1, DUM2, ...
+        """
         atoms = {}
         chunk = misc.chunks(self.options.target_coords, 3)
         if len(chunk) != len(self.target_atoms):
             print("*** Different number of target atoms and target coordinates! Can not proceed. ***")
             sys.exit()
-        for num, at in enumerate(self.target_atoms):
+        tmp = self.target_atoms
+        self.target_atoms = []
+        for num, at in enumerate(tmp):
+            # Handles douplicate q-peak names:
+            at = "DUM{}".format(num)
             atoms[at] = chunk[num]
+            self.target_atoms.append(at)
         return atoms
 
     def build_afix_entry(self, external_restraints, dfx_file_name, resi):

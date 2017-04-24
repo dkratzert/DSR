@@ -260,7 +260,7 @@ def sortedlistdir(directory):
     """
     try:
         dirlist = os.listdir(directory)
-    except (OSError, shutil.WindowsError):
+    except(IOError, OSError):
         return False
     dirlist.sort()
     return dirlist
@@ -424,7 +424,7 @@ def remove_file(filename, exit_dsr=False, terminate=False):
     if os.path.isfile(filename):
         try:
             os.remove(filename)
-        except(shutil.WindowsError, OSError):
+        except(IOError, OSError):
             print('can not delete {}'.format(filename))
             # print 'unable to cleanup ins {} files!'.format(file)
             if terminate:
@@ -457,7 +457,7 @@ def copy_file(source, target):
                 shutil.copyfile(filen, target)
         else:
             shutil.copyfile(source, target)
-    except(IOError) as e:
+    except IOError as e:
         print('Unable to copy {}.'.format(source_file))
         print(e)
 
