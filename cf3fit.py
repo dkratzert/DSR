@@ -394,7 +394,7 @@ class CF3(object):
         else:
             occ = str((self.rle.get_fvar_count()+1)*10+1+20)
         fcount = self.rle.get_fvar_count()
-        self.rle.set_free_variables(occ, '0.3')
+        fvar = self.rle.set_free_variables(occ, '0.3')
         atomline = self.fa.get_atom_line_numbers([target_atom])[0]
         self.make_pivot_isotropic(atomline)
         atoms_cf9 = ['PART 1 {1}1', 
@@ -428,8 +428,8 @@ class CF3(object):
         atoms_cf9 = '\n'.join(atoms_cf9).format(self.e2s.elem_2_sfac('F'),
                                         fcount+1, fcount+2, fcount+3, *coords)
         self.reslist[atomline] += atoms_cf9
-        # already done in set_free_variables()
-        #self.reslist[self.rle.find_fvarlines()[0]] = fvar
+        # have to do this here, because set_free_variables() works on different reslist:
+        self.reslist[self.rle.find_fvarlines()[0]] = ' \n'.join(fvar)+' \n'
         shx = ShelxlRefine(self.reslist, self.basefilename, self.fa, self.options)
         shx.set_refinement_cycles('8')
         self.rl.write_resfile(self.reslist, '.res')
