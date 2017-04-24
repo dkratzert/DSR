@@ -429,7 +429,7 @@ class CF3(object):
                                         fcount+1, fcount+2, fcount+3, *coords)
         self.reslist[atomline] += atoms_cf9
         # have to do this here, because set_free_variables() works on different reslist:
-        self.reslist[self.rle.find_fvarlines()[0]] = ' \n'.join(fvar)+' \n'
+        self.reslist[self.rle.find_fvarlines()[0]] = ' \n'.join(fvar)+'\n'
         shx = ShelxlRefine(self.reslist, self.basefilename, self.fa, self.options)
         shx.set_refinement_cycles('8')
         self.rl.write_resfile(self.reslist, '.res')
