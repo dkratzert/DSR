@@ -222,6 +222,7 @@ class Afix(object):
         return [distance, others]
 
     def combine_names_and_coordinates(self):
+        # type: () -> list
         """
         Combines the target atom names with the coordinates from the -target option.
         Douplicate q-peak names are explicitely allowed here for special positions.
@@ -245,6 +246,7 @@ class Afix(object):
         """
         build an afix entry with atom coordinates from the target atoms
 
+        :type resi: Resi
         :param external_restraints:  True/False decision if restraints should be
                                      written to external file
         :param dfx_file_name:        name of file for external restraints

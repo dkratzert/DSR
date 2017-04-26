@@ -80,10 +80,10 @@ class Resi(object):
 
     @property
     def get_residue_class(self):
-        '''
-        Returns the residue class of the currently fitted fragment
-        :type self._combined_resi['class']: string
-        '''
+        """
+        Returns the residue class of the currently fitted fragment. Also is an indicator 
+        if residues are active.
+        """
         return self._combined_resi['class']
 
     def remove_resi(self, head):
@@ -130,7 +130,6 @@ class Resi(object):
             newhead.append(line)
         return newhead
 
-
     def get_unique_resinumber(self, resinum):
         '''
         Finds a unique resi number. If the number is already unique
@@ -153,13 +152,13 @@ class Resi(object):
         else:
             return resinum
 
-
     def build_up_residue(self):
-        '''
+        """
+        :type () -> str
         Decides which class and residue number should be used for the fragment.
         Returns a final dict with the residue settings.
         self._resi_dict_dsr_command is False if resi is enabled but no values given.
-        '''
+        """
         final_residue = {'class': None, 'number': None, 'alias': None}
         resiclass = None
         resinum = None
