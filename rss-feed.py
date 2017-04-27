@@ -11,7 +11,6 @@
 #
 import os
 from collections import OrderedDict
-from pprint import pprint
 
 import misc
 

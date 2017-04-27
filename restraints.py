@@ -17,10 +17,8 @@ import string
 import sys
 from collections import OrderedDict
 from atomhandling import get_atomtypes
-from dsrparse import DSR_Parser
 from elements import ELEMENTS
 from misc import distance, vol_tetrahedron, flatten2, get_overlapped_chunks, remove_partsymbol, shift, find_line
-from resfile import ResList
 
 # all upper case for case insensitivity:
 alphabet = [ i for i in string.ascii_uppercase ]
