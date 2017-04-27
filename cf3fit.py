@@ -1,5 +1,5 @@
 #-*- encoding: utf-8 -*-
-'''
+"""
 Created on 13.05.2015
 
 @author: Daniel Kratzert
@@ -11,13 +11,9 @@ Created on 13.05.2015
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
+"""
 
-'''
-import resfile
-from dbfile import global_DB
-from atomhandling import FindAtoms, SfacTable, Elem_2_Sfac, NumberScheme
-from dsrparse import DSR_Parser
-from options import OptionsParser
+from atomhandling import Elem_2_Sfac, NumberScheme
 from refine import ShelxlRefine
 from restraints import ListFile
 from elements import ELEMENTS
@@ -26,7 +22,7 @@ from misc import atomic_distance, frac_to_cart, cart_to_frac,\
     calc_ellipsoid_axes
 from math import radians, sqrt
 import sys
-from resfile import ResList, ResListEdit
+from resfile import ResList
 import mpmath as mpm
 import string
 

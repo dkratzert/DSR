@@ -1,9 +1,6 @@
 import os
 import subprocess
 import tempfile
-import time
-import sys
-import dsr
 import misc
 import selfupdate
 try:  # Python2:
