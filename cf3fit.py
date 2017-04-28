@@ -280,6 +280,7 @@ class CF3(object):
             axes = calc_ellipsoid_axes(c_coords, uvals, self.cell)
         else:
             splitatoms = False
+        # The fluorine atoms are generated here:
         fatoms = self.make_afix(afixnum=int(afix), linenumber=atomline)
         if not fatoms:
             return False
@@ -359,6 +360,7 @@ class CF3(object):
         ####################################################
         reslist_copy = self.reslist[:]
         self.make_pivot_isotropic(atomline)
+        # Fluorine atoms are generated here:
         fatoms = self.make_afix(afixnum=130, linenumber=atomline, resioff=True)
         self.do_refine_cycle(self.rl, self.reslist)
         # this is the bond around the CF3 group rotates
