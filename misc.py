@@ -954,30 +954,34 @@ def dice_coefficient2(a, b, case_insens=True):
     (per discussion), otherwise 'AA' and 'AAAA' would have a 
     dice coefficient of 1...
     https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Dice%27s_coefficient#Python
+
+    This implementation is reverse. 1 means not hit, 0 means best match
     >>> dice_coefficient2('hallo', 'holla')
-    0.25
+    0.75
     >>> dice_coefficient2('Banze', 'Benzene')
-    0.4
+    0.6
     >>> dice_coefficient2('halo', 'Haaallo')
-    0.666667
+    0.333333
     >>> dice_coefficient2('hallo', 'Haaallo')
-    0.8
+    0.2
     >>> dice_coefficient2('hallo', 'Hallo')
-    1.0
-    >>> dice_coefficient2('aaa', 'BBBBB')
     0.0
+    >>> dice_coefficient2('aaa', 'BBBBB')
+    1.0
+    >>> dice_coefficient2('', '')
+    1.0
     """
     if case_insens:
         a = a.lower()
         b = b.lower()
     if not len(a) or not len(b):
-        return 0.0
+        return 1.0
     # quick case for true duplicates
     if a == b:
-        return 1.0
+        return 0.0
     # if a != b, and a or b are single chars, then they can't possibly match
     if len(a) == 1 or len(b) == 1:
-        return 0.0
+        return 1.0
     # use python list comprehension, preferred over list.append()
     a_bigram_list = [a[i:i + 2] for i in range(len(a) - 1)]
     b_bigram_list = [b[i:i + 2] for i in range(len(b) - 1)]
