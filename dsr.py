@@ -27,15 +27,13 @@ from afix import Afix
 from refine import ShelxlRefine
 from resfile import ResList, filename_wo_ending, ResListEdit
 
-VERSION = '201'
+VERSION = '202'
 # dont forget to change version in Innoscript file, spec file and deb file.
 
 program_name = '\n'+((width//2)-9)*'-'+' D S R - v{} '.format(VERSION)+((width//2)-8)*'-'
 
 # TODO and ideas:
 '''
-- Improve search algorithm
-
 - Add Rcomplete
 
 From SHELXL user guide:
