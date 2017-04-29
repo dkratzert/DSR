@@ -100,9 +100,9 @@ class DSR():
             self.gdb = global_DB(invert=self.invert)
         except Exception as e:  # @UnusedVariable
             print("*** Initializing the database failed ***")
-            print(self.helpmsg)
-            print(e)
-            sys.exit()
+            #print(self.helpmsg)
+            raise
+            #sys.exit()
         #  List of database Fragments:
         if self.list_db_csv:
             print('DSR version: {}'.format(VERSION))

@@ -39,7 +39,6 @@ class DSRURLopener(FancyURLopener):
 _urlopener = DSRURLopener()
 
 
-
 def get_current_dsr_version(silent=False):
     """
     determines the current version of DSR on the web server
