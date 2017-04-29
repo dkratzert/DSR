@@ -29,6 +29,7 @@ from argparse import ArgumentParser, SUPPRESS
 __metaclass__ = type  # use new-style classes
 
 
+
 class OptionsParser():
     """
     This class uses the ArgumentParser module to parse the command line options.
@@ -212,6 +213,8 @@ class OptionsParser():
     @property
     def all_options(self):
         return self._options
+
+
 
 
 if __name__ == '__main__':
