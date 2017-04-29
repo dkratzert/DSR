@@ -2478,144 +2478,6 @@ def _descriptions(symbol):
     return e[symbol].description
 
 
-def sqlite_script():
-    """Return SQL script to create sqlite database of elements.
-
-    Examples
-    --------
-    >>> import sqlite3
-    >>> con = sqlite3.connect(':memory:')
-    >>> cur = con.executescript(sqlite_script())
-    >>> con.commit()
-    >>> for r in cur.execute("SELECT name FROM element WHERE number=6"):
-    ...     str(r[0])
-    'Carbon'
-    >>> con.close()
-
-    """
-    sql = ["""
-        CREATE TABLE "period" (
-            "number" TINYINT NOT NULL PRIMARY KEY,
-            "label" CHAR NOT NULL UNIQUE,
-            "description" VARCHAR(64)
-        );
-        CREATE TABLE "group" (
-            "number" TINYINT NOT NULL PRIMARY KEY,
-            "label" VARCHAR(8) NOT NULL,
-            "description" VARCHAR(64)
-        );
-        CREATE TABLE "block" (
-            "label" CHAR NOT NULL PRIMARY KEY,
-            "description" VARCHAR(64)
-        );
-        CREATE TABLE "series" (
-            "id" TINYINT NOT NULL PRIMARY KEY,
-            "label"  VARCHAR(32) NOT NULL,
-            "description" VARCHAR(256)
-        );
-        CREATE TABLE "element" (
-            "number" TINYINT NOT NULL PRIMARY KEY,
-            "symbol" VARCHAR(2) UNIQUE NOT NULL,
-            "name" VARCHAR(16) UNIQUE NOT NULL,
-            "period" TINYINT NOT NULL,
-            --FOREIGN KEY("period") REFERENCES "period"(number),
-            "group" TINYINT NOT NULL,
-            --FOREIGN KEY("group") REFERENCES "group"(number),
-            "block" CHAR NOT NULL,
-            --FOREIGN KEY("block") REFERENCES "block"(label),
-            "series" TINYINT NOT NULL,
-            --FOREIGN KEY("series") REFERENCES "series"(id),
-            "mass" REAL NOT NULL,
-            "eleneg" REAL,
-            "covrad" REAL,
-            "atmrad" REAL,
-            "vdwrad" REAL,
-            "tboil" REAL,
-            "tmelt" REAL,
-            "density" REAL,
-            "eleaffin" REAL,
-            "eleconfig" VARCHAR(32),
-            "oxistates" VARCHAR(32),
-            "description" VARCHAR(2048)
-        );
-        CREATE TABLE "isotope" (
-            "element" TINYINT NOT NULL,
-            --FOREIGN KEY ("element") REFERENCES "element"("number"),
-            "massnum" TINYINT NOT NULL,
-            "mass" REAL NOT NULL,
-            "abundance" REAL NOT NULL,
-            PRIMARY KEY ("element", "massnum")
-        );
-        CREATE TABLE "eleconfig" (
-            "element" TINYINT NOT NULL,
-            --FOREIGN KEY ("element") REFERENCES "element"("number"),
-            "shell" TINYINT NOT NULL,
-            --FOREIGN KEY ("shell") REFERENCES "period"("number"),
-            "subshell" CHAR NOT NULL,
-            --FOREIGN KEY ("subshell") REFERENCES "block"("label"),
-            "count" TINYINT,
-            PRIMARY KEY ("element", "shell", "subshell")
-        );
-        CREATE TABLE "ionenergy" (
-            "element" TINYINT NOT NULL,
-            --FOREIGN KEY ("element") REFERENCES "element"("number"),
-            "number" TINYINT NOT NULL,
-            "energy" REAL NOT NULL,
-            PRIMARY KEY ("element", "number")
-        );
-    """]
-
-    for key, label in PERIODS.items():
-        sql.append("""INSERT INTO "period" VALUES (%i, '%s', NULL);""" % (
-            key, label))
-
-    for key, (label, descr) in GROUPS.items():
-        sql.append("""INSERT INTO "group" VALUES (%i, '%s', '%s');""" % (
-            key, label, descr))
-
-    for data in BLOCKS.items():
-        sql.append("""INSERT INTO "block" VALUES ('%s', '%s');""" % data)
-
-    for series in sorted(SERIES):
-        sql.append("""INSERT INTO "series" VALUES (%i, '%s', '');""" % (
-            series, SERIES[series]))
-
-    for ele in ELEMENTS:
-        sql.append("""
-        INSERT INTO "element" VALUES (%i, '%s', '%s', %i, %i, '%s', %i,
-            %.10f, %.4f, %.4f, %.4f, %.4f,
-            %.4f, %.4f, %.4f, %.8f,
-            '%s', '%s',
-            '%s'
-        );""" % (
-            ele.number, ele.symbol, ele.name, ele.period, ele.group,
-            ele.block, ele.series, ele.mass, ele.eleneg,
-            ele.covrad, ele.atmrad, ele.vdwrad, ele.tboil, ele.tmelt,
-            ele.density, ele.eleaffin, ele.eleconfig, ele.oxistates,
-            word_wrap(
-                ele.description.replace("'", "\'\'").replace("\"", "\"\""),
-                linelen=74, indent=0, joinstr="\n ")))
-
-    for ele in ELEMENTS:
-        for iso in ele.isotopes.values():
-            sql.append(
-                """INSERT INTO "isotope" VALUES (%i, %i, %.10f, %.8f);""" % (
-                    ele.number, iso.massnumber, iso.mass, iso.abundance))
-
-    for ele in ELEMENTS:
-        for (shell, subshell), count in ele.eleconfig_dict.items():
-            sql.append(
-                """INSERT INTO "eleconfig" VALUES (%i, %i, '%s', %i);""" % (
-                    ele.number, shell, subshell, count))
-
-    for ele in ELEMENTS:
-        for i, ionenergy in enumerate(ele.ionenergy):
-            sql.append("""INSERT INTO "ionenergy" VALUES (%i, %i, %.4f);""" % (
-                ele.number, i + 1, ionenergy))
-
-    return '\n'.join(sql).replace("        ", "")
-
-
 def word_wrap(text, linelen=80, indent=0, joinstr="\n"):
     """Return string, word wrapped at linelen."""
     if len(text) < linelen:
@@ -2637,7 +2499,12 @@ def word_wrap(text, linelen=80, indent=0, joinstr="\n"):
 
 
 if __name__ == "__main__":
-    for ele in ELEMENTS:
-        print(repr(ele), '\n')
+    #for ele in ELEMENTS:
+    #    print(repr(ele), '\n')
     import doctest
-    doctest.testmod(verbose=False)
+
+    failed, attempted = doctest.testmod()  # verbose=True)
+    if failed == 0:
+        print('passed all {} tests!'.format(attempted))
+    else:
+        print('{} of {} tests failed'.format(failed, attempted))

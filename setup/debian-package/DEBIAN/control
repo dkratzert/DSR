@@ -18,4 +18,4 @@ Description: DSR - Disordered Structure Refinement
  position of the target atoms specified by the user. Bond restraints are applied
  from the database to the molecule.
  Development is on GitHub: https://github.com/dkratzert/dsr
-Version: 195
+Version: 202

@@ -15,7 +15,6 @@ import os
 import shutil
 import tarfile
 import tempfile
-import urllib
 import sys
 
 from dsr import VERSION
@@ -23,10 +22,22 @@ from dsr import VERSION
 urlprefix = "http://www.xs3-data.uni-freiburg.de/data"
 
 # changes the user-agent of the http request:
-class DSRURLopener(urllib.FancyURLopener):
-    version = "DSR-updater"
+# Python 2 and 3: alternative 4
+try:
+    # Python 3:
+    from urllib.parse import urlparse, urlencode
+    from urllib.request import urlopen, Request, FancyURLopener
+    from urllib.error import HTTPError
+except ImportError:
+    # Python 2:
+    from urlparse import urlparse
+    from urllib import urlencode, FancyURLopener
+    from urllib2 import urlopen, Request, HTTPError
 
-urllib._urlopener = DSRURLopener()
+class DSRURLopener(FancyURLopener):
+    version = "DSR-updater"
+_urlopener = DSRURLopener()
+
 
 
 def get_current_dsr_version(silent=False):
@@ -34,20 +45,22 @@ def get_current_dsr_version(silent=False):
     determines the current version of DSR on the web server
 
     >>> get_current_dsr_version()
-    '193'
+    '199'
 
     Returns
     -------
     version number
     :type: int
     """
+    import socket
+    socket.setdefaulttimeout(3)
     try:
-        response = urllib.urlopen('{}/version.txt'.format(urlprefix))
+        response = urlopen('{}/version.txt'.format(urlprefix))
     except IOError:
         if not silent:
             print("*** Unable to connect to update server. No Update possible. ***")
         return 0
-    version = response.readline().strip()
+    version = response.readline().decode('ascii').strip()
     return version
 
 
@@ -68,6 +81,8 @@ def is_update_needed(silent=False):
 def update_dsr(force=False, version=None):
     """
     Updates the running DSR to the current version on the web server.
+    #>>> update_dsr(force=True)
+    #True
     """
     if version:
         version = version
@@ -134,12 +149,13 @@ def post_update_things():
         print('*** Unable to perform update. Please run me with super-user rights, e.g.: "sudo /opt/DSR/dsr -u" ***')
 
 
-def overwrite_dir(root_src_dir, root_dst_dir, move=True):
+def move_dir(root_src_dir, root_dst_dir, move=True):
     """
     Moves the content of scrdir over destdir and overwrites all files.
-
-    :param src_dir: source directory
-    :param dst_dir: target directory
+    
+    :param move: move directory instead of copying it
+    :param root_src_dir: source directory
+    :param root_dst_dir: target directory
     :return: True/False
     """
     for src_dir, dirs, files in os.walk(root_src_dir):
@@ -158,23 +174,28 @@ def overwrite_dir(root_src_dir, root_dst_dir, move=True):
     return True
 
 
-def get_update_package(version):
+def get_update_package(version, destdir=None, post=True):
     """
     Downloads the current DSR distribution from the web server and
     updates the files.
 
+    :param post: Defines if post_update_things() should be executed
+    :param destdir: Optional destdir instead of DSR_DIR
     :type version: int or string
 
     Returns
     -------
     True/False
+
+    >>> get_update_package('199')
+    True
     """
     try:
         dsrdir = os.path.dirname(os.path.realpath(__file__))
     except KeyError:
         print("*** Could not determine the location of DSR. Can not update. ***" )
         sys.exit()
-    response = urllib.urlopen('{}/DSR-{}.tar.gz'.format(urlprefix, version))
+    response = urlopen('{}/DSR-{}.tar.gz'.format(urlprefix, version))
     with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
         tmpfile.write(response.read())
     tmpdir = tempfile.mkdtemp()  # a temporary directory
@@ -182,22 +203,29 @@ def get_update_package(version):
         with tarfile.open(tmpfile.name) as tarobj:
             tarobj.extractall(path=tmpdir)
     except tarfile.ReadError as e:
-        print('*** Cound not get update from server. If this problem persists, please update manually! ***')
+        print('*** Could not get update from server. If this problem persists, please update manually! ***')
         print('***', e, '***')
-        print('Unable to perform update. Please run me with super-user rights, e.g.: "sudo DSR_DIR=/opt/DSR /opt/DSR/dsr -u"')
-        print(
-            'Unable to perform update. Please run me with super-user rights, e.g.: "sudo /opt/DSR/dsr -u"')
+        return False
+    os.remove(tmpfile.name)
+    try:
+        if not destdir:
+            move_dir(os.path.join(tmpdir, "DSR-{}".format(version)), dsrdir, move=False)
+        else:
+            move_dir(os.path.join(tmpdir, "DSR-{}".format(version)), destdir, move=False)
+    except OSError:
+        print('*** Unable to perform update. Please run me with super-user rights, e.g.: "sudo /opt/DSR/dsr -u" ***')
         sys.exit()
     shutil.rmtree(tmpdir, ignore_errors=True)  # cleanup the files
-    post_update_things()
+    if post:
+        post_update_things()
     return True
 
 
 if __name__ == "__main__":
-    # import sys
-    # import doctest
-    # failed, attempted = doctest.testmod()  # verbose=True)
-    # if failed == 0:
-    #    print('passed all {} tests!'.format(attempted))
-    print(is_update_needed(silent=True))
-    # update_dsr(force=True, version=193)
+    import doctest
+
+    failed, attempted = doctest.testmod()  # verbose=True)
+    if failed == 0:
+        print('passed all {} tests!'.format(attempted))
+    else:
+        print('{} of {} tests failed'.format(failed, attempted))

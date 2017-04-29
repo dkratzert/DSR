@@ -1,0 +1,9 @@
+
+------------------------------------------- D S R - v196 --------------------------------------------
+ Fragment          | Full name, Comments                      | Line number
+--------------------------------------------------------------------------------------------------------
+ toluene           | Toluene, C7H8                            | 797
+ pro               | PROLINE                                  | 4380
+ ile               | ISOLEUCINE                               | 4152
+ tbu-o             | tert-Butanol (or tert-Butoxy)            | 2115
+ pyr               | PYRROLYSINE                              | 3717

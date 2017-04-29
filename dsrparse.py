@@ -20,7 +20,7 @@ import logging
 __metaclass__ = type  # use new-style classes
 
 class DSR_Parser():
-    '''
+    """
     handles the parsing of the DSR command
 
     This Class should have the reslist object as input and
@@ -28,12 +28,12 @@ class DSR_Parser():
 
     Additionally the FVAR line in the reslist gets corrected by set_fvar() at
     the end of parse_dsr_line().
-    '''
+    """
     def __init__(self, reslist, rle):
-        '''
+        """
         :param reslist: list of strings of .res file
         :param rle:  ResList() object
-        '''
+        """
         self._reslist = reslist
         self._rle = rle
         self._dsr_regex = '^rem\s{1,5}DSR\s{1,5}.*'
@@ -41,15 +41,15 @@ class DSR_Parser():
         self._dsr_list = misc.makelist(self._dsr_string)
         try:
             self.dsr_dict = self.parse_dsr_line()
-        except:
+        except Exception as e:
             print("*** Parsing DSR command failed. ***")
+            print(e)
             logging.basicConfig(filename=misc.reportlog, filemode='w', level=logging.DEBUG)
             logging.info('DSR command line: {}'.format(self._dsr_string))
 
     @property
     def get_dsr_dict(self):
         try:
-            self.dsr_dict
             return self.dsr_dict
         except AttributeError as e:
             #print(e)
@@ -57,14 +57,14 @@ class DSR_Parser():
             sys.exit()
     
     def find_dsr_command(self, line=False):
-        '''
+        """
         line = False  -> Line number
         line = True  -> Text string
         find the lines with a DSR command entry and return its line number as
         default or the text string when line is set to True
         :param line: bool
-        '''
-        HKLF_endline = misc.find_line(self._reslist, r'^HKLF\s+[1-6]')
+        """
+        hklf_endline = misc.find_line(self._reslist, r'^HKLF\s+[1-6]')
         dsr_str = ''
         multiline = False
         indexnum = misc.find_multi_lines(self._reslist, self._dsr_regex)
@@ -74,7 +74,7 @@ class DSR_Parser():
             print('*** no proper DSR command found! \n'
                     'Have you really saved your .res file? ***\n')
             sys.exit()
-        if int(line_number) > int(HKLF_endline):
+        if int(line_number) > int(hklf_endline):
             print('*** A DSR command after HKLF is not allowed! '
                     'Check line {} ***'.format(line_number+1))
             sys.exit()
@@ -108,19 +108,18 @@ class DSR_Parser():
             #if len(dsrlines) > 1:
             #    dsrlines[0] = dsrlines[0]+' ='
             dsrlines = '\n'.join(dsrlines)
-            dsrlines = dsrlines+'\n'
-            self._reslist[line_number] = '' # delete old line
+            dsrlines += '\n'
+            self._reslist[line_number] = ''  # delete old line
             if multiline:
-                self._reslist[line_number+1] = '' # delete old line
+                self._reslist[line_number+1] = ''  # delete old line
             self._reslist[line_number] = dsrlines
             return line_number                     # return the line index number
 
-
     def find_commands(self, command):
-        '''
+        """
         returns the value of the input string argument as string
         :param command: string
-        '''
+        """
         # hier vielleicht sogar mit match, damit OCCC nicht gültig ist
         if command in self._dsr_list:
             try:
@@ -132,15 +131,14 @@ class DSR_Parser():
             cnum = False
         return cnum
 
-
     def find_atoms(self, start, *stop):
-        '''
+        """
         returns the source and target atoms between a single start argument
         and one or several stop arguments
-        '''
+        """
         try:
             atindex = self._dsr_list.index(start)+1
-        except(ValueError):
+        except ValueError:
             if start == 'WITH':
                 print('*** No source atoms given! ***')
                 sys.exit(-1)
@@ -155,12 +153,11 @@ class DSR_Parser():
                 break
         return atoms
 
-
     def minimal_requirements(self):
-        '''
+        """
         Checks if minimal requirements of the dsr command are met.
         E.g. the WITH and ON command
-        '''
+        """
         check = ('WITH', 'ON')
         for i in check:
             try:
@@ -171,15 +168,34 @@ class DSR_Parser():
                         'command line found! ***')
                 sys.exit()
 
-
     def parse_dsr_line(self):
-        '''returns the different parameters from the dsr command as dict
+        """
+        returns the different parameters from the dsr command as dict
         It needs find_commands() and find_atoms() to parse the line.
-        '''
-        cf3 = False
+
+        >>> from resfile import ResList, ResListEdit
+        >>> res_file = 'p21c.res'
+        >>> rl = ResList(res_file)
+        >>> reslist = rl.get_res_list()
+        >>> rle = ResListEdit(reslist, res_file)
+        >>> #dsr_line = dsrp.get_dsr_dict
+        >>> dsrp = DSR_Parser(reslist, rle)
+        >>> dic = dsrp.get_dsr_dict
+        >>> l = sorted(dic)
+        >>> for i in l:
+        ...     print('{}: '.format(i), dic[i])
+        command:  PUT
+        dfix:  False
+        fragment:  OC(CF3)3
+        occupancy:  -31
+        part:  2
+        resi:  ['CF3']
+        source:  ['O1', 'C1', 'C2', 'C3', 'C4']
+        split:  False
+        target:  ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7']
+        """
         source = None
-        if self._dsr_list[3] in ['CF3', 'CF6', 'CF9']:
-            cf3 = True
+        if self.cf3_active:
             splitatom = False
             if 'SPLIT' in self._dsr_list:
                 splitatom = True
@@ -201,7 +217,7 @@ class DSR_Parser():
             sys.exit(-1)
         # Source and target atoms:
         # In parenteses are one start und one to multiple stop conditions:
-        if not cf3:
+        if not self.cf3_active:
             # we need no soure atoms for cf3 groups
             source = self.find_atoms('WITH', 'ON')
         target = self.find_atoms('ON', 'PART', 'OCC', 'RESI', 'DFIX', 'SPLIT', '')
@@ -222,8 +238,8 @@ class DSR_Parser():
             print('*** Part without numerical value supplied.',
                   'Please give a part number after PART in the DSR command. ***')
             sys.exit(False)
-        if float(part) > 99:
-            print('*** only 99 parts allowed in SHELXL! ***')
+        if float(part) > 999:
+            print('*** only 999 parts allowed in SHELXL! ***')
             sys.exit(False)
         try:
             if len(part) > 4:
@@ -236,12 +252,15 @@ class DSR_Parser():
         occupancy = self.find_commands('OCC')
         badocc_message = '*** Occupancy without numerical value supplied. Please define occupancy value after OCC ***'
         badocc_status = False
-        try:
-            if float(occupancy) > 99:
-                print('*** Only 99 free variables allowed in SHELXL! ***')
-                sys.exit()
-        except(ValueError):
-            badocc_status = True
+        if occupancy != False:
+            num = occupancy.split('.')
+            fvar = abs(int(num[0]))//10
+            try:
+                if float(fvar) > 99:
+                    print('*** Only 99 free variables allowed in SHELXL! ***')
+                    sys.exit()
+            except(ValueError):
+                badocc_status = True
         if 'OCC' in self._dsr_list and not occupancy:
             badocc_status = True
         if badocc_status:
@@ -257,16 +276,19 @@ class DSR_Parser():
             'occupancy': occupancy,
             'resi': residue,
             'split': splitatom
-            };
+            }
         return dsr_dict
 
-    
-    
-    def special_cf3_parser(self):
-        '''
-        parses the command line in case we want a cf3 group an a carbon atom
-        '''
-        pass
+    @property
+    def cf3_active(self):
+        """
+        Does it have the CF3-Group keyword?
+        :return: True/False
+        """
+        cf = False
+        if self._dsr_list[3] in ['CF3', 'CF6', 'CF9']:
+            cf = True
+        return cf
 
     @property
     def fragment(self):
@@ -327,34 +349,11 @@ class DSR_Parser():
 
 #for testing:
 if __name__ == '__main__':
-    from resfile import ResList, ResListEdit
-    res_file = 'p21c.res'
-    rl = ResList(res_file)
-    reslist = rl.get_res_list()
-    rle = ResListEdit(reslist, res_file)
-    #dsr_line = dsrp.get_dsr_dict
-    dsrp = DSR_Parser(reslist, rle)
-    dsr_line = dsrp.get_dsr_dict
-    print(dsr_line)
-    #   dsr_str = dsrp.find_dsr_command(line=False)
+    
+    import doctest
 
-    #   dsr_num = dsrp.find_dsr_command(line=False)
-    #
-
-
-    print('\ncheck for FVAR:')
-    for i in reslist:
-        if i.upper().startswith('FVAR'):
-            print(i)
-    print()
-
-#    for i in dsr_line:
-#        print i.ljust(9), '=', str(dsr_line.get(i)).ljust(11)
-#    print
-
-
-    print('String:', dsrp.find_dsr_command(line=True))
-    print('Zeile mit dbentry:\n', dsrp.find_dsr_command(line=False), '\n')
-
-
-
+    failed, attempted = doctest.testmod()  # verbose=True)
+    if failed == 0:
+        print('passed all {} tests!'.format(attempted))
+    else:
+        print('{} of {} tests failed'.format(failed, attempted))

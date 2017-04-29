@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "DSR - Disordered Structure Refinement"
-#define MyAppVersion "195"
+#define MyAppVersion "202"
 #define MyAppPublisher "Daniel Kratzert"
 
 [Setup]
@@ -65,7 +65,7 @@ Name: "modifypath"; Description: "Add application directory to your system envir
 Source: "..\dsr_db.txt"; DestDir: "{app}"; Flags: ignoreversion; Permissions: users-modify
 Source: "..\dsr.bat"; DestDir: "{app}"; Flags: ignoreversion; Permissions: users-modify
 Source: "..\dsr.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\manuals\DSR-manual.pdf"; DestDir: "{app}\manual"; Flags: ignoreversion
+Source: "..\manuals\DSR-manual.pdf"; DestDir: "{app}\manuals"; Flags: ignoreversion
 Source: "..\atoms.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\afix.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\atomhandling.py"; DestDir: "{app}"; Flags: ignoreversion
@@ -124,7 +124,8 @@ Type: filesandordirs; Name: "{app}\setup"
 
 [Dirs]
 Name: "{app}\example"; Permissions: authusers-full
-Name: "{app}\manual"
+Name: "{app}\manuals"
+Name: "{app}\."; Permissions: authusers-full
 
 [Code]
 const

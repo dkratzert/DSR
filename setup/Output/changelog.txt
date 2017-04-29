@@ -1,4 +1,25 @@
 Recent changes
+-202    Greatly improved search results of "dsr -s name". A bug prevented to display very similar names
+        in the search results.
+-201    Fixed bug in threefold disordered CF3 group. Fixed -target option. Q-peaks
+        with -target can now have duplicate names. Removed FLAT in alkanes.
+-200-1  Added missing python27.dll in Windows package. Fixes "unknown error" in 
+        ShelXle GUI (Thanks to Christoph Wölper).
+-200    Startup speed improvements. Added possibility to define target position 
+        of atoms as coordinates (-target option“).
+-199    Added documentation how to control DSR with an external user interface.
+        Hexamethyl benzene fragment added. DSR inserts a comment about the origin
+        of the fragment into the res file.
+-198    Fixed some error messages. Added Leucine and Lysine. Improved search behavior.
+        Improved sorting of fragment list. Added [SbF6]-. SFAC names are now case insensitive.
+-197-1  2,6-Dichlorobenzene added.
+-197    Fixed bug that prevents using more than nine free variables. Added
+        Dichloroethane and TMEDA fragments, RSS-Feed, unit tests, more search
+        results. 
+-196    Improved C20, C60 and C70 fragments. Now they all have restraints and
+        optimized geometry. Fixed case sensitivity bug. Improved FLAT restraints.
+        Added CF3, CF6 and CF9 fragments as dummys to the database.
+        Improved unit tests.
 -195    Slight speed improvement. Cleaner code (needs more cleaning). Fixed too 
         optimistic replace mode in 194. External restraints shouuld work again.
 -194    Fixed ANSI escape codes appearing in ShelXle GUI. Improved updater.
