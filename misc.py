@@ -998,6 +998,7 @@ def dice_coefficient2(a, b, case_insens=True):
         else:
             j += 1
     score = float(matches) / float(lena + lenb)
+    score = 1-score
     return round(score, 6)
 
 

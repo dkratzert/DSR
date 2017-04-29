@@ -57,13 +57,13 @@ def search_fragment_name(search_string, gdb, numresults=6):
         names_list.append([i, fragname, line_number, dbname])
     search_results = []
     for i in names_list:
-        db_entry = make_sortkey(i[1])[0]
+        key = make_sortkey(i[1])
         #coefficient = dice_coefficient(search_string, db_entry)
-        coefficient = dice_coefficient2(search_string, db_entry)
-        i.append(coefficient)
+        coefficient = dice_coefficient2(search_string, key[0]+key[1])
+        i.append([coefficient, key[1]])
         search_results.append(i)
     # select the best n results:
-    selected_results =sorted(search_results, key=lambda coeff: coeff[4], reverse=True)[:numresults]
+    selected_results =sorted(search_results, key=lambda coeff: [coeff[-1][0], coeff[-1][1]], reverse=False)[:numresults]
     return selected_results
 
 
