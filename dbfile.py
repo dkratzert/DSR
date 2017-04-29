@@ -20,7 +20,7 @@ from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
 from atoms import Element
 from atomhandling import get_atomtypes
 from misc import atomic_distance, nalimov_test, std_dev, median, pairwise, \
-    unwrap_head_lines
+    unwrap_head_lines, dice_coefficient2, dice_coefficient
 from copy import deepcopy
 from os.path import expanduser
 from misc import touch
@@ -45,10 +45,9 @@ def invert_dbatoms_coordinates(atoms):
 
 
 def search_fragment_name(search_string, gdb, numresults=6):
-    '''
+    """
     searches the Name: comments in the database for a given name
-    '''
-    from misc import dice_coefficient
+    """
     db = gdb.db_dict
     names_list = []
     for i in db:
@@ -56,21 +55,23 @@ def search_fragment_name(search_string, gdb, numresults=6):
         line_number = gdb.get_line_number_from_fragment(i)
         dbname = gdb.get_db_name_from_fragment(i)
         names_list.append([i, fragname, line_number, dbname])
-    search_results = {}
+    search_results = []
     for i in names_list:
         db_entry = make_sortkey(i[1])[0]
-        coefficient = dice_coefficient(search_string, db_entry)
-        search_results[coefficient] = i
+        #coefficient = dice_coefficient(search_string, db_entry)
+        coefficient = dice_coefficient2(search_string, db_entry)
+        i.append(coefficient)
+        search_results.append(i)
     # select the best n results:
-    selected_results = [search_results[i] for i in sorted(search_results)[0:numresults]]
+    selected_results =sorted(search_results, key=lambda coeff: coeff[4], reverse=True)[:numresults]
     return selected_results
 
 
 def print_search_results(results):
-    '''
+    """
     prints the results of a database search to screen and exit.
     results are
-    '''
+    """
     print(' Fragment          | Full name, Comments                      | Line number')
     print(sep_line)
     for line in results:
@@ -373,8 +374,8 @@ class global_DB():
         :param line:     line number of db entry
         :type line:      integer
 
-        >>> gdb = global_DB(invert=False)
-        >>> gdb.get_fragment_atoms(fragment='benZene', db_name='dsr_db', line=669)
+        #>>> gdb = global_DB(invert=False)
+        #>>> gdb.get_fragment_atoms(fragment='benZene', db_name='dsr_db', line=669)
         ... # doctest: +NORMALIZE_WHITESPACE
         [['C1', '1', '0.880000', '-0.330900', '0.267190'], ['C2', '1', '0.786200', '-0.377700', '0.238080'],
         ['C3', '1', '0.760600', '-0.318400', '0.192570'], ['C4', '1', '0.829200', '-0.212200', '0.175520'],
@@ -763,12 +764,12 @@ class global_DB():
         return comment
 
     def get_src_from_fragment(self, fragment):
-        '''
+        """
         returns the source line of the dbentry of a fragment
         if a line with "rem Src:" is present.
         :param fragment: actual fragment name
         :type fragment: string
-        '''
+        """
         src = self._db_all_dict[fragment.lower()]['comment']
         for i in src:
             if re.match(r'.*[s|S][r|R][c|C]|Source:.*', i):
@@ -779,15 +780,15 @@ class global_DB():
         return src
 
     def get_db_name_from_fragment(self, fragment):
-        '''
+        """
         returns the fragment database name of fragment x
-        '''
+        """
         return self._db_all_dict[fragment.lower()]['db']
 
 
 class ImportGRADE():
     def __init__(self, grade_tar_file, invert=False, maindb=None, userdb=None):
-        '''
+        """
         class to import fragments from GRADE of Global Phasing Ltd.
         :param grade_tar_file:
         :type grade_tar_file:
@@ -799,7 +800,7 @@ class ImportGRADE():
         :type userdb:   string
         :param dbnames: file names of the databases
         :type dbnames:  string
-        '''
+        """
         if userdb is None:
             homedir = expanduser("~")
             self.user_db_path = os.path.join(homedir, "dsr_user_db.txt")
@@ -838,9 +839,9 @@ class ImportGRADE():
         self._comments = self.get_comments()
 
     def get_gradefiles(self, grade_tar_file):
-        '''
+        """
         returns the .mol2 and .dfix file location
-        '''
+        """
         grade_base_filename = os.path.splitext(grade_tar_file)
         if grade_base_filename[1] == '.tgz':
             try:
@@ -880,15 +881,15 @@ class ImportGRADE():
         return tmp
 
     def get_name_from_pdbfile(self):
-        '''
+        """
         get the fragment name from the pdbfile.txt file
         :param pdbfile: file with some information about the molecule
         :type pdbfile: list of strings
 
-        >>> mog = ImportGRADE('/Users/daniel/Downloads/aminoacids/GLN.gradeserver_all.tgz', False)
-        >>> print(mog.get_name_from_pdbfile())
-        GLUTAMINE
-        '''
+        >>> mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz', False)
+        >>> mog.get_name_from_pdbfile()
+        'Alanine'
+        """
         full_name = None
         full_name_regex = re.compile(r'^.*Compound full name.*')
         for line in self._pdbfile:
@@ -910,15 +911,15 @@ class ImportGRADE():
         return full_name
 
     def get_resi_from_pdbfile(self):
-        '''
+        """
         get the fragment name from the pdbfile.txt file
         :param pdbfile: file with some information about the molecule
         :type pdbfile: list of strings
 
-        >>> mog = ImportGRADE('/Users/daniel/Downloads/aminoacids/GLN.gradeserver_all.tgz', False)
-        >>> print(mog.get_resi_from_pdbfile())
-        GLN
-        '''
+        >>> mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz', False)
+        >>> mog.get_resi_from_pdbfile()
+        'ALA'
+        """
         resi_name = None
         resi_regex = re.compile(r'^HETATM\s+1.*')
         for line in self._pdbfile:
@@ -935,7 +936,7 @@ class ImportGRADE():
         return resi_name
 
     def get_comments(self):
-        '''
+        """
         returns a detailed comment out of the .dfix file where the fragment was imported from
 
         #   REM Produced by Grade Web Server http://grade.globalphasing.org
@@ -944,7 +945,7 @@ class ImportGRADE():
         #   REM GEN: using MOGUL 1.6(RC5), CSD as535be with quantum mechanics RM1
         #   REM grade-cif2shelx output
         #   REM Version: 0.0.5 <Dec 20 2013>
-        '''
+        """
         matches = ['REM Produced by Grade', 'REM GEN:', 'REM grade-cif2shelx', 'REM Version:', 'REM Total charge']
         comments = []
         name = 'REM Name: ' + self._frag_name
@@ -958,15 +959,16 @@ class ImportGRADE():
         return comments
 
     def get_first_last_atom(self, atoms):
-        '''
+        """
+        :type atoms: list
         returns the first and the last atom from the imported atom list
-        '''
+        """
         try:
             first = atoms[0][0]
             last = atoms[-1][0]
         except:
             return False
-        return (first, last)
+        return first, last
 
     def get_restraints(self):
         '''
@@ -992,9 +994,9 @@ class ImportGRADE():
         return restraints
 
     def get_pdbatoms(self, pdb):
-        '''
+        """
         returns the atoms from a pdb file
-        '''
+        """
         atomlines = []
         for line in pdb:
             if not isinstance(line, str):
@@ -1015,10 +1017,10 @@ class ImportGRADE():
         return atomlines
 
     def bild_grade_db_entry(self):
-        '''
+        """
         builds a dbentry from the information supplied by GRADEs
         .mol2 and .dfix file
-        '''
+        """
         db_import_dict = {}
         num = 0
         name = self._resi_name[:3].upper()
@@ -1058,10 +1060,10 @@ class ImportGRADE():
         sys.exit(False)
 
     def write_user_database(self):
-        '''
+        """
         writes content of existing dsr_user_db.txt and the imported GRADE entry to
         the dsr_user_db.txt
-        '''
+        """
         fragments = list(self._db)
         imported_entry = self.bild_grade_db_entry()
         grade_db_names = list(imported_entry)
@@ -1114,7 +1116,6 @@ class ImportGRADE():
 
 
 if __name__ == '__main__':
-
     import doctest
 
     failed, attempted = doctest.testmod()  # verbose=True)
@@ -1122,19 +1123,4 @@ if __name__ == '__main__':
         print('passed all {} tests!'.format(attempted))
     else:
         print('{} of {} tests failed'.format(failed, attempted))
-    ###################################################################
 
-    sys.exit()
-    gdb = global_DB(invert=False)
-    db = gdb.build_db_dict()
-    dbnames = list(db)
-
-    for names in dbnames:
-        # fragment = 'pfanion'
-        fragment = names
-        dbhead = gdb.get_head_from_fragment(fragment)  # this is only executed once
-        dbhead = unwrap_head_lines(dbhead)
-        dbatoms = gdb.get_atoms_from_fragment(fragment)
-
-        head = db[fragment]['head']
-        # gdb.check_sadi_consistence(fragment)

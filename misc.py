@@ -636,12 +636,10 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
 def shift(seq, n):
     """
     left-shift a sliceable object by n
-
     :param seq: sequence to shift
     :type seq: string or list
     :param n: shift length
     :type n: int
-
     >>> shift('hello world', 3)
     'lo worldhel'
     >>> shift(['sdfg', 'dsfg', '111', '222'], 1)
@@ -905,22 +903,35 @@ def vol_unitcell(a, b, c, al, be, ga):
     return v
 
 
-def dice_coefficient(a, b):
+def dice_coefficient(a, b, case_insens=True):
     """
-    dice coefficient 2nt/na + nb
-    Compares the similarity of a and b
-    :param a: string
-    :param b: string
-    >>> print(dice_coefficient('hallo', 'holla'))
+    :type a: str
+    :type b: str
+    :type case_insens: bool
+    dice coefficient 2nt/na + nb.
+    https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Dice%27s_coefficient#Python
+    >>> dice_coefficient('hallo', 'holla')
+    0.25
+    >>> dice_coefficient('Banze', 'Benzene')
+    0.444444
+    >>> dice_coefficient('halo', 'Haaallo')
     0.75
-    >>> print(dice_coefficient('Banze', 'Benzene'))
-    0.555556
+    >>> dice_coefficient('hallo', 'Haaallo')
+    0.888889
+    >>> dice_coefficient('hallo', 'Hallo')
+    1.0
+    >>> dice_coefficient('aaa', 'BBBBB')
+    0.0
     """
-    a = a.lower()
-    b = b.lower()
-    if not len(a) or not len(b): return 0.0
-    if len(a) == 1:  a = a + '.'
-    if len(b) == 1:  b = b + '.'
+    if case_insens:
+        a = a.lower()
+        b = b.lower()
+    if not len(a) or not len(b):
+        return 0.0
+    if len(a) == 1:
+        a = a + u'.'
+    if len(b) == 1:
+        b = b + u'.'
     a_bigram_list = []
     for i in range(len(a) - 1):
         a_bigram_list.append(a[i:i + 2])
@@ -931,24 +942,43 @@ def dice_coefficient(a, b):
     b_bigrams = set(b_bigram_list)
     overlap = len(a_bigrams & b_bigrams)
     dice_coeff = overlap * 2.0 / (len(a_bigrams) + len(b_bigrams))
-    dice_coeff = 1 - dice_coeff  # invert the result
-    if dice_coeff < 0.5:  # make a cutoff for the best matches
-        return 0.0
     return round(dice_coeff, 6)
 
 
-def dice_coefficient2(a, b):
-    """
+def dice_coefficient2(a, b, case_insens=True):
+    """ 
+    :type a: str
+    :type b: str
+    :type case_insens: bool
     duplicate bigrams in a word should be counted distinctly
-    (per discussion), otherwise 'AA' and 'AAAA' would have a
+    (per discussion), otherwise 'AA' and 'AAAA' would have a 
     dice coefficient of 1...
+    https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Dice%27s_coefficient#Python
+    >>> dice_coefficient('hallo', 'holla')
+    0.25
+    >>> dice_coefficient('Banze', 'Benzene')
+    0.444444
+    >>> dice_coefficient('halo', 'Haaallo')
+    0.75
+    >>> dice_coefficient('hallo', 'Haaallo')
+    0.888889
+    >>> dice_coefficient('hallo', 'Hallo')
+    1.0
+    >>> dice_coefficient('aaa', 'BBBBB')
+    0.0
     """
-    if not len(a) or not len(b): return 0.0
-    """ quick case for true duplicates """
-    if a == b: return 1.0
-    """ if a != b, and a or b are single chars, then they can't possibly match """
-    if len(a) == 1 or len(b) == 1: return 0.0
-    """ use python list comprehension, preferred over list.append() """
+    if case_insens:
+        a = a.lower()
+        b = b.lower()
+    if not len(a) or not len(b):
+        return 0.0
+    # quick case for true duplicates
+    if a == b:
+        return 1.0
+    # if a != b, and a or b are single chars, then they can't possibly match
+    if len(a) == 1 or len(b) == 1:
+        return 0.0
+    # use python list comprehension, preferred over list.append()
     a_bigram_list = [a[i:i + 2] for i in range(len(a) - 1)]
     b_bigram_list = [b[i:i + 2] for i in range(len(b) - 1)]
     a_bigram_list.sort()
@@ -958,7 +988,7 @@ def dice_coefficient2(a, b):
     lenb = len(b_bigram_list)
     # initialize match counters
     matches = i = j = 0
-    while (i < lena and j < lenb):
+    while i < lena and j < lenb:
         if a_bigram_list[i] == b_bigram_list[j]:
             matches += 2
             i += 1
@@ -967,10 +997,8 @@ def dice_coefficient2(a, b):
             i += 1
         else:
             j += 1
-    score = 1 - (float(matches) / float(lena + lenb))
-    if score < 0.7:
-        score = 0.0
-    return score
+    score = float(matches) / float(lena + lenb)
+    return round(score, 6)
 
 
 def longest_common_substring(s1, s2):
@@ -1022,12 +1050,12 @@ def fft(x):
 
 
 def levenshtein(s1, s2):
-    '''
-    >>> print(levenshtein('hallo', 'holla'))
+    """
+    >>> levenshtein('hallo', 'holla')
     2
-    >>> print(dice_coefficient('hallo', 'holla'))
-    0.75
-    '''
+    >>> dice_coefficient('hallo', 'holla')
+    0.25
+    """
     s1 = s1.lower()
     s2 = s2.lower()
     if len(s1) < len(s2):
