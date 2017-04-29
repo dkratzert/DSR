@@ -7,6 +7,9 @@ import sys
 import unittest
 from os import system
 import os
+
+import dbfile
+
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import afix
 import atomhandling
@@ -34,7 +37,7 @@ print(sys.version)
 class doctestsTest(unittest.TestCase):
     def testrun_doctest(self):
         for name in [dsr, afix, dsrparse, export, misc, elements, networkx, 
-                     atomhandling, networkx.classes.graph, dsrparse]:
+                     atomhandling, networkx.classes.graph, dsrparse, dbfile]:
             failed, attempted = doctest.testmod(name)  # , verbose=True)
             if failed == 0:
                 print('passed all {} tests in {}!'.format(attempted, name.__name__))
@@ -1423,10 +1426,10 @@ class MiscTest(unittest.TestCase):
         dice2 = misc.dice_coefficient(string, srch2)
         dice3 = misc.dice_coefficient(string, srch3)
         dice4 = misc.dice_coefficient(string, srch4)
-        self.assertEqual(dice1, 0.837838)
-        self.assertEqual(dice2, 0.789474)
-        self.assertEqual(dice3, 1.0)
-        self.assertEqual(dice4, 1.0)
+        self.assertEqual(dice1, 0.162162)
+        self.assertEqual(dice2, 0.210526)
+        self.assertEqual(dice3, 0.0)
+        self.assertEqual(dice4, 0.0)
 
 
 if __name__ == "__main__":
