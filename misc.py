@@ -954,17 +954,17 @@ def dice_coefficient2(a, b, case_insens=True):
     (per discussion), otherwise 'AA' and 'AAAA' would have a 
     dice coefficient of 1...
     https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Dice%27s_coefficient#Python
-    >>> dice_coefficient('hallo', 'holla')
+    >>> dice_coefficient2('hallo', 'holla')
     0.25
-    >>> dice_coefficient('Banze', 'Benzene')
-    0.444444
-    >>> dice_coefficient('halo', 'Haaallo')
-    0.75
-    >>> dice_coefficient('hallo', 'Haaallo')
-    0.888889
-    >>> dice_coefficient('hallo', 'Hallo')
+    >>> dice_coefficient2('Banze', 'Benzene')
+    0.4
+    >>> dice_coefficient2('halo', 'Haaallo')
+    0.666667
+    >>> dice_coefficient2('hallo', 'Haaallo')
+    0.8
+    >>> dice_coefficient2('hallo', 'Hallo')
     1.0
-    >>> dice_coefficient('aaa', 'BBBBB')
+    >>> dice_coefficient2('aaa', 'BBBBB')
     0.0
     """
     if case_insens:
