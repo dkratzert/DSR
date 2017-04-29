@@ -371,73 +371,51 @@ class DSR():
         self.rl.write_resfile(reslist, '.res')
 
 
+class multilog(object):
+    """
+    This class copies all output from stdout and stderr to a file
+    It acts like tee with following usage:
+    sys.stdout = multifile([sys.stdout, lstfileobj])
+    """
+    def __init__(self, files):
+        self._files = files
+
+    def __getattr__(self, attr, *args):
+        return self._wrap(attr, *args)
+
+    def _wrap(self, attr, *args):
+        def g(*a, **kw):
+            for f in self._files:
+                res = getattr(f, attr, *args)(*a, **kw)
+            return res
+        return g
+
+
 if __name__ == '__main__':
     '''main function'''
-    """
-    import cProfile
-    import pstats
-    cp = cProfile.Profile()
-    cp.enable(subcalls=True, builtins=True)
-    """
-    class LoggerWriter:
-        def __init__(self, level):
-            # self.level is really like using log.debug(message)
-            # at least in my case
-            self.level = level
-
-        def write(self, message):
-            # if statement reduces the amount of newlines that are
-            # printed to the logger
-            if message != '\n':
-                self.level(message)
-
-        def flush(self):
-            # create a flush method so things can be flushed when
-            # the system wants to. Not sure if simply 'printing'
-            # sys.stderr is the correct way to do it, but it seemed
-            # to work properly for me.
-            self.level(sys.stderr)
-    
     try:
-        remove_file(reportlog)
-        import logging
-        logging.basicConfig(filename="./dsr.lst", filemode='w', level=logging.INFO)
-        log = logging.getLogger('dsr')
-        log.addHandler(logging.StreamHandler())
-        sys.stdout = LoggerWriter(log.info)
-        sys.stderr = LoggerWriter(log.info)
+        lstfile = open('./dsr.lst', 'w')
+    except IOError:
+        is_listfile = False
+        pass
+    else:
+        sys.stdout = multilog([sys.stdout, lstfile])
+        sys.stderr = multilog([sys.stderr, lstfile])
+        is_listfile = True
+    try:
         options = OptionsParser(program_name)
         dsr = DSR(options)
-    except Exception as e:
+    except Exception:
         import platform
-        import logging
-        try:
-            logging.basicConfig(filename=reportlog, filemode='w', level=logging.DEBUG)
-        except IOError:
-            print("Error:", e)
-            import sys
-            sys.exit()
-        remove_file(reportlog)
-        logging.info('DSR version: {}'.format(VERSION))
-        logging.info('Python version: {}'.format(sys.version))
-        try:
-            logging.info('Platform: {} {}, {}'.format(platform.system(),
-                                                      platform.release(), ' '.join(platform.uname())))
-        except:
-            print("*** Can not write logfile ***")
-            pass
-        logger = logging.getLogger('dsr')
-        ch = logging.StreamHandler()
-        logger.addHandler(ch)
-        print('\n')
-        print('*** Congratulations! You found a bug in DSR. Please send the file ***\n'
-              '*** "dsr_bug_report.log" and the .res file (if possible) to dkratzert@gmx.de\n ***')
-        #.format(os.path.dirname(os.path.realpath(reportlog))+os.sep ))
-        logger.exception(e)
-    """
-    cp.disable()
-    pstats.Stats(cp).sort_stats('cumtime').print_stats(30)
-    pstats.Stats(cp).sort_stats('cumtime').print_callers(30)
-    pstats.Stats(cp).sort_stats('cumtime').print_callees(30)
-    """
-    
+        if is_listfile:
+            lstpath = os.path.abspath('./dsr.lst')
+            lst = 'the file "{}" \nand '.format(lstpath)
+        else:
+            lst = "this error message and "
+        print('\n*** Congratulations! You found a bug in DSR. Please send {}the .res file '
+              '(if possible) to dkratzert@gmx.de ***\n\n'.format(lst))
+        print('DSR version: {}'.format(VERSION))
+        print('Python version: {}'.format(sys.version))
+        print('Platform: {} {}, {}'.format(platform.system(),
+                                            platform.release(), ' '.join(platform.uname())))
+        raise
