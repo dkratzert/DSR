@@ -140,6 +140,10 @@ class Element():
 
         :param element:
         :type element:
+        
+        >>> el = Element()
+        >>> el.get_atomic_number('F')
+        9
         '''
         for atomic_number, elements in list(self.element_base.items()):
             if element.upper() == elements[1].upper():
@@ -152,12 +156,20 @@ class Element():
 
         :param atomic_number: atomic number
         :type atomic_number: integer
+        
+        >>> el = Element()
+        >>> el.get_element(7)
+        'N'
         '''
         return self.element_base[atomic_number][1]
 
     def get_atomlabel(self, input_atom):
         '''
         converts an atom name like C12 to the element symbol C
+        
+        >>> el = Element()
+        >>> el.get_atomic_number('N')
+        7
         '''
         elements = [x.upper() for x in atoms]
         atom=''
@@ -180,8 +192,10 @@ class Element():
     
 
 if __name__ == '__main__':
-    el = Element()
-    num = el.get_atomic_number('N')
-    ele = el.get_element(7)
-    print(num)
-    print(ele)
+    import doctest
+
+    failed, attempted = doctest.testmod()  # verbose=True)
+    if failed == 0:
+        print('passed all {} tests!'.format(attempted))
+    else:
+        print('{} of {} tests failed'.format(failed, attempted))

@@ -16,7 +16,6 @@
 
 from __future__ import print_function
 import sys
-from resfile import ResList
 from constants import RESTRAINT_CARDS
 
 
@@ -48,7 +47,7 @@ class Resi(object):
         self._find_atoms = find_atoms
         self._dbhead = dbhead
         self._atoms_in_reslist = self._find_atoms.collect_residues()
-        self._residues_in_res = sorted(self._atoms_in_reslist.keys())
+        self._residues_in_res = sorted(list(self._atoms_in_reslist))
         self._dsr_dict = dsr_line_dict.copy()
         self._dsr_command_resi_list = self._dsr_dict['resi']
         if self._dsr_command_resi_list:
@@ -80,10 +79,10 @@ class Resi(object):
 
     @property
     def get_residue_class(self):
-        '''
-        Returns the residue class of the currently fitted fragment
-        :type self._combined_resi['class']: string
-        '''
+        """
+        Returns the residue class of the currently fitted fragment. Also is an indicator 
+        if residues are active.
+        """
         return self._combined_resi['class']
 
     def remove_resi(self, head):
@@ -130,7 +129,6 @@ class Resi(object):
             newhead.append(line)
         return newhead
 
-
     def get_unique_resinumber(self, resinum):
         '''
         Finds a unique resi number. If the number is already unique
@@ -153,13 +151,13 @@ class Resi(object):
         else:
             return resinum
 
-
     def build_up_residue(self):
-        '''
+        """
+        :type () -> str
         Decides which class and residue number should be used for the fragment.
         Returns a final dict with the residue settings.
         self._resi_dict_dsr_command is False if resi is enabled but no values given.
-        '''
+        """
         final_residue = {'class': None, 'number': None, 'alias': None}
         resiclass = None
         resinum = None
@@ -264,7 +262,7 @@ class Resi(object):
                     add atom to at_list
             compare for residue if fragment atom list fits to at_list
         '''
-        for num in list(self._atoms_in_reslist.keys()):
+        for num in list(self._atoms_in_reslist):
             print(num, len(self._atoms_in_reslist[num]), self._atoms_in_reslist[num][:][0][3], \
                     [i[0] for i in self._atoms_in_reslist[num][:]])
 
@@ -273,42 +271,4 @@ class Resi(object):
 
 
 if __name__ == '__main__':
-    from dsrparse import DSR_Parser
-    from dbfile import global_DB
-    from atomhandling import FindAtoms
-    from resfile import ResListEdit
-    res_file = 'p21c.res'
-    #dbhead = ['REM test\n', 'RESI 1 TOL\n', 'SADI_TOL C1 C2\n']
-    rl = ResList(res_file)
-    res_list = rl.get_res_list()
-    find_atoms = FindAtoms(res_list)
-    rle = ResListEdit(res_list, find_atoms)
-    dsrp = DSR_Parser(res_list, rle)
-    dsr_dict = dsrp.get_dsr_dict
-    #fragment = dsr_dict['fragment']
-    fragment = 'toluene'
-    invert = True
-    gdb = global_DB(invert)
-    db = gdb.build_db_dict()
-    fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
-    dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
-    dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
-
-    for i in dbhead:
-        print(i)
-    residue = '5 CCF3'
-    resi = Resi(res_list, dsr_dict, dbhead, residue, find_atoms)
-    # db_resi = resi.get_resi_from_db()
-    # print 'the new resinumber:', resi.get_unique_resinumber()
-    print()
-    print()
-    head = resi.make_resihead()
-    #for i in head:
-    #    print(i)
-
-    resiatoms = find_atoms.collect_residues()
-    print(resiatoms['1'])
-    #if resi:
-    #    print 'ja, resi aktivieren! hallo'
-    #else:
-    #    print 'nein, resi nicht aktivieren!'
+    pass

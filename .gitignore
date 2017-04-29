@@ -5,7 +5,6 @@ dsrsaves/*
 *.ps
 .idea/
 .olex/
-/manuals/*.pdf
 /setup/*.exe
 /setup/Output/*.tar.gz
 /setup/Output/*.exe
@@ -210,3 +209,4 @@ unit-tests/test-data/beispiel/7a.ins
 unit-tests/test-data/beispiel/7a.res
 unit-tests/test-data/search.txt
 
+feed.rss

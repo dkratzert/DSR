@@ -79,6 +79,8 @@ class OptionsParser():
                                  help=SUPPRESS, default=False)
         self.parser.add_argument("-n", dest="no_refine", action="store_true",
                                  help="do not refine after fragment transfer", default=False)
+        self.parser.add_argument("-target", dest="target", nargs='+', type=float,
+                                 help=SUPPRESS, default=False)
         self._options = self.parser.parse_args()
 
     def error(self):
@@ -157,10 +159,18 @@ class OptionsParser():
         return self._options.invert
 
     @property
+    def target_coords(self):
+        target = self._options.target
+        if target and len(target) % 3 > 0:
+            print("*** Number of target coordinates have to be triplets. [x y z x y z ...] ***")
+            sys.exit()
+        return target
+
+    @property
     def shelxl_ex(self):
-        '''
+        """
         Option to define the path of the shelxl executable
-        '''
+        """
         spath = ''
         if self._options.shelxl_ex:
             spath = r' '.join(self._options.shelxl_ex)
@@ -206,9 +216,14 @@ class OptionsParser():
 
 
 if __name__ == '__main__':
+<<<<<<< HEAD
     optparse = OptionsParser('188')
     print(optparse.res_file)
     #print(optparse.parse_commandline())
+=======
+    optparse = OptionsParser('version 999')
+    print(optparse.res_file)
+>>>>>>> master
     optparse.parser.print_help()
 
 

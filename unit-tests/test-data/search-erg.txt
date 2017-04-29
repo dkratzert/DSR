@@ -1,9 +1,0 @@
-
-------------------------------- D S R - v185 --------------------------------
- Fragment          | Full name, Comments                      | Line number
--------------------------------------------------------------------------------
- fugcl             | tobi                                     | 339
- toluene           | Toluene, C7H8                            | 628
- tbu-o             | tert-Butanol (or tert-Butoxy)            | 1948
- pfadamo           | Perfluoroadamantol, C10O1F15             | 579
- ethanol           | Ethanol, C2H6O                           | 1136

@@ -18,13 +18,29 @@ import shutil
 import string
 from math import cos, sqrt, radians, sin
 
-import mpmath as mpm
-
 alphabet = string.ascii_uppercase
 
 __metaclass__ = type  # use new-style classes
 
 reportlog = 'dsr_bug_report.log'
+
+
+def extract_tarfile(file, targetdir):
+    """
+    Extracts .tar.gz "file" to "targetdir"
+    :param file: .tar.gz file
+    :param targetdir: target directory
+    :return: bool for sucess
+    """
+    import tarfile
+    try:
+        with tarfile.open(file) as tarobj:
+            tarobj.extractall(path=targetdir)
+    except tarfile.ReadError as e:
+        print('*** Could not extract tarfile ***')
+        print('***', e, '***')
+        return False
+    return True
 
 
 def join_floats(float_list, places=3,):
@@ -60,9 +76,8 @@ def check_file_exist(filename):
     False
     >>> check_file_exist('empty.txt')
     'zero'
-
-    #>>> checkFileExist('../misc.py')
-    #True
+    >>> check_file_exist('../misc.py')
+    True
     """
     filesize = False
     status = False
@@ -218,6 +233,19 @@ def flatten(nested):
     return result
 
 
+def flatten2(lis):
+    """
+    Given a list, possibly nested to any level, return it flattened.
+    From: http://code.activestate.com/recipes/578948-flattening-an-arbitrarily-nested-list-in-python/
+    """
+    new_lis = []
+    for item in lis:
+        if type(item) == type([]):
+            new_lis.extend(flatten2(item))
+        else:
+            new_lis.append(item)
+    return new_lis
+
 def sortedlistdir(directory):
     """
     returns a sorted list of files in directory directory.
@@ -225,11 +253,15 @@ def sortedlistdir(directory):
     :type directory: string
     :param cmpfunc: compare funtion to sort
     :type cmpfunc: string
-
     >>> sortedlistdir("../old")
     ['dsr.py']
+    >>> sortedlistdir("foobar/")
+    False
     """
-    dirlist = os.listdir(directory)
+    try:
+        dirlist = os.listdir(directory)
+    except(IOError, OSError):
+        return False
     dirlist.sort()
     return dirlist
 
@@ -332,6 +364,7 @@ def remove_line(reslist, linenum, rem=False, remove=False, frontspace=False):
     The default is a space character in front of the line (frontspace).
     This removes the line in the next refinement cycle. "rem" writes rem
     in front of the line and "remove" clears the line.
+    :param reslist: .res file list
     :param linenum: integer, line number
     :param rem:     True/False, activate comment with 'REM' in front
     :param remove:  True/False, remove the line
@@ -356,7 +389,7 @@ def remove_line(reslist, linenum, rem=False, remove=False, frontspace=False):
 
 
 def find_multi_lines(inputlist, regex):
-    '''
+    """
     returns the index number of all lines where regex is found in the inputlist
     ! this method is case insensitive !
     >>> input = ['Hallo blub', 'foo bar blub', '123', '1 blub 2 3 4']
@@ -369,7 +402,7 @@ def find_multi_lines(inputlist, regex):
     Traceback (most recent call last):
         ...
     TypeError: expected string or ...
-    '''
+    """
     reg = re.compile(regex, re.IGNORECASE)
     foundlist = []
     for i, string in enumerate(inputlist):
@@ -381,17 +414,17 @@ def find_multi_lines(inputlist, regex):
 
 
 def remove_file(filename, exit_dsr=False, terminate=False):
-    '''
+    """
     removes the file "filename" from disk
     program exits when exit is true
     platon gets terminated if terminate is true
 
     >>> remove_file('foobar')
-    '''
+    """
     if os.path.isfile(filename):
         try:
             os.remove(filename)
-        except(WindowsError, OSError):
+        except(IOError, OSError):
             print('can not delete {}'.format(filename))
             # print 'unable to cleanup ins {} files!'.format(file)
             if terminate:
@@ -400,13 +433,14 @@ def remove_file(filename, exit_dsr=False, terminate=False):
             if exit_dsr:
                 sys.exit(0)
 
+
 def copy_file(source, target):
-    '''
-    Copy a file from source to target. Source can be a single file or 
-    a directory. Target can be a single file or a directory. 
+    """
+    Copy a file from source to target. Source can be a single file or
+    a directory. Target can be a single file or a directory.
     :param source: list or string
     :param target: string
-    '''
+    """
     target_path = os.path.dirname(target)
     source_file = os.path.basename(source)
     listcopy = False
@@ -423,16 +457,16 @@ def copy_file(source, target):
                 shutil.copyfile(filen, target)
         else:
             shutil.copyfile(source, target)
-    except(IOError) as e:
+    except IOError as e:
         print('Unable to copy {}.'.format(source_file))
         print(e)
 
 
 def make_directory(dirpath):
-    '''
+    """
     create a directory with all subdirs from the last existing path
     :param dirpath: string
-    '''
+    """
     try:
         os.makedirs(dirpath)
     except(IOError, OSError):
@@ -474,7 +508,8 @@ def unwrap_head_lines(headlines):
     """
     if a line is wrapped like "SADI C1 C2 =\n", "  C3 C4" or "SADI C1 C2=\n", "  C3 C4"
     this function returns "SADI C1 C2 C3 C4"
-
+    :type headlines: list
+    :param headlines: list of strings from a res file
     >>> unwrap_head_lines(["SADI C1 C2 =\\n", "  C3 C4"])
     ['SADI C1 C2 C3 C4']
     >>> unwrap_head_lines(['foo bar this is =\\n   text to wrap. =\\n   blah bub\\n'])
@@ -503,13 +538,15 @@ def unwrap_head_lines(headlines):
     return new_head
 
 
-def makelist(string):
+def makelist(strng):
     """
-    returns an upper-case list from a text string
+    returns an upper-case list from a text strng
+    :type string: basestring
+    :param strng: converts space separated string into an upper case list
     >>> makelist('hello world!')
     ['HELLO', 'WORLD!']
     """
-    stringlist = [i.upper() for i in string.split()]
+    stringlist = [i.upper() for i in strng.split()]
     return stringlist
 
 
@@ -519,8 +556,8 @@ def which(name, flags=os.X_OK, exts=['.exe', '.EXE', '.bat']):
 
     On MS-Windows the only flag that has any meaning is os.F_OK. Any other
     flags will be ignored.
-    >>> which('dsr.bat') # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF +ELLIPSIS
-    ['D:\\\Programme\\\DSR\\\dsr.bat'...
+    #>>> which('dsr.bat') # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF +ELLIPSIS
+    ['d:\\\Programme\\\DSR\\\dsr.bat']
     """
     result = []
     # exts = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))
@@ -581,6 +618,7 @@ def remove_partsymbol(atom):
                 atom = prefix + '_' + suffix
     return atom
 
+
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
     """
     returns a random ID like 'L5J74W'
@@ -598,12 +636,10 @@ def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
 def shift(seq, n):
     """
     left-shift a sliceable object by n
-
     :param seq: sequence to shift
     :type seq: string or list
     :param n: shift length
     :type n: int
-
     >>> shift('hello world', 3)
     'lo worldhel'
     >>> shift(['sdfg', 'dsfg', '111', '222'], 1)
@@ -649,7 +685,7 @@ def frac_to_cart(frac_coord, cell):
     Converts fractional coordinates to cartesian coodinates
     :param frac_coord: [float, float, float]
     :param cell:       [float, float, float, float, float, float]
-
+    >>> import mpmath as mpm
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     >>> coord1 = (-0.186843,   0.282708,   0.526803)
     >>> print(frac_to_cart(coord1, cell))
@@ -660,7 +696,6 @@ def frac_to_cart(frac_coord, cell):
     [ 5.90959]
     [ 10.7752]
     """
-    # from math import cos, sin, sqrt, radians
     a, b, c, alpha, beta, gamma = cell
     x, y, z = frac_coord
     alpha = radians(alpha)
@@ -670,7 +705,7 @@ def frac_to_cart(frac_coord, cell):
         cosastar = (cos(beta) * cos(gamma) - cos(alpha)) / (sin(beta) * sin(gamma))
         sinastar = sqrt(1 - cosastar ** 2)
     except ValueError:
-        print("Malformed unit cell parameters found! Please correct the database entry.")
+        print("*** Malformed unit cell parameters found! Please correct the database entry. ***")
         sys.exit()
     Xc = a * x + (b * cos(gamma)) * y + (c * cos(beta)) * z
     Yc = 0 + (b * sin(gamma)) * y + (-c * sin(beta) * cosastar) * z
@@ -682,7 +717,7 @@ class A(object):
     """
     orthogonalization matrix
     e.g. converts fractional coordinates to cartesian coodinates
-
+    >>> import mpmath as mpm
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     >>> coord = (-0.186843,   0.282708,   0.526803)
     >>> A = A(cell).orthogonal_matrix
@@ -696,7 +731,7 @@ class A(object):
     [ 0.282708]
     [ 0.526803]
     """
-    def __init__(self, cell):        
+    def __init__(self, cell):
         self.a, self.b, self.c, alpha, beta, gamma = cell
         self.V = vol_unitcell(self.a, self.b, self.c, alpha, beta, gamma)
         self.alpha = radians(alpha)
@@ -705,10 +740,11 @@ class A(object):
     
     @property
     def orthogonal_matrix(self):
-        '''
+        """
         Converts von fractional to cartesian.
         Invert the matrix to do the opposite.
-        '''
+        """
+        import mpmath as mpm
         Am = mpm.matrix([ [self.a, self.b * cos(self.gamma), self.c * cos(self.beta) ],
                      [0, self.b * sin(self.gamma),
                         (self.c * (cos(self.alpha) - cos(self.beta) * cos(self.gamma)) / sin(self.gamma))],
@@ -721,7 +757,7 @@ def cart_to_frac(cart_coord, cell):
     converts cartesian coordinates to fractional coordinates
     :param cart_coord: [float, float, float]
     :param cell:       [float, float, float, float, float, float]
-
+    >>> import mpmath as mpm
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     >>> A = A(cell).orthogonal_matrix
     >>> coords = [-2.74150542399906, 5.909586678, 10.7752007008937]
@@ -867,22 +903,35 @@ def vol_unitcell(a, b, c, al, be, ga):
     return v
 
 
-def dice_coefficient(a, b):
+def dice_coefficient(a, b, case_insens=True):
     """
-    dice coefficient 2nt/na + nb
-    Compares the similarity of a and b
-    :param a: string
-    :param b: string
-    >>> print(dice_coefficient('hallo', 'holla'))
+    :type a: str
+    :type b: str
+    :type case_insens: bool
+    dice coefficient 2nt/na + nb.
+    https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Dice%27s_coefficient#Python
+    >>> dice_coefficient('hallo', 'holla')
+    0.25
+    >>> dice_coefficient('Banze', 'Benzene')
+    0.444444
+    >>> dice_coefficient('halo', 'Haaallo')
     0.75
-    >>> print(dice_coefficient('Banze', 'Benzene'))
-    0.555556
+    >>> dice_coefficient('hallo', 'Haaallo')
+    0.888889
+    >>> dice_coefficient('hallo', 'Hallo')
+    1.0
+    >>> dice_coefficient('aaa', 'BBBBB')
+    0.0
     """
-    a = a.lower()
-    b = b.lower()
-    if not len(a) or not len(b): return 0.0
-    if len(a) == 1:  a = a + '.'
-    if len(b) == 1:  b = b + '.'
+    if case_insens:
+        a = a.lower()
+        b = b.lower()
+    if not len(a) or not len(b):
+        return 0.0
+    if len(a) == 1:
+        a = a + u'.'
+    if len(b) == 1:
+        b = b + u'.'
     a_bigram_list = []
     for i in range(len(a) - 1):
         a_bigram_list.append(a[i:i + 2])
@@ -893,24 +942,47 @@ def dice_coefficient(a, b):
     b_bigrams = set(b_bigram_list)
     overlap = len(a_bigrams & b_bigrams)
     dice_coeff = overlap * 2.0 / (len(a_bigrams) + len(b_bigrams))
-    dice_coeff = 1 - dice_coeff  # invert the result
-    if dice_coeff < 0.5:  # make a cutoff for the best matches
-        return 0.0
     return round(dice_coeff, 6)
 
 
-def dice_coefficient2(a, b):
-    """
+def dice_coefficient2(a, b, case_insens=True):
+    """ 
+    :type a: str
+    :type b: str
+    :type case_insens: bool
     duplicate bigrams in a word should be counted distinctly
-    (per discussion), otherwise 'AA' and 'AAAA' would have a
+    (per discussion), otherwise 'AA' and 'AAAA' would have a 
     dice coefficient of 1...
+    https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Dice%27s_coefficient#Python
+
+    This implementation is reverse. 1 means not hit, 0 means best match
+    >>> dice_coefficient2('hallo', 'holla')
+    0.75
+    >>> dice_coefficient2('Banze', 'Benzene')
+    0.6
+    >>> dice_coefficient2('halo', 'Haaallo')
+    0.333333
+    >>> dice_coefficient2('hallo', 'Haaallo')
+    0.2
+    >>> dice_coefficient2('hallo', 'Hallo')
+    0.0
+    >>> dice_coefficient2('aaa', 'BBBBB')
+    1.0
+    >>> dice_coefficient2('', '')
+    1.0
     """
-    if not len(a) or not len(b): return 0.0
-    """ quick case for true duplicates """
-    if a == b: return 1.0
-    """ if a != b, and a or b are single chars, then they can't possibly match """
-    if len(a) == 1 or len(b) == 1: return 0.0
-    """ use python list comprehension, preferred over list.append() """
+    if case_insens:
+        a = a.lower()
+        b = b.lower()
+    if not len(a) or not len(b):
+        return 1.0
+    # quick case for true duplicates
+    if a == b:
+        return 0.0
+    # if a != b, and a or b are single chars, then they can't possibly match
+    if len(a) == 1 or len(b) == 1:
+        return 1.0
+    # use python list comprehension, preferred over list.append()
     a_bigram_list = [a[i:i + 2] for i in range(len(a) - 1)]
     b_bigram_list = [b[i:i + 2] for i in range(len(b) - 1)]
     a_bigram_list.sort()
@@ -920,7 +992,7 @@ def dice_coefficient2(a, b):
     lenb = len(b_bigram_list)
     # initialize match counters
     matches = i = j = 0
-    while (i < lena and j < lenb):
+    while i < lena and j < lenb:
         if a_bigram_list[i] == b_bigram_list[j]:
             matches += 2
             i += 1
@@ -929,10 +1001,9 @@ def dice_coefficient2(a, b):
             i += 1
         else:
             j += 1
-    score = 1 - (float(matches) / float(lena + lenb))
-    if score < 0.7:
-        score = 0.0
-    return score
+    score = float(matches) / float(lena + lenb)
+    score = 1-score
+    return round(score, 6)
 
 
 def longest_common_substring(s1, s2):
@@ -984,12 +1055,12 @@ def fft(x):
 
 
 def levenshtein(s1, s2):
-    '''
-    >>> print(levenshtein('hallo', 'holla'))
+    """
+    >>> levenshtein('hallo', 'holla')
     2
-    >>> print(dice_coefficient('hallo', 'holla'))
-    0.75
-    '''
+    >>> dice_coefficient('hallo', 'holla')
+    0.25
+    """
     s1 = s1.lower()
     s2 = s2.lower()
     if len(s1) < len(s2):
@@ -1040,7 +1111,7 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     Name type  x      y      z    occ     U11 U22 U33 U23 U13 U12
     F3    4    0.210835   0.104067   0.437922  21.00000   0.07243   0.03058 =
        0.03216  -0.01057  -0.01708   0.03014
-
+    >>> import mpmath as mpm
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     >>> coords = [0.210835,   0.104067,   0.437922]
     >>> uvals = [0.07243, 0.03058, 0.03216, -0.01057, -0.01708, 0.03014]
@@ -1049,7 +1120,6 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     [(0.24765096, 0.11383281, 0.43064756), (0.17401904, 0.09430119, 0.44519644)]
     >>> calc_ellipsoid_axes(coords, uvals, cell, longest=False)
     [[(0.24765096, 0.11383281, 0.43064756), (0.218406, 0.09626142, 0.43746127), (0.21924358, 0.10514684, 0.44886868)], [(0.17401904, 0.09430119, 0.44519644), (0.203264, 0.11187258, 0.43838273), (0.20242642, 0.10298716, 0.42697532)]]
-
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     >>> coords = [0.210835,   0.104067,   0.437922]
     >>> uvals = [0.07243, -0.03058, 0.03216, -0.01057, -0.01708, 0.03014]
@@ -1088,6 +1158,7 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
 
     """
     from misc import A
+    import mpmath as mpm
     probability += 1
     # Uij is symmetric:
     if len(uvals) != 6:
@@ -1202,14 +1273,50 @@ def file_len(fname):
     return i
 
 
+def get_overlapped_chunks(ring, size):
+    """
+    returns a list of chunks of size 'size' which overlap with one field.
+    If the last chunk is smaller than size, the last 'size' chunks are returned as last chunk.
+    "size" has to be larger than 3 to get reasonable results.
+    >>> l = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 'a', 'b', 'c', 'd', 'e']
+    >>> get_overlapped_chunks(l, 4)
+    [[1, 2, 3, 4], [4, 5, 6, 7], [0, 7, 8, 9], [0, 'a', 'b', 'c'], ['b', 'c', 'd', 'e']]
+    >>> get_overlapped_chunks(l, 3)
+    [['c', 'd', 'e'], ['c', 'd', 'e'], ['c', 'd', 'e'], ['c', 'd', 'e'], ['c', 'd', 'e']]
+    >>> get_overlapped_chunks(l, 5)
+    [[1, 2, 3, 4, 5], [4, 5, 6, 7, 8], [0, 7, 8, 9, 'a'], [0, 'a', 'b', 'c', 'd'], ['a', 'b', 'c', 'd', 'e']]
+    """
+    chunks = []
+    for i in range(0, len(ring) - size + 3, 3):
+        chunk = ring[i:i + size]
+        if len(chunk) < 4:
+            chunk = ring[-size:]
+        chunks.append(sorted(chunk))
+    return chunks
+
+
+def chunks(l, n):
+    """
+    returns successive n-sized chunks from l.
+
+    >>> l = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 'a', 'b', 'c', 'd', 'e', 'f']
+    >>> chunks(l, 5)
+    [[1, 2, 3, 4, 5], [6, 7, 8, 9, 0], ['a', 'b', 'c', 'd', 'e'], ['f']]
+    >>> chunks(l, 1)
+    [[1], [2], [3], [4], [5], [6], [7], [8], [9], [0], ['a'], ['b'], ['c'], ['d'], ['e'], ['f']]
+    >>> chunks(l, 50)
+    [[1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 'a', 'b', 'c', 'd', 'e', 'f']]
+    """
+    out = []
+    for i in range(0, len(l), n):
+        out.append(l[i:i + n])
+    return out
+
+
 if __name__ == '__main__':
     import sys
     import doctest
     failed, attempted = doctest.testmod()  # verbose=True)
     if failed == 0:
         print('passed all {} tests!'.format(attempted))
-    
 
-
-
-    

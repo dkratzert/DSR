@@ -10,20 +10,18 @@
 # ----------------------------------------------------------------------------
 #
 from __future__ import print_function
-import sys, re
 
-from resfile import ResList
-from dsrparse import DSR_Parser
+import os
+import re
 import string
-import misc
+import sys
 from collections import OrderedDict
 from atomhandling import get_atomtypes
-from misc import distance, vol_tetrahedron, flatten
 from elements import ELEMENTS
-import os
+from misc import distance, vol_tetrahedron, flatten2, get_overlapped_chunks, remove_partsymbol, shift, find_line
+
 # all upper case for case insensitivity:
 alphabet = [ i for i in string.ascii_uppercase ]
-import networkx as nx
 
 # note: parts    1, 2, 3 are _a, _b, _c
 # note: residue number 1, 2, 3 are _1, _2, _3
@@ -34,9 +32,9 @@ __metaclass__ = type  # use new-style classes
 
 
 def remove_duplicate_bonds(bonds):
-    '''
+    """
     removes duplicates from [(at1, at2, 1.324), (at2, at1, 1.324)]
-    '''
+    """
     new_bonds = []
     pairs = []
     for k in bonds:
@@ -48,13 +46,13 @@ def remove_duplicate_bonds(bonds):
 
 
 def format_atom_names(atoms, part='', resinum=''):
-    '''
+    """
     needs a list of atoms ['C1', 'C2', 'O1', ..] with part number and a residue number.
     returns a list with atoms like ['C1_4b', 'C2_4b', 'O1_4b', ..]
     :param atoms:  list of plain atom names
     :param part:  string, part number
     :param resinum: string, residue number
-    '''
+    """
     part = str(part)
     resinum = str(resinum)
     if not resinum:
@@ -85,13 +83,12 @@ def format_atom_names(atoms, part='', resinum=''):
 
 
 class Restraints():
-    '''
+    """
     returns an adjacence matrix for all atoms in the .lst file.
     edge property is the bond length
 
     needs atoms with numpart like C1_2b
-    '''
-
+    """
     def __init__(self, export, frag, gdb):
         self.fragment = frag.lower()
         self.gdb = gdb
@@ -115,12 +112,12 @@ class Restraints():
         return coords
 
     def get_fragment_atoms_cartesian(self):
-        '''
+        """
         returns the coordinates of the fragment as cartesian coords
         as list of lists [['-2.7538', '15.9724', '22.6810'], ['0.7939', '16.3333', '21.3135'], ...
         :param fragment:
         :type fragment:
-        '''
+        """
         atoms = self.export.format_atoms_for_export(self.fragment)
         coords = []
         for i in atoms:
@@ -128,9 +125,10 @@ class Restraints():
         return coords
 
     def adjmatrix(self):
-        '''
+        """
         create a distance matrix for the atom coordinates
-        '''
+        """
+        import networkx as nx
         G=nx.Graph()
         for i in self._connectivity_table:
             atom1 = i[0]
@@ -138,7 +136,7 @@ class Restraints():
             if atom1 in self._atoms:
                 coord1 = self.coords_dict[atom1]
                 coord2 = self.coords_dict[atom2]
-                dist = misc.distance(coord1[0], coord1[1], coord1[2], \
+                dist = distance(coord1[0], coord1[1], coord1[2], \
                                      coord2[0], coord2[1], coord2[2])
                 G.add_edge(atom1, atom2, weight=dist)
         return G
@@ -198,8 +196,8 @@ class Restraints():
         dfix_restraints = self.get_12_dfixes()
         dfix_restraints = remove_duplicate_bonds(dfix_restraints)
         for n, i in enumerate(dfix_restraints, 1):  # @UnusedVariable
-            dfix_formated.append('DFIX {:<7.4f}{:<4s} {:<4s}\n'.format(i[2], \
-                misc.remove_partsymbol(i[0]), misc.remove_partsymbol(i[1])))
+            dfix_formated.append('DFIX {:<7.4f}{:<4s} {:<4s}\n'.format(i[2],
+                remove_partsymbol(i[0]), remove_partsymbol(i[1])))
         return dfix_formated
 
     def get_neighbors(self, atoms):
@@ -212,7 +210,7 @@ class Restraints():
         for at in atoms:
             try:
                 nb = self._G.neighbors(at)
-            except(exception.NetworkXError):
+            except exception.NetworkXError:
                 print('Information: Atom "{}" has no neighbours.'.format(at))
                 #sys.exit()
             neighbors.append([at, nb])
@@ -262,19 +260,6 @@ class Restraints():
                                                    c2[0], c2[1], c2[2])))
         return dist_13
 
-    def get_overlapped_chunks(self, ring, size):
-        '''
-        returns a list of chunks of size 'size' which overlap with one field.
-        If the last chunk is smaller than size, the last 'size' chunks are returned as last chunk.
-        '''
-        chunks = []
-        for i in range(0, len(ring)-size+3, 3):
-            chunk = ring[i:i+size]
-            if len(chunk) < 4:
-                chunk = ring[-size:]
-            chunks.append(sorted(chunk))
-        return chunks
-
     def make_flat_restraints(self):
         """
         searches for rings in the graph G, splits it in 4-member chunks and tests if
@@ -285,6 +270,7 @@ class Restraints():
 
         TODO: Make a doctest!!
         """
+        import networkx as nx
         list_of_rings = nx.cycle_basis(self._G)
         if not list_of_rings:
             return False
@@ -295,11 +281,11 @@ class Restraints():
                 # lets see if there is a neighboring atom:
                 nb = self._G.neighbors(atom)#[1:]
                 for i in nb:
-                    if not i in flatten(list_of_rings):
+                    if not i in flatten2(list_of_rings):
                         neighbors.append(i)
             if len(ring) < 4:
                 continue # only proceed if ring is bigger than 3 atoms
-            chunks = self.get_overlapped_chunks(ring, 4)
+            chunks = get_overlapped_chunks(ring, 4)
             for chunk in chunks:
                 if self.is_flat(chunk):
                     if not chunk in flats:
@@ -316,7 +302,7 @@ class Restraints():
                             # add bound atoms near their partners:
                             ch = chunk[:]
                             ch.insert(atnum, nbatom)
-                            ch = misc.shift(ch, atnum)
+                            ch = shift(ch, atnum)
                             H = self._G.subgraph(ch)
                             # Try to delete atoms in the subgraph and test if subgraph divides.
                             # If it not devides, remove the atom unless it is the just added neighbour.
@@ -368,15 +354,15 @@ class Restraints():
             return False
 
     def get_formated_flats(self):
-        '''
+        """
         formats the FLAT restraints and removes the part symbol
-        '''
+        """
         flats = self.make_flat_restraints()
         if not flats:
             return []
         flat_format = []
         for i in flats:
-            i = [misc.remove_partsymbol(x) for x in i]
+            i = [remove_partsymbol(x) for x in i]
             flat_format.append('FLAT {}\n'.format(' '.join(i)))
         return flat_format
 
@@ -386,7 +372,7 @@ class Restraints():
         dfix_13_format = []
         for i in dfixes_13:
             dfix_13_format.append('DANG {:<7.4f}{:<4s} {:<4s}\n'.format(i[2],
-                misc.remove_partsymbol(i[0]), misc.remove_partsymbol(i[1])))
+                remove_partsymbol(i[0]), remove_partsymbol(i[1])))
         return dfix_13_format
 
 
@@ -427,7 +413,7 @@ class ListFile():
         are filtered out.
         '''
         # find the start of the conntable
-        start_line = misc.find_line(self._listfile_list, self._conntable_regex)
+        start_line = find_line(self._listfile_list, self._conntable_regex)
         if start_line:
             for num, line in enumerate(self._listfile_list[start_line:]):
                 line = line.split()
@@ -458,7 +444,7 @@ class ListFile():
         returns a dictionary with {'atom' : ['x', 'y', 'z']}
         '''
         atom_coordinates = {}
-        start_line = int(misc.find_line(self._listfile_list, self._coord_regex))+2
+        start_line = int(find_line(self._listfile_list, self._coord_regex))+2
         for line in self._listfile_list[start_line:]:
             line = line.split()
             try:
@@ -476,17 +462,17 @@ class ListFile():
         return atom_coordinates
 
     def get_cell(self):
-        '''
+        """
         Returns the unit cell parameters from the list file as list:
         ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
-        '''
+        """
         cell = False
         for num, line in enumerate(self._listfile_list):
             if line.startswith(' CELL'):
                 cell = line.split()[2:]
                 try:
                     cell = [float(i) for i in cell]
-                except(ValueError) as e:
+                except ValueError as e:
                     print('{} \nbad cell parameters in line {} in the list file.'.format(e, num+1))
                     sys.exit()
                 break
@@ -497,24 +483,24 @@ class ListFile():
 
     @property
     def get_lst_cell_parameters(self):
-        '''
+        """
         Returns the unit cell parameters from the list file as list:
         ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
-        '''
+        """
         return self.get_cell()
 
     @property
     def get_all_coordinates(self):
-        '''
+        """
         return all atom coordinates as property
         {'atom' : ['x', 'y', 'z'], 'atom2' : [...]}
-        '''
+        """
         return self.coordinates()
 
     def get_single_coordinate(self, atom):
-        '''
+        """
         return the coordinates of a single atom as ['x', 'y', 'z']
-        '''
+        """
         coord = self.coordinates()
         try:
             return coord[atom]
@@ -522,50 +508,50 @@ class ListFile():
             return None
 
     def get_afix_number_of_CF3(self):
-        '''
+        """
         returns the afix number of the atom where SHELXL prints the
         difference density at 15 degree intervals
-        '''
+        """
         regex_atom = r"^\sDifference\selectron\sdensity.*at\s15\sdegree"
-        line = misc.find_line(self._listfile_list, regex_atom)
+        line = find_line(self._listfile_list, regex_atom)
         if not line:
             return False
         at1 = self._listfile_list[line].split('.')[0].split()
         return at1[-1]
 
     def get_bondvector(self, atom=None):
-        '''
+        """
         get the bond vector in terms of atom names around which SHELXL
         calculates the difference density in 15 degree interval
         Y-Z-F1/F2/F3
         at1 = Y
         at2 = Z
-        '''
+        """
+        import networkx as nx
         regex = r'^.*is clockwise looking down'
-        line = misc.find_line(self.read_lst_file(), regex)
+        line = find_line(self.read_lst_file(), regex)
         if not line and atom:
             conn = self.read_conntable()
             G = nx.Graph(conn)
             nb = G[atom]
-            for i in nb.keys():
+            for i in list(nb):
                 if i[0] == 'C':
                     return (i, atom)
-                    break
         if not line:
-            return ('', '')
+            return '', ''
         at1 = self._listfile_list[line].split('.')[0].split()[-3]
         at2 = self._listfile_list[line].split('.')[0].split()[-1]
-        return (at1, at2)
+        return at1, at2
 
     def get_difference_density(self, averaged=False):
-        '''
+        """
         returns the difference density values in 15 degree interval
         if averaged is True, returns the averaged values.
         :param averaged: enable averaged values
         :type averaged: boolean
-        '''
+        """
         regex_atom = r'^.*is clockwise looking down'
-        line = misc.find_line(self._listfile_list, regex_atom)
+        line = find_line(self._listfile_list, regex_atom)
         if not line:
             return False
         if not averaged:
@@ -575,29 +561,29 @@ class ListFile():
         return [int(i) for i in nums]
 
     def get_degree_of_highest_peak(self):
-        '''
+        """
         returns the position in degree of the highest peak in the
         difference density. This point is assumed as an atom position.
-        '''
+        """
         dens = self.get_difference_density(averaged=True)
         maximum = dens.index(max(dens))+1
         return maximum*15
 
 
 class Lst_Deviations():
-    '''
+    """
     reads the deviations of the fitted group from the lst-file
-    '''
+    """
     def __init__(self, lst_file):
         self._lst_file = lst_file
         self._dev = self.find_deviations()
 
     def find_deviations(self):
-        '''
+        """
         parses the deviations of the fitted group and
         returns a dictionary with the results:
         {'C3': '11.773', 'C2': '7.667', 'C1': '8.761', 'C4': '5.700'}
-        '''
+        """
         regex = re.compile(r'^\s+\*\*\s+Atom.*deviates\sby')
         deviations = {}
         for line in self._lst_file:
@@ -607,9 +593,9 @@ class Lst_Deviations():
         return deviations
 
     def print_LS_fit_deviations(self):
-        '''
+        """
         pretty output of the LS-fit deviations
-        '''
+        """
         if self._dev:
             print('\n Fragment fit might have failed!')
             print(' Deviations on fitting group:')
@@ -619,84 +605,4 @@ class Lst_Deviations():
 
 
 if __name__ == '__main__':
-    from dbfile import global_DB
-    from atomhandling import FindAtoms
-    from resfile import filename_wo_ending
-    #import networkx as nx
-    from atomhandling import NumberScheme
-    res_file = 'p21c.res'
-    basefilename = filename_wo_ending(res_file)
-    rl = ResList(res_file)
-    res_list = rl.get_res_list()
-    dsrp = DSR_Parser(res_list, rl)
-    dsr_dict = dsrp.get_dsr_dict
-    fragment = 'toluene'
-    fragment= fragment.lower()
-    invert = True
-    rl = ResList(res_file)
-    reslist = rl.get_res_list()
-    gdb = global_DB(invert)
-    fa = FindAtoms(reslist)
-    residue = '4'
-    part = '2'
-
-    dbatoms = gdb.get_atoms_from_fragment(fragment)
-    #print('dbatoms:', dbatoms)
-    num = NumberScheme(res_list, dbatoms, residue)
-    fragment_atoms = num.get_fragment_number_scheme()
-    #print(numberscheme)
-    #fragment_atoms = [i[0] for i in dbatoms]
-    fragment_atoms = format_atom_names(fragment_atoms, part, residue)
-    #print(fragment_atoms)
-    from export import Export
-    exp = Export(gdb)
-    restr = Restraints(exp, fragment, gdb)
-    dfix_12 = restr.get_formated_12_dfixes()
-    dfix_13 = restr.get_formated_13_dfixes()
-    for i in dfix_12:
-        print(i.strip('\n'))
-    for i in dfix_13:
-        print(i.strip('\n'))
-    flats = restr.get_formated_flats()
-    print('flats:\n'+''.join(flats))
-    #print(''.join(dfixes_13))
-    sys.exit()
-
-    #print(restr.binds_to('C1', 'O1'), 'it binds')
-
-    def make_eadp(fa, fragatoms, resi_class, wavelength=0.71):
-        '''
-        find atoms of same residue nearby and make them EADP
-        '''
-        types = get_atomtypes(fragatoms)
-        resi = fa.atoms_as_residues
-        min_d_for_EADP = wavelength/2
-        for resinum in resi:
-            for at in resi[resinum]:
-                co1 = at[1]
-                for i, type in zip(fragatoms, types):
-                    distab = distance(float(co1[0]), float(co1[1]), float(co1[2]),\
-                                                     float(i[2]), float(i[3]), float(i[3]))
-                    if at[3] == 'CF3' and distab < min_d_for_EADP:
-                        print('make eadp:', co1, i)
-                        print(distab)
-
-    make_eadp(fa, dbatoms, 'CF3')
-    
-    
-    lf = ListFile('p21n_cf3')
-    bondv = lf.get_bondvector()
-    afa = lf.get_afix_number_of_CF3()
-    diffdens = lf.get_difference_density(averaged=False) 
-    diffdens_av = lf.get_difference_density(averaged=True)
-    degr = lf.get_degree_of_highest_peak()
-    print(bondv)
-    print(afa)
-    print(diffdens)
-    print(diffdens_av)
-    import mpmath as mp
-    print( int(round(mp.mpf(349+243+223)/3 )))
-    print('degree', degr)
-    
-    
-    
+    pass

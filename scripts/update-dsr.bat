@@ -7,6 +7,9 @@ rem cd C:\Users\ntrapp\Documents\GitHub\DSR
 set GIT="D:\GitHub\DSR"
 rem set GIT="."
 
+cd %GIT%
+python %GIT%\rss-feed.py
+
 xcopy /Y %GIT%\afix.py %DSRDIR%
 xcopy /Y %GIT%\atomhandling.py %DSRDIR%
 xcopy /Y %GIT%\atoms.py %DSRDIR%

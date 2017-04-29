@@ -10,18 +10,13 @@
 # ----------------------------------------------------------------------------
 #
 from __future__ import print_function
-from atomhandling import Elem_2_Sfac, rename_dbhead_atoms, FindAtoms,\
-    get_atomtypes, NumberScheme, SfacTable
+from atomhandling import Elem_2_Sfac, rename_dbhead_atoms
 import misc
 import os
 import sys
 import constants
 import fnmatch
-from resfile import ResList, ResListEdit
-from dsrparse import DSR_Parser
-from dbfile import global_DB
 from constants import RESTRAINT_CARDS
-from resi import Resi
 from misc import id_generator
 
 
@@ -29,14 +24,14 @@ __metaclass__ = type  # use new-style classes
 
 
 def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
-    '''
+    """
     write the restraints to an external file
     :param filename:     filename of database file
     :param dbhead:       database header
     :param resi_class:   SHELXL residue class
     :param resi_number:  SHELXL residue number
     :return filename:    full file name where restraints will be written
-    '''
+    """
     number = '1'
     files = []
     # find a unique number for the restraint file:
@@ -57,8 +52,7 @@ def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
     if not resi_number and resi_class:       # only residue class known
         filename = 'dsr_'+resi_class+'_'+filename
     if os.path.isfile(os.path.abspath(filename)):
-        print('Previous restraint file found.'\
-            ' Using restraints from "{}"'.format(filename))
+        print('Previous restraint file found. Using restraints from "{}"'.format(filename))
         return filename
     try:
         dfix_file = open(os.path.join(filepath, filename), 'w')  # open the ins file
@@ -66,22 +60,22 @@ def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
         print('*** Unable to write restraints file! Check directory write permissions. ***')
         sys.exit(False)
     print('Restraints were written to "{}"'.format(os.path.join(filepath, filename)))
-    for i in dbhead:            #modified reslist
-        dfix_file.write("%s" %i)    #write the new file
+    for i in dbhead:            # modified reslist
+        dfix_file.write("%s" %i)    # write the new file
     dfix_file.close()
     return filename
 
 def add_residue_to_dfix(dfix_head, resinum):
-    '''
+    """
     Add a residue to a list of DFIX/DANG restraints
-    DFIX 1.234 C1 C2 -> DFIX 1.234 C1_4 C2_4 
+    DFIX 1.234 C1 C2 -> DFIX 1.234 C1_4 C2_4
     >>> add_residue_to_dfix(['DFIX 1.456 C1 C2', 'DFIX 1.212 C3 C4'], 4)
     ['DFIX  1.456  C1_4  C2_4\\n', 'DFIX  1.212  C3_4  C4_4\\n']
     >>> add_residue_to_dfix(['DFIX 1.456 C1 C2', 'DFIX 1.212 C3 C4'], '5')
     ['DFIX  1.456  C1_5  C2_5\\n', 'DFIX  1.212  C3_5  C4_5\\n']
     >>> add_residue_to_dfix(['FLAT C6 C1 C2 C3', 'FLAT  C7  C1  C2  C3'], '2')
     ['FLAT  C6_2  C1_2  C2_2  C3_2\\n', 'FLAT  C7_2  C1_2  C2_2  C3_2\\n']
-    '''
+    """
     newhead = []
     for line in dfix_head:
         line = line.split()
@@ -96,16 +90,28 @@ def add_residue_to_dfix(dfix_head, resinum):
         newhead.append(line)
     return newhead
 
-class InsertAfix(object):
-    '''
+
+def insert_dsr_warning():
+    """
+    information to insert into .res-file
+    TODO: insert this text only once in the file and also the
+          comments from GRADE
+    """
+    txt = "rem the following was inserted by DSR:\n" \
+          "http://dx.doi.org/10.1107/S1600576715005580\n"
+    return txt
+
+
+class Afix(object):
+    """
     methods for the AFIX entry
     - dbhead is modified by Resi() if residues are used!
       RESI num class ist inserted there
-    '''
+    """
 
     def __init__(self, reslist, dbatoms, fragment_atom_types, dbhead, dsr_line_dict, sfac_table,
-                find_atoms, numberscheme, options, dfix_head=False):
-        '''
+                 find_atoms, numberscheme, options, dfix_head=False):
+        """
         :param reslist:      list of the .res file
         :type reslist: list
         :param dbatoms:      list of the atoms in the database entry
@@ -125,7 +131,7 @@ class InsertAfix(object):
         :param find_atoms:   FindAtoms() object
         :param numberscheme: atoms numbering scheme like: ['O1A', 'C1A', 'C2A', 'F1A', 'F2A', 'F3A', 'C3A']
 
-        '''
+        """
         self._reslist = reslist
         self._find_atoms = find_atoms
         self._dbatoms = dbatoms
@@ -136,29 +142,18 @@ class InsertAfix(object):
         self.numberscheme = numberscheme
         self.part = dsr_line_dict['part']
         self.occ = dsr_line_dict['occupancy']
-        self.source_atoms = dsr_line_dict['source']
-        self.target_atoms = dsr_line_dict['target']
+        self.source_atoms = dsr_line_dict['source']  # list
+        self.target_atoms = dsr_line_dict['target']  # list
         self._dfix = dsr_line_dict['dfix']
         self.options = options
         self.rand_id_dfx = id_generator(size=7)
         self.rand_id_afix = id_generator(size=7)
 
-
-    def insert_dsr_warning(self):
-        '''
-        information to insert into .res-file
-        TODO: insert this text only once in the file and also the
-              comments from GRADE
-        '''
-        txt = "rem the following was inserted by DSR:\n" \
-              "http://dx.doi.org/10.1107/S1600576715005580\n"
-        return txt
-
     def collect_all_restraints(self):
-        '''
+        """
         collects all restraints in the resfile and returns a list with them
         [['RIGU_CF3', 'O1', '>', 'F9'], '...']
-        '''
+        """
         all_restraints =[]
         for n, resline in enumerate(self._reslist):
             resline = resline.strip(' \n\r')
@@ -172,23 +167,23 @@ class InsertAfix(object):
                 line = 0
                 while resline[-1] == '=':
                     resline = resline[:-1]+self._reslist[n+line+1].split()
-                    line = line + 1
+                    line += 1
                     if not resline[-1] == '=':
                         break
                     if line > 500:
                         break
                 all_restraints.append(resline)
         return all_restraints
-    
+
     def remove_duplicate_restraints(self, dbhead, residue_class=''):
-        '''
+        """
         removes restraints from the header which are already
         in the res-file.
 
         :param dbhead:         database header (list of strings)
         :param residue_class:  SHELXL residue class
         :type residue_class:   string
-        '''
+        """
         all_restraints = self.collect_all_restraints()
         modified = False
         newhead = dbhead[:]
@@ -205,20 +200,20 @@ class InsertAfix(object):
         return newhead
 
     def distance_and_other_restraints(self, dbhead):
-        '''
+        """
         Devides header in distance restraints (distance)
         and all other lines (others)
         Restraints are instead inserted after fragment fit
 
         :param dbhead:  database header
-        '''
+        """
         distance = []
         others = []
         for num, headline in enumerate(dbhead):  # @UnusedVariable
             headline = headline.strip().split()
             try:
                 headline[0]
-            except(IndexError):
+            except IndexError:
                 continue
             if headline[0][:4] in constants.DIST_RESTRAINT_CARDS:
                 distance.append(' '.join(headline)+'\n')
@@ -226,25 +221,48 @@ class InsertAfix(object):
                 others.append(' '.join(headline)+'\n')
         return [distance, others]
 
+    def combine_names_and_coordinates(self):
+        # type: () -> list
+        """
+        Combines the target atom names with the coordinates from the -target option.
+        Douplicate q-peak names are explicitely allowed here for special positions.
+        Therefore, the target atoms are named DUM0, DUM1, DUM2, ...
+        """
+        atoms = {}
+        chunk = misc.chunks(self.options.target_coords, 3)
+        if len(chunk) != len(self.target_atoms):
+            print("*** Different number of target atoms and target coordinates! Can not proceed. ***")
+            sys.exit()
+        tmp = self.target_atoms
+        self.target_atoms = []
+        for num, at in enumerate(tmp):
+            # Handles douplicate q-peak names:
+            at = "DUM{}".format(num)
+            atoms[at] = chunk[num]
+            self.target_atoms.append(at)
+        return atoms
+
     def build_afix_entry(self, external_restraints, dfx_file_name, resi):
-        '''
+        """
         build an afix entry with atom coordinates from the target atoms
 
+        :type resi: Resi
         :param external_restraints:  True/False decision if restraints should be
                                      written to external file
         :param dfx_file_name:        name of file for external restraints
         :param resi:                Residue() object
-        '''
+        """
+        old_atoms = []
         afix_list = []   # the final list with atoms, sfac and coordinates
         e2s = Elem_2_Sfac(self._sfac_table)
         new_atomnames = list(reversed(self.numberscheme)) # i reverse it to pop() later
         if resi.get_residue_class:
             self._dbhead = resi.format_restraints(self._dbhead)
-            self._dbhead = self.remove_duplicate_restraints(self._dbhead, 
+            self._dbhead = self.remove_duplicate_restraints(self._dbhead,
                                                             resi.get_residue_class)
             if not external_restraints:
-                self._dbhead = self._dbhead+['RESI {} {}'.format(
-                                        resi.get_resinumber, resi.get_residue_class)]
+                self._dbhead += ['RESI {} {}'.format(
+                    resi.get_resinumber, resi.get_residue_class)]
         else:
             # applies new naming scheme to head:
             old_atoms = [ i[0] for i in self._dbatoms]
@@ -275,8 +293,8 @@ class InsertAfix(object):
             if self.dfix_head:
                 self._dbhead = other_head
             if resi.get_residue_class:
-                self._dbhead = self._dbhead+['RESI {} {}'.format(
-                                        resi.get_resinumber, resi.get_residue_class)]
+                self._dbhead += ['RESI {} {}'.format(
+                    resi.get_resinumber, resi.get_residue_class)]
         else:
             if self.dfix_head:
                 if resi.get_residue_class:
@@ -287,7 +305,18 @@ class InsertAfix(object):
             self._dbhead = misc.wrap_headlines(self._dbhead)
         # list of atom types in reverse order
         reversed_fragm_atom_types = list(reversed(self._fragment_atom_types))
-        coordinates = self._find_atoms.get_atomcoordinates(self.target_atoms)
+        if self.options.target_coords:
+            # {'C1': ['1.123', '0.7456', '3.245']}
+            coordinates = self.combine_names_and_coordinates()
+        else:
+            coordinates = self._find_atoms.get_atomcoordinates(self.target_atoms)
+        occ = ''
+        occ_part = self.occ
+        if not self.occ:
+            occ_part = ''
+            occ = "11.00"
+        else:
+            occ = self.occ
         # a list of zeroed atom coordinates (afix_list) is built:
         for i in self._dbatoms:
             l = []
@@ -297,7 +326,7 @@ class InsertAfix(object):
             l.insert(2, '0       ')
             l.insert(3, '0       ')
             l.insert(4, '0       ')
-            l.insert(5, '11.000')
+            l.insert(5, occ)
             l.insert(6, '0.04')
             afix_list.append(l)
         # for every atoms both in afix list and source_atoms, change the
@@ -307,8 +336,8 @@ class InsertAfix(object):
             if i[0].upper() in self.source_atoms:
                 ind = self.source_atoms.index(i[0].upper())
                 try:
-                    afix_list[n][2:5] =  coordinates[self.target_atoms[ind]]
-                except(IndexError):
+                    afix_list[n][2:5] = coordinates[self.target_atoms[ind]]
+                except IndexError:
                     print('*** More source than target atoms present! Exiting... ***')
                     sys.exit(False)
         newlist = []
@@ -320,10 +349,8 @@ class InsertAfix(object):
             newlist.append('   '.join(i).rstrip())
         atoms = '\n'.join(newlist)
         afixnumber = '179'   # makes afix 179 default
-        if not self.occ:
-            self.occ = ''
         if self.part:
-            part = 'PART '+str(self.part)+' '+str(self.occ)+'\n'
+            part = 'PART '+str(self.part)+' '+str(occ_part)
             part2 = 'PART 0'
         else:
             part = ''
@@ -334,31 +361,36 @@ class InsertAfix(object):
             resi_end = ''
         if external_restraints and not self.options.rigid_group:
             if resi.get_residue_class:
-                self._dbhead.append('\nREM The restraints for residue {} are in this'\
-                    ' file:\nrem +{}\nREM {}\n'.format(resi.get_residue_class, dfx_file_name, self.rand_id_dfx))
+                self._dbhead += '\nREM The restraints for residue {} are in this ' \
+                                'file:\nrem +{}\nREM {}\n'.format(resi.get_residue_class, dfx_file_name, self.rand_id_dfx)
             else:
-                self._dbhead.append('\nREM The restraints for this moiety are in this'\
-                          ' file:\nrem +{}\nREM {}\n'.format(dfx_file_name, self.rand_id_dfx))
+                self._dbhead += '\nREM The restraints for this moiety are in this'\
+                                ' file:\nrem +{}\nREM {}\n'.format(dfx_file_name, self.rand_id_dfx)
         if self.options.rigid_group:
             afixtag = ''
             if resi.get_residue_class:
-                self._dbhead = ''
-                self._dbhead = self._dbhead+'RESI {} {}\n'.format(
-                                        resi.get_residue_class, resi.get_resinumber)
+                self._dbhead = 'RESI {} {}\n'.format(
+                                resi.get_residue_class, resi.get_resinumber)
             else:
                 self._dbhead = ''
         else:
-            afixtag = '\n'+'REM '+self.rand_id_afix
+            afixtag = 'REM '+self.rand_id_afix
             self._dbhead = ''.join(self._dbhead)
-        afix = self._dbhead\
-                +part\
-                +'AFIX '+str(afixnumber)\
-                +afixtag\
-                +'\n'+atoms\
-                +'\nAFIX 0'\
-                +afixtag\
-                +'\n'+part2\
-                +'\n'+resi_end+'\n\n'
+        afix = '{0}{1}\n' \
+               'AFIX {2}\n' \
+               '{3}\n' \
+               '{4}\n' \
+               'AFIX 0\n' \
+               '{5}\n' \
+               '{6}\n' \
+               '{7}\n\n'.format(self._dbhead,    # 0
+                                part,            # 1
+                                str(afixnumber), # 2
+                                afixtag,         # 3
+                                atoms,           # 4
+                                afixtag,         # 5
+                                part2,           # 6
+                                resi_end)        # 7
         return afix
 
 
@@ -367,34 +399,8 @@ if __name__ == '__main__':
     failed, attempted = doctest.testmod()#verbose=True)
     if failed == 0:
         print('passed all {} tests!'.format(attempted))
-        
-###################################################################        
-    sys.exit()
-    res_file = 'p21c.res'
-    invert = True
-    rl = ResList(res_file)
-    reslist = rl.get_res_list()
-    dsrp = DSR_Parser(reslist, rl)
-    dsr_dict = dsrp.get_dsr_dict
-    find_atoms = FindAtoms(reslist)
-    rle = ResListEdit(reslist, find_atoms)
-    gdb = global_DB(invert)
-    db = gdb.build_db_dict()
-    fragment = 'pph3'
-    fragline = gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
-    dbatoms = gdb.get_atoms_from_fragment(fragment)      # only the atoms of the dbentry as list
-    dbhead = gdb.get_head_from_fragment(fragment)        # this is only executed once
-    print(dbhead)
 
-    resi = True #gdb.get_resi_from_fragment(fragment)
-    dbtypes = get_atomtypes(dbatoms)
-    #resi = Resi(reslist, dsr_dict, dbhead, residue, find_atoms)
-    #dbhead = resi.make_resihead()
-    resi = Resi(reslist, dsr_dict, dbhead, 'RESI PPH3', find_atoms)
-    sf = SfacTable(reslist, dbtypes)
-    sfac_table = sf.set_sfac_table()
-    num = NumberScheme(reslist, dbatoms, resi)
-    numberscheme = num.get_fragment_number_scheme()
+
 
 
 
