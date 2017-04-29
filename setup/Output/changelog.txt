@@ -1,4 +1,6 @@
 Recent changes
+-202    Greatly improved search results of "dsr -s name". A bug prevented to display very similar names
+        in the search results.
 -201    Fixed bug in threefold disordered CF3 group. Fixed -target option. Q-peaks
         with -target can now have duplicate names. Removed FLAT in alkanes.
 -200-1  Added missing python27.dll in Windows package. Fixes "unknown error" in 
