@@ -125,12 +125,6 @@ class DSR():
                 print('{};;{};;{};;{}'.format(i[0], i[1], i[2], i[3]))
             sys.exit()
         print(program_name)
-        ################
-        if self.options.selfupdate:
-            import selfupdate
-            selfupdate.update_dsr()
-            sys.exit()
-        ##############
         if self.list_db:
             self.list_dbentries()
         if self.search_string:
