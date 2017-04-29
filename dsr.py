@@ -140,14 +140,14 @@ class DSR():
             self.fragment = self.export_fragment
             try:
                 self.export.write_res_file(self.fragment)
-            except() as e:
-                print(e)
+            except:
+                raise
             sys.exit()
         if self.export_clip:
             try:
                 self.export.export_to_clip(self.fragment)
-            except() as e:
-                print(e)
+            except:
+                raise
             sys.exit()
         # Import a GRADE fragment
         if self.import_grade:
@@ -329,8 +329,8 @@ class DSR():
         #  Refine with L.S. 0 to insert the fragment
         try:
             shx.run_shelxl()
-        except() as e:
-            print(e)
+        except:
+            raise
             sys.exit()
         # Display the results from the list file:
         lf = ListFile(basefilename)
