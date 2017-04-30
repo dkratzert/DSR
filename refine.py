@@ -396,17 +396,16 @@ class ShelxlRefine():
                 centro = False
         if centro and data_to_parameter_ratio < 10:
             print('*** Warning! The data/parameter ratio is getting low (ratio = {:.1f})! ***'
-                  '\n*** (data+restraints)/parameter = {:.1f} ***'
+                  '\n*** but consider (data+restraints)/parameter = {:.1f} ***'
                   .format(data_to_parameter_ratio, restr_ratio))
         if not centro and data_to_parameter_ratio < 7.5:
             print('*** Warning! The data/parameter ratio is getting low (ratio = {:.1f})! ***'
-                  '\n*** (data+restraints)/parameter = {:.1f} ***'
+                  '\n*** but consider (data+restraints)/parameter = {:.1f} ***'
                   .format(data_to_parameter_ratio, restr_ratio))
         try:
             misc.remove_file(self.backup_file)
         except IOError:
             print('Unable to delete backup file {}.'.format(self.backup_file))
-
 
 
 if __name__ == '__main__':
