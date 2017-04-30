@@ -33,7 +33,7 @@ VERSION = '202'
 program_name = '\n'+((width//2)-9)*'-'+' D S R - v{} '.format(VERSION)+((width//2)-8)*'-'
 
 # TODO and ideas:
-'''
+"""
 - Add Rcomplete
 
 From SHELXL user guide:
@@ -49,7 +49,7 @@ and a negative value (i.e. k and p both negative) means p times [fv(–k)–1].
   -> learn JANA
   -> What do I need to change?
 
-'''
+"""
 
 
 class DSR():
@@ -100,9 +100,7 @@ class DSR():
             self.gdb = global_DB(invert=self.invert)
         except Exception as e:  # @UnusedVariable
             print("*** Initializing the database failed ***")
-            #print(self.helpmsg)
             raise
-            #sys.exit()
         #  List of database Fragments:
         if self.list_db_csv:
             print('DSR version: {}'.format(VERSION))
@@ -153,7 +151,7 @@ class DSR():
         if self.import_grade:
             mog = ImportGRADE(self.import_grade, self.invert)
             mog.write_user_database()
-            sys.exit(1)
+            sys.exit()
         if not any(list(vars(self.options.all_options).values())+[self.res_file]):
             self.options.error()
         if self.res_file == False:
