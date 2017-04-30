@@ -374,8 +374,8 @@ class ShelxlRefine():
             data = float(dataobj.group(0).split()[0])
             parameterobj = re.search(r'[0-9]+\s+parameters', list_file[final_results+4])
             parameters = float(parameterobj.group(0).split()[0])
-            restrobj = re.search(r'[0-9]+\s+restraints', list_file[final_results+4])
-            restraints = float(parameterobj.group(0).split()[0])
+            restrobj = re.search(r'[0-9]+\s+restraints', list_file[find_line(list_file, r" GooF = S =.*")])
+            restraints = float(restrobj.group(0).split()[0])
         except AttributeError:
             return False
         try:
