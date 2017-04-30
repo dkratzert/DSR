@@ -17,6 +17,7 @@ import copy
 import atomhandling as at
 from atoms import Element
 from dbfile import global_DB
+from misc import wrap_headlines
 from restraints import Restraints
 
 __metaclass__ = type  # use new-style classes
@@ -226,8 +227,6 @@ class Export():
         'C5 6 2.98081 10.44432 9.51725', 'C6 6 3.92045 9.74974 10.25408',
         'C7 6 3.53891 8.69091 11.05301']
         
-        #>>> print(exp.format_atoms_for_export(fragname="", gui=True))
-        #sys.exit()
         """
         fragname = fragname.lower()
         el = Element()
@@ -314,7 +313,7 @@ class Export():
         except IOError:
             print('*** Could not write file {} ***'.format(resfile))
             import sys
-            sys.exit(-1)
+            sys.exit()
         f.close()
 
 

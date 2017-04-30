@@ -386,7 +386,7 @@ class FindAtoms():
                 resinum = '0'
             if len(resinum) > 4:
                 print('*** Invalid residue number in {}'.format(atom))
-                sys.exit(-1)
+                sys.exit()
             return str(resinum)
         else:
             return '0'
@@ -428,7 +428,7 @@ class FindAtoms():
             i = i.upper()
             if i not in list(atom_dict):
                 print('\n*** Atom "{}" not found in res file! ***'.format(i))
-                sys.exit(0)
+                sys.exit()
         return atom_dict
 
     def get_atom_line_numbers(self, atoms):
@@ -539,13 +539,13 @@ def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
     if nsrc != ntrg:
         print('*** Number of source and target atoms/peaks is different!! '
               '({} and {} atoms/peaks) ***'.format(nsrc, ntrg))
-        sys.exit(False)
+        sys.exit()
     # do the source atoms exist at all?:
     for i in db_source_atoms:
         i = i.upper()
         if i not in temp:
             print('\n*** Atom {} not found in database entry! ***'.format(i))
-            sys.exit(False)
+            sys.exit()
     return True
 
 
@@ -653,7 +653,7 @@ class SfacTable():
                 sfac.append(i)        # get appended to sfac
             if i not in self.elements:
                 print('*** Error, atom {} not valid ***'.format(i))
-                sys.exit(False)
+                sys.exit()
         for i in range(1, len(sfac+explicit_scat)+1):
             i = str(i).upper()
             unit.append(i)
@@ -837,7 +837,7 @@ if __name__ == '__main__':
         print('passed all {} tests!'.format(attempted))
     else:
         print('{} of {} tests failed'.format(failed, attempted))
-    sys.exit()
+
 
 
 

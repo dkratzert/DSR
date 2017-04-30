@@ -21,7 +21,7 @@ from constants import sep_line
 try:
     from argparse import RawTextHelpFormatter
 except ImportError:
-    print('\nYour Python version is incompatible with DSR! \nPlease use Python 2.7 or above.\n')
+    print('\n*** Your Python version is incompatible with DSR! \nPlease use Python 2.7 or above. ***\n')
     sys.exit()
 from argparse import ArgumentParser, SUPPRESS
 

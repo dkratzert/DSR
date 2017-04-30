@@ -67,7 +67,7 @@ class DSR_Parser():
         indexnum = misc.find_multi_lines(self._reslist, self._dsr_regex)
         try:
             line_number = int(indexnum[0])
-        except(IndexError):
+        except IndexError:
             print('*** no proper DSR command found! \n'
                     'Have you really saved your .res file? ***\n')
             sys.exit()
