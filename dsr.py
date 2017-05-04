@@ -33,7 +33,7 @@ VERSION = '202'
 program_name = '\n'+((width//2)-9)*'-'+' D S R - v{} '.format(VERSION)+((width//2)-8)*'-'
 
 # TODO and ideas:
-'''
+"""
 - Add Rcomplete
 
 From SHELXL user guide:
@@ -49,7 +49,7 @@ and a negative value (i.e. k and p both negative) means p times [fv(–k)–1].
   -> learn JANA
   -> What do I need to change?
 
-'''
+"""
 
 
 class DSR():
@@ -100,9 +100,7 @@ class DSR():
             self.gdb = global_DB(invert=self.invert)
         except Exception as e:  # @UnusedVariable
             print("*** Initializing the database failed ***")
-            print(self.helpmsg)
-            print(e)
-            sys.exit()
+            raise
         #  List of database Fragments:
         if self.list_db_csv:
             print('DSR version: {}'.format(VERSION))
@@ -125,7 +123,6 @@ class DSR():
                 print('{};;{};;{};;{}'.format(i[0], i[1], i[2], i[3]))
             sys.exit()
         print(program_name)
-        ##############
         if self.list_db:
             self.list_dbentries()
         if self.search_string:
@@ -141,20 +138,20 @@ class DSR():
             self.fragment = self.export_fragment
             try:
                 self.export.write_res_file(self.fragment)
-            except() as e:
-                print(e)
+            except:
+                raise
             sys.exit()
         if self.export_clip:
             try:
                 self.export.export_to_clip(self.fragment)
-            except() as e:
-                print(e)
+            except:
+                raise
             sys.exit()
         # Import a GRADE fragment
         if self.import_grade:
             mog = ImportGRADE(self.import_grade, self.invert)
             mog.write_user_database()
-            sys.exit(1)
+            sys.exit()
         if not any(list(vars(self.options.all_options).values())+[self.res_file]):
             self.options.error()
         if self.res_file == False:
@@ -330,8 +327,8 @@ class DSR():
         #  Refine with L.S. 0 to insert the fragment
         try:
             shx.run_shelxl()
-        except() as e:
-            print(e)
+        except:
+            raise
             sys.exit()
         # Display the results from the list file:
         lf = ListFile(basefilename)
@@ -366,48 +363,51 @@ class DSR():
         self.rl.write_resfile(reslist, '.res')
 
 
+class multilog(object):
+    """
+    This class copies all output from stdout and stderr to a file
+    It acts like tee with following usage:
+    sys.stdout = multifile([sys.stdout, lstfileobj])
+    """
+    def __init__(self, files):
+        self._files = files
+
+    def __getattr__(self, attr, *args):
+        return self._wrap(attr, *args)
+
+    def _wrap(self, attr, *args):
+        def g(*a, **kw):
+            for f in self._files:
+                res = getattr(f, attr, *args)(*a, **kw)
+            return res
+        return g
+
+
 if __name__ == '__main__':
     '''main function'''
-    """
-    import cProfile
-    import pstats
-    cp = cProfile.Profile()
-    cp.enable(subcalls=True, builtins=True)
-    """
     try:
-        remove_file(reportlog)
+        lstfile = open('./dsr.lst', 'w')
+    except IOError:
+        is_listfile = False
+        pass
+    else:
+        sys.stdout = multilog([sys.stdout, lstfile])
+        sys.stderr = multilog([sys.stderr, lstfile])
+        is_listfile = True
+    try:
         options = OptionsParser(program_name)
         dsr = DSR(options)
-    except Exception as e:
+    except Exception:
         import platform
-        import logging
-        try:
-            logging.basicConfig(filename=reportlog, filemode='w', level=logging.DEBUG)
-        except IOError:
-            print("Error:", e)
-            import sys
-            sys.exit()
-        remove_file(reportlog)
-        logging.info('DSR version: {}'.format(VERSION))
-        logging.info('Python version: {}'.format(sys.version))
-        try:
-            logging.info('Platform: {} {}, {}'.format(platform.system(),
-                                                      platform.release(), ' '.join(platform.uname())))
-        except:
-            print("*** Can not write logfile ***")
-            pass
-        logger = logging.getLogger('dsr')
-        ch = logging.StreamHandler()
-        logger.addHandler(ch)
-        print('\n')
-        print('*** Congratulations! You found a bug in DSR. Please send the file ***\n'
-              '*** "dsr_bug_report.log" and the .res file (if possible) to dkratzert@gmx.de\n ***')
-        #.format(os.path.dirname(os.path.realpath(reportlog))+os.sep ))
-        logger.exception(e)
-    """
-    cp.disable()
-    pstats.Stats(cp).sort_stats('cumtime').print_stats(30)
-    pstats.Stats(cp).sort_stats('cumtime').print_callers(30)
-    pstats.Stats(cp).sort_stats('cumtime').print_callees(30)
-    """
-    
+        if is_listfile:
+            lstpath = os.path.abspath('./dsr.lst')
+            lst = 'the file "{}" \nand '.format(lstpath)
+        else:
+            lst = "this error message and "
+        print('\n*** Congratulations! You found a bug in DSR. Please send {}the .res file '
+              '(if possible) to dkratzert@gmx.de ***\n\n'.format(lst))
+        print('DSR version: {}'.format(VERSION))
+        print('Python version: {}'.format(sys.version))
+        print('Platform: {} {}, {}'.format(platform.system(),
+                                            platform.release(), ' '.join(platform.uname())))
+        raise

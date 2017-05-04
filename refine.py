@@ -92,7 +92,7 @@ class ShelxlRefine():
                 print('Your SHELXL version', exe, 'is too old for this Program')
                 print('Please use SHELXL 2013/4 or above!')
                 print(download)
-                sys.exit(-1)
+                sys.exit()
             version = version.split('/')
             if int(version[0]) < 2013:
                 print('Your SHELXL version is too old. Please use SHELXL 2013/4 or above!')
@@ -121,7 +121,7 @@ class ShelxlRefine():
         status = check_file_exist(self.resfile_name + '.res')
         if not status:
             print('Error: unable to find res file!')
-            sys.exit(-1)
+            sys.exit()
         regex = r'(^L\.S\.\s)|(^CGLS\s)'
         ls_line = misc.find_line(self._reslist, regex)
         ls_list = self._reslist[ls_line].split()
@@ -137,7 +137,7 @@ class ShelxlRefine():
         status = check_file_exist(self.resfile_name + '.res')
         if not status:
             print('Error: unable to find res file!')
-            sys.exit(-1)
+            sys.exit()
         regex = r'(^L\.S\.\s)|(^CGLS\s)'
         ls_line = misc.find_line(self._reslist, regex)
         try:
@@ -234,17 +234,17 @@ class ShelxlRefine():
         try:
             shutil.copyfile(resfile, self.backup_file)
         except IOError:
-            print('Unable to make backup file from {}.'.format(resfile))
-            sys.exit(-1)
+            print('*** Unable to make backup file from {}. ***'.format(resfile))
+            sys.exit()
         if not os.path.exists(bakup_dir):
             try:
                 os.makedirs(bakup_dir)
             except(IOError, OSError):
-                print('Unable to create backup directory {}.'.format(bakup_dir))
+                print('*** Unable to create backup directory {}. ***'.format(bakup_dir))
         try:
             shutil.copyfile(resfile, bakup_dir+os.path.sep+os.path.split(self.resfile_name)[1]+'_'+timestamp+'.res')
         except IOError:
-            print('\nUnable to make backup file from {} in dsrsaves.'.format(resfile))
+            print('\n*** Unable to make backup file from {} in dsrsaves. ***'.format(resfile))
 
     def restore_shx_file(self):
         """
@@ -252,7 +252,7 @@ class ShelxlRefine():
         """
         resfile = os.path.abspath(str(self.resfile_name+'.res'))
         try:
-            print('Restoring previous res file.')
+            print('*** Restoring previous res file. ***')
             shutil.copyfile(self.backup_file, resfile)
         except IOError:
             print('Unable to restore res file from {}.'.format(self.backup_file))
@@ -374,10 +374,13 @@ class ShelxlRefine():
             data = float(dataobj.group(0).split()[0])
             parameterobj = re.search(r'[0-9]+\s+parameters', list_file[final_results+4])
             parameters = float(parameterobj.group(0).split()[0])
+            restrobj = re.search(r'[0-9]+\s+restraints', list_file[find_line(list_file, r" GooF = S =.*")])
+            restraints = float(restrobj.group(0).split()[0])
         except AttributeError:
             return False
         try:
             data_to_parameter_ratio = data/parameters
+            restr_ratio = ((data+restraints)/parameters)
         except ZeroDivisionError:
             return False
         lattline = find_line(list_file, r'^ LATT.*')
@@ -391,17 +394,18 @@ class ShelxlRefine():
                 centro = True
             else:
                 centro = False
-        if centro == True and data_to_parameter_ratio < 10:
-            print('Warning! The data / parameter ratio is getting low (ratio = {:.1f})! \
-                    '.format(data_to_parameter_ratio))
-        if centro == False and data_to_parameter_ratio < 7.5:
-            print('Warning! The data / parameter ratio is getting low (ratio = {:.1f})! \
-                    '.format(data_to_parameter_ratio))
+        if centro and data_to_parameter_ratio < 10:
+            print('*** Warning! The data/parameter ratio is getting low (ratio = {:.1f})! ***'
+                  '\n*** but consider (data+restraints)/parameter = {:.1f} ***'
+                  .format(data_to_parameter_ratio, restr_ratio))
+        if not centro and data_to_parameter_ratio < 7.5:
+            print('*** Warning! The data/parameter ratio is getting low (ratio = {:.1f})! ***'
+                  '\n*** but consider (data+restraints)/parameter = {:.1f} ***'
+                  .format(data_to_parameter_ratio, restr_ratio))
         try:
             misc.remove_file(self.backup_file)
         except IOError:
             print('Unable to delete backup file {}.'.format(self.backup_file))
-
 
 
 if __name__ == '__main__':

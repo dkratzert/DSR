@@ -190,10 +190,10 @@ class ReadDB():
             diff = c1 - c2
             duplicates = list(diff.elements())
             for i in duplicates:
-                print('\n*** Duplicate database entry "{}" found! Please remove/rename ' \
-                      'second entry\nand/or check all end tags in the database dsr_usr_db.txt or dsr_db.txt. ***'.format(
-                    duplicates.pop()))
-            sys.exit(False)
+                print('\n*** Duplicate database entry "{}" found! Please remove/rename '
+                      'second entry\nand/or check all end tags in the database dsr_usr_db.txt '
+                      'or dsr_db.txt. ***'.format(duplicates.pop()))
+            sys.exit()
         # # sort lower-case:
         dbnames.sort(key=lambda x: x[0].lower())
         return dbnames
@@ -358,9 +358,9 @@ class global_DB():
                         del resiline[n]
                 try:
                     return resiline[1].upper()
-                except(IndexError):
+                except IndexError:
                     print('*** Invalid residue definition in database entry {}. ***'.format(fragment))
-                    sys.exit(False)
+                    sys.exit()
         return False
 
     def get_fragment_atoms(self, fragment, db_name, line):
@@ -398,11 +398,11 @@ class global_DB():
             print('*** Database entry of "{}" in line {} of "{}.txt" is corrupt. '
                   'No atoms found! ***'.format(fragment, line, db_name))
             print('*** Have you really followed the syntax? ***')
-            sys.exit(False)
+            sys.exit()
         if not end:
             print('*** Could not find end of dbentry for fragment "{}" in line {} of "{}.txt". '
                   'Check your database. ***'.format(fragment, line, db_name))
-            sys.exit(False)
+            sys.exit()
         if self.invert:
             atoms = invert_dbatoms_coordinates(atoms)
         return atoms
@@ -444,7 +444,7 @@ class global_DB():
             print('*** Error. No cell parameters found in the database entry ' \
                   'of "{}" ***'.format(fragment))
             print('*** Please add these parameters! ***')
-            sys.exit(False)
+            sys.exit()
         # nhead is list of strings
         head = unwrap_head_lines(head)
         return head, fragline, comment
@@ -520,7 +520,7 @@ class global_DB():
         if len(dbentry['fragline']) != 8:
             print('*** The line starting with "FRAG" in the database entry of {} is not correct. ***\n '
                   '*** Are the cell parameters really correct? "FRAG 17 a b c alpha beta gamma" ***\n'.format(fragment))
-            sys.exit(False)
+            sys.exit()
         return True
 
     def get_sum_formula(self, fragment):
@@ -552,9 +552,10 @@ class global_DB():
         while dbatoms:
             at = dbatoms.pop()
             if at in dbatoms:
-                print('*** Duplicate atom {0} in database entry "{1}" ({2}) ' \
-                      'found! Check your database... ***'.format(at, fragment, self.get_name_from_fragment(fragment)))
-                sys.exit(-1)
+                print('*** Duplicate atom {0} in database entry "{1}" ({2}) '
+                      'found! Check your database... ***'
+                      .format(at, fragment, self.get_name_from_fragment(fragment)))
+                sys.exit()
 
     def check_db_header_consistency(self, fragment):
         """
@@ -579,7 +580,6 @@ class global_DB():
                 status = False
                 print('*** Bad line in header of database entry "{}" found! ({}.txt) ***'.format(fragment, db))
                 print(line)
-                # sys.exit(status)
             if line[:4] in RESTRAINT_CARDS:
                 line = line[5:].split()
                 for i in line:
@@ -593,8 +593,8 @@ class global_DB():
             atom = atom.upper()
             if atom not in atoms:
                 status = False
-                print('\n*** Unknown atom "{}" in restraints of "{}: {}". ***'.format(atom, fragment,
-                                                                                      self.get_name_from_fragment(fragment)))
+                print('\n*** Unknown atom "{}" in restraints of "{}: {}". ***'
+                      .format(atom, fragment, self.get_name_from_fragment(fragment)))
         if not status:
             print('*** Check database entry. ***\n')
             sys.exit(status)
@@ -683,13 +683,13 @@ class global_DB():
         print_search_results(result)
 
     def get_atoms_from_fragment(self, fragment):
-        '''
+        """
         returns the atoms from the dbentry:
         [['O1', '1', '0.01453', '-1.6659', '-0.10966'],
         ['C1', '1', '0.00146', '-0.26814', '-0.06351'], ... ]
         :param fragment: fragment name
         :type fragment: string
-        '''
+        """
         fragment = fragment.lower()
         try:
             return self._db_all_dict[fragment]['atoms']
@@ -846,12 +846,12 @@ class ImportGRADE():
         if grade_base_filename[1] == '.tgz':
             try:
                 gradefile = tarfile.open(grade_tar_file)  # , encoding="ascii")
-            except(IOError):
+            except IOError:
                 print('No such file or directory: {}'.format(grade_tar_file))
-                sys.exit(0)
+                sys.exit()
         else:
             print('*** File {} is not a valid file to import from ***'.format(grade_base_filename[1]))
-            sys.exit(0)
+            sys.exit()
         pdbfile = False
         dfixfile = False
         for i in gradefile.getnames():
@@ -1028,8 +1028,8 @@ class ImportGRADE():
             name = name.decode()
         resi_name = name
         if not self._db_tags:
-            print('Unable to import fragment. Database is empty.')
-            sys.exit(False)
+            print('*** Unable to import fragment. Database is empty. ***')
+            sys.exit()
         for i in self._db_tags:
             while resi_name == i[0]:
                 num = num + 1
@@ -1055,9 +1055,9 @@ class ImportGRADE():
         '''
         warns for import errors
         '''
-        print('Unable to import GRADE file {}'.format(filename))
-        print('GRADE import relies on GRADE v1.100 and up.')
-        sys.exit(False)
+        print('*** Unable to import GRADE file {}'.format(filename))
+        print('GRADE import relies on GRADE v1.100 and up. ***')
+        sys.exit()
 
     def write_user_database(self):
         """
@@ -1088,9 +1088,9 @@ class ImportGRADE():
                     dbentry = '<{}> \n{} \nRESI {} \n{} \n{} \n{} \n</{}>\n''\
                         '.format(resi_name, comment, resi_name, head, cell, atoms, resi_name)
                     f.write(dbentry)
-        except(IOError) as e:
+        except IOError as e:
             print(e)
-            sys.exit(-1)
+            sys.exit()
         # try to write existing dbentries:
         try:
             with open(self.user_db_path, 'a+') as fu:
@@ -1109,9 +1109,9 @@ class ImportGRADE():
                         dbentry = '\n<{}> \nREM {} \nRESI {} \n{} \n{} \n{} \n</{}>\n' \
                                   ''.format(name, comment, resi_name, head, fragline, atoms, name)
                         fu.write(dbentry)
-        except(IOError) as e:
+        except IOError as e:
             print(e)
-            sys.exit(-1)
+            sys.exit()
         print('User database successfully updated.')
 
 

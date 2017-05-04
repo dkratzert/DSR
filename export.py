@@ -227,8 +227,6 @@ class Export():
         'C5 6 2.98081 10.44432 9.51725', 'C6 6 3.92045 9.74974 10.25408',
         'C7 6 3.53891 8.69091 11.05301']
         
-        #>>> print(exp.format_atoms_for_export(fragname="", gui=True))
-        #sys.exit()
         """
         fragname = fragname.lower()
         el = Element()
@@ -315,7 +313,7 @@ class Export():
         except IOError:
             print('*** Could not write file {} ***'.format(resfile))
             import sys
-            sys.exit(-1)
+            sys.exit()
         f.close()
 
 
