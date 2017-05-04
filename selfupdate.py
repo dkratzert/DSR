@@ -31,12 +31,15 @@ try:
 except ImportError:
     # Python 2:
     from urlparse import urlparse
-    from urllib import urlencode, FancyURLopener
+    from urllib import urlencode, FancyURLopener, URLopener
     from urllib2 import urlopen, Request, HTTPError
 
-class DSRURLopener(FancyURLopener):
-    version = "DSR-updater"
-_urlopener = DSRURLopener()
+
+class MyOpener(FancyURLopener):
+    """
+    Sets the user agent of the urllib http request.
+    """
+    version = 'DSR cmdline {}'.format(VERSION)
 
 
 def get_current_dsr_version(silent=False):
@@ -49,12 +52,14 @@ def get_current_dsr_version(silent=False):
     Returns
     -------
     version number
-    :type: int
+    :type: str
     """
     import socket
     socket.setdefaulttimeout(3)
+    myurlopen = MyOpener()
+    FancyURLopener.version = "DSR-updater {}".format(VERSION)
     try:
-        response = urlopen('{}/version.txt'.format(urlprefix))
+        response = myurlopen.open('{}/version.txt'.format(urlprefix))
     except IOError:
         if not silent:
             print("*** Unable to connect to update server. No Update possible. ***")
@@ -66,7 +71,7 @@ def get_current_dsr_version(silent=False):
 def is_update_needed(silent=False):
     """
     Decides if an update of DSR is needed.
-    :return: True/False
+    :return: bool
     >>> is_update_needed()
     False
     """
