@@ -179,6 +179,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         dsr -s tol
 
         """
+        self.maxDiff = None
         print('8 '*10, 'start')
         system("{} -s tol > search.txt".format(self.dsr))
         with open('search.txt') as txt:
@@ -193,6 +194,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         dsr -e tol
 
         """
+        self.maxDiff = None
         print('9 ' * 10, 'start')
         print("{} -e tolUene".format(self.dsr))
         system("{} -e tolUene".format(self.dsr))
@@ -216,6 +218,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         regular dsr run with
         replace resi PART 0
         """
+        self.maxDiff = None
         self.dsr_runtest(11, '-r')
 
     def testrun_run12(self):
@@ -223,6 +226,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         regular dsr run without fit with
         resi cf3 PART 2 occ -31
         """
+        self.maxDiff = None
         self.dsr_runtest(12, ending='ins', parameter='-n -r',  remlines = [293, 308])
 
     #@unittest.skip(" skipping 13")
@@ -690,8 +694,8 @@ class removeDublicatesAfixTest(unittest.TestCase):
                              'SADI_CF3 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ']
 
     def testrun_remove_dublicate_restraints(self):
-        newhead = self.afix.remove_duplicate_restraints(self.db_testhead)  # , self.resi.get_resiclass)
-        newhead2 = self.afix.remove_duplicate_restraints(self.db_testhead2)  # , self.resi.get_resiclass)
+        newhead = self.afix.remove_duplicate_restraints(self.db_testhead, self.afix.collect_all_restraints())  # , self.resi.get_resiclass)
+        newhead2 = self.afix.remove_duplicate_restraints(self.db_testhead2, self.afix.collect_all_restraints())  # , self.resi.get_resiclass)
         self.assertListEqual(['', '', 'REM test'], newhead)
         self.assertListEqual(self.db_testhead2, newhead2)
 
