@@ -195,7 +195,6 @@ def get_update_package(version, destdir=None, post=True):
     True
     """
     try:
-        #dsrdir = os.path.dirname(os.path.realpath(__file__))
         dsrdir = os.environ["DSR_DIR"]
     except KeyError:
         print("*** Could not determine the location of DSR. Can not update. ***" )
