@@ -105,9 +105,9 @@ class dsr_complete_runs_Test(unittest.TestCase):
         for line in remlines:
             del a[line]
             del b[line]
-        self.assertEqual(a, b)
+        self.assertEqual(b, a)
         if external_file:
-            self.assertEqual(c, d)
+            self.assertEqual(d, c)
         print('{} '.format(nummer) * 10, "ende")
 
     #@unittest.skip(" skipping1 ")
@@ -116,6 +116,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         regular dsr run with
         resi cf3 PART 2 occ -31
         """
+        self.maxDiff = None
         self.dsr_runtest(1, '-r')
 
     #@unittest.skip(" skipping2 ")

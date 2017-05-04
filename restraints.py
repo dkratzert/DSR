@@ -407,11 +407,11 @@ class ListFile():
         return listfile
 
     def read_conntable(self):
-        '''
+        """
         reads the connectivity table from self._listfile_list
         returns a list of all bonded atom pairs. Symmetry equivalent atoms
         are filtered out.
-        '''
+        """
         # find the start of the conntable
         start_line = find_line(self._listfile_list, self._conntable_regex)
         if start_line:
@@ -439,10 +439,10 @@ class ListFile():
         return connpairs
 
     def coordinates(self):
-        '''
+        """
         reads all atom coordinates of the lst-file
         returns a dictionary with {'atom' : ['x', 'y', 'z']}
-        '''
+        """
         atom_coordinates = {}
         start_line = int(find_line(self._listfile_list, self._coord_regex))+2
         for line in self._listfile_list[start_line:]:
