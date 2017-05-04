@@ -10,10 +10,10 @@ except(ImportError, AttributeError):  # Python3:
     import urllib
     http_error = IOError
 
-version = "201"  # define the .dmg release version
+version = "203"  # define the .dmg release version
 
 volname = "DSR-"+version
-inputfile = "/Users/daniel/Downloads/201/DSR-{}.tar.gz".format(version)
+inputfile = "/Users/daniel/Downloads/{}/DSR-{}.tar.gz".format(version, version)
 dmgname = os.path.abspath("../setup/Output/{}.dmg".format(volname))
 skeldmg = os.path.abspath("../setup/Output/DSR-skel-rw.dmg")
 finaltmpdmg = os.path.abspath("../setup/Output/DSR-tmp-rw.dmg")
