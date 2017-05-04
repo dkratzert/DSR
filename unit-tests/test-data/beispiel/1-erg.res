@@ -267,11 +267,7 @@ PART 0
 REM Restraints for Fragment oc(cf3)3, Nonafluoro-tert-butoxy, [(CF3)3CO]-
 REM from: TURBOMOLE V6.0 B-P86/def-SV(P). Please cite
 REM doi:10.1107/S1600576715005580
-SADI_CF3 0.02 C1 C2 C1 C3 C1 C4
-SADI_CF3 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4
-SADI_CF3 0.04 C2 C3 C3 C4 C2 C4
-SADI_CF3 0.04 O1 C2 O1 C3 O1 C4
-SADI_CF3 0.04 F1 F2 F2 F3 F3 F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7
+
 DFIX_CF3 1.35 O1 C1
 SADI_CF3 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1
 
@@ -305,7 +301,7 @@ HKLF 4
 
 REM  p21c in P2(1)/c
 REM R1 =  0.1556 for    7085 Fo > 4sig(Fo)  and  0.2015 for all   10786 data
-REM    758 parameters refined using   3117 restraints
+REM    758 parameters refined using   2067 restraints
 
 END  
      

@@ -151,6 +151,7 @@ class Afix(object):
 
     def collect_all_restraints(self):
         """
+        :return all_restraints: list
         collects all restraints in the resfile and returns a list with them
         [['RIGU_CF3', 'O1', '>', 'F9'], '...']
         """
@@ -189,15 +190,45 @@ class Afix(object):
         newhead = dbhead[:]
         for num, headline in enumerate(dbhead):
             headline = headline.split()
+            headline = self.remove_stddev_from_restraint(headline)
             for restr in all_restraints:
+                restr = self.remove_stddev_from_restraint(restr)
                 if headline == restr:
                     newhead[num] = ''
                     modified = True
                     break
         if modified:
-            print('\nAlready existing restraints for residue "{}" were not '
-                    'applied again.'.format(residue_class))
+            if residue_class:
+                print('\nAlready existing restraints for residue "{}" were not '
+                      'applied again.'.format(residue_class))
+            else:
+                print('\nAlready existing restraints for were not applied again.')
         return newhead
+
+    @staticmethod
+    def remove_stddev_from_restraint(restr):
+        """
+        
+        Parameters
+        ----------
+        restr: list of restraints
+
+        Returns list of restraints without standars deviation
+        -------
+        
+        >>> r = ['SADI', '0.02', 'C1', 'C2', 'C3', 'C4']
+        >>> r2 = ['SADI', 'C1', 'C2', 'C3', 'C4']
+        >>> Afix.remove_stddev_from_restraint(r)
+        ['SADI', 'C1', 'C2', 'C3', 'C4']
+        >>> Afix.remove_stddev_from_restraint(r2)
+        ['SADI', 'C1', 'C2', 'C3', 'C4']
+        """
+        new = []
+        # find out where the atoms begin (leave out numbers):
+        for num, i in enumerate(restr):
+            if i[0].isalpha():
+                new.append(i)
+        return new
 
     def distance_and_other_restraints(self, dbhead):
         """
@@ -267,6 +298,7 @@ class Afix(object):
             # applies new naming scheme to head:
             old_atoms = [ i[0] for i in self._dbatoms]
             self._dbhead = rename_dbhead_atoms(new_atomnames, old_atoms, self._dbhead)
+            self._dbhead = self.remove_duplicate_restraints(self._dbhead)
         # decide if restraints to external file or internal:
         distance_and_other = self.distance_and_other_restraints(self._dbhead)
         distance = distance_and_other[0]
