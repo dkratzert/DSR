@@ -396,6 +396,7 @@ if __name__ == '__main__':
         is_listfile = True
     try:
         options = OptionsParser(program_name)
+        lstfile.write('Python version: {}\n'.format(sys.version))
         dsr = DSR(options)
     except Exception:
         import platform
