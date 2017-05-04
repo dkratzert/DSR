@@ -27,7 +27,7 @@ from afix import Afix
 from refine import ShelxlRefine
 from resfile import ResList, filename_wo_ending, ResListEdit
 
-VERSION = '202'
+VERSION = '203'
 # dont forget to change version in Innoscript file, spec file and deb file.
 
 program_name = '\n'+((width//2)-9)*'-'+' D S R - v{} '.format(VERSION)+((width//2)-8)*'-'
@@ -385,10 +385,11 @@ class multilog(object):
 
 if __name__ == '__main__':
     '''main function'''
+    lstfile = ''
+    is_listfile = False
     try:
         lstfile = open('./dsr-log.lst', 'w')
     except IOError:
-        is_listfile = False
         pass
     else:
         sys.stdout = multilog([sys.stdout, lstfile])
@@ -396,7 +397,8 @@ if __name__ == '__main__':
         is_listfile = True
     try:
         options = OptionsParser(program_name)
-        lstfile.write('Python version: {}\n'.format(sys.version))
+        if is_listfile:
+            lstfile.write('Python version: {}\n'.format(sys.version))
         dsr = DSR(options)
     except Exception:
         import platform
