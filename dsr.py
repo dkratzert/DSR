@@ -386,7 +386,7 @@ class multilog(object):
 if __name__ == '__main__':
     '''main function'''
     try:
-        lstfile = open('./dsr.lst', 'w')
+        lstfile = open('./dsr-log.lst', 'w')
     except IOError:
         is_listfile = False
         pass
@@ -400,7 +400,7 @@ if __name__ == '__main__':
     except Exception:
         import platform
         if is_listfile:
-            lstpath = os.path.abspath('./dsr.lst')
+            lstpath = os.path.abspath(lstfile.name)
             lst = 'the file "{}" \nand '.format(lstpath)
         else:
             lst = "this error message and "
