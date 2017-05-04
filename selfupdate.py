@@ -41,6 +41,8 @@ class MyOpener(FancyURLopener):
     """
     version = 'DSR cmdline {}'.format(VERSION)
 
+myurlopen = MyOpener()
+
 
 def get_current_dsr_version(silent=False):
     """
@@ -56,7 +58,6 @@ def get_current_dsr_version(silent=False):
     """
     import socket
     socket.setdefaulttimeout(3)
-    myurlopen = MyOpener()
     FancyURLopener.version = "DSR-updater {}".format(VERSION)
     try:
         response = myurlopen.open('{}/version.txt'.format(urlprefix))
@@ -199,8 +200,7 @@ def get_update_package(version, destdir=None, post=True):
     except KeyError:
         print("*** Could not determine the location of DSR. Can not update. ***" )
         sys.exit()
-    myurlopen = MyOpener()
-    response = myurlopen('{}/DSR-{}.tar.gz'.format(urlprefix, version))
+    response = myurlopen.open('{}/DSR-{}.tar.gz'.format(urlprefix, version))
     with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
         tmpfile.write(response.read())
     tmpdir = tempfile.mkdtemp()  # a temporary directory
@@ -226,11 +226,11 @@ def get_update_package(version, destdir=None, post=True):
     return True
 
 
-if __name__ == "__main__":
-    import doctest
-
-    failed, attempted = doctest.testmod()  # verbose=True)
-    if failed == 0:
-        print('passed all {} tests!'.format(attempted))
-    else:
-        print('{} of {} tests failed'.format(failed, attempted))
+if __name__ == '__main__':
+    #import doctest
+    pass
+    #failed, attempted = doctest.testmod()  # verbose=True)
+    #if failed == 0:
+    #    print('passed all {} tests!'.format(attempted))
+    #else:
+    #    print('{} of {} tests failed'.format(failed, attempted))
