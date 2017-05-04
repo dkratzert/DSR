@@ -158,16 +158,16 @@ class Afix(object):
         all_restraints =[]
         for n, resline in enumerate(self._reslist):
             resline = resline.strip(' \n\r')
-            resline = resline.split()
+            #resline = resline.split()
             try:
-                resline[0][:4]
+                resline[:4]
             except:
                 continue
-            if resline[0][:4] in RESTRAINT_CARDS:
+            if resline[:4] in RESTRAINT_CARDS:
                 # see for the next four lines if the lines continues with "=":
                 line = 0
                 while resline[-1] == '=':
-                    resline = resline[:-1]+self._reslist[n+line+1].split()
+                    resline = resline[:-1]+self._reslist[n+line+1]
                     line += 1
                     if not resline[-1] == '=':
                         break
@@ -176,7 +176,8 @@ class Afix(object):
                 all_restraints.append(resline)
         return all_restraints
 
-    def remove_duplicate_restraints(self, dbhead, residue_class=''):
+    @staticmethod
+    def remove_duplicate_restraints(dbhead, all_restraints, residue_class=''):
         """
         removes restraints from the header which are already
         in the res-file.
@@ -184,15 +185,31 @@ class Afix(object):
         :param dbhead:         database header (list of strings)
         :param residue_class:  SHELXL residue class
         :type residue_class:   string
+        :param all_restraints: all restraints in the res file
+        :type all_restraints:  list
+        :return newhead: list
+        >>> dbhead = ["SADI 0.02 C1 C2 C2 C3 C3 C4", "SADI 0.04 C1 C3 C3 C5", "DFIX 1.45 C1 C2"]
+        >>> all_restraints = ["SADI C1 C2 C2 C3 C3 C4", "SADI C1 C3 C3 C5", "DFIX C1 C2", "SADI C4 C5 C5 C6"]
+        >>> Afix.remove_duplicate_restraints(dbhead, all_restraints)
+        <BLANKLINE>
+        Already existing restraints were not applied again.
+        ['', '', '']
+
+        >>> all_restraints = ["SADI 0.02 C1 C2 C2 C3 C3 C4", "SADI 0.04 C1 C3 C3 C5", "DFIX 1.45 C1 C2"]
+        >>> dbhead = ["SADI C1 C2 C2 C3 C3 C4", "SADI C1 C3 C3 C5", "DFIX C1 C2", "SADI C4 C5 C5 C6"]
+        >>> Afix.remove_duplicate_restraints(dbhead, all_restraints)        
+        <BLANKLINE>
+        Already existing restraints were not applied again.
+        ['', '', '', 'SADI C4 C5 C5 C6']
         """
-        all_restraints = self.collect_all_restraints()
         modified = False
         newhead = dbhead[:]
         for num, headline in enumerate(dbhead):
             headline = headline.split()
-            headline = self.remove_stddev_from_restraint(headline)
+            headline = Afix.remove_stddev_from_restraint(headline)
             for restr in all_restraints:
-                restr = self.remove_stddev_from_restraint(restr)
+                restr = restr.split()
+                restr = Afix.remove_stddev_from_restraint(restr)
                 if headline == restr:
                     newhead[num] = ''
                     modified = True
@@ -202,7 +219,7 @@ class Afix(object):
                 print('\nAlready existing restraints for residue "{}" were not '
                       'applied again.'.format(residue_class))
             else:
-                print('\nAlready existing restraints for were not applied again.')
+                print('\nAlready existing restraints were not applied again.')
         return newhead
 
     @staticmethod
@@ -289,7 +306,7 @@ class Afix(object):
         new_atomnames = list(reversed(self.numberscheme)) # i reverse it to pop() later
         if resi.get_residue_class:
             self._dbhead = resi.format_restraints(self._dbhead)
-            self._dbhead = self.remove_duplicate_restraints(self._dbhead,
+            self._dbhead = self.remove_duplicate_restraints(self._dbhead, self.collect_all_restraints(),
                                                             resi.get_residue_class)
             if not external_restraints:
                 self._dbhead += ['RESI {} {}'.format(
@@ -298,7 +315,7 @@ class Afix(object):
             # applies new naming scheme to head:
             old_atoms = [ i[0] for i in self._dbatoms]
             self._dbhead = rename_dbhead_atoms(new_atomnames, old_atoms, self._dbhead)
-            self._dbhead = self.remove_duplicate_restraints(self._dbhead)
+            self._dbhead = self.remove_duplicate_restraints(self._dbhead, self.collect_all_restraints())
         # decide if restraints to external file or internal:
         distance_and_other = self.distance_and_other_restraints(self._dbhead)
         distance = distance_and_other[0]
