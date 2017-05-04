@@ -49,7 +49,7 @@ def get_current_dsr_version(silent=False):
     determines the current version of DSR on the web server
 
     >>> get_current_dsr_version()
-    '199'
+    '202'
 
     Returns
     -------
@@ -130,13 +130,12 @@ def get_system():
         return "lin"
 
 
-def post_update_things():
+def post_update_things(dsrdir):
     """
     Performs some file operations after the update.
     :return:
     """
     import stat
-    dsrdir = os.environ["DSR_DIR"]
     plat = get_system()
     upath = os.path.join(dsrdir, "dsr")
     try:
@@ -146,7 +145,7 @@ def post_update_things():
             shutil.copy2(os.path.abspath(os.path.join(dsrdir, "setup//dsr-mac")), upath)
             st = os.stat(upath)
             os.chmod(upath, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-        else:
+        elif plat == "lin":
             shutil.copy2(os.path.abspath(os.path.join(dsrdir, "setup//dsr-linux")), upath)
             st = os.stat(upath)
             os.chmod(upath, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
@@ -192,11 +191,12 @@ def get_update_package(version, destdir=None, post=True):
     -------
     True/False
 
-    >>> get_update_package('199')
+    >>> get_update_package('202')
     True
     """
     try:
-        dsrdir = os.path.dirname(os.path.realpath(__file__))
+        #dsrdir = os.path.dirname(os.path.realpath(__file__))
+        dsrdir = os.environ["DSR_DIR"]
     except KeyError:
         print("*** Could not determine the location of DSR. Can not update. ***" )
         sys.exit()
@@ -222,15 +222,14 @@ def get_update_package(version, destdir=None, post=True):
         sys.exit()
     shutil.rmtree(tmpdir, ignore_errors=True)  # cleanup the files
     if post:
-        post_update_things()
+        post_update_things(dsrdir)
     return True
 
 
 if __name__ == '__main__':
-    #import doctest
-    pass
-    #failed, attempted = doctest.testmod()  # verbose=True)
-    #if failed == 0:
-    #    print('passed all {} tests!'.format(attempted))
-    #else:
-    #    print('{} of {} tests failed'.format(failed, attempted))
+    import doctest
+    failed, attempted = doctest.testmod()  # verbose=True)
+    if failed == 0:
+        print('passed all {} tests!'.format(attempted))
+    else:
+        print('{} of {} tests failed'.format(failed, attempted))
