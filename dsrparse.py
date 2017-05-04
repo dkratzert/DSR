@@ -41,18 +41,15 @@ class DSR_Parser():
         self._dsr_list = misc.makelist(self._dsr_string)
         try:
             self.dsr_dict = self.parse_dsr_line()
-        except Exception as e:
+        except Exception:
             print("*** Parsing DSR command failed. ***")
-            print(e)
-            logging.basicConfig(filename=misc.reportlog, filemode='w', level=logging.DEBUG)
-            logging.info('DSR command line: {}'.format(self._dsr_string))
+            raise
 
     @property
     def get_dsr_dict(self):
         try:
             return self.dsr_dict
-        except AttributeError as e:
-            #print(e)
+        except AttributeError:
             print('*** No valid DSR command line found. ***')
             sys.exit()
     
@@ -70,7 +67,7 @@ class DSR_Parser():
         indexnum = misc.find_multi_lines(self._reslist, self._dsr_regex)
         try:
             line_number = int(indexnum[0])
-        except(IndexError):
+        except IndexError:
             print('*** no proper DSR command found! \n'
                     'Have you really saved your .res file? ***\n')
             sys.exit()

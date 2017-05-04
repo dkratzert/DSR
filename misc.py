@@ -431,7 +431,7 @@ def remove_file(filename, exit_dsr=False, terminate=False):
                 pgrogname = terminate
                 pgrogname.terminate()
             if exit_dsr:
-                sys.exit(0)
+                sys.exit()
 
 
 def copy_file(source, target):
