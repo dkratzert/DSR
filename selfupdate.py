@@ -199,7 +199,8 @@ def get_update_package(version, destdir=None, post=True):
     except KeyError:
         print("*** Could not determine the location of DSR. Can not update. ***" )
         sys.exit()
-    response = urlopen('{}/DSR-{}.tar.gz'.format(urlprefix, version))
+    myurlopen = MyOpener()
+    response = myurlopen('{}/DSR-{}.tar.gz'.format(urlprefix, version))
     with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
         tmpfile.write(response.read())
     tmpdir = tempfile.mkdtemp()  # a temporary directory
