@@ -47,6 +47,43 @@
 #   in the SHELXL file automatically.
 ########################################################################################
 
+
+
+<ether3>
+rem Name: Diethyl ether (another conformer), C4H10O
+rem Src: CCDC URUNAY
+RESI DIET
+SADI 0.01 O1 C1 O1 C3
+SADI 0.02 C1 C2 C3 C4
+SADI 0.04 O1 C2 O1 C4
+SIMU O1 > C4
+RIGU O1 > C4
+FRAG 17 1 1 1 90 90 90
+O1    8     -0.47991    6.09522    8.92668
+C1    6     -1.64987    6.82741    9.37082
+C2    6     -2.91757    6.38949    8.68882
+C3    6     -0.40513    4.76941    9.44311
+C4    6      0.97807    4.22479    9.20453
+</ether3>
+
+<ether2>
+rem Name: Diethyl ether (zigzag conformer), C4H10O
+rem Src: CCDC 1472895
+RESI DIET
+SADI 0.01 O1 C1 O1 C3
+SADI 0.02 C1 C2 C3 C4
+SADI 0.04 O1 C2 O1 C4
+SIMU O1 > C4
+RIGU O1 > C4
+FRAG 17 1 1 1 90 90 90
+C1    6      7.40855    5.44415    4.94001
+C2    6      6.03294    5.91279    5.32362
+O1    8      7.39946    4.67211    3.72730
+C3    6      7.39037    5.44415    2.51458
+C4    6      8.76598    5.91279    2.13097
+</ether2>
+
+
 <hexabenz>
 rem Name: Hexamethylbenzene, Mellitene, C12H18
 rem Src: CCDC EXEDOC
