@@ -3,6 +3,7 @@ Recent changes
         'dsr-log.lst' file. Improved detection of already used restraints. The standard
         deviations are now ignored for detection of duplicate restraints. This prevents
         adding new restraints although they are alredy there but with different values.
+        Added two more ether conformers (zigzag and only one side angled).
 -202    Greatly improved search results of "dsr -s name". A bug prevented to display
         very similar names in the search results.
 -201    Fixed bug in threefold disordered CF3 group. Fixed -target option. Q-peaks
