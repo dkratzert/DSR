@@ -47,6 +47,8 @@ def invert_dbatoms_coordinates(atoms):
 def search_fragment_name(search_string, gdb, numresults=6):
     """
     searches the Name: comments in the database for a given name
+    :param numresults: number of results to return after search
+    :type search_string: str
     """
     db = gdb.db_dict
     names_list = []
@@ -57,8 +59,7 @@ def search_fragment_name(search_string, gdb, numresults=6):
         names_list.append([i, fragname, line_number, dbname])
     search_results = []
     for i in names_list:
-        key = make_sortkey(i[1])
-        #coefficient = dice_coefficient(search_string, db_entry)
+        key = make_sortkey(i[1], searchkey=True)
         coefficient = dice_coefficient2(search_string, key[0]+key[1])
         i.append([coefficient, key[1]])
         search_results.append(i)
@@ -79,13 +80,15 @@ def print_search_results(results):
     sys.exit()
 
 
-def make_sortkey(full_name):
+def make_sortkey(full_name, searchkey=False):
     """
     Algorythm inspired by W. Sage J. Chem. Inf: Comput. Sci. 1983, 23, 186-197
     """
     keylist = []
     full_name = ''.join(e for e in full_name if e not in ('{}()[],'))
-    full_name = full_name.split(' ')[0].lower()
+    full_name = full_name.split(' ')
+    rest = " "+' '.join(full_name[1:])
+    full_name = full_name[0].lower()
     numbers = ''.join(e for e in full_name if e in r'0123456789')
     if full_name.startswith('tert-'):
         full_name = full_name[4:]
@@ -116,7 +119,10 @@ def make_sortkey(full_name):
     if full_name.startswith('i-'):
         full_name = full_name[1:]
     full_name = ''.join(e for e in full_name if e not in ('+-_.\'1234567890, '))
-    keylist = [full_name, numbers]
+    if searchkey:
+        keylist = [full_name + rest, numbers]  # enables search for sum formulae
+    else:
+        keylist = [full_name, numbers]
     return keylist
 
 
@@ -300,7 +306,6 @@ class global_DB():
                     key[1]]
             fraglist.append(line)
         fraglist.sort(key=lambda x: (x[4], x[5]))
-        #fraglist.sort(key=lambda x: x[4].lower())
         return fraglist
 
     def build_db_dict(self):

@@ -126,7 +126,7 @@ class DSR():
         if self.list_db:
             self.list_dbentries()
         if self.search_string:
-            result = search_fragment_name(self.search_string, self.gdb)
+            result = search_fragment_name(self.search_string, self.gdb, numresults=7)
             print_search_results(result)
             sys.exit()
         # Export !all! fragments
