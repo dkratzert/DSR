@@ -630,7 +630,7 @@ class insertAfixTest(unittest.TestCase):
         self.options.rigid_group = False
         self.rl = ResList(testresfile)
         self.reslist = self.rl.get_res_list()
-        self.dsrp = DSRParser(self.reslist, self.rl)
+        self.dsrp = DSRParser(self.reslist)
         self.dsr_dict = self.dsrp.parse_dsr_line()
         self.find_atoms = FindAtoms(self.reslist)
         self.gdb = global_DB(invert)
@@ -672,7 +672,7 @@ class removeDublicatesAfixTest(unittest.TestCase):
         self.reslist = self.res_list.get_res_list()
         self.find_atoms = FindAtoms(self.reslist)
         invert = False
-        self.dsrp = DSRParser(self.reslist, self.res_list)
+        self.dsrp = DSRParser(self.reslist)
         self.dsr_dict = self.dsrp.parse_dsr_line()
         fragment = 'OC(cf3)3'
         self.gdb = global_DB(invert)
@@ -1012,7 +1012,7 @@ class DSRParseTest(unittest.TestCase):
         testresfile = './dsrparse.res'
         self.rl = ResList(testresfile)
         self.reslist = self.rl.get_res_list()
-        self.dsrp = DSRParser(self.reslist, self.rl)
+        self.dsrp = DSRParser(self.reslist)
         self.dsr_dict = self.dsrp.parse_dsr_line()
 
     def testrun_find_dsr_command(self):
@@ -1028,7 +1028,7 @@ class DSRParse2Test(unittest.TestCase):
         testresfile = './dsrparse.res'
         self.rl = ResList(testresfile)
         self.reslist = self.rl.get_res_list()
-        self.dsrp = DSRParser(self.reslist, self.rl)
+        self.dsrp = DSRParser(self.reslist)
         self.dsr_dict = self.dsrp.parse_dsr_line()
 
     def testrun_find_dsr_command(self):
@@ -1146,7 +1146,7 @@ class ResidueTest(unittest.TestCase):
         self.res_list = self.rl.get_res_list()
         self.find_atoms = FindAtoms(self.res_list)
         self.rle = ResListEdit(self.res_list, self.find_atoms)
-        self.dsrp = DSRParser(self.res_list, self.rle)
+        self.dsrp = DSRParser(self.res_list)
         self.dsr_dict = self.dsrp.parse_dsr_line()
         # fragment = self.dsr_dict['fragment']
         fragment = 'ch2cl2'

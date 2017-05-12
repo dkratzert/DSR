@@ -29,13 +29,11 @@ class DSRParser():
     Additionally the FVAR line in the reslist gets corrected by set_fvar() at
     the end of parse_dsr_line().
     """
-    def __init__(self, reslist, rle):
+    def __init__(self, reslist):
         """
         :param reslist: list of strings of .res file
-        :param rle:  ResList() object
         """
         self._reslist = reslist
-        self._rle = rle
         self._dsr_regex = '^rem\s{1,5}DSR\s{1,5}.*'
         self._dsr_string = self.find_dsr_command(line=True).lower()
         self._dsr_list = misc.makelist(self._dsr_string)
@@ -176,7 +174,7 @@ class DSRParser():
         >>> reslist = rl.get_res_list()
         >>> rle = ResListEdit(reslist, res_file)
         >>> #dsr_line = dsrp.get_dsr_dict
-        >>> dsrp = DSRParser(reslist, rle)
+        >>> dsrp = DSRParser(reslist)
         >>> dic = dsrp.get_dsr_dict
         >>> l = sorted(dic)
         >>> for i in l:
