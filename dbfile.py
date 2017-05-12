@@ -133,6 +133,22 @@ __metaclass__ = type  # use new-style classes
 # dsr_db.txt is the db from the distribution. This file should not be edited.
 # dsr_user_db.txt if this file exists, all its content is also read in.
 
+def read_file_data(filepath, with_comments=False):
+    """
+    reads the database files and returns them as list
+    """
+    dblist = []
+    try:
+        with open(filepath, 'r') as f:
+            for line in f:
+                if line.startswith('#') and with_comments is False:
+                    continue
+                dblist.append(line)
+    except IOError as e:
+        print(e)
+    return dblist
+
+
 class ReadDB():
     """
     reads in the system and user db files (self._db_file_names) and makes
@@ -148,31 +164,16 @@ class ReadDB():
     def get_databases(self):
         return self._databases
 
-    def read_db_data(self, filepath):
-        """
-        reads the database files and returns them as list
-        """
-        dblist = []
-        try:
-            with open(filepath, 'r') as f:
-                for line in f:
-                    if line.startswith('#'):
-                        continue
-                    dblist.append(line)
-        except IOError as e:
-            print(e)
-        return dblist
-
     def getDB_files_dict(self):
         """
         returns the database as dictionary. Each file has its own key.
         {'dsr-db': ('line1\n', 'line2\n', '...'), 'dsr-user-db': ('line1\n', 'line2\n', '...')}
         """
         db_dict = {}
-        dblist = self.read_db_data(self.maindb)
+        dblist = read_file_data(self.maindb)
         db_dict['dsr_db'] = dblist
         dblist = []
-        dblist = self.read_db_data(self.userdb)
+        dblist = read_file_data(self.userdb)
         db_dict['dsr_user_db'] = dblist
         return db_dict
 

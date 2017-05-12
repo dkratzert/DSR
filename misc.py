@@ -25,6 +25,18 @@ __metaclass__ = type  # use new-style classes
 reportlog = 'dsr_bug_report.log'
 
 
+def write_file(list, name):
+    """
+    Writes the content of list to name.
+    :param list: list
+    :param name:  string
+    """
+    with open(name, 'w') as ofile:
+        for line in list:  # modified reslist
+            ofile.write("%s" % line)  # write the new file
+
+
+
 def extract_tarfile(file, targetdir):
     """
     Extracts .tar.gz "file" to "targetdir"
