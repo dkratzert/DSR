@@ -96,14 +96,14 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     >>> from resfile import ResList
     >>> from dbfile import global_DB
     >>> from resfile import ResListEdit
-    >>> from dsrparse import DSR_Parser
+    >>> from dsrparse import DSRParser
     >>> from resi import Resi
     >>> res_file = 'p21c.res'
     >>> rl = ResList(res_file)
     >>> reslist = rl.get_res_list()
     >>> find_atoms = FindAtoms(reslist)
     >>> rle = ResListEdit(reslist, find_atoms)
-    >>> dsrp = DSR_Parser(reslist, rle)
+    >>> dsrp = DSRParser(reslist, rle)
     >>> dsr_dict = dsrp.get_dsr_dict
     >>> dbhead = ['RESI CF3']
     >>> db_residue_string='CF3'
