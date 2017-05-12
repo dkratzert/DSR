@@ -19,7 +19,7 @@ from misc import reportlog, remove_file, find_line, remove_line
 from options import OptionsParser
 from os.path import expanduser
 from terminalsize import get_terminal_size
-from dsrparse import DSR_Parser
+from dsrparse import DSRParser
 from dbfile import ImportGRADE, print_search_results
 from resi import Resi
 from restraints import ListFile, Lst_Deviations, Restraints
@@ -154,7 +154,7 @@ class DSR():
             sys.exit()
         if not any(list(vars(self.options.all_options).values())+[self.res_file]):
             self.options.error()
-        if self.res_file == False:
+        if not self.res_file:
             self.options.error()
         self.rl = ResList(self.res_file)
         self.reslist = self.rl.get_res_list()
@@ -230,10 +230,10 @@ class DSR():
             sys.exit()
         find_atoms = atomhandling.FindAtoms(self.reslist)
         rle = ResListEdit(self.reslist, find_atoms)
-        dsrp = DSR_Parser(self.reslist, rle)
+        dsrp = DSRParser(self.reslist, rle)
         dsr_dict = dsrp.get_dsr_dict
         fvarlines = rle.find_fvarlines()
-        self.fragment = dsrp.fragment.lower()
+        self.fragment = dsrp.fragment
         dbhead = self.gdb.get_head_from_fragment(self.fragment)        # this is only executed once
         db_residue_string = self.gdb.get_resi_from_fragment(self.fragment)
         dbatoms = self.gdb.get_atoms_from_fragment(self.fragment)      # only the atoms of the dbentry as list
@@ -329,7 +329,6 @@ class DSR():
             shx.run_shelxl()
         except:
             raise
-            sys.exit()
         # Display the results from the list file:
         lf = ListFile(basefilename)
         lst_file = lf.read_lst_file()
@@ -385,6 +384,7 @@ class multilog(object):
 
 if __name__ == '__main__':
     '''main function'''
+    options = False
     lstfile = ''
     is_listfile = False
     try:
@@ -411,6 +411,8 @@ if __name__ == '__main__':
               '(if possible) to dkratzert@gmx.de ***\n\n'.format(lst))
         print('DSR version: {}'.format(VERSION))
         print('Python version: {}'.format(sys.version))
+        if options:
+            print('Commandline: {}'.format(options.all_options))
         print('Platform: {} {}, {}'.format(platform.system(),
                                             platform.release(), ' '.join(platform.uname())))
         raise

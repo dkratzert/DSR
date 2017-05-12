@@ -19,7 +19,7 @@ import logging
 
 __metaclass__ = type  # use new-style classes
 
-class DSR_Parser():
+class DSRParser():
     """
     handles the parsing of the DSR command
 
@@ -176,7 +176,7 @@ class DSR_Parser():
         >>> reslist = rl.get_res_list()
         >>> rle = ResListEdit(reslist, res_file)
         >>> #dsr_line = dsrp.get_dsr_dict
-        >>> dsrp = DSR_Parser(reslist, rle)
+        >>> dsrp = DSRParser(reslist, rle)
         >>> dic = dsrp.get_dsr_dict
         >>> l = sorted(dic)
         >>> for i in l:
@@ -292,7 +292,7 @@ class DSR_Parser():
         '''
         database fragment name
         '''
-        return self.dsr_dict['fragment']
+        return self.dsr_dict['fragment'].lower()
 
     @property
     def occupancy(self):
