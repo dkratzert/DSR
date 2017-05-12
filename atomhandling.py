@@ -816,7 +816,7 @@ class NumberScheme():
             self.__rlist.extend(atomlist)
             # check if rlist contains an atom name of atomlist.
             # If so, add a suffix from aplhabet to it.
-            while self._contains(atomlist, self.__rlist) == False:
+            while not self._contains(atomlist, self.__rlist):
                 suffix = alph[0]
                 del alph[0]
                 atomlist = self._generate_numbers(atom, num, suffix)
