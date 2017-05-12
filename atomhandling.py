@@ -103,7 +103,7 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     >>> reslist = rl.get_res_list()
     >>> find_atoms = FindAtoms(reslist)
     >>> rle = ResListEdit(reslist, find_atoms)
-    >>> dsrp = DSRParser(reslist, rle)
+    >>> dsrp = DSRParser(reslist)
     >>> dsr_dict = dsrp.get_dsr_dict
     >>> dbhead = ['RESI CF3']
     >>> db_residue_string='CF3'

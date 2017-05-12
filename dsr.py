@@ -230,7 +230,7 @@ class DSR():
             sys.exit()
         find_atoms = atomhandling.FindAtoms(self.reslist)
         rle = ResListEdit(self.reslist, find_atoms)
-        dsrp = DSRParser(self.reslist, rle)
+        dsrp = DSRParser(self.reslist)
         dsr_dict = dsrp.get_dsr_dict
         fvarlines = rle.find_fvarlines()
         self.fragment = dsrp.fragment
