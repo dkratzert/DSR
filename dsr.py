@@ -300,8 +300,9 @@ class DSR():
             sys.exit()
         # Adds the origin of restraints and fragment to res file:
         import textwrap
-        source = textwrap.wrap("REM Restraints for Fragment {}, {} from: {}. "
+        source = textwrap.wrap("REM - DSR v{} - Restraints for Fragment {}, {} from: {}. "
                                "Please cite doi:10.1107/S1600576715005580".format(
+                                    VERSION,
                                     self.fragment,
                                     self.gdb.get_name_from_fragment(self.fragment),
                                     self.gdb.get_src_from_fragment(self.fragment)),
