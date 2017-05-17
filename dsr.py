@@ -299,12 +299,12 @@ class DSR():
             sys.exit()
         # Adds the origin of restraints and fragment to res file:
         import textwrap
-        source = textwrap.wrap("REM - DSR v{} - Restraints for Fragment {}, {} from: {}. "
-                               "Please cite doi:10.1107/S1600576715005580".format(
-                                    VERSION,
+        source = textwrap.wrap("REM Restraints for Fragment {}, {} from: {}. "
+                               "Please cite doi:10.1107/S1600576715005580, DSR-v{}".format(
                                     self.fragment,
                                     self.gdb.get_name_from_fragment(self.fragment),
-                                    self.gdb.get_src_from_fragment(self.fragment)),
+                                    self.gdb.get_src_from_fragment(self.fragment),
+                                    VERSION),
                                 width=74, subsequent_indent='REM ')
         # TODO: test if slow for big files:
         for line in self.reslist:
@@ -314,7 +314,7 @@ class DSR():
                     break
             except IndexError:
                 continue
-        self.reslist[dsr_line_number] = self.reslist[dsr_line_number] + '\n' + '\n'.join(source) + '\n'+ afix_entry
+        self.reslist[dsr_line_number] = self.reslist[dsr_line_number] + '\n' + '\n'.join(source) + '\n' + afix_entry
         # write to file:
         shx = ShelxlRefine(self.reslist, basefilename, find_atoms, self.options)
         acta_lines = shx.remove_acta_card()
