@@ -20,8 +20,8 @@ from constants import RESTRAINT_CARDS
 
 
 class Resi(object):
-    def __init__(self, reslist, dsr_line_dict, dbhead, db_residue_string, find_atoms):
-        '''
+    def __init__(self, reslist, dsrp, dbhead, db_residue_string, find_atoms):
+        """
         Handles the RESI instructions and restraints
         self._dsr_command_resi_list : list of RESI commands from command line.
         self._resi_dict_dsr_command : dictionary of commands after get_resi_syntax()
@@ -42,39 +42,39 @@ class Resi(object):
         :type db_residue_string: string
         :param find_atoms: find_atoms object
         :type find_atoms: object
-        '''
+        """
         self._reslist = reslist
         self._find_atoms = find_atoms
         self._dbhead = dbhead
-        self._atoms_in_reslist = self._find_atoms.collect_residues()
+        self._atoms_in_reslist = self._find_atoms.atoms_as_residues
         self._residues_in_res = sorted(list(self._atoms_in_reslist))
-        self._dsr_dict = dsr_line_dict.copy()
-        self._dsr_command_resi_list = self._dsr_dict['resi']
+        self.dsrp = dsrp
+        self._dsr_command_resi_list = self.dsrp.resi
         if self._dsr_command_resi_list:
             # at least one residue parameter defined in .res file
             self._resi_dict_dsr_command = self.get_resi_syntax(self._dsr_command_resi_list)
         if self._dsr_command_resi_list == '':
             # use residue from database
             self._resi_dict_dsr_command = {'class': None, 'number': None, 'alias': None}
-        if self._dsr_command_resi_list == False:
+        if not self._dsr_command_resi_list:
             # residues tuned off
             self._resi_dict_dsr_command = False
         try:
             # use residue class from db if not given in dsr command:
             self._db_resi_list = db_residue_string.split()
-        except(AttributeError):
-            print('No valid residue "RESI classname" in the database entry '\
-                    'of {} found.'.format(self._dsr_dict['fragment']))
+        except AttributeError:
+            print('No valid residue "RESI classname" in the database entry '
+                  'of {} found.'.format(self.dsrp.fragment))
             sys.exit()
         self._resi_dict_db = self.get_resi_syntax(self._db_resi_list)
         self._combined_resi = self.build_up_residue()
 
     @property
     def get_resinumber(self):
-        '''
+        """
         Returns the residue number of the currently fitted fragment
         :type self._combined_resi['number']: string
-        '''
+        """
         return self._combined_resi['number']
 
     @property
@@ -86,11 +86,11 @@ class Resi(object):
         return self._combined_resi['class']
 
     def remove_resi(self, head):
-        '''
+        """
         removes all resi commands and classes from head
         :param head: database header of the current fragment
         :type head: list
-        '''
+        """
         rhead = [] #head without resi
         delhead = []
         for dummy, line in enumerate(head):
@@ -98,7 +98,7 @@ class Resi(object):
             try:
                 if line[0][:4] in RESTRAINT_CARDS:
                     line[0] = line[0].split('_')[0]
-            except(IndexError):
+            except IndexError:
                 continue
             line = ' '.join(line)
             delhead.append(line)
@@ -110,9 +110,9 @@ class Resi(object):
         return rhead
 
     def format_restraints(self, head):
-        '''
+        """
         in case of RESI, format the restraints like "SAME_class"
-        '''
+        """
         newhead = []
         for line in head:
             line = line.upper()
@@ -130,13 +130,13 @@ class Resi(object):
         return newhead
 
     def get_unique_resinumber(self, resinum):
-        '''
+        """
         Finds a unique resi number. If the number is already unique
         the given is used.
         :param resinum: residue number of the fragment
         :type resinum: string
         :return resinum: unique residue number
-        '''
+        """
         new_num = '1'
         if not resinum:
             while new_num in self._residues_in_res:
@@ -190,13 +190,12 @@ class Resi(object):
         if final_residue['class']:
             return final_residue
 
-
-    def _wrong_syntax(self):
+    @staticmethod
+    def _wrong_syntax():
         print('This is not a valid RESIdue syntax!')
 
-
     def get_resi_syntax(self, resi):
-        '''
+        """
         Checks if resi class, number and/or alias are present and valid.
         start with digit-> rest auch digit-> resinumber or alias
         start with letter-> rest letter or digit -> residue class
@@ -207,21 +206,18 @@ class Resi(object):
         The return value of just "RESI" in the command line is an empty dict
         :param resi: residue definition like ['3', 'CF3']
         :type resi: list
-        '''
+        """
         resi_dict = {
             'class' : None,
             'number': None,
             'alias' : None}
-
         if not resi:
             print('No valid RESI instruction found in the database entry!')
             sys.exit()
-
         try:
             resi.sort()
-        except(AttributeError):
+        except AttributeError:
             return resi_dict
-
         if str.isalpha(resi[-1][0]): # first character of class must be a letter
             resi_dict['class'] = resi.pop()
         if len(resi) > 0:
@@ -248,9 +244,8 @@ class Resi(object):
                 sys.exit()
         return resi_dict
 
-
     def resi_class_atoms_consistent(self):
-        '''
+        """
         currently not used
 
         find out if the atom names of the current residue class fit
@@ -261,10 +256,10 @@ class Resi(object):
                 if atom == current residue class:
                     add atom to at_list
             compare for residue if fragment atom list fits to at_list
-        '''
+        """
         for num in list(self._atoms_in_reslist):
-            print(num, len(self._atoms_in_reslist[num]), self._atoms_in_reslist[num][:][0][3], \
-                    [i[0] for i in self._atoms_in_reslist[num][:]])
+            print(num, len(self._atoms_in_reslist[num]), self._atoms_in_reslist[num][:][0][3],
+                  [i[0] for i in self._atoms_in_reslist[num][:]])
 
 
 

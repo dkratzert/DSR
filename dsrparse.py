@@ -287,17 +287,24 @@ class DSRParser():
 
     @property
     def fragment(self):
-        '''
+        """
         database fragment name
-        '''
+        """
         return self.dsr_dict['fragment'].lower()
 
     @property
     def occupancy(self):
-        '''
+        """
         occupancy of the fragment
-        '''
+        """
         return self.dsr_dict['occupancy']
+
+    @occupancy.setter
+    def occupancy(self, value):
+        """
+        occupancy of the fragment
+        """
+        self.dsr_dict['occupancy'] = value
 
     @property
     def command(self):
@@ -319,20 +326,23 @@ class DSRParser():
     def split(self):
         return self.dsr_dict['split']
 
+    @split.setter
+    def split(self, value):
+        self.dsr_dict['split'] = value
+
     @property
     def resi(self):
-        '''
+        """
         resi: empty string, dbfile, class, number or class and number
-        '''
+        """
         return self.dsr_dict['resi']
 
     @property
-    def dfix_active(self):
-        '''
+    def dfix(self):
+        """
         dfix: bool True/False
-        '''
-        dfix = self.dsr_dict['dfix']
-        return dfix
+        """
+        return self.dsr_dict['dfix']
 
 
 
