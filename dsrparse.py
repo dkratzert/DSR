@@ -209,7 +209,11 @@ class DSRParser():
         command_list = ('PUT', 'REPLACE', 'ADD')
         if command not in command_list:
             print('*** No proper put/replace string found in DSR command line! ***')#, self._dsr_list
-            sys.exit(-1)
+            sys.exit()
+        for com in command_list:
+            if com in self._dsr_list[3:]:
+                print('*** PUT or REPLACE must occure once and only directly after REM DSR ***')
+                sys.exit()
         # Source and target atoms:
         # In parenteses are one start und one to multiple stop conditions:
         if not self.cf3_active:
@@ -229,7 +233,7 @@ class DSRParser():
         part = self.find_commands('PART')
         try:
             float(part)
-        except(ValueError):
+        except ValueError:
             print('*** Part without numerical value supplied.',
                   'Please give a part number after PART in the DSR command. ***')
             sys.exit(False)
@@ -241,20 +245,20 @@ class DSRParser():
                 print('*** Illegal part number supplied: {}. Please give just one digit '
                       '(positive or negative) in the DSR command ***'.format(part))
                 sys.exit(False)
-        except(TypeError):
+        except TypeError:
             # no part specified
             pass
         occupancy = self.find_commands('OCC')
         badocc_message = '*** Occupancy without numerical value supplied. Please define occupancy value after OCC ***'
         badocc_status = False
-        if occupancy != False:
+        if occupancy:
             num = occupancy.split('.')
             fvar = abs(int(num[0]))//10
             try:
                 if float(fvar) > 99:
                     print('*** Only 99 free variables allowed in SHELXL! ***')
                     sys.exit()
-            except(ValueError):
+            except ValueError:
                 badocc_status = True
         if 'OCC' in self._dsr_list and not occupancy:
             badocc_status = True
@@ -287,16 +291,16 @@ class DSRParser():
 
     @property
     def fragment(self):
-        '''
+        """
         database fragment name
-        '''
+        """
         return self.dsr_dict['fragment'].lower()
 
     @property
     def occupancy(self):
-        '''
+        """
         occupancy of the fragment
-        '''
+        """
         return self.dsr_dict['occupancy']
 
     @property
@@ -321,16 +325,16 @@ class DSRParser():
 
     @property
     def resi(self):
-        '''
+        """
         resi: empty string, dbfile, class, number or class and number
-        '''
+        """
         return self.dsr_dict['resi']
 
     @property
     def dfix_active(self):
-        '''
+        """
         dfix: bool True/False
-        '''
+        """
         dfix = self.dsr_dict['dfix']
         return dfix
 
