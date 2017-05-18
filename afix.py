@@ -23,48 +23,6 @@ from misc import id_generator
 __metaclass__ = type  # use new-style classes
 
 
-def write_dbhead_to_file(filename, dbhead, resi_class, resi_number):
-    """
-    write the restraints to an external file
-    :param filename:     filename of database file
-    :param dbhead:       database header
-    :param resi_class:   SHELXL residue class
-    :param resi_number:  SHELXL residue number
-    :return filename:    full file name where restraints will be written
-    """
-    number = '1'
-    files = []
-    # find a unique number for the restraint file:
-    for filen in misc.sortedlistdir('.'):
-        if fnmatch.fnmatch(filen, 'dsr_*_'+filename):
-            filenum = filen.split('_')
-            if str.isdigit(filenum[1]):
-                files.append(filenum[1])
-    filepath, filename = os.path.split(os.path.abspath(filename))
-    try:
-        number = str(int(files[-1])+1)
-    except(IndexError):
-        pass
-    if not resi_number and not resi_class:   # no residues
-        filename = 'dsr_'+number+'_'+filename
-    if resi_number:                          # only residue number known
-        filename = 'dsr_'+resi_class+'_'+resi_number+'_'+filename
-    if not resi_number and resi_class:       # only residue class known
-        filename = 'dsr_'+resi_class+'_'+filename
-    if os.path.isfile(os.path.abspath(filename)):
-        print('Previous restraint file found. Using restraints from "{}"'.format(filename))
-        return filename
-    try:
-        dfix_file = open(os.path.join(filepath, filename), 'w')  # open the ins file
-    except(IOError):
-        print('*** Unable to write restraints file! Check directory write permissions. ***')
-        sys.exit(False)
-    print('Restraints were written to "{}"'.format(os.path.join(filepath, filename)))
-    for i in dbhead:            # modified reslist
-        dfix_file.write("%s" %i)    # write the new file
-    dfix_file.close()
-    return filename
-
 def add_residue_to_dfix(dfix_head, resinum):
     """
     Add a residue to a list of DFIX/DANG restraints
@@ -119,14 +77,7 @@ class Afix(object):
         :type dbatoms: list
         :param fragment_atom_types:      ['N', 'C', 'C', 'C']
         :param dbhead:       database header
-        :param dsr_line_dict: {'occupancy': 'str',
-                                    'dfix': True/False,
-                                    'part': 'str',
-                                    'fragment': 'str',
-                                    'resi': ['class'] or ['number'] or ['class', [number]],
-                                    'target': ['atom1', 'atom2', ...],
-                                    'source': ['atom1', 'atom2', ...],
-                                    'command': 'PUT/REPLACE'}
+        :param dsrp: dsr parser object
         :param sfac_table:   SHELXL SFAC table as list like: ['C', 'H', 'O', 'F', 'Al', 'Ga']
         :param find_atoms:   FindAtoms() object
         :param numberscheme: atoms numbering scheme like: ['O1A', 'C1A', 'C2A', 'F1A', 'F2A', 'F3A', 'C3A']
@@ -140,6 +91,7 @@ class Afix(object):
         self._fragment_atom_types = fragment_atom_types
         self._sfac_table = sfac_table
         self.numberscheme = numberscheme
+        self.dsrp = dsrp
         self.part = dsrp.part
         self.occ = dsrp.occupancy
         self.source_atoms = dsrp.source
@@ -270,11 +222,11 @@ class Afix(object):
         return [distance, others]
 
     def combine_names_and_coordinates(self):
-        # type: () -> list
         """
         Combines the target atom names with the coordinates from the -target option.
         Douplicate q-peak names are explicitely allowed here for special positions.
         Therefore, the target atoms are named DUM0, DUM1, DUM2, ...
+        :rtype: dict
         """
         atoms = {}
         chunk = misc.chunks(self.options.target_coords, 3)
@@ -304,7 +256,7 @@ class Afix(object):
         afix_list = []   # the final list with atoms, sfac and coordinates
         e2s = Elem_2_Sfac(self._sfac_table)
         new_atomnames = list(reversed(self.numberscheme)) # i reverse it to pop() later
-        if resi.get_residue_class:
+        if self.dsrp.resiflag:
             self._dbhead = resi.format_restraints(self._dbhead)
             self._dbhead = self.remove_duplicate_restraints(self._dbhead, self.collect_all_restraints(),
                                                             resi.get_residue_class)
@@ -328,28 +280,29 @@ class Afix(object):
                 # DFIX enabled:
                 pname = os.path.splitext(dfx_file_name)
                 dfx_file_name = pname[0]+"_dfx"+pname[1]
-                if resi.get_residue_class:
+                if self.dsrp.resiflag:
                     # External, no dfix but with residue:
                     self.dfix_head = add_residue_to_dfix(self.dfix_head, resi.get_resinumber)
                 else:
                     # No residue but dfix and external:
                     self.dfix_head = rename_dbhead_atoms(new_atomnames, old_atoms, self.dfix_head)
-                dfx_file_name = write_dbhead_to_file(dfx_file_name, self.dfix_head, resi.get_residue_class, resi.get_resinumber)
+                dfx_file_name = self.write_dbhead_to_file(dfx_file_name, self.dfix_head, resi.get_residue_class,
+                                                          resi.get_resinumber)
             else:
                 # DFIX disabled:
-                dfx_file_name = write_dbhead_to_file(dfx_file_name, self._dbhead, resi.get_residue_class, resi.get_resinumber)
+                dfx_file_name = self.write_dbhead_to_file(dfx_file_name, self._dbhead, resi.get_residue_class,
+                                                          resi.get_resinumber)
                 self._dbhead = self._dbhead = other_head
             if self.dfix_head:
                 self._dbhead = other_head
-            if resi.get_residue_class:
-                self._dbhead += ['RESI {} {}'.format(
-                    resi.get_resinumber, resi.get_residue_class)]
+            if self.dsrp.resiflag:
+                self._dbhead += ['RESI {} {}'.format(resi.get_resinumber, resi.get_residue_class)]
         else:
             if self.dfix_head:
-                if resi.get_residue_class:
+                if self.dsrp.resiflag:
                     self.dfix_head = add_residue_to_dfix(self.dfix_head, resi.get_resinumber)
                 self._dbhead = other_head+self.dfix_head
-                if not resi.get_residue_class:
+                if not self.dsrp.resiflag:
                     self._dbhead = rename_dbhead_atoms(new_atomnames, old_atoms, self._dbhead)
             self._dbhead = misc.wrap_headlines(self._dbhead)
         # list of atom types in reverse order
@@ -404,12 +357,12 @@ class Afix(object):
         else:
             part = ''
             part2 = ''
-        if resi.get_residue_class:
+        if self.dsrp.resiflag:
             resi_end = 'RESI 0'
         else:
             resi_end = ''
         if external_restraints and not self.options.rigid_group:
-            if resi.get_residue_class:
+            if self.dsrp.resiflag:
                 self._dbhead += '\nREM The restraints for residue {} are in this ' \
                                 'file:\nrem +{}\nREM {}\n'.format(resi.get_residue_class, dfx_file_name, self.rand_id_dfx)
             else:
@@ -417,9 +370,8 @@ class Afix(object):
                                 ' file:\nrem +{}\nREM {}\n'.format(dfx_file_name, self.rand_id_dfx)
         if self.options.rigid_group:
             afixtag = ''
-            if resi.get_residue_class:
-                self._dbhead = 'RESI {} {}\n'.format(
-                                resi.get_residue_class, resi.get_resinumber)
+            if self.dsrp.resiflag:
+                self._dbhead = 'RESI {} {}\n'.format(resi.get_residue_class, resi.get_resinumber)
             else:
                 self._dbhead = ''
         else:
@@ -442,6 +394,47 @@ class Afix(object):
                                 resi_end)        # 7
         return afix
 
+    def write_dbhead_to_file(self, filename, dbhead, resi_class, resi_number):
+        """
+        write the restraints to an external file
+        :param filename:     filename of database file
+        :param dbhead:       database header
+        :param resi_class:   SHELXL residue class
+        :param resi_number:  SHELXL residue number
+        :return filename:    full file name where restraints will be written
+        """
+        number = '1'
+        files = []
+        # find a unique number for the restraint file:
+        for filen in misc.sortedlistdir('.'):
+            if fnmatch.fnmatch(filen, 'dsr_*_' + filename):
+                filenum = filen.split('_')
+                if str.isdigit(filenum[1]):
+                    files.append(filenum[1])
+        filepath, filename = os.path.split(os.path.abspath(filename))
+        try:
+            number = str(int(files[-1]) + 1)
+        except IndexError:
+            pass
+        if not self.dsrp.resiflag:  # no residues
+            filename = 'dsr_' + number + '_' + filename
+        if self.dsrp.resiflag and resi_number:  # only residue number known
+            filename = 'dsr_' + resi_class + '_' + resi_number + '_' + filename
+        if self.dsrp.resiflag and not resi_number and resi_class:  # only residue class known
+            filename = 'dsr_' + resi_class + '_' + filename
+        if os.path.isfile(os.path.abspath(filename)):
+            print('Previous restraint file found. Using restraints from "{}"'.format(filename))
+            return filename
+        try:
+            dfix_file = open(os.path.join(filepath, filename), 'w')  # open the ins file
+        except IOError:
+            print('*** Unable to write restraints file! Check directory write permissions. ***')
+            sys.exit(False)
+        print('Restraints were written to "{}"'.format(os.path.join(filepath, filename)))
+        for i in dbhead:  # modified reslist
+            dfix_file.write("%s" % i)  # write the new file
+        dfix_file.close()
+        return filename
 
 if __name__ == '__main__':
     import doctest

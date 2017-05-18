@@ -278,7 +278,7 @@ class DSR():
 
         # several checks if the atoms in the dsr command line are consistent
         atomhandling.check_source_target(dsrp.source, dsrp.target, dbatoms)
-        num = atomhandling.NumberScheme(self.reslist, dbatoms, resi.get_resinumber)
+        num = atomhandling.NumberScheme(self.reslist, dbatoms, dsrp)
         # returns also the atom names if residue is active
         fragment_numberscheme = num.get_fragment_number_scheme()
         print('Fragment atom names: {}'.format(', '.join(fragment_numberscheme)))
