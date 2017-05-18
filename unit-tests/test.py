@@ -1196,7 +1196,7 @@ class ResidueTest(unittest.TestCase):
         self.assertEqual(self.resi.get_resi_syntax(['CF3', '2', '3']), class_number_alias)
         self.assertEqual(self.resi.get_resi_syntax(['CF3']), only_class)
 
-    @unittest.skip('foo')
+    #@unittest.skip('foo')
     def testrun_build_up_residue(self):
         dsr_dict1 = {'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'], 'fragment': 'OC(CF3)3',
                      'occupancy': '-31', 'source': ['O1', 'C1', 'C2', 'C3', 'C4'],
@@ -1204,14 +1204,16 @@ class ResidueTest(unittest.TestCase):
         dsr_dict2 = {'target': ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7'], 'fragment': 'OC(CF3)3',
                      'occupancy': '-31', 'source': ['O1', 'C1', 'C2', 'C3', 'C4'],
                      'resi': ['CF23', '5'], 'command': 'PUT', 'dfix': False, 'part': '2'}
-        resi1 = Resi(self.res_list, dsr_dict1, self.dbhead, self.residue_class, self.find_atoms)
-        resi2 = Resi(self.res_list, dsr_dict2, self.dbhead, self.residue_class, self.find_atoms)
+        self.dsrp.dsr_dict = dsr_dict1
+        resi1 = Resi(self.res_list, self.dsrp, self.dbhead, self.residue_class, self.find_atoms)
+        self.dsrp.dsr_dict = dsr_dict2
+        resi2 = Resi(self.res_list, self.dsrp, self.dbhead, self.residue_class, self.find_atoms)
         residue1 = {'alias': None, 'class': 'CF13', 'number': '4'}
         residue2 = {'alias': None, 'class': 'CF23', 'number': '5'}
         self.assertDictEqual(resi1.build_up_residue(), residue1)
         self.assertDictEqual(resi2.build_up_residue(), residue2)
 
-    @unittest.skip('foo')
+    #@unittest.skip('foo')
     def testrun_make_resihead(self):
         testhead = ['RESI TST', 'SADI 0.02 C1 C2 C1 C3 C1 C4',
                     'SADI 0.02 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
@@ -1264,12 +1266,18 @@ class ResidueTest(unittest.TestCase):
                      'command': 'PUT',
                      'dfix': False,
                      'part': '2'}
-        resi1 = Resi(self.res_list, dsr_dict1, testhead, 'CF13', self.find_atoms)
-        resi2 = Resi(self.res_list, dsr_dict2, testhead, 'TEST', self.find_atoms)
-        resi3 = Resi(self.res_list, dsr_dict3, testhead, 'TEST', self.find_atoms)
-        resi4 = Resi(self.res_list, dsr_dict4, testhead, 'TES1', self.find_atoms)
-        resi5 = Resi(self.res_list, dsr_dict5, testhead, 'TES1', self.find_atoms)
-        resi6 = Resi(self.res_list, dsr_dict6, testhead, 'TES1', self.find_atoms)
+        self.dsrp.dsr_dict = dsr_dict1
+        resi1 = Resi(self.res_list, self.dsrp, testhead, 'CF13', self.find_atoms)
+        self.dsrp.dsr_dict = dsr_dict2
+        resi2 = Resi(self.res_list, self.dsrp, testhead, 'TEST', self.find_atoms)
+        self.dsrp.dsr_dict = dsr_dict3
+        resi3 = Resi(self.res_list, self.dsrp, testhead, 'TEST', self.find_atoms)
+        self.dsrp.dsr_dict = dsr_dict4
+        resi4 = Resi(self.res_list, self.dsrp, testhead, 'TES1', self.find_atoms)
+        self.dsrp.dsr_dict = dsr_dict5
+        resi5 = Resi(self.res_list, self.dsrp, testhead, 'TES1', self.find_atoms)
+        self.dsrp.dsr_dict = dsr_dict6
+        resi6 = Resi(self.res_list, self.dsrp, testhead, 'TES1', self.find_atoms)
 
 
 class MiscTest(unittest.TestCase):
