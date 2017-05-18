@@ -14,7 +14,6 @@ import re
 import sys
 import misc
 import textwrap
-import logging
 
 
 __metaclass__ = type  # use new-style classes
