@@ -56,7 +56,8 @@ class Resi(object):
         if self._dsr_command_resi_list == '':
             # use residue from database
             self._resi_dict_dsr_command = {'class': None, 'number': None, 'alias': None}
-        if not self._dsr_command_resi_list:
+        # TODO: make explicit state in dsrp for db/command/or off
+        if not self._dsr_command_resi_list == False:  # explicit test for False! Need to make extra dsrp object for this discrimination!
             # residues tuned off
             self._resi_dict_dsr_command = False
         try:
