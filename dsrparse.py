@@ -35,7 +35,7 @@ class DSRParser():
         """
         self._reslist = reslist
         self._dsr_regex = '^rem\s{1,5}DSR\s{1,5}.*'
-        self._dsr_string = self.find_dsr_command(line=True).lower()
+        self._dsr_string = self.find_dsr_command(line=True).upper()
         self._dsr_list = misc.makelist(self._dsr_string)
         try:
             self.dsr_dict = self.parse_dsr_line()
