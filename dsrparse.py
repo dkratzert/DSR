@@ -14,10 +14,10 @@ import re
 import sys
 import misc
 import textwrap
-import logging
 
 
 __metaclass__ = type  # use new-style classes
+
 
 class DSRParser():
     """
@@ -35,22 +35,17 @@ class DSRParser():
         """
         self._reslist = reslist
         self._dsr_regex = '^rem\s{1,5}DSR\s{1,5}.*'
-        self._dsr_string = self.find_dsr_command(line=True).lower()
+        self._dsr_string = self.find_dsr_command(line=True).upper()
         self._dsr_list = misc.makelist(self._dsr_string)
+        # Indicates if RESI is on of off in dsr command. Turns True if activated:
+        # class and number are defined in self.resi
+        self._resiflag = False
         try:
             self.dsr_dict = self.parse_dsr_line()
         except Exception:
-            print("*** Parsing DSR command failed. ***")
+            print("*** No valid DSR command line found. ***")
             raise
 
-    @property
-    def get_dsr_dict(self):
-        try:
-            return self.dsr_dict
-        except AttributeError:
-            print('*** No valid DSR command line found. ***')
-            sys.exit()
-    
     def find_dsr_command(self, line=False):
         """
         line = False  -> Line number
@@ -67,22 +62,23 @@ class DSRParser():
             line_number = int(indexnum[0])
         except IndexError:
             print('*** no proper DSR command found! \n'
-                    'Have you really saved your .res file? ***\n')
+                  'Have you really saved your .res file? ***\n')
             sys.exit()
         if int(line_number) > int(hklf_endline):
             print('*** A DSR command after HKLF is not allowed! '
-                    'Check line {} ***'.format(line_number+1))
+                  'Check line {} ***'.format(line_number+1))
             sys.exit()
         if len(indexnum) > 1:
             print('*** Only one DSR command at once is allowed! ***')
             sys.exit(-1)
+        # TODO: rip out dsr command removal:
         if line:  # returns the string
             dsr_str = str(self._reslist[line_number])
             if misc.multiline_test(dsr_str):
                 multiline = True
                 # in case of a multiline command, strip the '=' and the newline
                 dsr_str = dsr_str.rstrip('\n\r= ')
-                dsr_str = re.sub(' +',' ', dsr_str)
+                dsr_str = re.sub(' +', ' ', dsr_str)
                 dsr_str = dsr_str+self._reslist[line_number+1]
                 return dsr_str                    # return the dsr text string
             else:
@@ -90,7 +86,7 @@ class DSRParser():
                 return dsr_str
         else:  # returns the index number of the command
             dsr_str = str(self._reslist[line_number])
-            dsr_str = re.sub(' +',' ', dsr_str)
+            dsr_str = re.sub(' +', ' ', dsr_str)
             if misc.multiline_test(dsr_str):
                 multiline = True
                 # in case of a multiline command, strip the '=' and the newline
@@ -99,9 +95,7 @@ class DSRParser():
             dsr_list = dsr_str.split()
             txt = ' '.join(dsr_list)
             # wrap the line after 75 chars:
-            dsrlines = textwrap.wrap(txt, 75, initial_indent='REM ', subsequent_indent = 'REM !')
-            #if len(dsrlines) > 1:
-            #    dsrlines[0] = dsrlines[0]+' ='
+            dsrlines = textwrap.wrap(txt, 75, initial_indent='REM ', subsequent_indent='REM !')
             dsrlines = '\n'.join(dsrlines)
             dsrlines += '\n'
             self._reslist[line_number] = ''  # delete old line
@@ -120,7 +114,7 @@ class DSRParser():
             try:
                 c_index = self._dsr_list.index(command)+1  # find the index of the command+1
                 cnum = self._dsr_list[c_index]             # get the index value
-            except(IndexError):
+            except IndexError:
                 cnum = False
         else:
             cnum = False
@@ -128,18 +122,25 @@ class DSRParser():
 
     def find_atoms(self, start, *stop):
         """
-        returns the source and target atoms between a single start argument
-        and one or several stop arguments
+        Returns the parameter between a single start argument
+        and one or several stop arguments as list of strings. This can be atoms or
+        other Parameters
+
+        ----------
+        :type start: str 
+        :type stop: str
+        :rtype: list
         """
+        atindex = 0
         try:
             atindex = self._dsr_list.index(start)+1
         except ValueError:
             if start == 'WITH':
                 print('*** No source atoms given! ***')
-                sys.exit(-1)
+                sys.exit()
             if start == 'ON':
                 print('*** No target atoms given! ***')
-                sys.exit(-1)
+                sys.exit()
         atoms = []
         for i in self._dsr_list[atindex:]: # start at the position of the first atom
             atoms.append(i.upper())
@@ -159,8 +160,7 @@ class DSRParser():
                 if i not in self._dsr_list:
                     raise Exception
             except:
-                print('\n*** No "WITH" or "ON" statement in the dsr '\
-                        'command line found! ***')
+                print('\n*** No "WITH" or "ON" statement in the dsr command line found! ***')
                 sys.exit()
 
     def parse_dsr_line(self):
@@ -175,7 +175,7 @@ class DSRParser():
         >>> rle = ResListEdit(reslist, res_file)
         >>> #dsr_line = dsrp.get_dsr_dict
         >>> dsrp = DSRParser(reslist)
-        >>> dic = dsrp.get_dsr_dict
+        >>> dic = dsrp.all
         >>> l = sorted(dic)
         >>> for i in l:
         ...     print('{}: '.format(i), dic[i])
@@ -224,9 +224,11 @@ class DSRParser():
             residue = self.find_atoms('RESI', 'PART', 'OCC', 'RESI', 'DFIX', '')
             # RESI is in dsr_list but no residue returns -> only RESI in command line:
             if not residue:
-                residue = ''
+                residue = []  # No residue defined, but RESI is active
+            self._resiflag = True  # means residue is active
         else:
             residue = False
+            self._resiflag = False  # residue completely turned off
         dfix = False
         if 'DFIX' in self._dsr_list:
             dfix = True
@@ -303,6 +305,13 @@ class DSRParser():
         """
         return self.dsr_dict['occupancy']
 
+    @occupancy.setter
+    def occupancy(self, value):
+        """
+        occupancy of the fragment
+        """
+        self.dsr_dict['occupancy'] = value
+
     @property
     def command(self):
         return self.dsr_dict['command']
@@ -323,30 +332,50 @@ class DSRParser():
     def split(self):
         return self.dsr_dict['split']
 
+    @split.setter
+    def split(self, value):
+        self.dsr_dict['split'] = value
+
     @property
     def resi(self):
         """
-        resi: empty string, dbfile, class, number or class and number
+        resi: empty list, class, number or class and number
+        :rtype: list
         """
         return self.dsr_dict['resi']
 
     @property
-    def dfix_active(self):
+    def resiflag(self):
+        """
+        defines if residue is on or off
+        :rtype: bool
+        """
+        return self._resiflag
+
+    @resiflag.setter
+    def resiflag(self, value):
+        """ 
+        Setter for resiflag
+        :type value: bool
+        """
+        self._resiflag = value
+
+    @property
+    def dfix(self):
         """
         dfix: bool True/False
         """
-        dfix = self.dsr_dict['dfix']
-        return dfix
+        return self.dsr_dict['dfix']
+
+    @property
+    def all(self):
+        """
+        Returns the complete dsr command dictionary
+        :return: dict 
+        """
+        return self.dsr_dict
 
 
-
-
-
-
-
-
-
-#for testing:
 if __name__ == '__main__':
     
     import doctest

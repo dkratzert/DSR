@@ -231,7 +231,6 @@ class DSR():
         find_atoms = atomhandling.FindAtoms(self.reslist)
         rle = ResListEdit(self.reslist, find_atoms)
         dsrp = DSRParser(self.reslist)
-        dsr_dict = dsrp.get_dsr_dict
         fvarlines = rle.find_fvarlines()
         self.fragment = dsrp.fragment
         dbhead = self.gdb.get_head_from_fragment(self.fragment)        # this is only executed once
@@ -241,13 +240,13 @@ class DSR():
         db_atom_types = atomhandling.get_atomtypes(dbatoms)
         sf = atomhandling.SfacTable(self.reslist, db_atom_types)
         sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
-        resi = Resi(self.reslist, dsr_dict, dbhead, db_residue_string, find_atoms)
+        resi = Resi(self.reslist, dsrp, dbhead, db_residue_string, find_atoms)
         # line where the dsr command is found in the resfile:
         dsr_line_number = dsrp.find_dsr_command(line=False)
         if dsrp.cf3_active:
             from cf3fit import CF3
             cf3 = CF3(rle, find_atoms, self.reslist, self.fragment, sfac_table,
-                      basefilename, dsr_dict, resi, self.res_file, self.options)
+                      basefilename, dsrp, resi, self.res_file, self.options)
             if self.fragment == 'cf3':
                 cf3.cf3(afix='130')
             if self.fragment == 'cf6':
@@ -279,18 +278,18 @@ class DSR():
 
         # several checks if the atoms in the dsr command line are consistent
         atomhandling.check_source_target(dsrp.source, dsrp.target, dbatoms)
-        num = atomhandling.NumberScheme(self.reslist, dbatoms, resi.get_resinumber)
+        num = atomhandling.NumberScheme(self.reslist, dbatoms, dsrp)
         # returns also the atom names if residue is active
         fragment_numberscheme = num.get_fragment_number_scheme()
         print('Fragment atom names: {}'.format(', '.join(fragment_numberscheme)))
         dfix_head = ''
-        if dsrp.dfix_active:
+        if dsrp.dfix:
             restr = Restraints(self.export, self.fragment, self.gdb)
             dfix_12 = restr.get_formated_12_dfixes()
             dfix_13 = restr.get_formated_13_dfixes()
             flats = restr.get_formated_flats()
             dfix_head = dfix_12+dfix_13+flats
-        afix = Afix(self.reslist, dbatoms, db_atom_types, dbhead, dsr_dict,
+        afix = Afix(self.reslist, dbatoms, db_atom_types, dbhead, dsrp,
                     sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
         afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfix', resi)
         if dsr_line_number < fvarlines[-1]:
@@ -301,12 +300,11 @@ class DSR():
         # Adds the origin of restraints and fragment to res file:
         import textwrap
         source = textwrap.wrap("REM Restraints for Fragment {}, {} from: {}. "
-                               "Please cite doi:10.1107/S1600576715005580, DSR-v{}".format(
+                               "Please cite doi:10.1107/S1600576715005580".format(
                                     self.fragment,
                                     self.gdb.get_name_from_fragment(self.fragment),
-                                    self.gdb.get_src_from_fragment(self.fragment),
-                                    VERSION),
-                                width=74, subsequent_indent='REM ')
+                                    self.gdb.get_src_from_fragment(self.fragment)),
+                               width=74, subsequent_indent='REM ')
         # TODO: test if slow for big files:
         for line in self.reslist:
             try:
