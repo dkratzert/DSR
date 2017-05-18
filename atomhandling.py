@@ -113,10 +113,10 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
 
     #>>> replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell)
     """
-    remdist=1.3
+    remdist = 1.3
     from resfile import ResListEdit
     find_atoms = FindAtoms(reslist)
-    if resi.get_resinumber:
+    if resi.dsrp.resiflag:
         frag_at = []
         for i in fragment_numberscheme:
             at = i + '_{}'.format(resi.get_resinumber)
@@ -143,9 +143,9 @@ class FindAtoms():
     """
 
     def __init__(self, reslist):
-        '''
+        """
         :param reslist: SHELXL .res file as list
-        '''
+        """
         self._reslist = reslist
         sfacline = find_multi_lines(self._reslist, r'SFAC\s+[a-zA-Z]+')
         try:
@@ -607,7 +607,6 @@ class SfacTable():
         self._db_atom_types = dbatom_types
         self.elements = [x.upper() for x in atoms]
 
-
     def set_sfac_table(self):
         """
         sets the new global sfac table in the res file
@@ -663,6 +662,7 @@ class SfacTable():
 
 
 #############################################################################
+
 
 class Elem_2_Sfac():
     def __init__(self, sfac_table):
@@ -723,7 +723,6 @@ class Elem_2_Sfac():
 #############################################################################
 
 
-
 class NumberScheme():
     """
     This class needs a dbentry and the resfile contents to generate a unique
@@ -732,13 +731,13 @@ class NumberScheme():
     over the names until the names are unique.
     """
 
-    def __init__(self, reslist, dbatome, resi=False):
+    def __init__(self, reslist, dbatome, dsrp):
         """
         :param reslist: resfile as list
         :param dbatome: list of atoms as list
         :param resi: residue True or false
         """
-        self.__resi = resi
+        self.dsrp = dsrp
         self._reslist = reslist
         self.__rlist = []
         for i in get_atoms(self._reslist):
@@ -775,7 +774,8 @@ class NumberScheme():
             atlist.append("%s%s%s"%(atype, str(i), suffix))
         return atlist
 
-    def _contains(self, atomlist, rlist):
+    @staticmethod
+    def _contains(atomlist, rlist):
         """
         checks if one of the atoms in the list exist in resfile
         """
@@ -785,17 +785,16 @@ class NumberScheme():
         else:
             return True
 
-
     def get_fragment_number_scheme(self, extranames=[]):
         """
         returns a list of atoms of length len(self.__dbatome) whith a
         naming scheme which fits into the resfile. extraname is a list of atoms
         which should be also excluded from the new names.
         :param extranames: list of excluding atoms e.g. ['O1A']
-        :type extranems: list
+        :type extranames: list
         """
         self.__rlist.extend(extranames)
-        if self.__resi:
+        if self.dsrp.resiflag:
             print('RESI instruction is enabled. Leaving atom numbers as they are.')
             return [i[0].upper() for i in self.__dbatome]
         num = 0

@@ -23,19 +23,10 @@ class Resi(object):
     def __init__(self, reslist, dsrp, dbhead, db_residue_string, find_atoms):
         """
         Handles the RESI instructions and restraints
-        self._dsr_command_resi_list : list of RESI commands from command line.
-        self._resi_dict_dsr_command : dictionary of commands after get_resi_syntax()
-
-        self._dsr_dict['resi'] = False : no residue given
-        self._dsr_dict['resi'] = '' : only resi command given
-        self._dsr_dict['resi'] = ['number, e.g. 3'] : only resi number given
-        self._dsr_dict['resi'] = ['class'] : only resi class given
-        self._dsr_dict['resi'] = ['class', 'number'] : resi class and number given
-        self._dsr_dict['resi'] = ['class', 'number', 'alias'] : resi class, number and alias given
+        :param dsrp: Dsrparse object
+        :type dsrp: object
         :param reslist: res file as list
         :type reslist: list
-        :param dsr_line_dict: dsr command line as dictionary
-        :type dsr_line_dict: dictionary
         :param dbhead: database header with restraints and residue
         :type dbhead: list
         :param db_residue_string: db residue string
@@ -49,17 +40,15 @@ class Resi(object):
         self._atoms_in_reslist = self._find_atoms.atoms_as_residues
         self._residues_in_res = sorted(list(self._atoms_in_reslist))
         self.dsrp = dsrp
-        self._dsr_command_resi_list = self.dsrp.resi
-        if self._dsr_command_resi_list:
-            # at least one residue parameter defined in .res file
-            self._resi_dict_dsr_command = self.get_resi_syntax(self._dsr_command_resi_list)
-        if self._dsr_command_resi_list == '':
-            # use residue from database
-            self._resi_dict_dsr_command = {'class': None, 'number': None, 'alias': None}
-        # TODO: make explicit state in dsrp for db/command/or off
-        if not self._dsr_command_resi_list == False:  # explicit test for False! Need to make extra dsrp object for this discrimination!
-            # residues tuned off
-            self._resi_dict_dsr_command = False
+        self._resi_dict_dsr_command = {'class': None, 'number': None, 'alias': None}
+        if self.dsrp.resiflag:
+            # use a residue
+            if self.dsrp.resi:
+                # a residue was defined (class, number, or both)
+                self._resi_dict_dsr_command = self.get_resi_syntax(self.dsrp.resi)
+            else:
+                # no residue defined, only active (use class from DB)
+                self._resi_dict_dsr_command = {'class': None, 'number': None, 'alias': None}
         try:
             # use residue class from db if not given in dsr command:
             self._db_resi_list = db_residue_string.split()
@@ -74,7 +63,7 @@ class Resi(object):
     def get_resinumber(self):
         """
         Returns the residue number of the currently fitted fragment
-        :type self._combined_resi['number']: string
+        :rtype self._combined_resi['number']: string
         """
         return self._combined_resi['number']
 
@@ -83,6 +72,7 @@ class Resi(object):
         """
         Returns the residue class of the currently fitted fragment. Also is an indicator 
         if residues are active.
+        :rtype self._combined_resi['class']: str
         """
         return self._combined_resi['class']
 
@@ -92,7 +82,7 @@ class Resi(object):
         :param head: database header of the current fragment
         :type head: list
         """
-        rhead = [] #head without resi
+        rhead = []  # head without resi
         delhead = []
         for dummy, line in enumerate(head):
             line = line.split()

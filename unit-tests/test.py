@@ -295,6 +295,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
     def testrun_run20(self):
         """
         rem dsr put CF6 on C22 split
+        (AFIX 120)
 
         """
         self.maxDiff = None
@@ -303,7 +304,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
     def testrun_run21(self):
         """
         rem dsr put CF3 on C22
-
+        (AFIX 130)
         """
         #self.maxDiff = None
         self.dsr_runtest(21, '-r', hkl=20)
@@ -606,12 +607,17 @@ class NumberSchemeTest(unittest.TestCase):
         res_file = './p21c.res'
         invert = True
         resi = False
+
+        class Dsrp():
+            resiflag = False
+
+        dsrp = Dsrp()
         rl = ResList(res_file)
         reslist = rl.get_res_list()
         gdb = global_DB(invert)
         fragment = 'OC(cf3)3'
         dbatoms = gdb.get_atoms_from_fragment(fragment)
-        self.num = NumberScheme(reslist, dbatoms, resi)
+        self.num = NumberScheme(reslist, dbatoms, dsrp)
 
     def testrun_get_numberscheme(self):
         numberscheme = self.num.get_fragment_number_scheme()
@@ -645,7 +651,7 @@ class insertAfixTest(unittest.TestCase):
         misc.remove_file('dsr_CF3_4_dsr_CF3_p21c.dfix')
         self.sf = SfacTable(self.reslist, self.dbtypes)
         self.sfac_table = self.sf.set_sfac_table()
-        self.num = NumberScheme(self.reslist, self.dbatoms, self.resi)
+        self.num = NumberScheme(self.reslist, self.dbatoms, self.dsrp)
         self.numberscheme = self.num.get_fragment_number_scheme()
         self.db_testhead = db.db_testhead
 
@@ -664,8 +670,6 @@ class insertAfixTest(unittest.TestCase):
 class removeDublicatesAfixTest(unittest.TestCase):
     def setUp(self):
         # self.verbosity = 4
-        #from options import OptionsParser
-        #self.options = OptionsParser('foo')
         self.res_file = './collect_resi.res'
         self.res_list = ResList(self.res_file)
         self.reslist = self.res_list.get_res_list()
@@ -681,7 +685,7 @@ class removeDublicatesAfixTest(unittest.TestCase):
         # self.sfac_table = self.sf.set_sfac_table()
         self.sfac_table = ['C', 'H', 'N', 'O', 'F']
         self.resi = 'CCF3'  # gdb.get_resi_from_fragment(fragment)
-        self.num = NumberScheme(self.reslist, self.dbatoms, self.resi)
+        self.num = NumberScheme(self.reslist, self.dbatoms, self.dsrp)
         self.numberscheme = self.num.get_fragment_number_scheme()
         self.afix = Afix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead, \
                          self.dsrp, self.sfac_table, self.find_atoms, self.numberscheme, {'rigid_group': False})

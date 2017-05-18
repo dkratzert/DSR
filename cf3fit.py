@@ -267,7 +267,7 @@ class CF3(object):
                 if self.dsrp.split:
                     restr = dfixr_120_split
         if afix == '120' and self.dsrp.split and uvals:
-            num = NumberScheme(self.reslist, [targetatom], False)
+            num = NumberScheme(self.reslist, [targetatom], self.dsrp)
             if len(targetatom) < 4:
                 # in this case it is possible to add a character
                 alphabet = [i for i in string.ascii_uppercase]
@@ -367,14 +367,14 @@ class CF3(object):
         Y = remove_partsymbol(Y)
         Z = remove_partsymbol(Z)
         numberedatoms = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9']
-        if self.resi.get_residue_class:
+        if self.dsrp.resiflag:
             F1, F2, F3, F4, F5, F6, F7, F8, F9  = numberedatoms
             resiclass = self.resi.get_residue_class
             resinum = self.resi.get_resinumber
             resistr = 'RESI '+resiclass+' '+resinum
             resi0 = 'RESI 0\n'
         else:
-            nums = NumberScheme(self.reslist, numberedatoms, False)
+            nums = NumberScheme(self.reslist, numberedatoms, self.dsrp)
             F1, F2, F3, F4, F5, F6, F7, F8, F9  = nums.get_fragment_number_scheme()            
         start_f_coord = self.lf.get_single_coordinate(fatoms[0])
         replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3),
@@ -420,7 +420,7 @@ class CF3(object):
         for delta in [0, 120, 240,   40, 160, 280,   80, 200, 320]:
             coord = self.rotate_atom_around_bond(start_f_coord, at1, at2, delta)
             coords.append('{:>10.6f} {:>10.6f} {:>10.6f}'.format(*coord))
-        if self.resi.get_residue_class:
+        if self.dsrp.resiflag:
             atoms_cf9 = [resistr]+atoms_cf9+[resi0]
         # join all together:
         atoms_cf9 = '\n'.join(atoms_cf9).format(self.e2s.elem_2_sfac('F'),
@@ -450,14 +450,14 @@ class CF3(object):
         if int(afixnum) == 120:
             self.dsrp.occupancy = occ
             self.rle.set_free_variables(occ, '0.5')
-            num_120 = NumberScheme(self.reslist, ['F1', 'F2', 'F3', 'F4', 'F5', 'F6'], False)
+            num_120 = NumberScheme(self.reslist, ['F1', 'F2', 'F3', 'F4', 'F5', 'F6'], self.dsrp)
             # returns also the atom names if residue is active
             numberscheme_120 = num_120.get_fragment_number_scheme()  
         if int(afixnum) == 130:
-            num_130 = NumberScheme(self.reslist, ['F1', 'F2', 'F3'], False)
+            num_130 = NumberScheme(self.reslist, ['F1', 'F2', 'F3'], self.dsrp)
             # returns also the atom names if residue is active
             numberscheme_130 = num_130.get_fragment_number_scheme()
-        if self.resi.get_residue_class and not resioff:
+        if self.dsrp.resiflag and not resioff:
             resiclass = self.resi.get_residue_class
             resinum = self.resi.get_resinumber
             resistr = '\nRESI '+resiclass+' '+resinum
@@ -632,7 +632,7 @@ class CF3(object):
         at1 = self.lf.get_single_coordinate(bondvec[0].upper())
         at2 = self.lf.get_single_coordinate(bondvec[1].upper())
         names = ['F{}'.format(i) for i in range(1, 25)]
-        num_thor = NumberScheme(self.reslist, names, False)
+        num_thor = NumberScheme(self.reslist, names, self.dsrp)
         names = num_thor.get_fragment_number_scheme()
         for delta in range(0, 360, 15):
             coord = self.rotate_atom_around_bond(ratom, at1, at2, delta)
