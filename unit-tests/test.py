@@ -45,6 +45,7 @@ class doctestsTest(unittest.TestCase):
                 msg = '!!!!!!!!!!!!!!!! {} of {} tests failed in {}  !!!!!!!!!!!!!!!!!!!!!!!!!!!'.format(failed, attempted, name.__name__)
                 self.assertFalse(failed, msg)
 
+#@unittest.skip("skipping dsr_complete_runs_Test ")
 class dsr_complete_runs_Test(unittest.TestCase):
     def setUp(self):
         #self.maxDiff = 20
@@ -623,17 +624,20 @@ class NumberSchemeTest(unittest.TestCase):
         numberscheme = self.num.get_fragment_number_scheme()
         self.assertListEqual(numberscheme, self.numbers)
 
-@unittest.skip("skipping  ")
+
+@unittest.skip("skipping insertAfixTest")
 class insertAfixTest(unittest.TestCase):
     def setUp(self):
-        import db
         from options import OptionsParser
+        import db
         self.maxDiff = None
         self.res_file = 'p21c.res'
         testresfile = './p21c.res'
         invert = True
-        self.options = OptionsParser('foo')
-        self.options.rigid_group = False
+        class OptionsParser():
+            rigid_group = False
+            target_coords = False
+        self.options = OptionsParser()
         self.rl = ResList(testresfile)
         self.reslist = self.rl.get_res_list()
         self.dsrp = DSRParser(self.reslist)
@@ -648,23 +652,29 @@ class insertAfixTest(unittest.TestCase):
             self.intern = txt.read()
         with open('./extern.TXT') as txt2:
             self.extern = txt2.read()
-        misc.remove_file('dsr_CF3_4_dsr_CF3_p21c.dfix')
+        misc.remove_file('./dsr_CF3_4_dsr_CF3_p21c.dfix')
         self.sf = SfacTable(self.reslist, self.dbtypes)
         self.sfac_table = self.sf.set_sfac_table()
         self.num = NumberScheme(self.reslist, self.dbatoms, self.dsrp)
         self.numberscheme = self.num.get_fragment_number_scheme()
         self.db_testhead = db.db_testhead
 
+
     def testrun_afix(self):
         self.maxDiff = None
-        afix = Afix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead,
+        afix1 = Afix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead,
                     self.dsrp, self.sfac_table, self.find_atoms,
-                    self.numberscheme, options = {'rigid_group': False})
-        afix_extern_entry = afix.build_afix_entry(True, 'dsr_CF3_p21c.dfix', self.resi)
-        # afix_intern_entry = afix.build_afix_entry(False, 'TEST', self.resi)
-        # self.assertEqual(afix_intern_entry, self.intern)
-        # self.assertEqual(afix_extern_entry, self.extern)
+                    self.numberscheme, self.options)
+        afix2 = Afix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead,
+                          self.dsrp, self.sfac_table, self.find_atoms,
+                          self.numberscheme, self.options)
+        afix_intern_entry = afix1.build_afix_entry(False, 'TEST', self.resi)
+        afix_extern_entry = afix2.build_afix_entry(True, 'dsr_CF3_p21c.dfix', self.resi)
+        #misc.write_file(afix_extern_entry, 'ext.txt')
+        self.assertEqual(afix_intern_entry, self.intern)
+        self.assertEqual(afix_extern_entry, self.extern)
         misc.remove_file('dsr_CF3_p21c.dfix')
+        misc.remove_file('./dsr_CF3_4_dsr_CF3_p21c.dfix')
 
 
 class removeDublicatesAfixTest(unittest.TestCase):
@@ -751,12 +761,12 @@ class dbfileTest(unittest.TestCase):
         with self.assertRaises(SystemExit):
             rdb.find_db_tags()
     
-    @unittest.skip("")
+    #@unittest.skip("")
     def testrun_ReadDB(self):
         main_dbpath = "./db1_klein.TXT"
         user_dbpath = "./db2_klein.TXT"
         result = [['DME', 1, 'dsr_db'], ['DMX', 2, 'dsr_user_db']]
-        rdb = ReadDB()
+        rdb = ReadDB('', '')
         rdb2 = ReadDB(main_dbpath, user_dbpath)
         names = rdb.find_db_tags()
         names2 = rdb2.find_db_tags()
