@@ -104,10 +104,9 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     >>> find_atoms = FindAtoms(reslist)
     >>> rle = ResListEdit(reslist, find_atoms)
     >>> dsrp = DSRParser(reslist)
-    >>> dsr_dict = dsrp.get_dsr_dict
     >>> dbhead = ['RESI CF3']
     >>> db_residue_string='CF3'
-    >>> resi = Resi(reslist, dsr_dict, dbhead, db_residue_string, find_atoms)
+    >>> resi = Resi(reslist, dsrp, dbhead, db_residue_string, find_atoms)
     No residue number was given. Using residue number 4.
     >>> fragment_numberscheme = ['O1_1', 'C1_1', 'C2_1', 'F1_1', 'F2', 'F3', 'C3', 'F4', 'F5', 'F6', 'C4', 'F7', 'F8', 'F9']
     >>> cell = rle.get_cell()

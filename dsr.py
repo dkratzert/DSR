@@ -289,7 +289,7 @@ class DSR():
             dfix_13 = restr.get_formated_13_dfixes()
             flats = restr.get_formated_flats()
             dfix_head = dfix_12+dfix_13+flats
-        afix = Afix(self.reslist, dbatoms, db_atom_types, dbhead, dsr_dict,
+        afix = Afix(self.reslist, dbatoms, db_atom_types, dbhead, dsrp,
                     sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
         afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfix', resi)
         if dsr_line_number < fvarlines[-1]:
@@ -300,12 +300,11 @@ class DSR():
         # Adds the origin of restraints and fragment to res file:
         import textwrap
         source = textwrap.wrap("REM Restraints for Fragment {}, {} from: {}. "
-                               "Please cite doi:10.1107/S1600576715005580, DSR-v{}".format(
+                               "Please cite doi:10.1107/S1600576715005580".format(
                                     self.fragment,
                                     self.gdb.get_name_from_fragment(self.fragment),
-                                    self.gdb.get_src_from_fragment(self.fragment),
-                                    VERSION),
-                                width=74, subsequent_indent='REM ')
+                                    self.gdb.get_src_from_fragment(self.fragment)),
+                               width=74, subsequent_indent='REM ')
         # TODO: test if slow for big files:
         for line in self.reslist:
             try:

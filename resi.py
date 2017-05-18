@@ -194,7 +194,7 @@ class Resi(object):
     def _wrong_syntax():
         print('This is not a valid RESIdue syntax!')
 
-    def get_resi_syntax(self, resi):
+    def get_resi_syntax(self, inresi):
         """
         Checks if resi class, number and/or alias are present and valid.
         start with digit-> rest auch digit-> resinumber or alias
@@ -207,6 +207,7 @@ class Resi(object):
         :param resi: residue definition like ['3', 'CF3']
         :type resi: list
         """
+        resi = inresi[:]
         resi_dict = {
             'class' : None,
             'number': None,

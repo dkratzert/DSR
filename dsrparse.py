@@ -40,17 +40,9 @@ class DSRParser():
         try:
             self.dsr_dict = self.parse_dsr_line()
         except Exception:
-            print("*** Parsing DSR command failed. ***")
+            print("*** No valid DSR command line found. ***")
             raise
 
-    @property
-    def get_dsr_dict(self):
-        try:
-            return self.dsr_dict
-        except AttributeError:
-            print('*** No valid DSR command line found. ***')
-            sys.exit()
-    
     def find_dsr_command(self, line=False):
         """
         line = False  -> Line number
@@ -175,7 +167,7 @@ class DSRParser():
         >>> rle = ResListEdit(reslist, res_file)
         >>> #dsr_line = dsrp.get_dsr_dict
         >>> dsrp = DSRParser(reslist)
-        >>> dic = dsrp.get_dsr_dict
+        >>> dic = dsrp.all
         >>> l = sorted(dic)
         >>> for i in l:
         ...     print('{}: '.format(i), dic[i])
@@ -348,6 +340,13 @@ class DSRParser():
         """
         return self.dsr_dict['dfix']
 
+    @property
+    def all(self):
+        """
+        Returns the complete dsr command dictionary
+        :return: dict 
+        """
+        return self.dsr_dict
 
 
 if __name__ == '__main__':
