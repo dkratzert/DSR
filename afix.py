@@ -109,7 +109,7 @@ class Afix(object):
       RESI num class ist inserted there
     """
 
-    def __init__(self, reslist, dbatoms, fragment_atom_types, dbhead, dsr_line_dict, sfac_table,
+    def __init__(self, reslist, dbatoms, fragment_atom_types, dbhead, dsrp, sfac_table,
                  find_atoms, numberscheme, options, dfix_head=False):
         """
         :param reslist:      list of the .res file
@@ -140,11 +140,11 @@ class Afix(object):
         self._fragment_atom_types = fragment_atom_types
         self._sfac_table = sfac_table
         self.numberscheme = numberscheme
-        self.part = dsr_line_dict['part']
-        self.occ = dsr_line_dict['occupancy']
-        self.source_atoms = dsr_line_dict['source']  # list
-        self.target_atoms = dsr_line_dict['target']  # list
-        self._dfix = dsr_line_dict['dfix']
+        self.part = dsrp.part
+        self.occ = dsrp.occupancy
+        self.source_atoms = dsrp.source
+        self.target_atoms = dsrp.target
+        self._dfix = dsrp.dfix
         self.options = options
         self.rand_id_dfx = id_generator(size=7)
         self.rand_id_afix = id_generator(size=7)
