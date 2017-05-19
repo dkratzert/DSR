@@ -185,9 +185,12 @@ class dsr_complete_runs_Test(unittest.TestCase):
         system("{} -s tol > search.txt".format(self.dsr))
         with open('search.txt') as txt:
             se = txt.readlines()
-        with open('search-erg.txt') as txt2:
-            se_erg = txt2.readlines()
         misc.remove_file('./search.txt')
+        good = False
+        for line in se:
+            if line.startswith(" toluene           | Toluene, C7H8"):
+                good = True
+        self.assertTrue(good, "Search text differs")
         print('8 ' * 10, 'ende')
 
     def testrun_9(self):
@@ -204,6 +207,9 @@ class dsr_complete_runs_Test(unittest.TestCase):
         with open('toluene-erg.res') as txt2:
             ex_erg = txt2.readlines()
         misc.remove_file('toluene.res')
+        del ex[1]  # line with the version number
+        del ex_erg[1]
+        self.assertEqual(ex, ex_erg)
         print('9 ' * 10, 'ende')
 
     def testrun_run10(self):

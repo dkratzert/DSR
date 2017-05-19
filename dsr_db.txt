@@ -630,7 +630,7 @@ C20   1    -0.19870 -0.12018  0.24521  11.00000  0.04000
 </C20>
 
 <C60>
-REM Name: Fullerene-C60, Buckminsterfullerene, (C60-Ih)[5,6]fullerene
+REM Name: Fullerene-C60, C60, Buckminsterfullerene, (C60-Ih)[5,6]fullerene
 REM Src: B. T. King, M. M. Olmstead, K. K. Baldridge, B. Kumar, A. L. Balch,
 rem Src: J. A. Gharamaleki, Chem. Commun. 2012, 48, 9882–9884.
 REM DOI: 10.1039/C2CC34472F
