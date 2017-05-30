@@ -25,9 +25,8 @@ urlprefix = "http://www.xs3-data.uni-freiburg.de/data"
 # Python 2 and 3: alternative 4
 try:
     # Python 3:
-    from urllib.parse import urlparse, urlencode
-    from urllib.request import urlopen, Request, FancyURLopener
-    from urllib.error import HTTPError
+    from urllib.request import FancyURLopener
+    import urllib.request
 except ImportError:
     # Python 2:
     from urlparse import urlparse
