@@ -205,7 +205,7 @@ class OptionsParser():
         chars = re.match(r'^[\w\-,\(\)\[\]\{\}\'\"\+\*\|\=\.]+$', 
                          self._options.search_extern)
         if not chars:
-            print('Characters not allowed for searching.')
+            print('*** Characters not allowed for searching. ***')
             sys.exit()
         else:
             return self._options.search_extern

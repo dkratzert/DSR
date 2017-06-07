@@ -22,8 +22,6 @@ alphabet = string.ascii_uppercase
 
 __metaclass__ = type  # use new-style classes
 
-reportlog = 'dsr_bug_report.log'
-
 
 def write_file(list, name):
     """
