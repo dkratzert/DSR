@@ -1,5 +1,6 @@
 Recent changes
--204    Added Methyl tert-butyl ether to the DB.
+-204    Added Methyl tert-butyl ether to the DB. Small fix for CF3 groups. Refractured
+        some code.
 -203    Added logfile 'dsr-log.lst' to dsr output. Every last dsr run is now in the
         'dsr-log.lst' file. Improved detection of already used restraints. The standard
         deviations are now ignored for detection of duplicate restraints. This prevents

@@ -91,7 +91,7 @@ class DSRParser():
                 multiline = True
                 # in case of a multiline command, strip the '=' and the newline
                 dsr_str = dsr_str.rstrip('\n\r= ')
-                dsr_str = dsr_str+' '+self._reslist[line_number+1]
+                dsr_str = "{} {}".format(dsr_str, self._reslist[line_number+1])
             dsr_list = dsr_str.split()
             txt = ' '.join(dsr_list)
             # wrap the line after 75 chars:

@@ -15,7 +15,7 @@ import sys
 import os
 from dbfile import global_DB, search_fragment_name
 from constants import width, sep_line
-from misc import reportlog, remove_file, find_line, remove_line
+from misc import find_line, remove_line
 from options import OptionsParser
 from os.path import expanduser
 from terminalsize import get_terminal_size
