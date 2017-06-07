@@ -313,7 +313,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         rem dsr put CF3 on C22
         (AFIX 130)
         """
-        #self.maxDiff = None
+        self.maxDiff = None
         self.dsr_runtest(21, '-r', hkl=20)
 
     def testrun_run22(self):
