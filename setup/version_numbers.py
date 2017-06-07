@@ -48,7 +48,7 @@ def process_iss(filepath):
 
 if __name__ == "__main__":
 
-    print("Updating version numbers...")
+    print("Updating version numbers to version {} ...".format(VERSION))
 
     print("Linux...")
     process_debian_and_spec(debianpath)
