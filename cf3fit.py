@@ -31,49 +31,57 @@ import string
 dfixr_130 = ['DFIX 1.328 Z F1 Z F2 Z F3 ', 
              'DFIX 2.125 F1 F2 F2 F3 F3 F1 ',
              'SADI 0.1   Y F1 Y F2 Y F3 ',
-             'RIGU Y Z F1 F2 F3 ']
+             'RIGU Y Z F1 F2 F3 ',
+             'SIMU Y Z F1 F2 F3 ']
 
 dfixr_120 = ['DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 ', 
              'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 ',
              'SADI 0.1   Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
-             'RIGU Y Z F1 > F6']
+             'RIGU Y Z F1 > F6',
+             'SIMU Y Z F1 > F6']
 
 dfixr_120_split = ['DFIX 1.328 ZA F1 ZA F2 ZA F3  ZB F4 ZB F5 ZB F6 ', 
                    'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 ',
                    'SADI 0.1   Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
                    'SADI Y ZA Y ZB',
                    'EADP ZA ZB',
-                   'RIGU Y ZA ZB F1 > F6']
+                   'RIGU Y ZA ZB F1 > F6',
+                   'SIMU Y ZA ZB F1 > F6']
 
 dfixr_cf9 = ['SUMP 1 0.0001 1 {0} 1 {1} 1 {2}', 
              'DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 ', 
              'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4  F7 F8 F8 F9 F9 F7 ',
              'SADI 0.1 Y F1 Y F2 Y F3  Y F4 Y F5 Y F6  Y F7 Y F8 Y F9 ',
-             'RIGU Y Z F1 > F9']
+             'RIGU Y Z F1 > F9',
+             'SIMU Y Z F1 > F9']
 
 
 sadir_130 = ['SADI 0.02 Z F1 Z F2 Z F3 ',
              'SADI 0.04 F1 F2 F2 F3 F3 F1 ',
              'SADI 0.1  Y F1 Y F2 Y F3 ',
-             'RIGU Y Z F1 F2 F3 ']
+             'RIGU Y Z F1 F2 F3 ',
+             'SIMU Y Z F1 F2 F3 ']
 
 sadir_120 = ['SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 ',
              'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 ',
              'SADI 0.1  Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
-             'RIGU Y Z F1 > F6']
+             'RIGU Y Z F1 > F6',
+             'SIMU Y Z F1 > F6']
 
 sadir_120_split = ['SADI 0.02 ZA F1 ZA F2 ZA F3  ZB F4 ZB F5 ZB F6 ',
                    'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 ',
                    'SADI 0.1  Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
                    'SADI Y ZA Y ZB',
                    'EADP ZA ZB',
-                   'RIGU Y ZA ZB F1 > F6']
+                   'RIGU Y ZA ZB F1 > F6',
+                   'SIMU Y ZA ZB F1 > F6']
 
 sadir_cf9 = ['SUMP 1 0.0001 1 {0} 1 {1} 1 {2}',
              'SADI 0.02 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 ',
              'SADI 0.04 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4  F7 F8 F8 F9 F9 F7 ',
              'SADI 0.1  Y F1 Y F2 Y F3  Y F4 Y F5 Y F6  Y F7 Y F8 Y F9 ',
-             'RIGU Y Z F1 > F9']
+             'RIGU Y Z F1 > F9',
+             'SIMU Y Z F1 > F9']
 
 
 class CF3(object):
@@ -387,10 +395,11 @@ class CF3(object):
         # all fluorines are set, so we can get back to the original res file:
         self.reslist = reslist_copy
         self.rle._reslist = self.reslist
-        if self.dsrp.occupancy:
-            occ = self.dsrp.occupancy
-        else:
-            occ = str((self.rle.get_fvar_count()+1)*10+1+20)
+        # Turned out to be problematic with ShelXle:
+        #if self.dsrp.occupancy:
+        #    occ = self.dsrp.occupancy
+        #else:
+        occ = str((self.rle.get_fvar_count()+1)*10+1+20)
         fcount = self.rle.get_fvar_count()
         self.rle.set_free_variables(occ, '0.3')
         atomline = self.fa.get_atom_line_numbers([target_atom])[0]
@@ -443,10 +452,11 @@ class CF3(object):
         """
         resistr = ''
         resi0 = ''
-        if self.dsrp.occupancy:
-            occ = self.dsrp.occupancy
-        else:
-            occ = str((self.rle.get_fvar_count()+1)*10+1)
+        # Turned out to be problematic with ShelXle:
+        #if self.dsrp.occupancy:
+        #    occ = self.dsrp.occupancy
+        #else:
+        occ = str((self.rle.get_fvar_count()+1)*10+1)
         if int(afixnum) == 120:
             self.dsrp.occupancy = occ
             self.rle.set_free_variables(occ, '0.5')
