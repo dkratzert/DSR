@@ -1,8 +1,9 @@
-@ECHO OFF
+@ECHO ON
 
 rem DSR startup script for windows
-echo %DSRDIR%
-set DSRDIR="d:\Programme\DSR"
+echo %DSR_DIR%
+
+rem set DSRDIR="d:\Programme\DSR"
 rem cd C:\Users\ntrapp\Documents\GitHub\DSR
 set GIT="D:\GitHub\DSR"
 rem set GIT="."
@@ -10,35 +11,35 @@ rem set GIT="."
 cd %GIT%
 python %GIT%\rss-feed.py
 
-xcopy /Y %GIT%\afix.py %DSRDIR%
-xcopy /Y %GIT%\atomhandling.py %DSRDIR%
-xcopy /Y %GIT%\atoms.py %DSRDIR%
-xcopy /Y %GIT%\constants.py %DSRDIR%
-xcopy /Y %GIT%\dbfile.py %DSRDIR%
-xcopy /Y %GIT%\dsr.py %DSRDIR%
-xcopy /Y %GIT%\dsrparse.py %DSRDIR%
-xcopy /Y %GIT%\elements.py %DSRDIR%
-xcopy /Y %GIT%\export.py %DSRDIR%
-xcopy /Y %GIT%\misc.py %DSRDIR%
-xcopy /Y %GIT%\options.py %DSRDIR%
-xcopy /Y %GIT%\resfile.py %DSRDIR%
-xcopy /Y %GIT%\resi.py %DSRDIR%
-xcopy /Y %GIT%\pyperclip.py %DSRDIR%
-xcopy /Y %GIT%\refine.py %DSRDIR%
-xcopy /Y %GIT%\restraints.py %DSRDIR%
-xcopy /Y %GIT%\cf3fit.py %DSRDIR%
-xcopy /Y %GIT%\selfupdate.py %DSRDIR%
-xcopy /Y %GIT%\dsr.bat %DSRDIR%
-xcopy /Y %GIT%\terminalsize.py %DSRDIR%
-xcopy /Y %GIT%\dsr_db.txt %DSRDIR%
-xcopy /Y %GIT%\manuals\DSR-manual.pdf %DSRDIR%
-xcopy /Y %GIT%\example\p21c.res %DSRDIR%\example
-xcopy /Y %GIT%\example\p21c.hkl %DSRDIR%\example
+xcopy /Y "%GIT%\afix.py" "%DSR_DIR%"
+xcopy /Y "%GIT%\atomhandling.py" "%DSR_DIR%"
+xcopy /Y "%GIT%\atoms.py" "%DSR_DIR%"
+xcopy /Y "%GIT%\constants.py" "%DSR_DIR%"
+xcopy /Y "%GIT%\dbfile.py" "%DSR_DIR%"
+xcopy /Y "%GIT%\dsr.py" "%DSR_DIR%"
+xcopy /Y "%GIT%\dsrparse.py" "%DSR_DIR%"
+xcopy /Y "%GIT%\elements.py" "%DSR_DIR%"
+xcopy /Y "%GIT%\export.py" "%DSR_DIR%"
+xcopy /Y "%GIT%\misc.py" "%DSR_DIR%"
+xcopy /Y "%GIT%\options.py" "%DSR_DIR%"
+xcopy /Y "%GIT%\resfile.py" "%DSR_DIR%"
+xcopy /Y "%GIT%\resi.py" "%DSR_DIR%"
+xcopy /Y "%GIT%\pyperclip.py" "%DSR_DIR%"
+xcopy /Y "%GIT%\refine.py" "%DSR_DIR%"
+xcopy /Y "%GIT%\restraints.py" "%DSR_DIR%"
+xcopy /Y "%GIT%\cf3fit.py" "%DSR_DIR%"
+xcopy /Y "%GIT%\selfupdate.py" "%DSR_DIR%"
+xcopy /Y "%GIT%\dsr.bat" "%DSR_DIR%"
+xcopy /Y "%GIT%\terminalsize.py" "%DSR_DIR%"
+xcopy /Y "%GIT%\dsr_db.txt" "%DSR_DIR%"
+xcopy /Y "%GIT%\manuals\DSR-manual.pdf" "%DSR_DIR%"
+xcopy /Y "%GIT%\example\p21c.res" "%DSR_DIR%\example"
+xcopy /Y "%GIT%\example\p21c.hkl" "%DSR_DIR%\example"
 
 rem xcopy /Y %GIT%\update-dsr.bat %DSRDIR%
 
-del %DSRDIR%\*.pyc
+del %DSR_DIR%\*.pyc
 
 rem copy %GIT%\dsr.bat %DSRDIR%
 rem sleep 2s
-rem pause
+pause
