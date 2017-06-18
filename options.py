@@ -34,10 +34,9 @@ class OptionsParser():
     """
     This class uses the ArgumentParser module to parse the command line options.
     """
-    def __init__(self, versionline):
-        self.versionline = versionline
+    def __init__(self):
         self.parser = ArgumentParser(prog='dsr', formatter_class=RawTextHelpFormatter,
-                                     description='{}\nDisordered Structure Refinement (DSR)\n'.format(self.versionline)
+                                     description='\nDisordered Structure Refinement (DSR)\n'
                                      + '\nExample DSR .res file command line:'
                                      + '\nREM DSR PUT/REPLACE "Fragment" WITH C1 C2 C3 ON Q1 Q2 Q3 PART 1 OCC -21 ='
                                      + '\n  RESI DFIX\n'
@@ -45,6 +44,7 @@ class OptionsParser():
                                      + '   PUT:     Just put the fragment source atoms here.\n'
                                      + '   REPLACE: Replace atoms of PART 0 in 1.3 A distance around target atoms.\n'
                                      + sep_line
+                                     , usage=SUPPRESS
                                      )
         self.parser.add_argument("-r", dest="res_file", metavar='"res file"', nargs='+',
                                  help="res file with DSR command", default=False)
@@ -218,7 +218,7 @@ class OptionsParser():
 
 
 if __name__ == '__main__':
-    optparse = OptionsParser('version 999')
+    optparse = OptionsParser()
     print(optparse.res_file)
     optparse.parser.print_help()
 
