@@ -47,8 +47,11 @@ def invert_dbatoms_coordinates(atoms):
 def search_fragment_name(search_string, gdb, numresults=6):
     """
     searches the Name: comments in the database for a given name
+
     :param numresults: number of results to return after search
     :type search_string: str
+    :param gdb: database object
+    :type gdb: global_DB
     """
     db = gdb.db_dict
     names_list = []
@@ -63,8 +66,8 @@ def search_fragment_name(search_string, gdb, numresults=6):
         coefficient = dice_coefficient2(search_string, key[0]+key[1])
         i.append([coefficient, key[1]])
         search_results.append(i)
-    # select the best n results:
-    selected_results =sorted(search_results, key=lambda coeff: [coeff[-1][0], coeff[-1][1]], reverse=False)[:numresults]
+    # select the best n results, sort for first and sewcond search key
+    selected_results = sorted(search_results, key=lambda coeff: [coeff[-1][0], coeff[-1][1]], reverse=False)[:numresults]
     return selected_results
 
 
