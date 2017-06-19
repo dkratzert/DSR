@@ -121,6 +121,7 @@ class DSR():
             for i in result:
                 print('{};;{};;{};;{}'.format(i[0], i[1], i[2], i[3]))
             sys.exit()
+        print(program_name)
         if self.list_db:
             self.list_dbentries()
         if self.search_string:
@@ -381,7 +382,6 @@ class multilog(object):
 
 if __name__ == '__main__':
     '''main function'''
-    print(program_name)
     options = False
     lstfile = ''
     is_listfile = False
@@ -394,7 +394,7 @@ if __name__ == '__main__':
         sys.stderr = multilog([sys.stderr, lstfile])
         is_listfile = True
     try:
-        options = OptionsParser()
+        options = OptionsParser(program_name)
         if is_listfile:
             lstfile.write('Python version: {}\n'.format(sys.version))
         dsr = DSR(options)
