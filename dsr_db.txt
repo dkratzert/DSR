@@ -49,6 +49,21 @@
 ########################################################################################
 
 
+
+<so2>
+rem Name: Sulfur dioxide, SO2
+rem Src: CCDC VOLZIH
+RESI SO2
+RIGU S1 > O2
+SIMU S1 > O2
+SADI 0.01 S1 O1 S1 O2
+FRAG 17 1 1 1 90 90 90
+S1    16     3.12800    3.60460    3.93639
+O1    8      3.27267    3.46118    5.35073
+O2    8      1.97377    4.32718    3.50301
+</so2>
+
+
 <plusminus>
 rem Name: Methyl tert-butyl ether, plus minus ether, C5H12O
 rem Src: CCDC ESEYIL
