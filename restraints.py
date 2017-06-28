@@ -160,6 +160,8 @@ class Restraints():
         conlist = []
         for co1, typ, n1 in zip(cart_coords, atom_types, names):
             for co2, typ2, n2 in zip(cart_coords, atom_types, names):
+                if n1 == n2:
+                    continue
                 ele1 = ELEMENTS[typ.capitalize()]
                 ele2 = ELEMENTS[typ2.capitalize()]
                 d = distance(co1[0], co1[1], co1[2], co2[0], co2[1], co2[2], round_out=5)
@@ -167,8 +169,6 @@ class Restraints():
                 # a bond is defined with less than the sum of the covalence
                 # radii plus the extra_param:
                 if d <= (ele1.covrad+ele2.covrad)+extra_param and d > (ele1.covrad or ele2.covrad):
-                    if n1 == n2:
-                        continue
                     conlist.append([n2[1], n1[1]])
                     if [n1[1], n2[1]] in conlist:
                         continue
