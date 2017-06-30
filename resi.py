@@ -210,7 +210,7 @@ class Resi(object):
             resi.sort()
         except AttributeError:
             return resi_dict
-        if any(resi[-1].isalpha()): # any character of class must be a letter
+        if any([x.isalpha() for x in resi[-1]]): # any character of class must be a letter
             resi_dict['class'] = resi.pop()
         if len(resi) > 0:
             if str.isdigit(resi[0][0]): # first character of number must be an digit
