@@ -48,7 +48,7 @@ class doctestsTest(unittest.TestCase):
 #@unittest.skip("skipping dsr_complete_runs_Test ")
 class dsr_complete_runs_Test(unittest.TestCase):
     def setUp(self):
-        #self.maxDiff = 20
+        self.maxDiff = 20
         # remove this to view the results:
         #self.dsr = '/Applications/DSR/dsr'
         #self.dsr = 'D:\Programme\DSR\dsr'
@@ -117,7 +117,6 @@ class dsr_complete_runs_Test(unittest.TestCase):
         regular dsr run with
         resi cf3 PART 2 occ -31
         """
-        self.maxDiff = None
         self.dsr_runtest(1, '-r')
 
     #@unittest.skip(" skipping2 ")
@@ -127,7 +126,6 @@ class dsr_complete_runs_Test(unittest.TestCase):
         resi cf3 dfix =
             PART 2 occ -31
         """
-        self.maxDiff = None
         self.dsr_runtest(2, '-r')
 
     #@unittest.skip(" skipping3 ")
@@ -136,7 +134,6 @@ class dsr_complete_runs_Test(unittest.TestCase):
         regular run with:
          occ -31 PART 2
         """
-        self.maxDiff = None
         self.dsr_runtest(3, '-r')
 
     #@unittest.skip(" skipping4 ")
@@ -146,23 +143,22 @@ class dsr_complete_runs_Test(unittest.TestCase):
         resi cf3 =
             PART 2 occ -31
         """
-        self.maxDiff = None
-        self.dsr_runtest(4, '-re', external_file='dsr_CF3_4_4a')
+        self.dsr_runtest(4, '-re', external_file='dsr_CCF3_6_4a')
 
     #@unittest.skip(" skipping5 ")
     def testrun_run5(self):
         """
-        -re resi cf3 part 2 occ -31 dfix
+        dsr -re  with:
+        REM dsr put oc(CF3)3 with o1 c1 c2 C3 on O1_4 C1_4 Q6 Q7 resi Ccf3 part 2 occ =
+            -31 dfix
         """
-        self.maxDiff = None
-        self.dsr_runtest(5, '-re', external_file='dsr_CF3_4_5a_dfx')
+        self.dsr_runtest(5, '-re', external_file='dsr_CCF3_6_5a_dfx')
 
     #@unittest.skip(" skipping6 ")
     def testrun_run6(self):
         """
         -re   PART 2 occ -31
         """
-        self.maxDiff = None
         self.dsr_runtest(6, '-re', external_file='dsr_1_6a')
 
     #@unittest.skip(" skipping 7")
@@ -171,7 +167,6 @@ class dsr_complete_runs_Test(unittest.TestCase):
         rigid
 
         """
-        self.maxDiff = None
         self.dsr_runtest(7, '-g -r')
 
     #@unittest.skip(" skipping 8")
@@ -180,7 +175,6 @@ class dsr_complete_runs_Test(unittest.TestCase):
         dsr -s tol
 
         """
-        self.maxDiff = None
         print('8 '*10, 'start')
         system("{} -s tol > search.txt".format(self.dsr))
         with open('search.txt') as txt:
@@ -193,12 +187,12 @@ class dsr_complete_runs_Test(unittest.TestCase):
         self.assertTrue(good, "Search text differs")
         print('8 ' * 10, 'ende')
 
+    #@unittest.skip(" skipping 9")
     def testrun_9(self):
         """
         dsr -e tol
 
         """
-        self.maxDiff = None
         print('9 ' * 10, 'start')
         print("{} -e tolUene".format(self.dsr))
         system("{} -e tolUene".format(self.dsr))
@@ -212,124 +206,118 @@ class dsr_complete_runs_Test(unittest.TestCase):
         self.assertEqual(ex, ex_erg)
         print('9 ' * 10, 'ende')
 
+    #@unittest.skip(" skipping 10")
     def testrun_run10(self):
         """
         invert fragment
         -r -t
         """
-        self.maxDiff = None
         self.dsr_runtest(10, '-t -r', limit_end=300)
 
+    #@unittest.skip(" skipping 11")
     def testrun_run11(self):
         """
         regular dsr run with
         replace resi PART 0
         """
-        self.maxDiff = None
         self.dsr_runtest(11, '-r')
 
+    #@unittest.skip(" skipping 12")
     def testrun_run12(self):
         """
         regular dsr run without fit with
         resi cf3 PART 2 occ -31
         """
-        self.maxDiff = None
-        self.dsr_runtest(12, ending='ins', parameter='-n -r',  remlines = [293, 308])
+        self.dsr_runtest(12, ending='ins', parameter='-n -r',  remlines = [99, 114])
 
     #@unittest.skip(" skipping 13")
     def testrun_run13(self):
         """
-        99 FVARS
-
+        rem dsr put oc(cf3)3 with o1 c1 c2 c3 c4 on O1_3 c1_3 q6 Q4 q7 resi cf3 =
+            PART 2 occ 501
         """
-        self.maxDiff = None
         self.dsr_runtest(13, '-r')
 
     #@unittest.skip(" skipping 14")
     def testrun_run14(self):
         """
-        without occ and fvar
-
+        dsr -r p21c.res
+        REM  dsr put oc(CF3)3 with o1 c1 c2 C3 on O1_4 C1_4 Q6 Q7 resi cf3 =
+            PART 2
         """
-        self.maxDiff = None
         self.dsr_runtest(14, '-r')
 
     #@unittest.skip(" skipping 15")
     def testrun_run15(self):
         """
-        without occ and fvar without resi cf3
-
+        dsr -r foo
+        REM  dsr put oc(CF3)3 with o1 c1 c2 C3 on O1_4 C1_4 Q6 Q7
         """
-        self.maxDiff = None
         self.dsr_runtest(15, '-r')
 
     #@unittest.skip(" skipping 16")
     def testrun_run16(self):
         """
-        without occ and fvar with resi alone
-
+        dsr -r
+        REM  dsr put oc(CF3)3 with o1 c1 c2 C3 on O1_4 C1_4 Q6 Q7 RESI
         """
-        self.maxDiff = None
         self.dsr_runtest(16, '-r')
 
-    # @unittest.skip(" skipping 17")
+    #@unittest.skip(" skipping 17")
     def testrun_run17(self):
         """
-        resi occ -31 without FVAR
-
+        dsr -r with:
+        REM  dsr put oc(CF3)3 with o1 c1 c2 C3 on O1_4 C1_4 Q6 Q7 resi occ -31
         """
-        self.maxDiff = None
         self.dsr_runtest(17, '-r')
 
     #@unittest.skip(" skipping 18")
     def testrun_run18(self):
         """
-        occ -31 without FVAR
-
+        dsr -r foo
+        REM  dsr put oc(CF3)3 with o1 c1 c2 C3 on O1_4 C1_4 Q6 Q7 occ -31
         """
-        self.maxDiff = None
         self.dsr_runtest(18, '-r')
 
-    #@unittest.skip(" skipping 18")
+    #@unittest.skip(" skipping 19")
     def testrun_run19(self):
         """
         occ -31 without FVAR
 
         """
-        self.maxDiff = None
         self.dsr_runtest(19, '-re', external_file='dsr_1_19a')
 
+    #@unittest.skip(" skipping 20")
     def testrun_run20(self):
         """
         rem dsr put CF6 on C22 split
         (AFIX 120)
 
         """
-        self.maxDiff = None
         self.dsr_runtest(20, '-r', hkl=20)
 
+    #@unittest.skip(" skipping 21")
     def testrun_run21(self):
         """
         rem dsr put CF3 on C22
         (AFIX 130)
         """
-        self.maxDiff = None
-        self.dsr_runtest(21, '-r', hkl=20)
+        self.dsr_runtest(21, '-r', hkl=20, remlines=[27])
 
+    #@unittest.skip(" skipping 22")
     def testrun_run22(self):
         """
         rem dsr put CF9 on C1
 
         """
-        self.maxDiff = None
         self.dsr_runtest(22, '-r', hkl=20)
 
+    #@unittest.skip(" skipping 23")
     def testrun_run23(self):
         """
         REM DSR PUT TOLUENE WITH C2 C3 C5 ON Q1 Q2 Q1 PART -1 OCC 10.5 RESI TOL
         1.0005, 0.5447, 0.5342, 0.9314, 0.5395, 0.5126, 0.9995, 0.4553, 0.4658
         """
-        self.maxDiff = None
         self.dsr_runtest(23, '-target 1.0005 0.5447 0.5342 0.9314 0.5395 0.5126 0.9995 0.4553 0.4658 -r')
 
 
