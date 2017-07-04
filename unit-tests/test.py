@@ -220,7 +220,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         regular dsr run with
         replace resi PART 0
         """
-        self.dsr_runtest(11, '-r')
+        self.dsr_runtest(11, '-r', remlines=[108])
 
     #@unittest.skip(" skipping 12")
     def testrun_run12(self):
@@ -236,7 +236,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         rem dsr put oc(cf3)3 with o1 c1 c2 c3 c4 on O1_3 c1_3 q6 Q4 q7 resi cf3 =
             PART 2 occ 501
         """
-        self.dsr_runtest(13, '-r')
+        self.dsr_runtest(13, '-r', remlines=[331])
 
     #@unittest.skip(" skipping 14")
     def testrun_run14(self):
