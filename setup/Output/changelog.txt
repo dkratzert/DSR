@@ -1,4 +1,6 @@
 Recent changes
+-205    Added SO2. Added full SHELXL-2017/1 compatibility (Except for chain IDs). Fixed
+        restraints in acetonitrile.
 -204    Added Methyl tert-butyl ether to the DB. Small fix for CF3 groups. Refractured
         some code.
 -203    Added logfile 'dsr-log.lst' to dsr output. Every last dsr run is now in the
