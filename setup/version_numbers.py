@@ -50,13 +50,13 @@ if __name__ == "__main__":
 
     print("Updating version numbers to version {} ...".format(VERSION))
 
-    print("Linux...")
+    print("Linux... {}".format(VERSION))
     process_debian_and_spec(debianpath)
 
-    print("Linux...")
+    print("Linux... {}".format(VERSION))
     process_debian_and_spec(specpath)
 
-    print("windows...")
+    print("windows... {}".format(VERSION))
     process_iss(isspath)
 
     print("Version numbers updated.")
