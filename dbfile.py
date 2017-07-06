@@ -20,7 +20,7 @@ from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
 from atoms import Element
 from atomhandling import get_atomtypes
 from misc import atomic_distance, nalimov_test, std_dev, median, pairwise, \
-    unwrap_head_lines, dice_coefficient2, dice_coefficient
+    unwrap_head_lines, dice_coefficient2
 from copy import deepcopy
 from os.path import expanduser
 from misc import touch
