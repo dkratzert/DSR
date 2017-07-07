@@ -3,7 +3,10 @@ import subprocess
 import tempfile
 import misc
 import selfupdate
+
+
 try:  # Python2:
+    # noinspection PyCompatibility
     import urllib2
     http_error = urllib2.HTTPError
 except(ImportError, AttributeError):  # Python3:
