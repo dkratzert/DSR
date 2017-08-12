@@ -86,7 +86,7 @@ Source: "..\elements.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\README"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Python27-dsr\*"; DestDir: "{app}\Python27"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
 Source: "..\example\p21c.hkl"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
-Source: "..\example\p21c.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\example\p21c.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs; Permissions: everyone-full
 Source: "..\example\p21c_step0.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\example\p21c_step1.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 ;Source: "..\example\p21c_step2.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
@@ -122,7 +122,7 @@ Type: filesandordirs; Name: "{app}\manuals"
 Type: filesandordirs; Name: "{app}\setup"
 
 [Dirs]
-Name: "{app}\example"; Permissions: authusers-full
+Name: "{app}\example"; Permissions: everyone-full
 Name: "{app}\manuals"
 Name: "{app}\."; Permissions: authusers-full
 
