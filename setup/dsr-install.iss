@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "DSR - Disordered Structure Refinement"
-#define MyAppVersion "205"
+#define MyAppVersion "206"
 #define MyAppPublisher "Daniel Kratzert"
 
 [Setup]
@@ -22,7 +22,6 @@ CloseApplications=False
 RestartApplications=False
 ShowLanguageDialog=no
 ChangesAssociations=True
-RestartIfNeededByRun=False
 ChangesEnvironment=True
 DisableFinishedPage=True
 DisableReadyPage=True
