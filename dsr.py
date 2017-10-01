@@ -374,6 +374,7 @@ class multilog(object):
 
     def _wrap(self, attr, *args):
         def g(*a, **kw):
+            res = ''
             for f in self._files:
                 res = getattr(f, attr, *args)(*a, **kw)
             return res
