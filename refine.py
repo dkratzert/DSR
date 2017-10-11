@@ -308,6 +308,8 @@ class ShelxlRefine():
     def run_shelxl(self):
         """
         This method runs shelxl 2013 on the res file self.resfile_name
+
+        TODO: Do the fit with https://github.com/tjmustard/QuatfitPy
         """
         resfile = self.resfile_name+'.res'
         hklfile = self.resfile_name+'.hkl'
