@@ -48,7 +48,29 @@
 #   in the SHELXL file automatically.
 ########################################################################################
 
-
+<tetfluorbenz>
+rem Name: 1,2,3,4-Tetrafluorobenzene, C6H2F4
+rem Src: CCDC ZELDOJ, http://dx.doi.org/10.1002/anie.199515171
+RESI TFB
+SIMU F1 > C6
+RIGU F1 > C6
+FLAT F1 > C6
+SADI 0.02 C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1
+SADI 0.02 C1 F1 C2 F2 C3 F3 C4 F4
+SADI 0.04 C1 C3 C3 C5 C5 C1 C2 C6 C6 C4 C2 C4
+SADI 0.05 C2 F1 C6 F1 C1 F2 C3 F2 C2 F3 C4 F3 C3 F4 C5 F4
+FRAG 17 1 1 1 90 90 90
+F1    9     -0.05082    3.99263    9.22109
+F2    9      2.12407    3.76804    7.63932
+F3    9      2.00186    2.33130    5.34763
+F4    9     -0.31846    1.20384    4.57893
+C1    6     -0.14903    3.28787    8.07414
+C2    6      0.97513    3.17369    7.28547
+C3    6      0.91082    2.45683    6.11633
+C4    6     -0.28216    1.87911    5.74585
+C5    6     -1.40500    1.99934    6.52120
+C6    6     -1.33620    2.71166    7.70809
+</tetfluorbenz>
 
 <so2>
 rem Name: Sulfur dioxide, SO2
