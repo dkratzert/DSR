@@ -48,6 +48,26 @@
 #   in the SHELXL file automatically.
 ########################################################################################
 
+
+<thiophen>
+rem Name: Thiophen, Thiofuran, C4H4S
+rem Src: Turbomole V7.1, def2-TZVP/pbe0
+RESI THIO
+SIMU S1 > C4
+RIGU S1 > C4
+SADI 0.02 S1 C1 S1 C4
+SADI 0.03 C1 C2 C2 C3 C3 C4
+SADI 0.04 C1 C3 C2 C4
+SADI 0.04 S1 C2 S1 C3
+FLAT S1 C1 C2 C3 C4
+FRAG 17 1 1 1 90 90 90
+S1    16     0.53456   -0.37592    0.00001
+C1    6      1.18298   -1.95313   -0.00077
+C2    6      2.54669   -1.93110   -0.00103
+C3    6      3.06659   -0.61273   -0.00068
+C4    6      2.08496    0.33421   -0.00005
+</thiophen>
+
 <tetfluorbenz>
 rem Name: 1,2,3,4-Tetrafluorobenzene, C6H2F4
 rem Src: CCDC ZELDOJ, http://dx.doi.org/10.1002/anie.199515171
