@@ -1118,9 +1118,9 @@ class ExportTest(unittest.TestCase):
         self.assertListEqual(smallcell, cell2)
 
     def testrun_export_to_clip(self):
-        '''
+        """
         Exports the current fragment to the clipboard.
-        '''
+        """
         gdb = global_DB(invert=self.invert)
         export = Export(gdb)
         #        with self.assertRaises(SystemExit):
