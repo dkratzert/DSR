@@ -92,6 +92,7 @@ C5    6     -1.40500    1.99934    6.52120
 C6    6     -1.33620    2.71166    7.70809
 </tetfluorbenz>
 
+
 <so2>
 rem Name: Sulfur dioxide, SO2
 rem Src: CCDC VOLZIH
