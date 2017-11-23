@@ -273,6 +273,7 @@ class global_DB():
         if not maindb:
             try:
                 main_dbdir = os.environ["DSR_DIR"]
+                maindb = os.path.join(main_dbdir, 'dsr_db.txt')
             except KeyError:
                 main_dbdir = './'
                 maindb = os.path.join(main_dbdir, 'dsr_db.txt')
