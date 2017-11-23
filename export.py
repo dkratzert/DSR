@@ -201,7 +201,7 @@ class Export():
 
     def format_atoms_for_export(self, fragname, gui=False):
         """
-        fractional coordinates are converted to cartesian
+        Returns properly formated cartesian coordinates for fragment export.
         Atom;;number;;x;;y;;z
 
         >>> gdb = global_DB(invert=False)
