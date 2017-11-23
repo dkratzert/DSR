@@ -1,4 +1,5 @@
 Recent changes
+-206    Added Thiophen and 1,2,3,4-Tetrafluorobenzene.
 -205    Added SO2. Added full SHELXL-2017/1 compatibility (Except for chain IDs). Fixed
         restraints in acetonitrile.
 -204    Added Methyl tert-butyl ether to the DB. Small fix for CF3 groups. Refractured
