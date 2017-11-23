@@ -147,7 +147,7 @@ def read_file_data(filepath, with_comments=False):
                 if line.startswith('#') and with_comments is False:
                     continue
                 dblist.append(line)
-    except IOError as e:
+    except (IOError, TypeError) as e:
         print(e)
     return dblist
 
@@ -172,12 +172,11 @@ class ReadDB():
         returns the database as dictionary. Each file has its own key.
         {'dsr-db': ('line1\n', 'line2\n', '...'), 'dsr-user-db': ('line1\n', 'line2\n', '...')}
         """
-        db_dict = {}
-        dblist = read_file_data(self.maindb)
-        db_dict['dsr_db'] = dblist
-        dblist = []
-        dblist = read_file_data(self.userdb)
-        db_dict['dsr_user_db'] = dblist
+        db_dict = {'dsr_db': read_file_data(self.maindb)}
+        try:
+            db_dict['dsr_user_db'] = read_file_data(self.userdb)
+        except (IOError, TypeError):
+            pass
         return db_dict
 
     def find_db_tags(self):
@@ -258,7 +257,7 @@ class global_DB():
         :param dbnames: file names of the databases
         :type dbnames:  string
         """
-        if userdb is None:
+        if not userdb:
             # using the environment variable turned out to be too complicated.
             # DSR_DB_DIR is now deprecated!
             # try:
@@ -271,17 +270,15 @@ class global_DB():
         else:
             user_db_path = userdb
         ##############################################    
-        if maindb is None:
+        if not maindb:
             try:
                 main_dbdir = os.environ["DSR_DIR"]
-            except(KeyError):
+            except KeyError:
                 main_dbdir = './'
-            main_db_path = os.path.join(main_dbdir, 'dsr_db.txt')
-        else:
-            main_db_path = maindb
+                maindb = os.path.join(main_dbdir, 'dsr_db.txt')
         ##############################################
         self.invert = invert
-        self._getdb = ReadDB(main_db_path, user_db_path)
+        self._getdb = ReadDB(maindb, user_db_path)
         self._db_tags = self._getdb.find_db_tags()
         self._db_plain_dict = self._getdb.get_databases
         self._db_all_dict = self.build_db_dict()
@@ -346,6 +343,27 @@ class global_DB():
     @property
     def db_dict(self):
         return self._db_all_dict
+
+    def get_atomic_numbers(self, fragment=''):
+        """
+        returns the atomic numbers of the atoms in a fragment in
+        same order as the dsr db as list
+        :param fragment: fragment name tag
+        :type fragment: basestring
+        """
+        atnumbers = []
+        types = get_atomtypes(self.get_atoms_from_fragment(fragment))
+        for i in types:
+            el = Element()
+            atnumbers.append(el.get_atomic_number(i))
+        return atnumbers
+
+    def get_atomnames(self, fragment=''):
+        atoms = self.db_dict[fragment]['atoms']
+        names = []
+        for i in atoms:
+            names.append(i[0])
+        return names
 
     @staticmethod
     def get_residue_from_head(head, fragment=''):
@@ -438,6 +456,7 @@ class global_DB():
         fragment = fragment.lower()
         head = []
         comment = []
+        fragline = None
         for i in self._db_plain_dict[db][int(line):]:
             i = i.strip(' \n\r')
             if i.upper().startswith('REM'):
@@ -708,9 +727,10 @@ class global_DB():
             sys.exit()
 
     def get_fragline_from_fragment(self, fragment):
-        '''
+        """
         returns the line with FRAG 17 cell from the dbentry
-        '''
+        """
+        fragline = None
         fragment = fragment.lower()
         try:
             fragline = self._db_all_dict[fragment]['fragline']
@@ -720,23 +740,23 @@ class global_DB():
         return fragline
 
     def get_unit_cell(self, fragment):
-        '''
+        """
         returns the unit cell parameters of the fragment
         [a, b, c, alpha, beta, gamma]
-        '''
+        """
         return self.get_fragline_from_fragment(fragment)[2:]
 
     def get_line_number_from_fragment(self, fragment):
-        '''
+        """
         returns the line number from the dbentry
-        '''
+        """
         return self._db_all_dict[fragment.lower()]['line']
 
     def get_head_from_fragment(self, fragment):
-        '''
+        """
         returns the header of the dbentry of fragment.
         This header does not include comments, only the restraints.
-        '''
+        """
         fragment = fragment.lower()
         try:
             head = self._db_all_dict[fragment]['head']
@@ -980,9 +1000,9 @@ class ImportGRADE():
         return first, last
 
     def get_restraints(self):
-        '''
+        """
         reads the restraints from a dfix-file
-        '''
+        """
         restraints = []
         for line in self._dfixfile:
             if not isinstance(line, str):
