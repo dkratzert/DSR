@@ -11,19 +11,22 @@
 #
 from __future__ import print_function
 
-from collections import Counter
-import os, sys
+import os
 import re
+import sys
 import tarfile
-
-from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
-from atoms import Element
-from atomhandling import get_atomtypes
-from misc import atomic_distance, nalimov_test, std_dev, median, pairwise, \
-    unwrap_head_lines, dice_coefficient2
+from collections import Counter
 from copy import deepcopy
 from os.path import expanduser
+
+import misc
+from atomhandling import get_atomtypes
+from atoms import Element
+from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
+from misc import atomic_distance, nalimov_test, std_dev, median, pairwise, \
+    unwrap_head_lines, dice_coefficient2
 from misc import touch
+
 atreg = re.compile(atomregex)
 
 
@@ -63,11 +66,12 @@ def search_fragment_name(search_string, gdb, numresults=6):
     search_results = []
     for i in names_list:
         key = make_sortkey(i[1], searchkey=True)
-        coefficient = dice_coefficient2(search_string, key[0]+key[1])
+        coefficient = dice_coefficient2(search_string, key[0] + key[1])
         i.append([coefficient, key[1]])
         search_results.append(i)
     # select the best n results, sort for first and sewcond search key
-    selected_results = sorted(search_results, key=lambda coeff: [coeff[-1][0], coeff[-1][1]], reverse=False)[:numresults]
+    selected_results = sorted(search_results, key=lambda coeff: [coeff[-1][0], coeff[-1][1]], reverse=False)[
+                       :numresults]
     return selected_results
 
 
@@ -90,7 +94,7 @@ def make_sortkey(full_name, searchkey=False):
     keylist = []
     full_name = ''.join(e for e in full_name if e not in ('{}()[],'))
     full_name = full_name.split(' ')
-    rest = " "+' '.join(full_name[1:])
+    rest = " " + ' '.join(full_name[1:])
     full_name = full_name[0].lower()
     numbers = ''.join(e for e in full_name if e in r'0123456789')
     if full_name.startswith('tert-'):
@@ -137,8 +141,9 @@ __metaclass__ = type  # use new-style classes
 # dsr_user_db.txt if this file exists, all its content is also read in.
 
 def read_file_data(filepath, with_comments=False):
+    # type: (str, bool) -> list
     """
-    reads the database files and returns them as list
+    reads the database files and returns them as list.
     """
     dblist = []
     try:
@@ -146,83 +151,23 @@ def read_file_data(filepath, with_comments=False):
             for line in f:
                 if line.startswith('#') and with_comments is False:
                     continue
-                dblist.append(line)
+                dblist.append(line.strip(' \n\r'))
     except (IOError, TypeError) as e:
         print(e)
     return dblist
 
 
-class ReadDB():
+class ParseDB(object):
     """
-    reads in the system and user db files (self._db_file_names) and makes
+    reads in the system and user db files and makes
     a dictionary of them.
+    maindb = read_file_data(path_to_maindb)
     """
 
-    def __init__(self, main_dbpath='./dsr_db.txt', user_dbpath='./dsr_usr_db.txt'):
-        self.maindb = main_dbpath
-        self.userdb = user_dbpath
-        self._databases = self.getDB_files_dict()
-
-    @property
-    def get_databases(self):
-        return self._databases
-
-    def getDB_files_dict(self):
+    def __init__(self):
+        # type: () -> NotImplemented
         """
-        returns the database as dictionary. Each file has its own key.
-        {'dsr-db': ('line1\n', 'line2\n', '...'), 'dsr-user-db': ('line1\n', 'line2\n', '...')}
-        """
-        db_dict = {'dsr_db': read_file_data(self.maindb)}
-        try:
-            db_dict['dsr_user_db'] = read_file_data(self.userdb)
-        except (IOError, TypeError):
-            pass
-        return db_dict
-
-    def find_db_tags(self):
-        """
-        This method returns all fragment name tags in the database
-        """
-        regex = re.compile(r'^<[^/].*>')  # regular expression for db tag.
-        dbnames = []
-        for db in self._databases:
-            for num, line in enumerate(self._databases[db]):
-                if regex.match(line):
-                    frag = [str(line.strip('<> \n\r')).upper(), num + 1, db]  # stripping spaces is important here!
-                    dbnames.append(frag)
-        nameset = []
-        for i in dbnames:
-            nameset.append(i[0])
-        if len(set(nameset)) != len(nameset):
-            c1 = Counter(nameset)
-            c2 = Counter(set(nameset))
-            diff = c1 - c2
-            duplicates = list(diff.elements())
-            for i in duplicates:
-                print('\n*** Duplicate database entry "{}" found! Please remove/rename '
-                      'second entry\nand/or check all end tags in the database dsr_usr_db.txt '
-                      'or dsr_db.txt. ***'.format(duplicates.pop()))
-            sys.exit()
-        # # sort lower-case:
-        dbnames.sort(key=lambda x: x[0].lower())
-        return dbnames
-
-
-class global_DB():
-    """
-    creates a final dictionary where all dbs are included
-    """
-
-    def __init__(self, invert=False, maindb=None, userdb=None):
-        """
-        self._db_tags: ['12-DICHLOROBENZ', 590, 'dsr_db']
-
-        self._db_plain_dict: dictionary with plain text of the individual databases
-                  {'dsr_db': ['# Fragment database of DSR.py\n', '#\n',
-                              '# Some Fragments are from geometry optimizations with Gaussian 03:\n',
-                              '#  Gaussian 03, Revision B.04,\n', '#  M. J. Frisch, et. al. Gaussian, ...}
-
-        self._db_all_dict: dictionary with the individial fragments
+        self._databases: dictionary with the individial fragments
                   {'benzene':
                     {'comment': ['Source: GRADE import', 'Name: Benzene, C6H6'],
                      'head': ['DFIX 1.379 0.015 C1 C2 ', 'DFIX 1.379 0.015 C1 C6 ',
@@ -246,47 +191,84 @@ class global_DB():
                                ['C6', '1', '-1.208', '-0.0', '0.683']]},
                     'bipyridine':
                      {'comment': ...
-        :param invert: inverts the coordinates of a fragment
-        :type invert:  boolean
-        :param maindb:  directory where the main database is located.
-                        Default location is the users home directory.
-        :type maindb:   string
-        :param userdb:  directory where the user database is located.
-                        Default is the users home directory.
-        :type userdb:   string
-        :param dbnames: file names of the databases
-        :type dbnames:  string
+
         """
-        if not userdb:
+        self._databases = {}
+
+    def parse(self, dbpath, dbname="dsr_db"):
+        # type: (str) -> dict
+        """
+        This method returns all fragment name tags in the database
+
+        >>> dbpath = os.path.abspath('dsr_db.txt')
+        >>> db = ParseDB()
+        >>> db.parse(dbpath, 'dsr_db')
+        """
+        db = {}
+        start_regex = re.compile(r'^<[^/].*>')  # regular expression for db tag.
+        starttag = False
+        endtag = False
+        fraglines =[]
+        end_regex = None
+        for num, line in enumerate(read_file_data(dbpath)):
+            if starttag:
+                fraglines.append(line)
+            if start_regex.match(line):
+                starttag = True
+                endtag =False
+                frag = line.strip('<> \n\r').upper()
+                r = r'^<[/]{}>'.format(frag)
+                end_regex = re.compile(r)
+            if end_regex and end_regex.match(line):
+                endtag = True
+
+                fraglines = []
+        return db
+
+    """
+    nameset = []
+    for i in dbnames:
+        nameset.append(i[0])
+    if len(set(nameset)) != len(nameset):
+        c1 = Counter(nameset)
+        c2 = Counter(set(nameset))
+        diff = c1 - c2
+        duplicates = list(diff.elements())
+        for i in duplicates:
+            print('\n*** Duplicate database entry "{}" found! Please remove/rename '
+                  'second entry\nand/or check all end tags in the database dsr_usr_db.txt '
+                  'or dsr_db.txt. ***'.format(duplicates.pop()))
+        sys.exit()
+    # # sort lower-case:
+    dbnames.sort(key=lambda x: x[0].lower())
+    return db
+    """
+
+    def use_default_locations(self):
+        """
+        Tries to find the database files in their default locations after a regular DSR installation.
+        Returns
+        -------
+        bool
+        """
+        if not self.userdb:
             # using the environment variable turned out to be too complicated.
-            # DSR_DB_DIR is now deprecated!
-            # try:
-            #    homedir = os.environ["DSR_DB_DIR"]
-            # except(KeyError):
             homedir = expanduser("~")
-            user_db_path = os.path.join(homedir, "dsr_user_db.txt")
-            if not os.path.isfile(user_db_path):
-                touch(user_db_path)
-        else:
-            user_db_path = userdb
-        ##############################################    
-        if not maindb:
+            self.userdb = os.path.join(homedir, "dsr_user_db.txt")
+            if not os.path.isfile(self.userdb):
+                touch(self.userdb)
+        if not self.maindb:
             try:
                 main_dbdir = os.environ["DSR_DIR"]
-                maindb = os.path.join(main_dbdir, 'dsr_db.txt')
+                self.maindb = os.path.join(main_dbdir, 'dsr_db.txt')
             except KeyError:
                 main_dbdir = './'
-                maindb = os.path.join(main_dbdir, 'dsr_db.txt')
-        ##############################################
-        self.invert = invert
-        self._getdb = ReadDB(maindb, user_db_path)
-        self._db_tags = self._getdb.find_db_tags()
-        self._db_plain_dict = self._getdb.get_databases
-        self._db_all_dict = self.build_db_dict()
+                self.maindb = os.path.join(main_dbdir, 'dsr_db.txt')
+        return True
 
     def __getitem__(self, fragment):
         try:
-            return self._db_all_dict[fragment]
+            return self._databases[fragment]
         except KeyError:
             print("*** Fragment {} was not found in the Database! ***".format(fragment))
             sys.exit()
@@ -297,7 +279,7 @@ class global_DB():
         [['tbu-c', 1723, 'dsr_db', 'Tert-butyl-C'], ...]
         """
         fraglist = []
-        for frag in self._db_all_dict:
+        for frag in self._databases:
             comment = self.get_name_from_fragment(frag)
             key = make_sortkey(comment)
             line = [frag,
@@ -341,10 +323,6 @@ class global_DB():
             sys.exit()
         return db_dict
 
-    @property
-    def db_dict(self):
-        return self._db_all_dict
-
     def get_atomic_numbers(self, fragment=''):
         """
         returns the atomic numbers of the atoms in a fragment in
@@ -360,14 +338,14 @@ class global_DB():
         return atnumbers
 
     def get_atomnames(self, fragment=''):
-        atoms = self.db_dict[fragment]['atoms']
+        atoms = self._databases[fragment]['atoms']
         names = []
         for i in atoms:
             names.append(i[0])
         return names
 
     @staticmethod
-    def get_residue_from_head(head, fragment=''):
+    def get_fragment_residue(head, fragment=''):
         """
         extracts the residue from the head
         and returns just the first string after RESI
@@ -435,7 +413,8 @@ class global_DB():
             atoms = invert_dbatoms_coordinates(atoms)
         return atoms
 
-    def get_head_lines(self, fragment, db, line):
+    def get_head_lines(self, db_dict, fragment, dbname, fraglist):
+        # type: (dict, str, str, list) -> NotImplemented
         """
         return the head of the dbentry , the FRAG line and the comment of the
         fragment as list of strings
@@ -445,21 +424,12 @@ class global_DB():
         [['Src:', 'pbe1pbe/6-311++G(3df,3pd),', 'Ilia', 'A.', 'Guzei'],
         ['Name:', '1,2-Dichlorobenzene,', 'C6H4Cl2']] ]
         #####
-        [list, list, dict]
-        :param fragment: fragment name
-        :type fragment:  string
-        :param db:  database name e.g. dsr_db or dsr_user_db
-        :type db: string
-        :param line: line number where dbentry is located in the db file
-        :type line: string
-        :return head, # new head with unwrapped lines
         """
         fragment = fragment.lower()
         head = []
         comment = []
         fragline = None
-        for i in self._db_plain_dict[db][int(line):]:
-            i = i.strip(' \n\r')
+        for i in fraglist:
             if i.upper().startswith('REM'):
                 comment.append(i.split()[1:])
                 continue
@@ -476,7 +446,7 @@ class global_DB():
             sys.exit()
         # nhead is list of strings
         head = unwrap_head_lines(head)
-        return head, fragline, comment
+        return None
 
     def get_head_for_gui(self, fragment):
         """
@@ -530,7 +500,7 @@ class global_DB():
         if fragment in ['cf3', 'cf6', 'cf9']:
             return True
         try:
-            dbentry = self._db_all_dict[fragment]
+            dbentry = self._databases[fragment]
         except KeyError:
             print("*** Fragment {} not found in the database. ***".format(fragment))
             sys.exit()
@@ -561,7 +531,7 @@ class global_DB():
         """
         fragment = fragment.lower()
         try:
-            types = get_atomtypes(self._db_all_dict[fragment]['atoms'])
+            types = get_atomtypes(self._databases[fragment]['atoms'])
         except:
             return None
         formula = ''
@@ -593,7 +563,7 @@ class global_DB():
         - Checks wether restraints cards are vaid.
         """
         fragment = fragment.lower()
-        restraints = self._db_all_dict[fragment]['head']
+        restraints = self._databases[fragment]['head']
         atoms = self.get_atoms_from_fragment(fragment)
         db = self.get_db_name_from_fragment(fragment)
         status = True
@@ -640,8 +610,8 @@ class global_DB():
         :param factor: factor for confidence interval
         """
         fragment = fragment.lower()
-        atoms = self._db_all_dict[fragment]['atoms']
-        restr = self._db_all_dict[fragment]['head']
+        atoms = self._databases[fragment]['atoms']
+        restr = self._databases[fragment]['head']
         restraints = deepcopy(restr)
         atnames = [i[0].upper() for i in atoms]
         for num, line in enumerate(restraints):
@@ -690,7 +660,7 @@ class global_DB():
                             print(
                                 '*** Suspicious deviation in atom pair "{}" ({:4.3f} A, median: {:4.3f}) of '
                                 'SADI line {} ***'.format(pair, distances[x], median(distances), num + 1))
-                            print('*** '+restr[num][:60]+'... ***')
+                            print('*** ' + restr[num][:60] + '... ***')
                             return False
                 if stdev > 2.5 * float(dev):
                     print("\nFragment {}:".format(fragment))
@@ -721,7 +691,7 @@ class global_DB():
         """
         fragment = fragment.lower()
         try:
-            return self._db_all_dict[fragment]['atoms']
+            return self._databases[fragment]['atoms']
         except KeyError:
             print('*** Could not find {} in database ***'.format(fragment))
             self.search_for_error_response(fragment)
@@ -734,7 +704,7 @@ class global_DB():
         fragline = None
         fragment = fragment.lower()
         try:
-            fragline = self._db_all_dict[fragment]['fragline']
+            fragline = self._databases[fragment]['fragline']
         except(KeyError):
             print('*** Fragment "{}" not found in database ***'.format(fragment))
             self.search_for_error_response(fragment)
@@ -751,16 +721,25 @@ class global_DB():
         """
         returns the line number from the dbentry
         """
-        return self._db_all_dict[fragment.lower()]['line']
+        return self._databases[fragment.lower()]['line']
 
     def get_head_from_fragment(self, fragment):
         """
         returns the header of the dbentry of fragment.
         This header does not include comments, only the restraints.
+
+        Parameters
+        ----------
+        fragment : str
+
+        Returns
+        ----------
+        list
         """
+        head = []
         fragment = fragment.lower()
         try:
-            head = self._db_all_dict[fragment]['head']
+            head = self._databases[fragment]['head']
         except KeyError:
             print('*** Could not find {} in database ***'.format(fragment))
             self.search_for_error_response(fragment)
@@ -1146,11 +1125,15 @@ class ImportGRADE():
 
 
 if __name__ == '__main__':
+    dbpath = os.path.abspath('dsr_db.txt')
+    db = ParseDB()
+    p = db.parse(dbpath, 'dsr_db')
+    print(p)
+    """
     import doctest
-
     failed, attempted = doctest.testmod()  # verbose=True)
     if failed == 0:
         print('passed all {} tests!'.format(attempted))
     else:
         print('{} of {} tests failed'.format(failed, attempted))
-
+    """
