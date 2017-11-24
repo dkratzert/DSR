@@ -180,7 +180,7 @@ class ParseDB(object):
                              'FLAT C4 C5 C6 C1 ', 'FLAT C5 C6 C1 C2 ', 'FLAT C6 C1 C2 C3'],
                      'resi': 'BEN1',
                      'name': 'BENZENE',
-                     'line': 762,
+                     'line': 762,  <-- index number beginning with zero
                      'db': 'dsr_db',
                      'fragline': ['FRAG', '17', '1', '1', '1', '90', '90', '90'],
                      'atoms': [['C1', '1', '-0.012', '-0.0', '-0.007'],
@@ -204,45 +204,114 @@ class ParseDB(object):
         >>> db = ParseDB()
         >>> db.parse(dbpath, 'dsr_db')
         """
+        frag = ''
         db = {}
-        start_regex = re.compile(r'^<[^/].*>')  # regular expression for db tag.
+        start_regex = re.compile(r'<[^/].*>', re.IGNORECASE)  # regular expression for db tag.
         starttag = False
-        endtag = False
         fraglines =[]
         end_regex = None
-        for num, line in enumerate(read_file_data(dbpath)):
+        startnum = 0
+        for num, line in enumerate(read_file_data(dbpath, with_comments=True)):
+            if line.startswith('#'):
+                continue
+            # matching end tag
+            if end_regex and end_regex.match(line):
+                starttag = False
+                if frag in db:
+                    print('\n*** Duplicate database entry "{}" found! Please remove/rename '
+                          'second entry\nand/or check all end tags in the database dsr_usr_db.txt '
+                          'or dsr_db.txt. ***'.format(frag))
+                db[frag] = {'dbname': dbname}
+                db[frag] = {'line': num}
+                db[frag] = {'startline': startnum}
+                db = self.parse_fraglines(frag, fraglines, db)
+                fraglines = []
+            # start tag was found, appending lines to fragment list
             if starttag:
                 fraglines.append(line)
+            # matching start tag and compiling end regex
             if start_regex.match(line):
+                if starttag:
+                    print('*** Error in database "{}.txt" in line {}. End tag is missing ***'.format(dbname, num+1))
                 starttag = True
-                endtag =False
-                frag = line.strip('<> \n\r').upper()
-                r = r'^<[/]{}>'.format(frag)
-                end_regex = re.compile(r)
-            if end_regex and end_regex.match(line):
-                endtag = True
-
-                fraglines = []
+                frag = line.strip('<> \n\r').lower()
+                startnum = num
+                end_regex = re.compile(re.escape(r'</{}>'.format(frag)), re.IGNORECASE)
+                continue
         return db
 
-    """
-    nameset = []
-    for i in dbnames:
-        nameset.append(i[0])
-    if len(set(nameset)) != len(nameset):
-        c1 = Counter(nameset)
-        c2 = Counter(set(nameset))
-        diff = c1 - c2
-        duplicates = list(diff.elements())
-        for i in duplicates:
-            print('\n*** Duplicate database entry "{}" found! Please remove/rename '
-                  'second entry\nand/or check all end tags in the database dsr_usr_db.txt '
-                  'or dsr_db.txt. ***'.format(duplicates.pop()))
-        sys.exit()
-    # # sort lower-case:
-    dbnames.sort(key=lambda x: x[0].lower())
-    return db
-    """
+    def parse_fraglines(self, fragname, fraglines, db):
+        # type: (str, list, dict) -> dict
+        """
+        Fills the database dictionary with fragment data.
+        """
+        fragment = fragname.lower()
+        headlist = []
+        comments = []
+        residue = ''
+        head = True
+        atoms = []
+        cell = []
+        source = ''
+        name = ''
+        nameregex = re.compile(r'.*[n|N]ame:.*')
+        rem = re.compile(r'REM', re.IGNORECASE)
+        srcregex = re.compile(r'.*[s|S][r|R][c|C]|Source:')
+        # bring all wrapped lines with = at end to a single line:
+        fraglines = unwrap_head_lines(fraglines)
+        for num, line in enumerate(fraglines):
+            if head:
+                # Get the full name:
+                if nameregex.match(line):
+                    name = ' '.join(line.split()[2:])
+                    continue
+                # collect the comments:
+                if rem.match(line):
+                    if srcregex.match(line):
+                        source = ' '.join(line.split()[2:])
+                    comments.append(line)
+                    continue
+                if line[:4].upper() in SHX_CARDS:
+                    if line[:4].upper() == 'RESI':  # faster than startswith()?
+                        resiline = line.split()
+                        for n, i in enumerate(resiline):
+                            if not i[0].isalpha():
+                                del resiline[n]
+                        try:
+                            residue = resiline[1].upper()
+                            continue
+                        except IndexError:
+                            print('*** Invalid residue definition in database entry {}. ***'.format(fragment))
+                            sys.exit()
+                    # collect the unit cell of the fragment:
+                    if line[:4].upper().startswith('FRAG'):
+                        cell = line.split()[2:8]
+                        head = False  # End of header is reached, the rest are hopefully atoms
+                        continue
+                    # these must be restraints:
+                    if line[:4] in RESTRAINT_CARDS:
+                        headlist.append(line)
+                else:
+                    print('*** Bad line {} in header of database entry "{}" found! ({}.txt) ***'
+                          .format(num+db[fragment]['startline']+2, fragment, db))
+                    print(line)
+            else:
+                if atreg.match(line):  # search atoms
+                    atline = line.split()[:5]  # convert to list and use only first 5 columns
+                    if atline[0] not in SHX_CARDS:  # exclude all non-atom cards
+                        atoms.append(atline)
+        db[fragment].update({
+            'restraints': headlist,  # header with just the restraints
+            'resi': residue,  # the residue class
+            'cell': cell,  # FRAG ...
+            'atoms': atoms,  # the atoms as lists of list
+            'comments': comments,  # the comment line
+            'source': source,
+            'name': name})
+        if not db:
+            print('*** No database found! ***\n')
+            sys.exit()
+        return db
 
     def use_default_locations(self):
         """
@@ -280,48 +349,19 @@ class ParseDB(object):
         """
         fraglist = []
         for frag in self._databases:
-            comment = self.get_name_from_fragment(frag)
-            key = make_sortkey(comment)
+            name = self.get_name_from_fragment(frag)
+            key = make_sortkey(name)
             line = [frag,
                     self.get_line_number_from_fragment(frag),
                     self.get_db_name_from_fragment(frag),
-                    comment,
+                    name,
                     key[0],
                     key[1]]
             fraglist.append(line)
         fraglist.sort(key=lambda x: (x[4], x[5]))
         return fraglist
 
-    def build_db_dict(self):
-        """
-        returns the global db dictionary
-        """
-        db_dict = {}
-        for i in self._db_tags:
-            fragment = i[0].lower()
-            line = i[1]  # line number where dbentry is in dbfile
-            db = str(i[2])
-            headboth = self.get_head_lines(fragment, db, line)
-            header = headboth[0]
-            fragline = headboth[1]
-            residue = self.get_residue_from_head(header, fragment)
-            atoms = self.get_fragment_atoms(fragment, db, line)
-            comment = headboth[2]
-            comment = [' '.join(x) for x in comment]
-            db_dict[fragment] = {
-                'head': header,  # header with just the restraints
-                'resi': residue,  # the residue class
-                'fragline': fragline.split(),  # FRAG ...
-                'atoms': atoms,  # the atoms as lists of list
-                'line': line,  # line number
-                'db': db,  # user or dsr db
-                'comment': comment,  # the comment line
-                'name': i[0]
-            }
-        if not db_dict:
-            print('*** No database dsr_db.txt found! ***\n')
-            sys.exit()
-        return db_dict
+
 
     def get_atomic_numbers(self, fragment=''):
         """
@@ -345,29 +385,6 @@ class ParseDB(object):
         return names
 
     @staticmethod
-    def get_fragment_residue(head, fragment=''):
-        """
-        extracts the residue from the head
-        and returns just the first string after RESI
-        :param fragment: fragment name
-        :param head: ['line1\n', 'line2\n', '...']
-        :type head: list of strings
-        :return residue class
-        """
-        for index, line in enumerate(head):
-            line = line.upper()
-            if line[:4] == 'RESI':  # faster than startswith()?
-                resiline = line.split()
-                del head[index]  # remove resi from head
-                for n, i in enumerate(resiline):
-                    if not i[0].isalpha():
-                        del resiline[n]
-                try:
-                    return resiline[1].upper()
-                except IndexError:
-                    print('*** Invalid residue definition in database entry {}. ***'.format(fragment))
-                    sys.exit()
-        return False
 
     def get_fragment_atoms(self, fragment, db_name, line):
         """
@@ -413,40 +430,7 @@ class ParseDB(object):
             atoms = invert_dbatoms_coordinates(atoms)
         return atoms
 
-    def get_head_lines(self, db_dict, fragment, dbname, fraglist):
-        # type: (dict, str, str, list) -> NotImplemented
-        """
-        return the head of the dbentry , the FRAG line and the comment of the
-        fragment as list of strings
-        [['RESI CBZ', 'SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1',
-        'SADI Cl1 C2 Cl1 C6',
-        'FLAT Cl1 > C6', 'SIMU Cl1 > C6', 'RIGU Cl1 > C6'], [FRAG 17 1 1 1 90 90 90],
-        [['Src:', 'pbe1pbe/6-311++G(3df,3pd),', 'Ilia', 'A.', 'Guzei'],
-        ['Name:', '1,2-Dichlorobenzene,', 'C6H4Cl2']] ]
-        #####
-        """
-        fragment = fragment.lower()
-        head = []
-        comment = []
-        fragline = None
-        for i in fraglist:
-            if i.upper().startswith('REM'):
-                comment.append(i.split()[1:])
-                continue
-            if i.upper().startswith('FRAG'):  # collect the fragline
-                fragline = i
-                break
-            head.append(i.upper())
-        if not comment:
-            comment = ['']
-        if not fragline:
-            print('*** Error. No cell parameters found in the database entry ' \
-                  'of "{}" ***'.format(fragment))
-            print('*** Please add these parameters! ***')
-            sys.exit()
-        # nhead is list of strings
-        head = unwrap_head_lines(head)
-        return None
+
 
     def get_head_for_gui(self, fragment):
         """
@@ -504,22 +488,17 @@ class ParseDB(object):
         except KeyError:
             print("*** Fragment {} not found in the database. ***".format(fragment))
             sys.exit()
-        for i in dbentry:
-            if i == 'comment':
-                continue
-            if not dbentry[i]:
-                if i == 'head':
-                    print('*** Restraints in the header of database entry "{}" ({}) missing! Check your Database! ***' \
-                          .format(fragment, self.get_name_from_fragment(fragment)))
-                    return False
-                else:
-                    print('*** Values for "{}" in database entry "{}" missing! Check your Database! ***' \
-                          .format(str.upper(i), fragment))
-                    return False
-        if len(dbentry['fragline']) != 8:
-            print('*** The line starting with "FRAG" in the database entry of {} is not correct. ***\n '
-                  '*** Are the cell parameters really correct? "FRAG 17 a b c alpha beta gamma" ***\n'.format(fragment))
-            sys.exit()
+        if not dbentry['cell']:
+            print('*** Error. No cell parameters or malformed cell found in the database entry ' \
+                  'of "{}" ***'.format(fragment))
+            print('*** Please add these parameters! ***')
+        if not dbentry['restraints']:
+            print('*** Restraints in the header of database entry "{}" ({}) missing! Check your Database! ***' \
+                  .format(fragment, dbentry['name']))
+            return False
+        if not dbentry['resi']:
+            print('*** Residue in the header of database entry "{}" ({}) missing! Check your Database! ***' \
+                  .format(fragment, dbentry['name']))
         return True
 
     def get_sum_formula(self, fragment):
@@ -546,14 +525,14 @@ class ParseDB(object):
         check the db for duplicates:
         """
         fragment = fragment.lower()
-        dbatoms = [i[0].upper().strip() for i in self.get_atoms_from_fragment(fragment)]
+        dbatoms = [i[0].upper() for i in self._databases[fragment]['atoms']]
         # check for duplicates:
         while dbatoms:
             at = dbatoms.pop()
             if at in dbatoms:
                 print('*** Duplicate atom {0} in database entry "{1}" ({2}) '
                       'found! Check your database... ***'
-                      .format(at, fragment, self.get_name_from_fragment(fragment)))
+                      .format(at, fragment, self._databases[fragment]['name']))
                 sys.exit()
 
     def check_db_header_consistency(self, fragment):
@@ -570,24 +549,13 @@ class ParseDB(object):
         atoms = [i[0].upper().strip() for i in atoms]
         restraint_atoms_list = set([])
         for line in restraints:
-            if not line:
-                continue
-            line = line.upper()
-            line2 = line.split()
-            # only the first 4 characters, because SADI_TOL would be bad:
-            if line2[0] not in SHX_CARDS:
-                status = False
-                print('*** Bad line in header of database entry "{}" found! ({}.txt) ***'.format(fragment, db))
-                print(line)
-            if line[:4] in RESTRAINT_CARDS:
-                line = line[5:].split()
-                for i in line:
-                    if i in ('>', '<'):
-                        continue
-                    try:
-                        float(i)
-                    except(ValueError):
-                        restraint_atoms_list.add(i)
+            for i in line:
+                if i in ('>', '<'):
+                    continue
+                try:
+                    float(i)
+                except(ValueError):
+                    restraint_atoms_list.add(i)
         for atom in restraint_atoms_list:
             atom = atom.upper()
             if atom not in atoms:
