@@ -6,11 +6,20 @@ Every fragemnt needs a picture with the same name as the fragment tag in ./pictu
 import sqlite3 as lite
 import os
 import sys
+
+import misc
 from constants import SHX_CARDS
 from dbfile import global_DB
 
+misc.remove_file('./fragment-database.sqlite')
 gl = global_DB(invert=False, maindb="./olex_dsr_db.txt", userdb='no userdatabase!')
 db = gl.build_db_dict()
+
+
+dbfilename = 'fragment-database.sqlite'
+con = lite.connect(dbfilename)
+con.text_factory = str
+cur = con.cursor()
 
 
 def get_fragment_atoms_cartesian(fragment):
@@ -30,12 +39,6 @@ def get_fragment_atoms_cartesian(fragment):
         # print(co)
         coords.append(co)
     return coords
-
-
-dbfilename = 'fragment-database.sqlite'
-con = lite.connect(dbfilename)
-con.text_factory = str
-cur = con.cursor()
 
 
 def initialize_db(con, cur):
@@ -166,7 +169,8 @@ def get_picture(name):
 
 def export_database():
     for fid, fragment in enumerate(db.keys(), 1):
-        Name = gl.get_db_name_from_fragment(fragment)
+        Name = gl.get_name_from_fragment(fragment)
+        print("Exporting {}: {}: {}".format(fid, fragment, Name))
         # head = '\n'.join(db[fragment]['head'])
         head = db[fragment]['head']
         comment = ' '.join(db[fragment]['comment'])
@@ -176,7 +180,6 @@ def export_database():
         picture = get_picture(fragment)
         picture = lite.Binary(picture)
         table_frag = (resiclass, '1', Name, reference, comment, picture)
-        print("Exporting {}".format(fragment))
         fill_fragment_table(table_frag)
         fill_atoms(fid, fragment)
         fill_restraints_table(fid, head)
@@ -186,6 +189,7 @@ def export_database():
     for row in rows:
         print("{}  {}  {:>8.4f} {:>8.4f} {:>8.4f}".format(*row))
         # print("{}".format(row))
+
 
 
 # enable to re-export the db to sql:
