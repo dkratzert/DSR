@@ -169,14 +169,14 @@ def get_picture(name):
 
 def export_database():
     for fid, fragment in enumerate(db.keys(), 1):
-        Name = gl.get_name_from_fragment(fragment)
+        Name = gl.get_fragment_name(fragment)
         print("Exporting {}: {}: {}".format(fid, fragment, Name))
         # head = '\n'.join(db[fragment]['head'])
         head = db[fragment]['head']
         comment = ' '.join(db[fragment]['comment'])
         # formula = db.get_sum_formula(fragment)
-        reference = gl.get_src_from_fragment(fragment)
-        resiclass = gl.get_resi_from_fragment(fragment)
+        reference = gl.get_src(fragment)
+        resiclass = gl.get_resi(fragment)
         picture = get_picture(fragment)
         picture = lite.Binary(picture)
         table_frag = (resiclass, '1', Name, reference, comment, picture)

@@ -13,7 +13,7 @@
 from __future__ import print_function
 import sys
 import os
-from dbfile import global_DB, search_fragment_name
+from dbfile import search_fragment_name, ParseDB
 from constants import width, sep_line
 from misc import find_line, remove_line
 from options import OptionsParser
@@ -96,7 +96,9 @@ class DSR():
             sys.exit()
         #################################
         try:
-            self.gdb = global_DB(invert=self.invert)
+            self.gdb = ParseDB()
+            self.gdb.use_default_locations()
+            self.gdb.parse(dbpath=self.gdb.maindb)
         except Exception as e:  # @UnusedVariable
             print("*** Initializing the database failed ***")
             raise
@@ -233,8 +235,8 @@ class DSR():
         fvarlines = rle.find_fvarlines()
         self.fragment = dsrp.fragment
         dbhead = self.gdb.get_head_from_fragment(self.fragment)        # this is only executed once
-        db_residue_string = self.gdb.get_resi_from_fragment(self.fragment)
-        dbatoms = self.gdb.get_atoms_from_fragment(self.fragment)      # only the atoms of the dbentry as list
+        db_residue_string = self.gdb.get_resi(self.fragment)
+        dbatoms = self.gdb.get_atoms(self.fragment)      # only the atoms of the dbentry as list
         # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
         db_atom_types = atomhandling.get_atomtypes(dbatoms)
         sf = atomhandling.SfacTable(self.reslist, db_atom_types)
@@ -301,8 +303,8 @@ class DSR():
         source = textwrap.wrap("REM Restraints for Fragment {}, {} from: {}. "
                                "Please cite doi:10.1107/S1600576715005580".format(
                                     self.fragment,
-                                    self.gdb.get_name_from_fragment(self.fragment),
-                                    self.gdb.get_src_from_fragment(self.fragment)),
+                                    self.gdb.get_fragment_name(self.fragment),
+                                    self.gdb.get_src(self.fragment)),
                                width=74, subsequent_indent='REM ')
         # TODO: test if slow for big files:
         for line in self.reslist:

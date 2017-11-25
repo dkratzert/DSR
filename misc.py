@@ -670,8 +670,7 @@ def atomic_distance(p1, p2, cell):
     >>> atomic_distance(coord1, coord2, cell)
     1.5729229943265979
     """
-    cell = [float(y) for y in cell]
-    a , b, c = cell[:3]
+    a, b, c = cell[:3]
     al = radians(cell[3])
     be = radians(cell[4])
     ga = radians(cell[5])
