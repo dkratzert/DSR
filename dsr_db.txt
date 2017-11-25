@@ -692,7 +692,7 @@ C20   1    -0.19870 -0.12018  0.24521  11.00000  0.04000
 <C60>
 REM Name: Fullerene-C60, C60, Buckminsterfullerene, (C60-Ih)[5,6]fullerene
 REM Src: B. T. King, M. M. Olmstead, K. K. Baldridge, B. Kumar, A. L. Balch,
-rem Src: J. A. Gharamaleki, Chem. Commun. 2012, 48, 9882–9884.
+rem Src: J. A. Gharamaleki, Chem. Commun. 2012, 48, 9882-9884.
 REM DOI: 10.1039/C2CC34472F
 REM Syst. Numbering from http://www.chem.qmul.ac.uk/iupac/fullerene/Fu01t03.html
 RESI C60
@@ -825,7 +825,7 @@ C60   1     0.06959  0.01398  0.00000  11.00000  0.04000
 <C70>
 REM Name: Fullerene-C70, rugbyballene, (C70-D5h)[5,6]fullerene, C70
 REM Src: L. N. Wirz, R. Tonner, A. Hermann, R. Sure, P. Schwerdtfeger,
-REM Src: J. Comput. Chem. 2016, 37, 10–17.
+REM Src: J. Comput. Chem. 2016, 37, 10-17.
 REM Syst. Numbering from http://www.chem.qmul.ac.uk/iupac/fullerene/Fu01t03.html
 REM DOI: 10.1002/jcc.23894
 REM D5h, isomer 8149, E = -2662.40103868
@@ -1355,7 +1355,7 @@ C3      1  0.076300  0.302240  0.996690  1.000000 0.05000
 
 <Pyrene>
 REM Src: TURBOMOLE BP86/SVP
-rem Name: Pyrene, C16H10
+REM Name: Pyrene, C16H10
 RESI pyr
 SADI C1 C2 C2 C3 C3 C3A C3A C4 C4 C5 C5 C5A C5A C6 C6 C7 C7 C8 C8 C8A C8A C9 =
   C9 C10 C10 C10A C10A C1 C10A C10B C10B C3A C10B C10C C10C C5A C10C C8A
@@ -1973,8 +1973,8 @@ C9      1  0.337300  0.772640  0.755910
 
 
 <Cp>
-rem Src: Gaussian 03 B3LYP/6-31+G(d,p) Opt
-rem Name: Cyclopentadienyl, [C5H5]-, Cp
+REM Src: Gaussian 03 B3LYP/6-31+G(d,p) Opt
+REM Name: Cyclopentadienyl, [C5H5]-, Cp
 RESI CP
 SADI 0.02  C2 C3  C1 C2  C3 C4  C1 C5  C4 C5
 SADI 0.04  C3 C5  C2 C4  C1 C4  C1 C3  C2 C5
@@ -1991,8 +1991,8 @@ C5   1   -1.157659   -0.339847   0.000001
 
 
 <Cpstar>
-rem Src: Gaussian 03 B3LYP/6-31G(d,p) Opt
-rem Name: Pentamethylcyclopentadienyl, [C5Me5]-, Cp*
+REM Name: Pentamethylcyclopentadienyl, [C5Me5]-, Cp*
+REM Src: Gaussian 03 B3LYP/6-31G(d,p) Opt
 RESI CPST
 SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C1
 SADI 0.04 C1 C3  C2 C4  C3 C5  C5 C2  C1 C4

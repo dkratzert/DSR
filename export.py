@@ -16,6 +16,7 @@ import copy
 
 import atomhandling as at
 from atoms import Element
+from dbfile import ParseDB
 from misc import wrap_headlines
 from restraints import Restraints
 
@@ -57,8 +58,8 @@ class Export():
         TODO: make this crude hack more elegant!
         In calculated structure the cell is 1 1 1 90 90 90. Shelxle has problems
         with that when growing. So the cell is expanded to 50 50 50
-        >>> gdb = global_DB()
-        >>> exp = Export(gdb, invert=False)
+        >>> gdb = ParseDB()
+        >>> exp = Export(gdb)
         >>> exp.format_calced_coords([1, 1, 1, 90, 90, 90], "benzene")
         [['50', '50', '50', 90, 90, 90], [['C1', '1', '  0.017600', ' -0.006618', '  0.005344'], ['C2', '1', '  0.015724', ' -0.007554', '  0.004762'], ['C3', '1', '  0.015212', ' -0.006368', '  0.003851'], ['C4', '1', '  0.016584', ' -0.004244', '  0.003510'], ['C5', '1', '  0.018464', ' -0.003288', '  0.004080'], ['C6', '1', '  0.018976', ' -0.004464', '  0.004998']]]
         >>> exp.format_calced_coords([1, 1, 1, 90, 90, 90], "BENZENE")
@@ -231,8 +232,8 @@ class Export():
         el = Element()
         from misc import frac_to_cart
         dbentry = self._gdb[fragname]
-        cell = dbentry['fragline'][2:]
-        cell = [float(x) for x in cell]
+        cell = dbentry['cell']
+        #cell = [float(x) for x in cell]
         atoms = copy.deepcopy(dbentry['atoms'])
         for line in atoms:
             if int(line[1]) < 0:

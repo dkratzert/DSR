@@ -15,7 +15,7 @@ import sys
 import os
 from dbfile import search_fragment_name, ParseDB
 from constants import width, sep_line
-from misc import find_line, remove_line
+from misc import find_line, remove_line, touch
 from options import OptionsParser
 from os.path import expanduser
 from terminalsize import get_terminal_size
@@ -95,10 +95,11 @@ class DSR():
             selfupdate.update_dsr()
             sys.exit()
         #################################
+        self.maindb_path = ''
+        self.userdb_path = ''
         try:
-            self.gdb = ParseDB()
-            self.gdb.use_default_locations()
-            self.gdb.parse(dbpath=self.gdb.maindb)
+            self.set_database_locations()
+            self.gdb = ParseDB(self.maindb_path, self.userdb_path)
         except Exception as e:  # @UnusedVariable
             print("*** Initializing the database failed ***")
             raise
@@ -167,6 +168,28 @@ class DSR():
 
 ###############################################################################
 
+    def set_database_locations(self):
+        """
+        Tries to find the database files in their default locations after a regular DSR installation.
+        Returns
+        -------
+        bool
+        """
+        if not self.userdb_path:
+            # using the environment variable turned out to be too complicated.
+            homedir = expanduser("~")
+            self.userdb_path = os.path.join(homedir, "dsr_user_db.txt")
+            if not os.path.isfile(self.userdb_path):
+                touch(self.userdb_path)
+        if not self.maindb_path:
+            try:
+                main_dbdir = os.environ["DSR_DIR"]
+                self.maindb_path = os.path.join(main_dbdir, 'dsr_db.txt')
+            except KeyError:
+                main_dbdir = './'
+                self.maindb_path = os.path.join(main_dbdir, 'dsr_db.txt')
+        return True
+
     def head_to_gui(self):
         """
         Exports current fragment header and atoms to the GUI
@@ -174,7 +197,8 @@ class DSR():
         atoms = []
         try:
             atoms = self.export.export_to_gui(self.fragment)
-        except:
+        except Exception as e:
+            #print(e)
             print("*** Could not get atom information ***")
             print(self.helpmsg)
             sys.exit()

@@ -141,7 +141,7 @@ __metaclass__ = type  # use new-style classes
 # dsr_db.txt is the db from the distribution. This file should not be edited.
 # dsr_user_db.txt if this file exists, all its content is also read in.
 
-def read_file_data(filepath, with_comments=False):
+def read_file_data(filepath):
     # type: (str, bool) -> list
     """
     reads the database files and returns them as list.
@@ -149,10 +149,7 @@ def read_file_data(filepath, with_comments=False):
     dblist = []
     try:
         with open(filepath, 'r') as f:
-            for line in f:
-                if line.startswith('#') and with_comments is False:
-                    continue
-                dblist.append(line.strip(' \n\r'))
+            dblist = f.read().splitlines()
     except (IOError, TypeError) as e:
         print(e)
     return dblist
@@ -164,43 +161,26 @@ class ParseDB(object):
     a dictionary of them.
     maindb = read_file_data(path_to_maindb)
     """
-
-    def __init__(self):
+    def __init__(self, maindb_path=None, userdb_path=None):
         # type: () -> NotImplemented
         """
         self._databases: dictionary with the individial fragments
         """
-        self._databases = {}
+        self.databases = {}
+        self.maindb_path = maindb_path
+        self.userdb_path = userdb_path
+        if maindb_path:
+            self.parse(maindb_path, 'dsr_db')
+        if userdb_path:
+            self.parse(userdb_path, 'dsr_usr_db')
 
-    def use_default_locations(self):
-        """
-        Tries to find the database files in their default locations after a regular DSR installation.
-        Returns
-        -------
-        bool
-        """
-        if not self.userdb:
-            # using the environment variable turned out to be too complicated.
-            homedir = expanduser("~")
-            self.userdb = os.path.join(homedir, "dsr_user_db.txt")
-            if not os.path.isfile(self.userdb):
-                touch(self.userdb)
-        if not self.maindb:
-            try:
-                main_dbdir = os.environ["DSR_DIR"]
-                self.maindb = os.path.join(main_dbdir, 'dsr_db.txt')
-            except KeyError:
-                main_dbdir = './'
-                self.maindb = os.path.join(main_dbdir, 'dsr_db.txt')
-        return True
-
-    def parse(self, dblines=None, dbname=""):
-        # type: (list, str) -> dict
+    def parse(self, dbpath, dbname):
+        # type: (str, str) -> dict
         """
         This method returns all fragment name tags in the database
 
         >>> dbpath = os.path.abspath('dsr_db.txt')
-        >>> db = ParseDB()
+        >>> db = ParseDB(dbpath)
         >>> db.parse('dsr_db')['water']
         ... # doctest: +NORMALIZE_WHITESPACE
         {'startline': 2402,
@@ -224,7 +204,7 @@ class ParseDB(object):
         fraglines =[]
         end_regex = None
         startnum = 0
-        for num, line in enumerate(dblines):
+        for num, line in enumerate(read_file_data(dbpath)):
             if line.startswith('#'):
                 continue
             if not line:
@@ -254,7 +234,7 @@ class ParseDB(object):
                 db[frag] = {'dbname': dbname}
                 end_regex = re.compile(re.escape(r'</{}>'.format(frag)), re.IGNORECASE)
                 continue
-        self._databases = db
+        self.databases.update(db)
         return db
 
     @staticmethod
@@ -263,7 +243,7 @@ class ParseDB(object):
         """
         Fills the database dictionary with fragment data.
         """
-        fragment = fragname.lower()
+        fragname = fragname.lower()
         headlist = []
         comments = []
         residue = ''
@@ -271,9 +251,9 @@ class ParseDB(object):
         cell = []
         source = ''
         name = ''
-        nameregex = re.compile(r'.*Name:', re.IGNORECASE)
-        rem = re.compile(r'REM', re.IGNORECASE)
-        srcregex = re.compile(r'.*(Src:|Source:)', re.IGNORECASE)
+        nameregex = re.compile(r'REM\s+NAME:', re.IGNORECASE)
+        rem = re.compile(r"REM.*", re.IGNORECASE)
+        srcregex = re.compile(r'REM\s+(SRC:|SOURCE:)', re.IGNORECASE)
         # devide atoms and the rest:
         for num, aline in enumerate(fraglines):
             if atreg.match(aline):  # search atoms
@@ -283,6 +263,8 @@ class ParseDB(object):
                     fraglines[num] = ''
         # bring all wrapped lines with = at end to a single line:
         fraglines = unwrap_head_lines(fraglines)
+        if fragname == 'cpstar':
+            pass
         for num, line in enumerate(fraglines):
             # collect the comments:
             if rem.match(line):
@@ -309,23 +291,23 @@ class ParseDB(object):
                         residue = resiline[1].upper()
                         continue
                     except IndexError:
-                        print('*** Invalid residue definition in database entry {}. ***'.format(fragment))
+                        print('*** Invalid residue definition in database entry {}. ***'.format(fragname))
                         sys.exit()
                 # collect the unit cell of the fragment:
                 if line[:4].upper().startswith('FRAG'):
                     try:
                         cell = [float(x) for x in line.split()[2:8]]
                     except ValueError:
-                        print('*** Invalid unit cell found in database entry {}. ***'.format(fragment))
+                        print('*** Invalid unit cell found in database entry {}. ***'.format(fragname))
                     continue
                 # these must be restraints:
                 if line[:4] in RESTRAINT_CARDS:
                     headlist.append(line)
             elif com:
                 print('*** Bad line {} in header of database entry "{}" found! ({}.txt) ***'
-                      .format(num+db[fragment]['startline']+2, fragment, db[fragment]['dbname']))
+                      .format(num+db[fragname]['startline']+2, fragname, db[fragname]['dbname']))
                 print(line)
-        db[fragment].update({
+        db[fragname].update({
             'restraints': headlist,  # header with just the restraints
             'resi': residue,  # the residue class
             'cell': cell,  # FRAG ...
@@ -340,7 +322,7 @@ class ParseDB(object):
 
     def __getitem__(self, fragment):
         try:
-            return self._databases[fragment]
+            return self.databases[fragment]
         except KeyError:
             print("*** Fragment {} was not found in the Database! ***".format(fragment))
             sys.exit()
@@ -351,7 +333,7 @@ class ParseDB(object):
         [['tbu-c', 1723, 'dsr_db', 'Tert-butyl-C'], ...]
         """
         fraglist = []
-        for frag in self._databases:
+        for frag in self.databases:
             name = self.get_fragment_name(frag)
             key = make_sortkey(name)
             line = [frag,
@@ -379,7 +361,7 @@ class ParseDB(object):
         return atnumbers
 
     def get_atomnames(self, fragment=''):
-        atoms = self._databases[fragment]['atoms']
+        atoms = self.databases[fragment]['atoms']
         names = []
         for i in atoms:
             names.append(i[0])
@@ -439,7 +421,7 @@ class ParseDB(object):
         if fragment in ['cf3', 'cf6', 'cf9']:
             return True
         try:
-            dbentry = self._databases[fragment]
+            dbentry = self.databases[fragment]
         except KeyError:
             print("*** Fragment {} not found in the database. ***".format(fragment))
             sys.exit()
@@ -474,7 +456,7 @@ class ParseDB(object):
         """
         fragment = fragment.lower()
         try:
-            types = get_atomtypes(self._databases[fragment]['atoms'])
+            types = get_atomtypes(self.databases[fragment]['atoms'])
         except:
             return None
         formula = ''
@@ -489,14 +471,14 @@ class ParseDB(object):
         check the db for duplicates:
         """
         fragment = fragment.lower()
-        dbatoms = [i[0].upper() for i in self._databases[fragment]['atoms']]
+        dbatoms = [i[0].upper() for i in self.databases[fragment]['atoms']]
         # check for duplicates:
         while dbatoms:
             at = dbatoms.pop()
             if at in dbatoms:
                 print('*** Duplicate atom {0} in database entry "{1}" ({2}) '
                       'found! Check your database... ***'
-                      .format(at, fragment, self._databases[fragment]['name']))
+                      .format(at, fragment, self.databases[fragment]['name']))
                 sys.exit()
 
     def check_db_header_consistency(self, fragment):
@@ -591,7 +573,7 @@ class ParseDB(object):
                             print(
                                 '*** Suspicious deviation in atom pair "{}" ({:4.3f} A, median: {:4.3f}) of '
                                 'SADI line {} ***'.format(pair, distances[x], median(distances), num + 1))
-                            print('*** ' + restr[num][:60] + '... ***')
+                            print('*** ' + restr[num][:60] + ' ... ***')
                             return False
                 if stdev > 2.5 * float(dev):
                     print("\nFragment {}:".format(fragment))
@@ -608,7 +590,7 @@ class ParseDB(object):
         :param fragment: the fragment
         :type fragment: string
         """
-        result = search_fragment_name(fragment.lower(), self._databases)
+        result = search_fragment_name(fragment.lower(), self.databases)
         print('Do you mean one of these?:\n')
         print_search_results(result)
 
@@ -622,7 +604,7 @@ class ParseDB(object):
         """
         fragment = fragment.lower()
         try:
-            return self._databases[fragment]['atoms']
+            return self.databases[fragment]['atoms']
         except KeyError:
             print('*** Could not find {} in database ***'.format(fragment))
             sys.exit()
@@ -633,7 +615,7 @@ class ParseDB(object):
         """
         fragment = fragment.lower()
         try:
-            cell = self._databases[fragment]['cell']
+            cell = self.databases[fragment]['cell']
         except KeyError:
             print('*** Fragment "{}" not found in database ***'.format(fragment))
             sys.exit()
@@ -643,7 +625,7 @@ class ParseDB(object):
         """
         returns the line number from the dbentry
         """
-        return self._databases[fragment.lower()]['startline']
+        return self.databases[fragment.lower()]['startline']
 
     def get_restraints(self, fragment):
         """
@@ -661,7 +643,7 @@ class ParseDB(object):
         head = []
         fragment = fragment.lower()
         try:
-            head = self._databases[fragment]['restraints']
+            head = self.databases[fragment]['restraints']
         except KeyError:
             print('*** Could not find {} in database ***'.format(fragment))
             sys.exit()
@@ -673,7 +655,7 @@ class ParseDB(object):
         can be either class or class + number.
         convention is only class.
         """
-        return self._databases[fragment.lower()]['resi']
+        return self.databases[fragment.lower()]['resi']
 
     def get_fragment_name(self, fragment):
         """
@@ -682,7 +664,7 @@ class ParseDB(object):
         :param fragment: actual fragment name
         :type fragment: string
         """
-        name = self._databases[fragment.lower()]['name']
+        name = self.databases[fragment.lower()]['name']
         return name
 
     def get_src(self, fragment):
@@ -692,14 +674,14 @@ class ParseDB(object):
         :param fragment: actual fragment name
         :type fragment: string
         """
-        src = self._databases[fragment.lower()]['source']
+        src = self.databases[fragment.lower()]['source']
         return src
 
     def get_db_name(self, fragment):
         """
         returns the fragment database name of fragment x
         """
-        return self._databases[fragment.lower()]['dbname']
+        return self.databases[fragment.lower()]['dbname']
 
 
 class ImportGRADE():
@@ -1031,14 +1013,15 @@ class ImportGRADE():
 
 
 if __name__ == '__main__':
-    dbpath = os.path.abspath('dsr_db.txt')
-    db = ParseDB()
-    p = db.parse('dsr_db')
-    #pprint(p)
-
     import doctest
     failed, attempted = doctest.testmod()  # verbose=True)
     if failed == 0:
         print('passed all {} tests!'.format(attempted))
     else:
         print('{} of {} tests failed'.format(failed, attempted))
+    #homedir = expanduser("~")
+    #userdb_path = os.path.join(homedir, "dsr_db.txt")
+    dbpath = os.path.abspath('./dsr_db.txt')
+    db = ParseDB(dbpath)
+    pprint(db.databases['cpstar'])
+    print(dbpath)
