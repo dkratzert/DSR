@@ -611,7 +611,7 @@ class NumberSchemeTest(unittest.TestCase):
         reslist = rl.get_res_list()
         gdb = global_DB(invert)
         fragment = 'OC(cf3)3'
-        dbatoms = gdb.get_atoms_from_fragment(fragment)
+        dbatoms = gdb.get_atoms(fragment)
         self.num = NumberScheme(reslist, dbatoms, dsrp)
 
     def testrun_get_numberscheme(self):
@@ -638,7 +638,7 @@ class insertAfixTest(unittest.TestCase):
         self.find_atoms = FindAtoms(self.reslist)
         self.gdb = global_DB(invert)
         fragment = 'OC(CF3)3'
-        self.dbatoms = self.gdb.get_atoms_from_fragment(fragment)  # only the atoms of the dbentry as list
+        self.dbatoms = self.gdb.get_atoms(fragment)  # only the atoms of the dbentry as list
         self.dbhead = self.gdb.get_head_from_fragment(fragment)  # this is only executed once
         self.resi = Resi(self.reslist, self.dsrp, self.dbhead, 'CF3', self.find_atoms)
         self.dbtypes = get_atomtypes(self.dbatoms)
@@ -682,7 +682,7 @@ class removeDublicatesAfixTest(unittest.TestCase):
         self.dsrp = DSRParser(self.reslist)
         fragment = 'OC(cf3)3'
         self.gdb = global_DB(invert)
-        self.dbatoms = self.gdb.get_atoms_from_fragment(fragment)  # only the atoms of the dbentry as list
+        self.dbatoms = self.gdb.get_atoms(fragment)  # only the atoms of the dbentry as list
         self.dbhead = self.gdb.get_head_from_fragment(fragment)  # this is only executed once
         self.dbtypes = get_atomtypes(self.dbatoms)
         # self.sf = SfacTable(self.reslist, self.dbtypes)
@@ -917,14 +917,14 @@ class globalDB(unittest.TestCase):
         gdb = global_DB(True, maindb="./comment.TXT", userdb="./db1.TXT")
         gdb.build_db_dict()
         fragment = 'com'
-        comment = gdb.get_name_from_fragment('com4')
+        comment = gdb.get_fragment_name('com4')
         self.assertEqual(comment, 'A really fancy name.')
         names = ['name!', 'Name 1,2-Dimethoxyethane, not coordinated, C4H10O2, '
                           'DME, Src: Turbomole, B3-LYP/def2-TZVPP, This DME is not coordinated',
                  'Src: Turbomole, B3-LYP/def2-TZVPP, blub, This DME is not coordinated',
                  'A really fancy name.']
         for i in range(1, 5):
-            com = gdb.get_name_from_fragment(fragment + str(i))
+            com = gdb.get_fragment_name(fragment + str(i))
             self.assertEqual(com, names[i - 1])
 
     def testrun_get_resi_from_fragment(self):
@@ -932,7 +932,7 @@ class globalDB(unittest.TestCase):
         gdb = global_DB(maindb="comment.TXT", userdb='db1.txt')
         gdb.build_db_dict()
         fragment = 'com1'
-        resi = gdb.get_resi_from_fragment(fragment)
+        resi = gdb.get_resi(fragment)
         line = gdb.get_line_number_from_fragment(fragment)
         self.assertEqual(resi, 'DME')
         self.assertEqual(line, 2)
@@ -1158,10 +1158,10 @@ class ResidueTest(unittest.TestCase):
                       'SIMU CL1 > C1',
                       'RIGU CL1 > C1']
         self.gdb = global_DB(invert)
-        self.residue_class = self.gdb.get_resi_from_fragment(fragment)
+        self.residue_class = self.gdb.get_resi(fragment)
         self.db = self.gdb.build_db_dict()
         self.fragline = self.gdb.get_fragline_from_fragment(fragment)  # full string of FRAG line
-        self.dbatoms = self.gdb.get_atoms_from_fragment(fragment)  # only the atoms of the dbentry as list
+        self.dbatoms = self.gdb.get_atoms(fragment)  # only the atoms of the dbentry as list
         self.dbhead = self.gdb.get_head_from_fragment(fragment)
         self.resi = Resi(self.res_list, self.dsrp, self.dbhead, self.residue_class, self.find_atoms)
 

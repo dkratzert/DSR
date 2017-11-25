@@ -16,7 +16,6 @@ import copy
 
 import atomhandling as at
 from atoms import Element
-from dbfile import global_DB
 from misc import wrap_headlines
 from restraints import Restraints
 
@@ -66,7 +65,7 @@ class Export():
         [['50', '50', '50', 90, 90, 90], [['C1', '1', '  0.017600', ' -0.006618', '  0.005344'], ['C2', '1', '  0.015724', ' -0.007554', '  0.004762'], ['C3', '1', '  0.015212', ' -0.006368', '  0.003851'], ['C4', '1', '  0.016584', ' -0.004244', '  0.003510'], ['C5', '1', '  0.018464', ' -0.003288', '  0.004080'], ['C6', '1', '  0.018976', ' -0.004464', '  0.004998']]]
         """
         fragment = fragment.lower()
-        atoms = copy.deepcopy(self._gdb[fragment]['atoms'])
+        atoms = copy.deepcopy(self._gdb.at)
         summe = int(sum(float(i) for i in cell[0:3]))  # this is to detect calculated structures
         if summe == 3:  # 1+1+1=3!
             for coord in range(2, 5):  # x, y, z of coordinates
@@ -151,7 +150,7 @@ class Export():
         res_export.append('LATT  -1\n')
         res_export.append('SFAC ' + '  '.join(sfac) + '\n')
         res_export.append('UNIT ' + ' '.join(unit) + '\n')
-        res_export.append('REM  RESIDUE: {}\n'.format(self._gdb.get_resi_from_fragment(fragname)))
+        res_export.append('REM  RESIDUE: {}\n'.format(self._gdb.get_resi(fragname)))
         res_export.append('REM Sum formula: {}\n'.format(self._gdb.get_sum_formula(fragname)))
         res_export.append('WGHT  0.1' + '\n')
         res_export.append('FVAR  1.0' + '\n')
