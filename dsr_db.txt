@@ -1226,7 +1226,7 @@ C18     1  0.530730  0.361180  0.193460
 
 <Quinaldine>
 REM Src: Gaussian03, b3lyp/6-31+G(d), Ilia A. Guzei
-REM: Name: Quinaldine, C10H9N
+REM Name: Quinaldine, C10H9N
 RESI quin
 SADI C2 C3 C3 C4 C4 C5 C5 C10 C5 C6 C6 C7 C7 C8 C8 C9 C9 C10
 SADI N11 C2 N11 C10
@@ -1593,7 +1593,7 @@ C3      1  0.230600  0.759140  0.344940  1.000000 0.05000
 
 <pentane>
 rem Src: CCDC 102188
-REM: Name: n-Pentane, C5H10
+REM Name: n-Pentane, C5H10
 RESI PEN
 SADI C1 C2 C2 C3 C3 C4 C4 C5
 SADI 0.04 C1 C3 C3 C5 C2 C4
@@ -1611,7 +1611,7 @@ C5    1  -0.196000   0.368860   0.412200   1.00000   0.05000
 
 <Hexane>
 rem Src: CCDC 103189
-REM: Name: n-Hexane, C6H14
+REM Name: n-Hexane, C6H14
 RESI HEX
 SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6
 SADI 0.04 C1 C3 C3 C5 C2 C4 C4 C6
@@ -1786,7 +1786,7 @@ F2     9     1.713722   -1.355385    0.000000
 
 <Napht>
 rem Src: CCDC NAPHTA26
-REM: Name: Naphthalene, C10H8
+REM Name: Naphthalene, C10H8
 RESI NAPH
 SADI 0.02 C1 C2  C2 C3  C3 C4  C4 C4A  C1 C8A  C4A C5  C5 C6  C6 C7  C8 C8A =
      C7 C8 C4A C8A
@@ -2402,8 +2402,9 @@ C6      1  0.022900  0.292500  0.259900  1.000000 0.05000
 
 <Water>
 rem Src: pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei
-REM: Name: Water, H2O
+REM Name: Water, H2O
 RESI H2O
+snüfal
 DFIX 0.9584 0.001 O1 H1 O1 H2
 DFIX 1.5150 0.001 H1 H2
 FRAG 17 1 1 1 90 90 90
