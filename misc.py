@@ -536,8 +536,7 @@ def unwrap_head_lines(headlines):
     if not eq:
         return headlines
     for line in headlines:
-        line = line.strip(' \n=')
-        line = line.replace('=', ' ')
+        line = line.strip(' \r\n=').replace('=', ' ')
         tmp = tmp + ' ' + line
     line = tmp.split()
     for n, i in enumerate(line):
