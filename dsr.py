@@ -258,7 +258,7 @@ class DSR():
         dsrp = DSRParser(self.reslist)
         fvarlines = rle.find_fvarlines()
         self.fragment = dsrp.fragment
-        dbhead = self.gdb.get_head_from_fragment(self.fragment)        # this is only executed once
+        dbhead = self.gdb.get_restraints(self.fragment)        # this is only executed once
         db_residue_string = self.gdb.get_resi(self.fragment)
         dbatoms = self.gdb.get_atoms(self.fragment)      # only the atoms of the dbentry as list
         # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]

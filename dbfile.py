@@ -15,12 +15,10 @@ import os
 import re
 import sys
 import tarfile
-from collections import Counter
 from copy import deepcopy
 from os.path import expanduser
 from pprint import pprint
 
-import misc
 from atomhandling import get_atomtypes
 from atoms import Element
 from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
@@ -30,6 +28,7 @@ from misc import touch
 
 atreg = re.compile(atomregex)
 
+#TODO: reactivate Invert
 
 def invert_dbatoms_coordinates(atoms):
     """
@@ -40,7 +39,7 @@ def invert_dbatoms_coordinates(atoms):
     """
     for line in atoms:
         try:
-            inv_coord = [str(-float(i)) for i in line[-3:]]
+            inv_coord = [-x for x in line[-3:]]
         except:
             print('Unable to invert fragment coordinates.')
             return False
@@ -172,7 +171,7 @@ class ParseDB(object):
         if maindb_path:
             self.parse(maindb_path, 'dsr_db')
         if userdb_path:
-            self.parse(userdb_path, 'dsr_usr_db')
+            self.parse(userdb_path, 'dsr_user_db')
 
     def parse(self, dbpath, dbname):
         # type: (str, str) -> dict
@@ -259,12 +258,18 @@ class ParseDB(object):
             if atreg.match(aline):  # search atoms
                 atline = aline.split()[:5]  # convert to list and use only first 5 columns
                 if atline[0] not in SHX_CARDS:  # exclude all non-atom cards
+                    coords = []
+                    try:
+                        coords = [float(x) for x in atline[2:]]
+                    except ValueError:
+                        print("*** Invalid atomic coordinates in line {} of {}.txt (Fragment: {}) ***"
+                              .format(db[fragname]['startline']+num+2, db[fragname]['dbname'], fragname))
+                        sys.exit()
+                    atline[2:] = coords
                     atoms.append(atline)
                     fraglines[num] = ''
         # bring all wrapped lines with = at end to a single line:
         fraglines = unwrap_head_lines(fraglines)
-        if fragname == 'cpstar':
-            pass
         for num, line in enumerate(fraglines):
             # collect the comments:
             if rem.match(line):
@@ -571,8 +576,10 @@ class ParseDB(object):
                         for x in outliers:
                             pair = ' '.join(pairlist[x])
                             print(
-                                '*** Suspicious deviation in atom pair "{}" ({:4.3f} A, median: {:4.3f}) of '
-                                'SADI line {} ***'.format(pair, distances[x], median(distances), num + 1))
+                                '*** Suspicious deviation of atom pair "{}" ({:4.3f} A, median: {:4.3f}) after '
+                                'line {} of {}.txt ***'.format(pair, distances[x], median(distances),
+                                                              self.databases[fragment]['startline'] + num + 2,
+                                                              self.databases[fragment]['dbname']))
                             print('*** ' + restr[num][:60] + ' ... ***')
                             return False
                 if stdev > 2.5 * float(dev):
@@ -594,7 +601,7 @@ class ParseDB(object):
         print('Do you mean one of these?:\n')
         print_search_results(result)
 
-    def get_atoms(self, fragment):
+    def get_atoms(self, fragment, invert=False):
         """
         returns the atoms from the dbentry:
         [['O1', '1', '0.01453', '-1.6659', '-0.10966'],
@@ -1023,5 +1030,5 @@ if __name__ == '__main__':
     #userdb_path = os.path.join(homedir, "dsr_db.txt")
     dbpath = os.path.abspath('./dsr_db.txt')
     db = ParseDB(dbpath)
-    pprint(db.databases['cpstar'])
+    pprint(db.databases['pyrazole'])
     print(dbpath)
