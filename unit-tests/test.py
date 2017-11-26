@@ -22,7 +22,7 @@ from afix import Afix
 from atomhandling import get_atomtypes, FindAtoms, check_source_target, \
     rename_dbhead_atoms, SfacTable, Elem_2_Sfac, NumberScheme
 from atoms import Element, atoms
-from dbfile import global_DB, invert_dbatoms_coordinates, ReadDB, ImportGRADE
+from dbfile import invert_dbatoms_coordinates, ImportGRADE
 import dsr
 from dsr import VERSION
 from dsrparse import DSRParser

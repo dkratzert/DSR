@@ -66,8 +66,8 @@ class Export():
         [['50', '50', '50', 90, 90, 90], [['C1', '1', '  0.017600', ' -0.006618', '  0.005344'], ['C2', '1', '  0.015724', ' -0.007554', '  0.004762'], ['C3', '1', '  0.015212', ' -0.006368', '  0.003851'], ['C4', '1', '  0.016584', ' -0.004244', '  0.003510'], ['C5', '1', '  0.018464', ' -0.003288', '  0.004080'], ['C6', '1', '  0.018976', ' -0.004464', '  0.004998']]]
         """
         fragment = fragment.lower()
-        atoms = copy.deepcopy(self._gdb.at)
-        summe = int(sum(float(i) for i in cell[0:3]))  # this is to detect calculated structures
+        atoms = copy.deepcopy(self._gdb.get_atoms(fragment))
+        summe = int(sum(cell[0:3]))  # this is to detect calculated structures
         if summe == 3:  # 1+1+1=3!
             for coord in range(2, 5):  # x, y, z of coordinates
                 for line in atoms:  # for every atom line
@@ -105,11 +105,10 @@ class Export():
         #>>> export = Export(gdb, invert)
         """
         fragname = fragname.lower()
-        comment = self._gdb[fragname]['comment']
-        cell = self._gdb[fragname]['fragline'][2:]
+        cell = self._gdb[fragname]['cell']
         # expands the cell of calculated structures:
         cell, atoms = self.format_calced_coords(cell=cell, fragment=fragname)
-        cellstring = ' {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f} {:>8.3f}'.format(*[float(i) for i in cell])
+        cellstring = '{:>8.4f} {:>8.4f} {:>8.4f} {:>8.4f} {:>8.4f} {:>8.4f}'.format(*[float(i) for i in cell])
         if self.invert:
             print("Fragment inverted.")
         try:
@@ -145,7 +144,8 @@ class Export():
             res_export.append('REM This file was exported by DSR version {}\n'.format(VERSION))
         except NameError:
             pass
-        res_export.append('REM ' + '\nREM '.join(comment) + '\n')
+        res_export.append('REM {}\nREM Source: {}\n'.format(self._gdb[fragname]['name'], self._gdb[fragname]['source']))
+        res_export.append("{}\n".format('\n'.join(self._gdb[fragname]['comments'])))
         res_export.append('CELL 0.71073 ' + cellstring + '\n')  # the cell with wavelength
         res_export.append('ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n')
         res_export.append('LATT  -1\n')
@@ -157,14 +157,15 @@ class Export():
         res_export.append('FVAR  1.0' + '\n')
         try:
             res_export.append('rem Restraints from DSR database:\n')
-            res_export.append(''.join(wrap_headlines(self._gdb.get_head_from_fragment(fragname))))
+            res_export.append(''.join(wrap_headlines(self._gdb.get_restraints(fragname))))
         except:
             pass
         try:
             res_export.append('rem Restraints from atom connectivities:\n')
             res_export.append(self.make_dfix(fragname))
             res_export.append('rem end of restraints\n')
-        except:
+        except Exception as e:
+            print("*** {} ***".format(e))
             pass
         res_export.append('\n')
         res_export.append(final_atomlist)  # the atoms

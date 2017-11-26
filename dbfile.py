@@ -47,7 +47,7 @@ def invert_dbatoms_coordinates(atoms):
     return atoms
 
 
-def search_fragment_name(search_string, db, numresults=6):
+def search_fragment_name(search_string, gdb, numresults=6):
     """
     searches the Name: comments in the database for a given name
 
@@ -57,10 +57,10 @@ def search_fragment_name(search_string, db, numresults=6):
     :type gdb: global_DB
     """
     names_list = []
-    for fragment in db:
-        fragname = db[fragment]['name']
-        line_number = db[fragment]['startline']
-        dbname = db[fragment]['dbname']
+    for fragment in gdb.databases:
+        fragname = gdb[fragment]['name']
+        line_number = gdb[fragment]['startline']
+        dbname = gdb[fragment]['dbname']
         names_list.append([fragment, fragname, line_number, dbname])
     search_results = []
     for fragment in names_list:
