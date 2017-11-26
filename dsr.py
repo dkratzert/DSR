@@ -287,13 +287,12 @@ class DSR():
         self.gdb.check_sadi_consistence(self.fragment)
         if dsrp.occupancy:
             rle.set_free_variables(dsrp.occupancy)
-        fragline = self.gdb.get_fragline_from_fragment(self.fragment)  # full string of FRAG line
         dbhead = resi.remove_resi(dbhead)
         # corrects the atom type according to the previous defined global sfac table:
         dbatoms = atomhandling.set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table)
 
         # Insert FRAG ... FEND entry:
-        rle.insert_frag_fend_entry(dbatoms, fragline, fvarlines)
+        rle.insert_frag_fend_entry(dbatoms, self.gdb.get_cell(self.fragment), fvarlines)
 
         print('Inserting {} into res File.'.format(self.fragment))
         if self.invert:
