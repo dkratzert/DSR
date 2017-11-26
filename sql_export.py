@@ -9,11 +9,11 @@ import sys
 
 import misc
 from constants import SHX_CARDS
-from dbfile import global_DB
+from dbfile import ParseDB
 
 misc.remove_file('./fragment-database.sqlite')
-gl = global_DB(invert=False, maindb="./olex_dsr_db.txt", userdb='no userdatabase!')
-db = gl.build_db_dict()
+gl = ParseDB()
+db = gl.parse(dbpath="./olex_dsr_db.txt", dbname='olex_db')
 
 
 dbfilename = 'fragment-database.sqlite'
@@ -31,7 +31,7 @@ def get_fragment_atoms_cartesian(fragment):
     """
     from export import Export
     ex = Export(gl, invert=False)
-    atoms = ex.format_atoms_for_export(fragment)
+    atoms = ex.format_atoms_for_export(gl.get_cell(fragment), gl.get_atoms(fragment), False)
     coords = []
     for i in atoms:
         co = i.split()[2:5]
@@ -171,15 +171,14 @@ def export_database():
     for fid, fragment in enumerate(db.keys(), 1):
         Name = gl.get_fragment_name(fragment)
         print("Exporting {}: {}: {}".format(fid, fragment, Name))
-        # head = '\n'.join(db[fragment]['head'])
-        head = db[fragment]['head']
-        comment = ' '.join(db[fragment]['comment'])
+        head = db[fragment]['restraints']
+        name = ' '.join(db[fragment]['name'])
         # formula = db.get_sum_formula(fragment)
         reference = gl.get_src(fragment)
         resiclass = gl.get_resi(fragment)
         picture = get_picture(fragment)
         picture = lite.Binary(picture)
-        table_frag = (resiclass, '1', Name, reference, comment, picture)
+        table_frag = (resiclass, '1', Name, reference, name, picture)
         fill_fragment_table(table_frag)
         fill_atoms(fid, fragment)
         fill_restraints_table(fid, head)

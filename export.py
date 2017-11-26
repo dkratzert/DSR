@@ -191,7 +191,7 @@ class Export():
         import pyperclip
         fragname = fragname.lower()
         clip_text = []
-        atoms = self.format_atoms_for_export(fragname)
+        atoms = self.format_atoms_for_export(fragname, False)
         atoms = '\n'.join(atoms)
         clip_text.append('FRAG')
         clip_text.append('\n' + atoms)
@@ -200,49 +200,47 @@ class Export():
         pyperclip.setcb(text)
         return True
 
-    def format_atoms_for_export(self, fragname, gui=False):
+    def format_atoms_for_export(self, cell, atoms, gui=False):
         """
         Returns properly formated cartesian coordinates for fragment export.
         Atom;;number;;x;;y;;z
 
-        >>> gdb = global_DB(invert=False)
-        >>> exp = Export(gdb=gdb, invert=False)
-        >>> print(exp.format_atoms_for_export(fragname="toluene", gui=False)) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF
+        >>> gdb = ParseDB()
+        >>> foo = gdb.parse()
+        >>> atoms = gdb.get_atoms('toluene')
+        >>> atoms
+        >>> cell = gdb.get_cell('toluene')
+        >>> exp = Export(gdb=gdb)
+        >>> exp.format_atoms_for_export(cell, atoms, gui=False) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF
         ['C1      6  1.7810   7.1491  12.0042',
-        'C2      6  2.2009   8.3068  11.1376',
-        'C3      6  1.2689   9.0217  10.3903',
-        'C4      6  1.6422  10.0777   9.5884',
-        'C5      6  2.9808  10.4443   9.5173',
-        'C6      6  3.9205   9.7497  10.2541',
-        'C7      6  3.5389   8.6909  11.0530']
+         'C2      6  2.2009   8.3068  11.1376',
+         'C3      6  1.2689   9.0217  10.3903',
+         'C4      6  1.6422  10.0777   9.5884',
+         'C5      6  2.9808  10.4443   9.5173',
+         'C6      6  3.9205   9.7497  10.2541',
+         'C7      6  3.5389   8.6909  11.0530']
 
-        >>> print(exp.format_atoms_for_export(fragname="toluene", gui=True)) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF
+        >>> exp.format_atoms_for_export(cell, atoms, gui=True) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF
         ['C1 6 1.78099 7.14907 12.00423', 'C2 6 2.20089 8.30676 11.13758',
         'C3 6 1.26895 9.02168 10.39032', 'C4 6 1.64225 10.07768 9.58845',
         'C5 6 2.98081 10.44432 9.51725', 'C6 6 3.92045 9.74974 10.25408',
         'C7 6 3.53891 8.69091 11.05301']
         
-        >>> print(exp.format_atoms_for_export(fragname="TOLUeNE", gui=True)) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF
+        >>> exp.format_atoms_for_export(cell, atoms, gui=True) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF
         ['C1 6 1.78099 7.14907 12.00423', 'C2 6 2.20089 8.30676 11.13758',
         'C3 6 1.26895 9.02168 10.39032', 'C4 6 1.64225 10.07768 9.58845',
         'C5 6 2.98081 10.44432 9.51725', 'C6 6 3.92045 9.74974 10.25408',
         'C7 6 3.53891 8.69091 11.05301']
         
         """
-        fragname = fragname.lower()
         el = Element()
         from misc import frac_to_cart
-        dbentry = self._gdb[fragname]
-        cell = dbentry['cell']
-        #cell = [float(x) for x in cell]
-        atoms = copy.deepcopy(dbentry['atoms'])
         for line in atoms:
             if int(line[1]) < 0:
                 line[1] = int(line[1])  # abs(int(line[1])) <- No abs(), it causes confusion with GUI
             else:
                 line[1] = el.get_atomic_number(el.get_atomlabel(line[0]))
-            frac_coord = [float(i) for i in line[2:5]]
-            coord = frac_to_cart(frac_coord, cell)
+            coord = frac_to_cart(line[2:5], cell)
             line[2:5] = coord
         newlist = []
         if not gui:
@@ -269,8 +267,9 @@ class Export():
     def export_to_gui(self, fragname):
         """
         exports atoms to output for the DSRGui
-        >>> gdb = global_DB(invert=False)
-        >>> exp = Export(gdb=gdb, invert=False)
+        >>> gdb = ParseDB()
+        >>> foo = gdb.parse()
+        >>> exp = Export(gdb=gdb)
         >>> print(exp.export_to_gui(fragname="toluene")) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF +ELLIPSIS
         C1 6 1.78099 7.14907 12.00423;;C2 6 2.20089 8.30676 11.13758;;C3 6 1.26895 9.02168 10.39032;;C4
         6 1.64225 10.07768 9.58845;;C5 6 2.98081 10.44432 9.51725;;C6 6 3.92045 9.74974 10.25408;;C7 6 3.53891 8.69091 11.05301
@@ -278,7 +277,7 @@ class Export():
         C1 6 1.78099 7.14907 12.00423;;C2 6 2.20089 8.30676 11.13758;;C3 6 1.26895 9.02168 10.39032;;C4 6 1.64225 10.07768 9.58845;;C5 6 2.98081 10.44432 9.51725;;C6 6 3.92045 9.74974 10.25408;;C7 6 3.53891 8.69091 11.05301
         """
         fragname = fragname.lower()
-        atoms = self.format_atoms_for_export(fragname, gui=True)
+        atoms = self.format_atoms_for_export(self._gdb.get_cell(fragname), self._gdb.get_atoms(fragname), gui=True)
         atoms = ';;'.join(atoms)
         return atoms
 
