@@ -28,21 +28,26 @@ from misc import touch
 
 atreg = re.compile(atomregex)
 
-#TODO: reactivate Invert
 
-def invert_dbatoms_coordinates(atoms):
+def invert_atomic_coordinates(atoms):
     """
-    Inverts SHELXL atom coordinates like
-    [[C1  1  0.44  0.21  -1.23 ][ ...]]
+    Inverts SHELXL atom coordinates.
 
     :param atoms: list of atom list
+
+    >>> atoms = [['C1', 1, 0.44, 0.21, -1.23 ], ['C2', 1, -1.44, -0.21, 21.23]]
+    >>> invert_atomic_coordinates(atoms)
+    [['C1', 1, -0.44, -0.21, 1.23], ['C2', 1, 1.44, 0.21, -21.23]]
+    >>> invert_atomic_coordinates([['C2', 1, 'd', 1, 2]])
+    Unable to invert fragment coordinates.
+    []
     """
     for line in atoms:
         try:
             inv_coord = [-x for x in line[-3:]]
         except:
             print('Unable to invert fragment coordinates.')
-            return False
+            return []
         line[-3:] = inv_coord
     return atoms
 
@@ -173,21 +178,21 @@ class ParseDB(object):
         if userdb_path:
             self.parse(userdb_path, 'dsr_user_db')
 
-    def parse(self, dbpath, dbname):
+    def parse(self, dbpath='./dsr_db.txt', dbname='dsr_db'):
         # type: (str, str) -> dict
         """
         This method returns all fragment name tags in the database
 
         >>> dbpath = os.path.abspath('dsr_db.txt')
         >>> db = ParseDB(dbpath)
-        >>> db.parse('dsr_db')['water']
+        >>> db.parse(dbpath, 'dsr_db')['water']
         ... # doctest: +NORMALIZE_WHITESPACE
         {'startline': 2402,
         'name': 'Water, H2O',
         'comments': [],
-        'atoms': [['O1', '4', '0.0000', '0.0000', '0.0000'],
-                  ['H1', '2', '0.9584', '0.0000', '0.0000'],
-                  ['H2', '2', '-0.2392', '0.9281', '0.0000']],
+        'atoms': [['O1', 4, 0.0, 0.0, 0.0],
+                  ['H1', 2, 0.9584, 0.0, 0.0],
+                  ['H2', 2, -0.2392, 0.9281, 0.0]],
         'cell': [1.0, 1.0, 1.0, 90.0, 90.0, 90.0],
         'source': 'pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei',
         'resi': 'H2O',
@@ -261,6 +266,7 @@ class ParseDB(object):
                     coords = []
                     try:
                         coords = [float(x) for x in atline[2:]]
+                        atline[1] = int(atline[1])
                     except ValueError:
                         print("*** Invalid atomic coordinates in line {} of {}.txt (Fragment: {}) ***"
                               .format(db[fragname]['startline']+num+2, db[fragname]['dbname'], fragname))
@@ -611,10 +617,13 @@ class ParseDB(object):
         """
         fragment = fragment.lower()
         try:
-            return self.databases[fragment]['atoms']
+            atoms = self.databases[fragment]['atoms']
+            if invert:
+                atoms = invert_atomic_coordinates(atoms)
         except KeyError:
             print('*** Could not find {} in database ***'.format(fragment))
             sys.exit()
+        return atoms
 
     def get_cell(self, fragment):
         """
@@ -633,6 +642,19 @@ class ParseDB(object):
         returns the line number from the dbentry
         """
         return self.databases[fragment.lower()]['startline']
+
+    def get_coordinates(self, fragment, cartesian=False):
+        """
+        Returns the coordinates of the fragment. Optionally is direct conversion to cartesian coordinates.
+        :param fragment:
+        :param cartesian:
+        :return:
+        """
+        atoms = self.databases[fragment]['atoms']
+        coords = []
+        for i in atoms:
+            coords.append(i[2:5])
+        return coords
 
     def get_restraints(self, fragment):
         """
@@ -917,7 +939,7 @@ class ImportGRADE():
         if not atomlines:
             self.import_error(pdb)
         if self.invert:
-            atomlines = invert_dbatoms_coordinates(atomlines)
+            atomlines = invert_atomic_coordinates(atomlines)
         return atomlines
 
     def bild_grade_db_entry(self):

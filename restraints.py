@@ -117,7 +117,7 @@ class Restraints():
         :param fragment:
         :type fragment:
         """
-        atoms = self.export.format_atoms_for_export(self.fragment)
+        atoms = self.export.format_atoms_for_export(self.gdb.get_cell(self.fragment), self.gdb.get_atoms(self.fragment), False)
         coords = []
         for i in atoms:
             coords.append(i.split()[2:5])

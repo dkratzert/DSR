@@ -258,14 +258,14 @@ class DSR():
         dsrp = DSRParser(self.reslist)
         fvarlines = rle.find_fvarlines()
         self.fragment = dsrp.fragment
-        dbhead = self.gdb.get_restraints(self.fragment)        # this is only executed once
+        restraints = self.gdb.get_restraints(self.fragment)        # this is only executed once
         db_residue_string = self.gdb.get_resi(self.fragment)
-        dbatoms = self.gdb.get_atoms(self.fragment)      # only the atoms of the dbentry as list
+        dbatoms = self.gdb.get_atoms(self.fragment, self.invert)      # only the atoms of the dbentry as list
         # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
         db_atom_types = atomhandling.get_atomtypes(dbatoms)
         sf = atomhandling.SfacTable(self.reslist, db_atom_types)
         sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
-        resi = Resi(self.reslist, dsrp, dbhead, db_residue_string, find_atoms)
+        resi = Resi(self.reslist, dsrp, restraints, db_residue_string, find_atoms)
         # line where the dsr command is found in the resfile:
         dsr_line_number = dsrp.find_dsr_command(line=False)
         if dsrp.cf3_active:
@@ -287,7 +287,7 @@ class DSR():
         self.gdb.check_sadi_consistence(self.fragment)
         if dsrp.occupancy:
             rle.set_free_variables(dsrp.occupancy)
-        dbhead = resi.remove_resi(dbhead)
+        restraints = resi.remove_resi(restraints)
         # corrects the atom type according to the previous defined global sfac table:
         dbatoms = atomhandling.set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table)
 
@@ -313,7 +313,7 @@ class DSR():
             dfix_13 = restr.get_formated_13_dfixes()
             flats = restr.get_formated_flats()
             dfix_head = dfix_12+dfix_13+flats
-        afix = Afix(self.reslist, dbatoms, db_atom_types, dbhead, dsrp,
+        afix = Afix(self.reslist, dbatoms, db_atom_types, restraints, dsrp,
                     sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
         afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfix', resi)
         if dsr_line_number < fvarlines[-1]:

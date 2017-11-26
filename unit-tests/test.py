@@ -22,7 +22,7 @@ from afix import Afix
 from atomhandling import get_atomtypes, FindAtoms, check_source_target, \
     rename_dbhead_atoms, SfacTable, Elem_2_Sfac, NumberScheme
 from atoms import Element, atoms
-from dbfile import invert_dbatoms_coordinates, ImportGRADE
+from dbfile import invert_atomic_coordinates, ImportGRADE
 import dsr
 from dsr import VERSION
 from dsrparse import DSRParser
@@ -716,7 +716,7 @@ class invert_fragmentTest(unittest.TestCase):
                             ['C2', 1, '1.13341', '0.23247', '0.9073'], ['F1', 4, '2.34661', '0.11273', '0.34544']]
 
     def testrun_invert_dbatoms_coordinates(self):
-        inverted = invert_dbatoms_coordinates(self.dbatoms)
+        inverted = invert_atomic_coordinates(self.dbatoms)
         self.assertListEqual(self.inv_dbatoms, inverted)
         self.assertNotEqual(self.dbatoms2[0][2], inverted[0][2])
 
