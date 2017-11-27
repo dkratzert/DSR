@@ -218,7 +218,7 @@ class ParseDB(object):
                 starttag = False
                 db[frag].update(
                     {'endline': num,
-                     'startline': startnum})
+                     'startline': startnum  + 1})
                 db = self.parse_fraglines(frag, fraglines, db)
                 fraglines = []
             # start tag was found, appending lines to fragment list
@@ -269,7 +269,7 @@ class ParseDB(object):
                         atline[1] = int(atline[1])
                     except ValueError:
                         print("*** Invalid atomic coordinates in line {} of {}.txt (Fragment: {}) ***"
-                              .format(db[fragname]['startline']+num+2, db[fragname]['dbname'], fragname))
+                              .format(db[fragname]['startline']+num+1, db[fragname]['dbname'], fragname))
                         sys.exit()
                     atline[2:] = coords
                     atoms.append(atline)
@@ -316,7 +316,7 @@ class ParseDB(object):
                     headlist.append(line)
             elif com:
                 print('*** Bad line {} in header of database entry "{}" found! ({}.txt) ***'
-                      .format(num+db[fragname]['startline']+2, fragname, db[fragname]['dbname']))
+                      .format(num+db[fragname]['startline']+1, fragname, db[fragname]['dbname']))
                 print(line)
         db[fragname].update({
             'restraints': headlist,  # header with just the restraints
@@ -332,6 +332,7 @@ class ParseDB(object):
         return db
 
     def __getitem__(self, fragment):
+        # type: (str) -> dict
         try:
             return self.databases[fragment]
         except KeyError:
@@ -339,6 +340,7 @@ class ParseDB(object):
             sys.exit()
 
     def list_fragments(self):
+        # type: () -> list
         """
         list all fragments in the db as list of lists
         [['tbu-c', 1723, 'dsr_db', 'Tert-butyl-C'], ...]
@@ -358,6 +360,7 @@ class ParseDB(object):
         return fraglist
 
     def get_atomic_numbers(self, fragment=''):
+        # type: (str) -> list
         """
         returns the atomic numbers of the atoms in a fragment in
         same order as the dsr db as list
@@ -584,7 +587,7 @@ class ParseDB(object):
                             print(
                                 '*** Suspicious deviation of atom pair "{}" ({:4.3f} A, median: {:4.3f}) after '
                                 'line {} of {}.txt ***'.format(pair, distances[x], median(distances),
-                                                              self.databases[fragment]['startline'] + num + 2,
+                                                              self.databases[fragment]['startline'] + num + 1,
                                                               self.databases[fragment]['dbname']))
                             print('*** ' + restr[num][:60] + ' ... ***')
                             return False
@@ -712,6 +715,10 @@ class ParseDB(object):
         """
         return self.databases[fragment.lower()]['dbname']
 
+    def get_fragment_tags(self):
+        tags = [x[0] for x in self.list_fragments()]
+        return tags
+
 
 class ImportGRADE():
     def __init__(self, grade_tar_file, invert=False, maindb=None, userdb=None):
@@ -747,11 +754,10 @@ class ImportGRADE():
         ##############################################        
         self.el = Element()
         self.invert = invert
-        self._getdb = ReadDB(self.main_db_path, self.user_db_path)
+        self._getdb = ParseDB(self.main_db_path, self.user_db_path)
         self._db_dir = expanduser("~")
-        self._db_tags = self._getdb.find_db_tags()
-        self._gdb = global_DB(invert=False)
-        self._db = self._gdb.build_db_dict()
+        self._db_tags = self._getdb.get_fragment_tags()
+        self._db = self._getdb.databases
         gradefiles = self.get_gradefiles(grade_tar_file)
         self._pdbfile = gradefiles[0]
         self._dfixfile = gradefiles[1]
@@ -966,12 +972,12 @@ class ImportGRADE():
             resi_name = resi_name[:3] + str(num)
         fragline = 'FRAG 17 1  1  1  90  90  90'
         db_import_dict[resi_name] = {
-            'head': self._restraints,
+            'restraints': self._restraints,
             'resi': resi_name,
-            'fragline': fragline.split(),
+            'cell': fragline.split(),
             'atoms': self._atoms,
             'line': None,
-            'db': 'dsr-user-db',
+            'db': 'dsr_user_db',
             'comment': self._comments,
             'name': resi_name
         }
@@ -1005,7 +1011,7 @@ class ImportGRADE():
                     atomlist = imported_entry[name]['atoms']
                     comment = imported_entry[name]['comment']
                     comment = '\n'.join([' '.join(i) for i in comment if i])
-                    head = '\n'.join([' '.join(x) for x in imported_entry[name]['head']])
+                    head = '\n'.join([' '.join(x) for x in imported_entry[name]['restraints']])
                     atoms = '\n'.join(['{:<6} -{}  {:>8.3f}{:>8.3f}{:>8.3f}' \
                                       .format(y[0], self.el.get_atomic_number(y[1]), float(y[2]), float(y[3]),
                                               float(y[4])) for y in atomlist])
@@ -1025,7 +1031,7 @@ class ImportGRADE():
                     if self._db[i]['db'] == 'dsr_user_db':
                         # userdb = list(self._db[i])
                         atomlist = self._db[i]['atoms']
-                        head = '\n'.join([''.join(x) for x in self._db[i]['head']])
+                        head = '\n'.join([''.join(x) for x in self._db[i]['restraints']])
                         atoms = '\n'.join(['{:<6}{:<2}{:>8.3f}{:>8.3f}{:>8.3f}' \
                                           .format(y[0], y[1], float(y[2]), float(y[3]), float(y[4])) for y in atomlist])
                         resi_name = self._db[i]['resi']

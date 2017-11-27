@@ -802,7 +802,7 @@ class globalDB(unittest.TestCase):
     def testrun_get_fragment_atoms(self):
         x = '-1.154'
         z = '0.526'
-        o1 = ['O1', '1', '-1.154', '-0.748', '0.526']
+        o1 = ['O1', 1, -1.154, -0.748, 0.526]
         gdb = dbfile.ParseDB("db1.TXT", "db2.TXT")
         atom = gdb.get_atoms('dme')[0]
         self.assertListEqual(o1, atom)
@@ -812,7 +812,7 @@ class globalDB(unittest.TestCase):
         self.assertEqual('O1', atom[0])
 
     def testrun_get_fragment_atoms_shortline(self):
-        gdb = dbfile.ParseDB(maindb="db1_shortline.TXT")
+        gdb = dbfile.ParseDB("db1_shortline.TXT")
         # db = gdb.build_db_dict()
         atom = gdb.get_atoms('dme-free')
         self.assertEqual(len(atom), 5)
@@ -822,7 +822,7 @@ class globalDB(unittest.TestCase):
         x = '1.154'
         z = '-0.526'
         o1 = ['O1', '1', '1.154', '0.748', '-0.526']
-        gdb = dbfile.ParseDB(True, "db1.TXT", "db2.TXT")
+        gdb = dbfile.ParseDB("db1.TXT", "db2.TXT")
         atom = gdb.get_atoms('dme')[0]
         self.assertListEqual(o1, atom)
         self.assertEqual(x, atom[2])
@@ -837,8 +837,8 @@ class globalDB(unittest.TestCase):
 
     def testrun_get_fragment_atoms_noend(self):
         with self.assertRaises(SystemExit):
-            gdb = dbfile.ParseDB(False, "db1_noend.TXT", "db2.TXT")
-            gdb.get_atoms('dme-free', 'dsr_db', 1)
+            gdb = dbfile.ParseDB("db1_noend.TXT", "db2.TXT")
+            gdb.get_atoms('dme-free')
 
     def testrun_header_consistency(self):
         self.maxDiff = None
@@ -847,8 +847,6 @@ class globalDB(unittest.TestCase):
         with self.assertRaises(SystemExit):
             gdb = dbfile.ParseDB(main_dbpath, user_dbpath)
             fragment = 'dmel'
-            head = gdb[fragment]['restraints']
-            atoms = gdb[fragment]['atoms']
             gdb.check_db_header_consistency(fragment)
 
     def testrun_header_consistency2(self):
