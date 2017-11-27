@@ -119,8 +119,8 @@ class Restraints():
         """
         atoms = self.export.format_atoms_for_export(self.gdb.get_cell(self.fragment), self.gdb.get_atoms(self.fragment), False)
         coords = []
-        for i in atoms:
-            coords.append(i.split()[2:5])
+        for x in atoms:
+            coords.append(x.split()[2:5])
         return coords
 
     def adjmatrix(self):
@@ -451,12 +451,12 @@ class ListFile():
             line = line.split()
             try:
                 line[0]
-            except(IndexError):
+            except IndexError:
                 break
             xyz = line[1:4]
             try:
                 xyz = [float(i) for i in xyz]
-            except(ValueError):
+            except ValueError:
                 print('No atoms found in .lst file!')
                 sys.exit(0)
             atom = {str(line[0]).upper(): xyz}

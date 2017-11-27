@@ -610,7 +610,9 @@ class ParseDB(object):
         print('Do you mean one of these?:\n')
         print_search_results(result)
 
-    def get_atoms(self, fragment, invert=False):
+    def get_atoms(self, fragment, invert=False, cartesian=False):
+        # type: (str, bool, bool) -> list
+        # TODO: implement cartesian atom coordinates
         """
         returns the atoms from the dbentry:
         [['O1', '1', '0.01453', '-1.6659', '-0.10966'],
