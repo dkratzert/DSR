@@ -603,8 +603,6 @@ class NumberSchemeTest(unittest.TestCase):
         self.numbers = ['O1A', 'C1A', 'C2A', 'F1A', 'F2A', 'F3A', 'C3A',
                         'F4A', 'F5A', 'F6A', 'C4A', 'F7A', 'F8A', 'F9A']
         res_file = './p21c.res'
-        invert = True
-        resi = False
 
         class Dsrp():
             resiflag = False
@@ -612,7 +610,7 @@ class NumberSchemeTest(unittest.TestCase):
         dsrp = Dsrp()
         rl = ResList(res_file)
         reslist = rl.get_res_list()
-        gdb = dbfile.ParseDB(invert)
+        gdb = dbfile.ParseDB('../dsr_db.txt')
         fragment = 'OC(cf3)3'
         dbatoms = gdb.get_atoms(fragment)
         self.num = NumberScheme(reslist, dbatoms, dsrp)
@@ -641,11 +639,11 @@ class insertAfixTest(unittest.TestCase):
         self.reslist = self.rl.get_res_list()
         self.dsrp = DSRParser(self.reslist)
         self.find_atoms = FindAtoms(self.reslist)
-        self.gdb = dbfile.ParseDB(invert)
+        self.gdb = dbfile.ParseDB()
         fragment = 'OC(CF3)3'
         self.dbatoms = self.gdb.get_atoms(fragment)  # only the atoms of the dbentry as list
         self.dbhead = self.gdb.get_restraints(fragment)  # this is only executed once
-        self.resi = Resi(self.reslist, self.dsrp, self.dbhead, 'CF3', self.find_atoms)
+        self.resi = Resi(self.dsrp, 'CF3', self.find_atoms)
         self.dbtypes = get_atomtypes(self.dbatoms)
         with open('./intern.TXT') as txt:
             self.intern = txt.read()
@@ -685,7 +683,7 @@ class removeDublicatesAfixTest(unittest.TestCase):
         invert = False
         self.dsrp = DSRParser(self.reslist)
         fragment = 'OC(cf3)3'
-        self.gdb = dbfile.ParseDB(invert)
+        self.gdb = dbfile.ParseDB()
         self.dbatoms = self.gdb.get_atoms(fragment)  # only the atoms of the dbentry as list
         self.dbhead = self.gdb.get_restraints(fragment)  # this is only executed once
         self.dbtypes = get_atomtypes(self.dbatoms)
@@ -751,38 +749,41 @@ class dbfileTest(unittest.TestCase):
 
 class globalDB(unittest.TestCase):
     def setUp(self):
-        self.maxDiff = None
+        self.maxDiff = 9999
         self.klein = ['RESI ClBE ', 'SADI C1 Cl1 C2 Cl2 ',
                       'SADI 0.04 C6 Cl1 C2 Cl1 C1 Cl2 C3 Cl2 ',
                       'SAME C2 > C6 C1 ', 'FLAT C1 > Cl2 ',
                       'SIMU C1 > Cl2 ', 'RIGU C1 > Cl2']
-        self.result = {'dmx': {'comment': ['test'],
-                               'head': ['SIMU C1'],
+        self.result = {'dmx': {'startline': 2,
+                               'name': '',
+                               'comments': ['REM test'],
+                               'atoms': [['O1', 1, -1.3542148, -0.478099, -0.5279749]],
+                               'cell': [1.0, 1.0, 1.0, 90.0, 90.0, 90.0],
+                               'source': '',
                                'resi': 'TST1',
-                               'name': 'DMX',
-                               'line': 2,
-                               'db': 'dsr_user_db',
-                               'fragline': ['FRAG', '17', '1', '1', '1', '90', '90', '90'],
-                               'atoms': [['O1', '1', '-1.3542148', '-0.4780990', '-0.5279749']]},
-                       'dme': {'comment': ['test'],
-                               'head': [],
-                               'resi': False,
-                               'name': 'DME',
-                               'line': 1,
-                               'db': 'dsr_db',
-                               'fragline': ['FRAG', '17', '1', '1', '1', '90', '90', '90'],
-                               'atoms': [['O1', '1', '-1.3542148', '-0.4780990', '-0.5279749']]}}
-
-
+                               'restraints': ['SIMU C1'],
+                               'endline': 7,
+                               'dbname': 'dsr_user_db'},
+                       'dme': {'startline': 1,
+                               'name': '',
+                               'comments': ['REM test'],
+                               'atoms': [['O1', 1, -1.3542148, -0.478099, -0.5279749]],
+                               'cell': [1.0, 1.0, 1.0, 90.0, 90.0, 90.0],
+                               'source': '',
+                               'resi': '',
+                               'restraints': [],
+                               'endline': 4,
+                               'dbname': 'dsr_db'}
+                       }
     
     def testrun_build_db_dict(self):
         gdb = dbfile.ParseDB("db1_klein.TXT", "db2_klein.TXT")
         db = gdb.databases
-        self.assertEqual(db['dmx']['line'], 2)
-        self.assertEqual(db['dmx']['name'], 'DMX')
-        self.assertEqual(db['dmx']['db'], 'dsr_user_db')
-        self.assertEqual(db['dmx']['head'], ['SIMU C1'])
-        self.assertEqual(db['dmx']['fragline'], ['FRAG', '17', '1', '1', '1', '90', '90', '90'])
+        self.assertEqual(db['dmx']['startline'], 2)
+        self.assertEqual(db['dmx']['name'], '')
+        self.assertEqual(db['dmx']['dbname'], 'dsr_user_db')
+        self.assertEqual(db['dmx']['restraints'], ['SIMU C1'])
+        self.assertEqual(db['dmx']['cell'], [1, 1, 1, 90, 90, 90])
         self.assertEqual(db['dmx']['resi'], 'TST1')
         self.assertEqual(db, self.result)
 
@@ -993,7 +994,7 @@ class ExportTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
         self.invert = False
-        self.gdb = dbfile.ParseDB(self.invert)
+        self.gdb = dbfile.ParseDB('../dsr_db.txt')
         self.export_clip = 'benzene'
         self.resgood = ['TITL toluene\n', 'REM This file was exported by DSR version {}\n'.format(VERSION),
                         'REM Name: Toluene, C7H8\nREM Source: CCDC CESLUJ\n',
@@ -1056,8 +1057,8 @@ class ExportTest(unittest.TestCase):
 
     def testrun_format_calced_coords(self):
         export = Export(self.gdb, invert=False)
-        bigcell = export.format_calced_coords(['1', '1', '1', '90', '90', '90'], "benzene")[0]
-        smallcell = export.format_calced_coords(['2', '1', '1', '90', '90', '90'], "benzene")[0]
+        bigcell = export.format_calced_coords([1, 1, 1, 90, 90, 90], "benzene")[0]
+        smallcell = export.format_calced_coords([2, 1, 1, 90, 90, 90], "benzene")[0]
         cell1 = ['50', '50', '50', '90', '90', '90']
         cell2 = ['2', '1', '1', '90', '90', '90']
         self.assertListEqual(bigcell, cell1)
@@ -1067,7 +1068,7 @@ class ExportTest(unittest.TestCase):
         """
         Exports the current fragment to the clipboard.
         """
-        gdb = dbfile.ParseDB(invert=self.invert)
+        gdb = dbfile.ParseDB('../dsr_db.txt')
         export = Export(gdb)
         #        with self.assertRaises(SystemExit):
         self.assertTrue(export.export_to_clip('benzene'))
@@ -1108,7 +1109,7 @@ class ResidueTest(unittest.TestCase):
         self.fragline = self.gdb.get_startline(fragment)  # full string of FRAG line
         self.dbatoms = self.gdb.get_atoms(fragment)  # only the atoms of the dbentry as list
         self.dbhead = self.gdb.get_startline(fragment)
-        self.resi = Resi(self.res_list, self.dsrp, self.dbhead, self.residue_class, self.find_atoms)
+        self.resi = Resi(self.dsrp, self.residue_class, self.find_atoms)
 
     def testrun_get_resinumber(self):
         self.assertEqual(self.resi.get_resinumber, '4')
@@ -1158,9 +1159,9 @@ class ResidueTest(unittest.TestCase):
                      'occupancy': '-31', 'source': ['O1', 'C1', 'C2', 'C3', 'C4'],
                      'resi': ['CF23', '5'], 'command': 'PUT', 'dfix': False, 'part': '2'}
         self.dsrp.dsr_dict = dsr_dict1
-        resi1 = Resi(self.res_list, self.dsrp, self.dbhead, self.residue_class, self.find_atoms)
+        resi1 = Resi(self.dsrp, self.residue_class, self.find_atoms)
         self.dsrp.dsr_dict = dsr_dict2
-        resi2 = Resi(self.res_list, self.dsrp, self.dbhead, self.residue_class, self.find_atoms)
+        resi2 = Resi(self.dsrp, self.residue_class, self.find_atoms)
         residue1 = {'alias': None, 'class': 'CF13', 'number': '4'}
         residue2 = {'alias': None, 'class': 'CF23', 'number': '5'}
         self.assertDictEqual(resi1.build_up_residue(), residue1)
@@ -1220,17 +1221,17 @@ class ResidueTest(unittest.TestCase):
                      'dfix': False,
                      'part': '2'}
         self.dsrp.dsr_dict = dsr_dict1
-        resi1 = Resi(self.res_list, self.dsrp, testhead, 'CF13', self.find_atoms)
+        resi1 = Resi(self.dsrp, 'CF13', self.find_atoms)
         self.dsrp.dsr_dict = dsr_dict2
-        resi2 = Resi(self.res_list, self.dsrp, testhead, 'TEST', self.find_atoms)
+        resi2 = Resi(self.dsrp, 'TEST', self.find_atoms)
         self.dsrp.dsr_dict = dsr_dict3
-        resi3 = Resi(self.res_list, self.dsrp, testhead, 'TEST', self.find_atoms)
+        resi3 = Resi(self.dsrp, 'TEST', self.find_atoms)
         self.dsrp.dsr_dict = dsr_dict4
-        resi4 = Resi(self.res_list, self.dsrp, testhead, 'TES1', self.find_atoms)
+        resi4 = Resi(self.dsrp, 'TES1', self.find_atoms)
         self.dsrp.dsr_dict = dsr_dict5
-        resi5 = Resi(self.res_list, self.dsrp, testhead, 'TES1', self.find_atoms)
+        resi5 = Resi(self.dsrp, 'TES1', self.find_atoms)
         self.dsrp.dsr_dict = dsr_dict6
-        resi6 = Resi(self.res_list, self.dsrp, testhead, 'TES1', self.find_atoms)
+        resi6 = Resi(self.dsrp, 'TES1', self.find_atoms)
 
 
 class MiscTest(unittest.TestCase):

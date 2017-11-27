@@ -69,6 +69,7 @@ def get_current_dsr_version(silent=False):
 
 
 def is_update_needed(silent=False):
+    # type: (bool) -> bool
     """
     Decides if an update of DSR is needed.
     :return: bool

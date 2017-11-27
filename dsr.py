@@ -45,9 +45,6 @@ parameter is given a value greater than 15 or less than -15, it is interpreted a
 a free variable. A positive value (10k+p) is decoded as p times free variable number k [fv(k)],
 and a negative value (i.e. k and p both negative) means p times [fv(–k)–1].
 
-- port to JANA?
-  -> learn JANA
-  -> What do I need to change?
 
 """
 
@@ -217,7 +214,7 @@ class DSR():
         fragnames = []
         num = 0
         try:
-            (width, height) = get_terminal_size()  # @UnusedVariable
+            (width, _) = get_terminal_size()
         except():
             width = 80
         print('\n Entries found in the databases:\n')
@@ -235,7 +232,7 @@ class DSR():
             self.gdb.check_db_header_consistency(fragment)
             self.gdb.check_sadi_consistence(fragment)
         from selfupdate import is_update_needed
-        if is_update_needed(silent=True):
+        if is_update_needed(silent = True):
             print("\n*** An update for DSR is available. You can update with 'dsr -u' ***")
         sys.exit()
 
@@ -265,7 +262,7 @@ class DSR():
         db_atom_types = atomhandling.get_atomtypes(dbatoms)
         sf = atomhandling.SfacTable(self.reslist, db_atom_types)
         sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
-        resi = Resi(self.reslist, dsrp, restraints, db_residue_string, find_atoms)
+        resi = Resi(dsrp, db_residue_string, find_atoms)
         # line where the dsr command is found in the resfile:
         dsr_line_number = dsrp.find_dsr_command(line=False)
         if dsrp.cf3_active:

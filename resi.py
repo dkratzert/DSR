@@ -16,11 +16,15 @@
 
 from __future__ import print_function
 import sys
+
+from atomhandling import FindAtoms
 from constants import RESTRAINT_CARDS
+from dsrparse import DSRParser
 
 
 class Resi(object):
-    def __init__(self, reslist, dsrp, dbhead, db_residue_string, find_atoms):
+    def __init__(self, dsrp, db_residue_string, find_atoms):
+        # type: (DSRParser, str, FindAtoms) -> NotImplemented
         """
         Handles the RESI instructions and restraints
         :param dsrp: Dsrparse object
@@ -34,10 +38,7 @@ class Resi(object):
         :param find_atoms: find_atoms object
         :type find_atoms: object
         """
-        self._reslist = reslist
-        self._find_atoms = find_atoms
-        self._dbhead = dbhead
-        self._atoms_in_reslist = self._find_atoms.atoms_as_residues
+        self._atoms_in_reslist = find_atoms.atoms_as_residues()
         self._residues_in_res = sorted(list(self._atoms_in_reslist))
         self.dsrp = dsrp
         self._resi_dict_dsr_command = {'class': None, 'number': None, 'alias': None}
@@ -121,6 +122,7 @@ class Resi(object):
         return newhead
 
     def get_unique_resinumber(self, resinum):
+        # type: (str) -> str
         """
         Finds a unique resi number. If the number is already unique
         the given is used.
@@ -129,11 +131,11 @@ class Resi(object):
         :return resinum: unique residue number
         """
         new_num = '1'
-        if not resinum:
+        if resinum == '0':
             while new_num in self._residues_in_res:
                 new_num = str(int(new_num)+1)
             return new_num
-        if resinum in self._residues_in_res:
+        elif resinum in self._residues_in_res and not resinum == '0':
             print('Warning: The residue number "{}" you have chosen is already '\
                     'in use!'.format(resinum))
             while new_num in self._residues_in_res:
@@ -143,15 +145,15 @@ class Resi(object):
             return resinum
 
     def build_up_residue(self):
+        # type: () -> dict
         """
-        :type () -> str
         Decides which class and residue number should be used for the fragment.
         Returns a final dict with the residue settings.
         self._resi_dict_dsr_command is False if resi is enabled but no values given.
         """
         final_residue = {'class': None, 'number': None, 'alias': None}
         resiclass = None
-        resinum = None
+        resinum = '0'
         resialias = None
 
         #### for the db entry
@@ -162,7 +164,7 @@ class Resi(object):
         if self._resi_dict_db['number']:
             resinum = self._resi_dict_db['number']
         #### for the comlist entry
-        if self._resi_dict_dsr_command == False:
+        if not self._resi_dict_dsr_command:
             return final_residue
         else:
             if self._resi_dict_dsr_command['alias']:
@@ -172,7 +174,7 @@ class Resi(object):
             if self._resi_dict_dsr_command['number']:
                 resinum = self._resi_dict_dsr_command['number']
         final_residue = {'class': resiclass, 'number': resinum, 'alias': resialias}
-        if not resinum:
+        if resinum == '0':
             final_residue['number'] = self.get_unique_resinumber(resinum)
             print('No residue number was given. Using residue number {}.'.format(final_residue['number']))
         else:
@@ -235,23 +237,6 @@ class Resi(object):
                 print('Only four digits allowed in residue number!')
                 sys.exit()
         return resi_dict
-
-    def resi_class_atoms_consistent(self):
-        """
-        currently not used
-
-        find out if the atom names of the current residue class fit
-        to the atom names in already existing classes.
-        
-        go through residues:
-            go through atoms:
-                if atom == current residue class:
-                    add atom to at_list
-            compare for residue if fragment atom list fits to at_list
-        """
-        for num in list(self._atoms_in_reslist):
-            print(num, len(self._atoms_in_reslist[num]), self._atoms_in_reslist[num][:][0][3],
-                  [i[0] for i in self._atoms_in_reslist[num][:]])
 
 
 
