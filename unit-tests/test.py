@@ -656,22 +656,6 @@ class insertAfixTest(unittest.TestCase):
         self.numberscheme = self.num.get_fragment_number_scheme()
         self.db_testhead = db.db_testhead
 
-    def testrun_afix(self):
-        self.maxDiff = None
-        afix1 = Afix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead,
-                     self.dsrp, self.sfac_table, self.find_atoms,
-                     self.numberscheme, self.options)
-        afix2 = Afix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead,
-                     self.dsrp, self.sfac_table, self.find_atoms,
-                     self.numberscheme, self.options)
-        afix_intern_entry = afix1.build_afix_entry(False, 'TEST', self.resi)
-        afix_extern_entry = afix2.build_afix_entry(True, 'dsr_CF3_p21c.dfix', self.resi)
-        # misc.write_file(afix_extern_entry, 'ext.txt')
-        self.assertEqual(afix_intern_entry, self.intern)
-        self.assertEqual(afix_extern_entry, self.extern)
-        misc.remove_file('dsr_CF3_p21c.dfix')
-        misc.remove_file('./dsr_CF3_4_dsr_CF3_p21c.dfix')
-
 
 class removeDublicatesAfixTest(unittest.TestCase):
     def setUp(self):
@@ -683,7 +667,7 @@ class removeDublicatesAfixTest(unittest.TestCase):
         invert = False
         self.dsrp = DSRParser(self.reslist)
         fragment = 'OC(cf3)3'
-        self.gdb = dbfile.ParseDB()
+        self.gdb = dbfile.ParseDB('../dsr_db.txt')
         self.dbatoms = self.gdb.get_atoms(fragment)  # only the atoms of the dbentry as list
         self.dbhead = self.gdb.get_restraints(fragment)  # this is only executed once
         self.dbtypes = get_atomtypes(self.dbatoms)
@@ -762,7 +746,7 @@ class globalDB(unittest.TestCase):
                                'source': '',
                                'resi': 'TST1',
                                'restraints': ['SIMU C1'],
-                               'endline': 7,
+                               'endline': 8,
                                'dbname': 'dsr_user_db'},
                        'dme': {'startline': 1,
                                'name': '',
@@ -772,7 +756,7 @@ class globalDB(unittest.TestCase):
                                'source': '',
                                'resi': '',
                                'restraints': [],
-                               'endline': 4,
+                               'endline': 5,
                                'dbname': 'dsr_db'}
                        }
     
@@ -787,12 +771,6 @@ class globalDB(unittest.TestCase):
         self.assertEqual(db['dmx']['resi'], 'TST1')
         self.assertEqual(db, self.result)
 
-    def testrun_get_residue_from_head(self):
-        main_dbpath = "db1_klein.TXT"
-        user_dbpath = "db2_klein.TXT"
-        gdb = dbfile.ParseDB(main_dbpath, user_dbpath)
-        self.assertEqual(gdb.get_resi('dme'), 'CLBE')
-
     def testrun_get_residue_from_head2(self):
         # raises System exit, because residue in db_resinum.TXT is badly defined.
         main_dbpath = "db_resinum.TXT"
@@ -801,15 +779,15 @@ class globalDB(unittest.TestCase):
             gdb = dbfile.ParseDB(main_dbpath, user_dbpath)
 
     def testrun_get_fragment_atoms(self):
-        x = '-1.154'
-        z = '0.526'
+        x = -1.154
+        z = 0.526
         o1 = ['O1', 1, -1.154, -0.748, 0.526]
         gdb = dbfile.ParseDB("db1.TXT", "db2.TXT")
         atom = gdb.get_atoms('dme')[0]
         self.assertListEqual(o1, atom)
         self.assertEqual(x, atom[2])
         self.assertEqual(z, atom[4])
-        self.assertEqual('1', atom[1])
+        self.assertEqual(1, atom[1])
         self.assertEqual('O1', atom[0])
 
     def testrun_get_fragment_atoms_shortline(self):
@@ -820,15 +798,15 @@ class globalDB(unittest.TestCase):
         self.assertEqual(atom[0][0], 'O2')
 
     def testrun_get_fragment_atoms_inv(self):
-        x = '1.154'
-        z = '-0.526'
-        o1 = ['O1', '1', '1.154', '0.748', '-0.526']
+        x = -1.154
+        z = 0.526
+        o1 = ['O1', 1, -1.154, -0.748, 0.526]
         gdb = dbfile.ParseDB("db1.TXT", "db2.TXT")
         atom = gdb.get_atoms('dme')[0]
         self.assertListEqual(o1, atom)
         self.assertEqual(x, atom[2])
         self.assertEqual(z, atom[4])
-        self.assertEqual('1', atom[1])
+        self.assertEqual(1, atom[1])
         self.assertEqual('O1', atom[0])
 
     def testrun_get_fragment_atoms_noatoms(self):
@@ -857,23 +835,9 @@ class globalDB(unittest.TestCase):
         with self.assertRaises(SystemExit):
             gdb = dbfile.ParseDB(maindb, userdb)
             fragment = 'dmem'
-            head = gdb[fragment]['restrains']
+            head = gdb[fragment]['restraints']
             atoms = gdb.get_atoms(fragment, invert=True)
             gdb.check_db_header_consistency(fragment)
-
-    def testrun_get_comment_from_fragment1(self):
-        self.maxDiff = None
-        gdb = dbfile.ParseDB("./comment.TXT", "./db1.TXT")
-        fragment = 'com'
-        comment = gdb.get_fragment_name('com4')
-        self.assertEqual(comment, 'A really fancy name.')
-        names = ['name!', 'Name 1,2-Dimethoxyethane, not coordinated, C4H10O2, '
-                          'DME, Src: Turbomole, B3-LYP/def2-TZVPP, This DME is not coordinated',
-                 'Src: Turbomole, B3-LYP/def2-TZVPP, blub, This DME is not coordinated',
-                 'A really fancy name.']
-        for i in range(1, 5):
-            com = gdb.get_fragment_name(fragment + str(i))
-            self.assertEqual(com, names[i - 1])
 
     def testrun_get_resi_from_fragment(self):
         self.maxDiff = None
@@ -1104,7 +1068,7 @@ class ResidueTest(unittest.TestCase):
                       'DFIX 2.916 0.03 CL1 CL2',
                       'SIMU CL1 > C1',
                       'RIGU CL1 > C1']
-        self.gdb = dbfile.ParseDB(invert)
+        self.gdb = dbfile.ParseDB('../dsr_db.txt')
         self.residue_class = self.gdb.get_resi(fragment)
         self.fragline = self.gdb.get_startline(fragment)  # full string of FRAG line
         self.dbatoms = self.gdb.get_atoms(fragment)  # only the atoms of the dbentry as list
