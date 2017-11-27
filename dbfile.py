@@ -42,14 +42,15 @@ def invert_atomic_coordinates(atoms):
     Unable to invert fragment coordinates.
     []
     """
-    for line in atoms:
+    catoms = deepcopy(atoms)
+    for line in catoms:
         try:
             inv_coord = [-x for x in line[-3:]]
         except:
             print('Unable to invert fragment coordinates.')
             return []
         line[-3:] = inv_coord
-    return atoms
+    return catoms
 
 
 def search_fragment_name(search_string, gdb, numresults=6):
@@ -183,11 +184,10 @@ class ParseDB(object):
         """
         This method returns all fragment name tags in the database
 
-        >>> dbpath = os.path.abspath('dsr_db.txt')
+        >>> dbpath = os.path.abspath('../dsr_db.txt')
         >>> db = ParseDB(dbpath)
-        >>> db.parse(dbpath, 'dsr_db')['water']
-        ... # doctest: +NORMALIZE_WHITESPACE
-        {'startline': 2402,
+        >>> db.parse(dbpath, 'dsr_db')['water'] # doctest: +NORMALIZE_WHITESPACE
+        {'startline': 2403,
         'name': 'Water, H2O',
         'comments': [],
         'atoms': [['O1', 4, 0.0, 0.0, 0.0],
@@ -198,7 +198,7 @@ class ParseDB(object):
         'resi': 'H2O',
         'restraints': ['DFIX 0.9584 0.001 O1 H1 O1 H2',
                        'DFIX 1.5150 0.001 H1 H2'],
-        'endline': 2412,
+        'endline': 2413,
         'dbname': 'dsr_db'}
         """
         frag = ''
@@ -217,9 +217,12 @@ class ParseDB(object):
             if end_regex and end_regex.match(line):
                 starttag = False
                 db[frag].update(
-                    {'endline': num,
-                     'startline': startnum  + 1})
+                    {'endline': num + 1,
+                     'startline': startnum + 1})
                 db = self.parse_fraglines(frag, fraglines, db)
+                if not db[frag]['atoms']:
+                    print('*** No atoms found in database entry {} line {} of {}.txt***'.format(frag, num+1, dbname))
+                    sys.exit()
                 fraglines = []
             # start tag was found, appending lines to fragment list
             if starttag:
@@ -386,7 +389,7 @@ class ParseDB(object):
         """
         returns header information of the specific fragment:
         tag, Name/comment, source, cell, residue, dbtype, restr, atoms
-        >>> dbpath = os.path.abspath('dsr_db.txt')
+        >>> dbpath = os.path.abspath('../dsr_db.txt')
         >>> db = ParseDB(dbpath)
         >>> db.get_head_for_gui('benZene')
         ... # doctest: +NORMALIZE_WHITESPACE
@@ -526,7 +529,7 @@ class ParseDB(object):
                       .format(atom, fragment, self.get_fragment_name(fragment), self.get_db_name(fragment)))
         if not status:
             print('*** Check database entry. ***\n')
-            #sys.exit()
+            sys.exit()
         return status
 
     def check_sadi_consistence(self, fragment):
