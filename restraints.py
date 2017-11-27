@@ -95,7 +95,7 @@ class Restraints():
         self._atoms = [i[0] for i in self.gdb[self.fragment]['atoms']]
         self._cell = self.gdb.get_cell(self.fragment)
         self.atom_types = get_atomtypes(self.gdb[self.fragment]['atoms'])
-        self.cart_coords = [[float(y) for y in i] for i in self.get_fragment_atoms_cartesian()]
+        self.cart_coords = self.gdb.get_coordinates(self.fragment, cartesian=True)
         self._connectivity_table = self.get_conntable_from_atoms(
             self.cart_coords, self.atom_types, self._atoms)
         self.coords_dict = self.get_coords_dict()
@@ -108,19 +108,6 @@ class Restraints():
         coords = OrderedDict({})
         for name, co in zip(self._atoms, self.cart_coords):
             coords[name] = co
-        return coords
-
-    def get_fragment_atoms_cartesian(self):
-        """
-        returns the coordinates of the fragment as cartesian coords
-        as list of lists [['-2.7538', '15.9724', '22.6810'], ['0.7939', '16.3333', '21.3135'], ...
-        :param fragment:
-        :type fragment:
-        """
-        atoms = self.export.format_atoms_for_export(self.gdb.get_cell(self.fragment), self.gdb.get_atoms(self.fragment), False)
-        coords = []
-        for x in atoms:
-            coords.append(x.split()[2:5])
         return coords
 
     def adjmatrix(self):

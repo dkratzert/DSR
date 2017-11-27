@@ -23,11 +23,11 @@ from atomhandling import get_atomtypes
 from atoms import Element
 from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
 from misc import atomic_distance, nalimov_test, std_dev, median, pairwise, \
-    unwrap_head_lines, dice_coefficient2
+    unwrap_head_lines, dice_coefficient2, frac_to_cart
 from misc import touch
 
 atreg = re.compile(atomregex)
-
+not_existing_error = '*** Fragment "{}" not found in database ***'
 
 def invert_atomic_coordinates(atoms):
     """
@@ -343,6 +343,14 @@ class ParseDB(object):
             print("*** Fragment {} was not found in the Database! ***".format(fragment))
             sys.exit()
 
+    def __iter__(self):
+        """
+        >>> db = ParseDB('../dsr_db.txt')
+        >>> [x for x in db][:3]
+        ['napht', 'plusminus', 'fluorbenz']
+        """
+        return iter(self.databases.keys())
+
     def list_fragments(self):
         # type: () -> list
         """
@@ -618,13 +626,21 @@ class ParseDB(object):
 
     def get_atoms(self, fragment, invert=False, cartesian=False):
         # type: (str, bool, bool) -> list
-        # TODO: implement cartesian atom coordinates
         """
         returns the atoms from the dbentry:
         [['O1', '1', '0.01453', '-1.6659', '-0.10966'],
         ['C1', '1', '0.00146', '-0.26814', '-0.06351'], ... ]
         :param fragment: fragment name
         :type fragment: string
+
+        >>> db = ParseDB('../dsr_db.txt')
+        >>> db.get_atoms('water', cartesian=False) # doctest: +NORMALIZE_WHITESPACE
+        [['O1', 4, 0.0, 0.0, 0.0], ['H1', 2, 0.9584, 0.0, 0.0], ['H2', 2, -0.2392, 0.9281, 0.0]]
+        >>> db.get_atoms('isoprop', cartesian=True) # doctest: +NORMALIZE_WHITESPACE
+        [['O1', 1, 5.611626689944858, 4.650686219462244, 9.549527472636036],
+        ['C1', 1, 5.969103603542006, 3.2932494073414893, 9.793246423730249],
+        ['C2', 1, 4.814135175316713, 2.3627923165385942, 9.795180701119886],
+        ['C3', 1, 7.0650724256725805, 2.9180586416449548, 8.82997628369121]]
         """
         fragment = fragment.lower()
         try:
@@ -634,17 +650,28 @@ class ParseDB(object):
         except KeyError:
             print('*** Could not find {} in database ***'.format(fragment))
             sys.exit()
+        if cartesian:
+            cell = self.get_cell(fragment)
+            for num, c in enumerate(self.get_coordinates(fragment)):
+                atoms[num][2:5] = frac_to_cart(c, cell)
         return atoms
 
     def get_cell(self, fragment):
+        # type: (str) -> list
         """
         returns the line with FRAG 17 cell from the dbentry
+        >>> db = ParseDB('../dsr_db.txt')
+        >>> db.get_cell('water')
+        [1.0, 1.0, 1.0, 90.0, 90.0, 90.0]
+        >>> db.get_cell('foobar')
+        Traceback (most recent call last):
+        ...
+        SystemExit
         """
-        fragment = fragment.lower()
         try:
-            cell = self.databases[fragment]['cell']
+            cell = [float(x) for x in self.databases[fragment.lower()]['cell']]
         except KeyError:
-            print('*** Fragment "{}" not found in database ***'.format(fragment))
+            print(not_existing_error.format(fragment))
             sys.exit()
         return cell
 
@@ -652,22 +679,36 @@ class ParseDB(object):
         """
         returns the line number from the dbentry
         """
-        return self.databases[fragment.lower()]['startline']
+        try:
+            return self.databases[fragment.lower()]['startline']
+        except KeyError:
+            print(not_existing_error.format(fragment))
+            sys.exit()
 
     def get_coordinates(self, fragment, cartesian=False):
+        # type: (str, bool) -> list
         """
         Returns the coordinates of the fragment. Optionally is direct conversion to cartesian coordinates.
+        [['0.01453', '-1.6659', '-0.10966'], [...] ]
         :param fragment:
         :param cartesian:
         :return:
         """
-        atoms = self.databases[fragment]['atoms']
-        coords = []
-        for i in atoms:
-            coords.append(i[2:5])
+        try:
+            if cartesian:
+                atoms = self.get_atoms(fragment, cartesian=True)
+            else:
+                atoms = self.get_atoms(fragment)
+            coords = []
+            for i in atoms:
+                coords.append(i[2:5])
+        except KeyError:
+            print(not_existing_error.format(fragment))
+            sys.exit()
         return coords
 
     def get_restraints(self, fragment):
+        # type: (str) -> list
         """
         returns the header of the dbentry of fragment.
         This header does not include comments, only the restraints.
@@ -680,14 +721,13 @@ class ParseDB(object):
         ----------
         list
         """
-        head = []
         fragment = fragment.lower()
         try:
-            head = self.databases[fragment]['restraints']
+            restr = self.databases[fragment]['restraints']
         except KeyError:
-            print('*** Could not find {} in database ***'.format(fragment))
+            print(not_existing_error.format(fragment))
             sys.exit()
-        return head
+        return restr
 
     def get_resi(self, fragment):
         """
@@ -704,7 +744,11 @@ class ParseDB(object):
         :param fragment: actual fragment name
         :type fragment: string
         """
-        name = self.databases[fragment.lower()]['name']
+        try:
+            name = self.databases[fragment.lower()]['name']
+        except KeyError:
+            print(not_existing_error.format(fragment))
+            return ''
         return name
 
     def get_src(self, fragment):
@@ -1064,7 +1108,7 @@ if __name__ == '__main__':
         print('{} of {} tests failed'.format(failed, attempted))
     #homedir = expanduser("~")
     #userdb_path = os.path.join(homedir, "dsr_db.txt")
-    dbpath = os.path.abspath('./dsr_db.txt')
+    dbpath = os.path.abspath('../dsr_db.txt')
     db = ParseDB(dbpath)
     pprint(db.databases['pyrazole'])
     print(dbpath)

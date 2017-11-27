@@ -1023,8 +1023,8 @@ class ExportTest(unittest.TestCase):
         export = Export(self.gdb, invert=False)
         bigcell = export.format_calced_coords([1, 1, 1, 90, 90, 90], "benzene")[0]
         smallcell = export.format_calced_coords([2, 1, 1, 90, 90, 90], "benzene")[0]
-        cell1 = ['50', '50', '50', '90', '90', '90']
-        cell2 = ['2', '1', '1', '90', '90', '90']
+        cell1 = [50, 50, 50, 90, 90, 90]
+        cell2 = [2, 1, 1, 90, 90, 90]
         self.assertListEqual(bigcell, cell1)
         self.assertListEqual(smallcell, cell2)
 

@@ -54,6 +54,7 @@ class Export():
         self._gdb = gdb
 
     def format_calced_coords(self, cell, fragment):
+        # type: (list, str) -> list
         """
         TODO: make this crude hack more elegant!
         In calculated structure the cell is 1 1 1 90 90 90. Shelxle has problems
@@ -61,9 +62,9 @@ class Export():
         >>> gdb = ParseDB('../dsr_db.txt')
         >>> exp = Export(gdb)
         >>> exp.format_calced_coords([1, 1, 1, 90, 90, 90], "benzene")
-        [['50', '50', '50', '90', '90', '90'], [['C1', 1, '  0.017600', ' -0.006618', '  0.005344'], ['C2', 1, '  0.015724', ' -0.007554', '  0.004762'], ['C3', 1, '  0.015212', ' -0.006368', '  0.003851'], ['C4', 1, '  0.016584', ' -0.004244', '  0.003510'], ['C5', 1, '  0.018464', ' -0.003288', '  0.004080'], ['C6', 1, '  0.018976', ' -0.004464', '  0.004998']]]
+        [[50, 50, 50, 90, 90, 90], [['C1', 1, 0.0176, -0.006618, 0.005344], ['C2', 1, 0.015724, -0.007554, 0.004762], ['C3', 1, 0.015212, -0.006368, 0.003851], ['C4', 1, 0.016584, -0.004244, 0.00351], ['C5', 1, 0.018464, -0.003288, 0.00408], ['C6', 1, 0.018976, -0.004464, 0.004998]]]
         >>> exp.format_calced_coords([1, 1, 1, 90, 90, 90], "BENZENE")
-        [['50', '50', '50', '90', '90', '90'], [['C1', 1, '  0.017600', ' -0.006618', '  0.005344'], ['C2', 1, '  0.015724', ' -0.007554', '  0.004762'], ['C3', 1, '  0.015212', ' -0.006368', '  0.003851'], ['C4', 1, '  0.016584', ' -0.004244', '  0.003510'], ['C5', 1, '  0.018464', ' -0.003288', '  0.004080'], ['C6', 1, '  0.018976', ' -0.004464', '  0.004998']]]
+        [[50, 50, 50, 90, 90, 90], [['C1', 1, 0.0176, -0.006618, 0.005344], ['C2', 1, 0.015724, -0.007554, 0.004762], ['C3', 1, 0.015212, -0.006368, 0.003851], ['C4', 1, 0.016584, -0.004244, 0.00351], ['C5', 1, 0.018464, -0.003288, 0.00408], ['C6', 1, 0.018976, -0.004464, 0.004998]]]
         """
         fragment = fragment.lower()
         atoms = deepcopy(self._gdb.get_atoms(fragment))
@@ -71,12 +72,11 @@ class Export():
         if summe == 3:  # 1+1+1=3!
             for coord in range(2, 5):  # x, y, z of coordinates
                 for line in atoms:  # for every atom line
-                    num = float(line[coord]) / 50
-                    line[coord] = "{:10.6f}".format(num)
+                    line[coord] = round(line[coord] / 50, 6)
             # now the new 50,50,50 cell:
             for n in range(0, 3):
-                cell[n] = '50'
-        cell = [str(x) for x in cell]
+                cell[n] = 50
+        #cell = [str(x) for x in cell]
         return [cell, atoms]
 
     def make_dfix(self, fragname):
@@ -93,23 +93,38 @@ class Export():
         Export all database entries at once
         """
         import sys
-        for fragment in self._gdb.db_dict:
+        for fragment in self._gdb:
             self.write_res_file(fragment)
         sys.exit(1)
 
     def export_resfile(self, fragname):
         """
         exports a .res file from a database entry to be viewed in a GUI
-        #>>> invert = False
-        #>>> gdb = global_DB(invert)
-        #>>> fragment = 'toLuene'
-        #>>> export = Export(gdb, invert)
+        >>> db = ParseDB('../dsr_db.txt')
+        >>> ex = Export(db)
+        >>> ex.export_resfile('water') # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF
+        ['TITL water\\n', 'REM This file was exported by DSR version 207\\n',
+        'REM Name: Water, H2O\\nREM Source: pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei\\n', '',
+        'CELL 0.71073  50.0000  50.0000  50.0000  90.0000  90.0000  90.0000\\n',
+        'ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\\n',
+        'LATT  -1\\n', 'SFAC O  H\\n', 'UNIT 1  1 \\n', 'REM  RESIDUE: H2O\\n',
+        'REM Sum formula: H2 O1 \\n', 'WGHT  0.1\\n', 'FVAR  1.0\\n',
+        'rem Restraints from DSR database:\\n',
+        'DFIX 0.9584 0.001 O1 H1 O1 H2\\nDFIX 1.5150 0.001 H1 H2\\n',
+        'rem Restraints from atom connectivities:\\n',
+        ['DFIX 0.9584 H2   O1  \\n', 'DFIX 0.9584 H1   O1  \\n', 'DANG 1.5151 H1   H2  \\n'],
+        'rem end of restraints\\n', '\\n',
+        ['O1   1     0.00000   0.00000   0.00000   11.0   0.04\\n',
+        'H1   2     0.01917   0.00000   0.00000   11.0   0.04\\n',
+        'H2   2    -0.00478   0.01856   0.00000   11.0   0.04\\n'],
+        '\\nHKLF 0\\nEND\\n']
         """
         fragname = fragname.lower()
-        cell = self._gdb[fragname]['cell']
+        cell = self._gdb.get_cell(fragname)
         # expands the cell of calculated structures:
         cell, atoms = self.format_calced_coords(cell=cell, fragment=fragname)
-        cellstring = '{:>8.4f} {:>8.4f} {:>8.4f} {:>8.4f} {:>8.4f} {:>8.4f}'.format(*[float(i) for i in cell])
+#        atoms = self._gdb.get_atoms(fragname, cartesian=False)
+        cellstring = '{:>8.4f} {:>8.4f} {:>8.4f} {:>8.4f} {:>8.4f} {:>8.4f}'.format(*cell)
         if self.invert:
             print("Fragment inverted.")
         try:
@@ -166,7 +181,7 @@ class Export():
             res_export.append(self.make_dfix(fragname))
             res_export.append('rem end of restraints\n')
         except Exception as e:
-            print("*** {} ***".format(e))
+            print("*** Error during restraints generation: {} ***".format(e))
             pass
         res_export.append('\n')
         res_export.append(final_atomlist)  # the atoms
@@ -206,7 +221,7 @@ class Export():
 
     @staticmethod
     def format_atoms_for_export(cell, atoms, gui=False):
-        # type: (list, str, bool) -> list
+        # type: (list, list, bool) -> list
         """
         Returns properly formated cartesian coordinates for fragment export.
         Atom;;number;;x;;y;;z
