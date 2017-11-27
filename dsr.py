@@ -148,7 +148,7 @@ class DSR():
             sys.exit()
         # Import a GRADE fragment
         if self.import_grade:
-            mog = ImportGRADE(self.import_grade, self.invert)
+            mog = ImportGRADE(self.import_grade, self.gdb, self.invert, self.gdb.maindb_path, self.gdb.userdb_path)
             mog.write_user_database()
             sys.exit()
         if not any(list(vars(self.options.all_options).values())+[self.res_file]):

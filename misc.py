@@ -485,7 +485,7 @@ def make_directory(dirpath):
     return True
 
 
-def wrap_headlines(dbhead, width=77):
+def wrap_headlines(dbhead, width=75):
     """
     wraps lines of a restraint header to prevent too long lines in
     SHELXL. wrapping is done with = at the end of a line and ' ' at
@@ -512,6 +512,19 @@ def wrap_headlines(dbhead, width=77):
         line = ' '.join(line.strip().split(' '))
         dbhead[num] = line + '\n'
     return dbhead
+
+
+def wrap_stringlist(strlist, width=75):
+    """
+    Wraps the text lines of a list to width characters.
+    >>> wrap_stringlist(['REM foo bar baz foo bar baz blah blub', 'REM 2foo bar baz foo bar baz blah blub'], 36)
+    ['REM foo bar baz foo bar baz blah\\nREM blub\\n', 'REM 2foo bar baz foo bar baz blah\\nREM blub\\n']
+    """
+    import textwrap
+    wrapped = []
+    for num, line in enumerate(strlist):
+        wrapped.append('\n'.join(textwrap.wrap(line, width, subsequent_indent='REM ')) + '\n')
+    return wrapped
 
 
 def unwrap_head_lines(headlines):

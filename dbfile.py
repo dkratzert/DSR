@@ -773,7 +773,7 @@ class ParseDB(object):
 
 
 class ImportGRADE():
-    def __init__(self, grade_tar_file, invert=False, maindb=None, userdb=None):
+    def __init__(self, grade_tar_file, db, invert=False, maindb=None, userdb=None):
         """
         class to import fragments from GRADE of Global Phasing Ltd.
         :param grade_tar_file:
@@ -787,29 +787,14 @@ class ImportGRADE():
         :param dbnames: file names of the databases
         :type dbnames:  string
         """
-        if userdb is None:
-            homedir = expanduser("~")
-            self.user_db_path = os.path.join(homedir, "dsr_user_db.txt")
-            if not os.path.isfile(self.user_db_path):
-                touch(self.user_db_path)
-        else:
-            self.user_db_path = userdb
-        ##############################################    
-        if maindb is None:
-            try:
-                main_dbdir = os.environ["DSR_DIR"]
-            except(KeyError):
-                main_dbdir = './'
-            self.main_db_path = os.path.join(main_dbdir, 'dsr_db.txt')
-        else:
-            self.main_db_path = maindb
-        ##############################################        
+        self.user_db_path = userdb
+        self.main_db_path = maindb
         self.el = Element()
         self.invert = invert
-        self._getdb = ParseDB(self.main_db_path, self.user_db_path)
+        self._db = db
         self._db_dir = expanduser("~")
-        self._db_tags = self._getdb.get_fragment_tags()
-        self._db = self._getdb.databases
+        self._db_tags = self._db.get_fragment_tags()
+        self._db = self._db.databases
         gradefiles = self.get_gradefiles(grade_tar_file)
         self._pdbfile = gradefiles[0]
         self._dfixfile = gradefiles[1]
@@ -821,7 +806,6 @@ class ImportGRADE():
         self._frag_name = self.get_name_from_pdbfile()
         if not isinstance(self._resi_name, str):
             self._resi_name = self._resi_name.decode()
-        self._comments = self.get_comments()
 
     def get_gradefiles(self, grade_tar_file):
         """
@@ -872,7 +856,8 @@ class ImportGRADE():
         :param pdbfile: file with some information about the molecule
         :type pdbfile: list of strings
 
-        >>> mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz')
+        >>> db = ParseDB('../dsr_db.txt')
+        >>> mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz', db)
         >>> mog.get_name_from_pdbfile()
         'Alanine'
         """
@@ -902,7 +887,8 @@ class ImportGRADE():
         :param pdbfile: file with some information about the molecule
         :type pdbfile: list of strings
 
-        >>> mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz')
+        >>> db = ParseDB('../dsr_db.txt')
+        >>> mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz', db)
         >>> mog.get_resi_from_pdbfile()
         'ALA'
         """
@@ -1030,7 +1016,7 @@ class ImportGRADE():
             'atoms': self._atoms,
             'line': None,
             'db': 'dsr_user_db',
-            'comment': self._comments,
+            'comments': self.get_comments(),
             'name': resi_name
         }
         return db_import_dict
@@ -1053,7 +1039,7 @@ class ImportGRADE():
         grade_db_names = list(imported_entry)
         user_db_names = []
         for i in fragments:
-            if self._db[i]['db'] == 'dsr_user_db':
+            if self._db[i]['dbname'] == 'dsr_user_db':
                 user_db_names.append(self._db[i]['name'])
         # try to write the new dbentry:
         try:
@@ -1061,16 +1047,16 @@ class ImportGRADE():
                 for name in grade_db_names:
                     print('Importing {} ({}) to user database...'.format(self._resi_name, name))
                     atomlist = imported_entry[name]['atoms']
-                    comment = imported_entry[name]['comment']
-                    comment = '\n'.join([' '.join(i) for i in comment if i])
+                    comments = imported_entry[name]['comments']
+                    comments = '\n'.join([' '.join(i) for i in comments if i])
                     head = '\n'.join([' '.join(x) for x in imported_entry[name]['restraints']])
                     atoms = '\n'.join(['{:<6} -{}  {:>8.3f}{:>8.3f}{:>8.3f}' \
                                       .format(y[0], self.el.get_atomic_number(y[1]), float(y[2]), float(y[3]),
                                               float(y[4])) for y in atomlist])
                     resi_name = str(name)
-                    cell = '  '.join(imported_entry[name]['fragline'])
+                    cell = '  '.join(imported_entry[name]['cell'])
                     dbentry = '<{}> \n{} \nRESI {} \n{} \n{} \n{} \n</{}>\n''\
-                        '.format(resi_name, comment, resi_name, head, cell, atoms, resi_name)
+                        '.format(resi_name, comments, resi_name, head, cell, atoms, resi_name)
                     f.write(dbentry)
         except IOError as e:
             print(e)
@@ -1080,18 +1066,17 @@ class ImportGRADE():
             with open(self.user_db_path, 'a+') as fu:
                 for i in fragments:
                     name = i
-                    if self._db[i]['db'] == 'dsr_user_db':
+                    if self._db[i]['dbname'] == 'dsr_user_db':
                         # userdb = list(self._db[i])
                         atomlist = self._db[i]['atoms']
                         head = '\n'.join([''.join(x) for x in self._db[i]['restraints']])
-                        atoms = '\n'.join(['{:<6}{:<2}{:>8.3f}{:>8.3f}{:>8.3f}' \
+                        atoms = '\n'.join(['{:<6}{:<2}{:>8.3f}{:>8.3f}{:>8.3f}'
                                           .format(y[0], y[1], float(y[2]), float(y[3]), float(y[4])) for y in atomlist])
                         resi_name = self._db[i]['resi']
-                        comment = self._db[i]['comment']
-                        comment = '\nREM '.join(comment)
-                        fragline = '  '.join(self._db[i]['fragline'])
+                        comments = '\nREM '.join(self._db[i]['comments'])
+                        fragline = 'FRAG 17 {} {} {} {} {} {}'.format(*self._db[i]['cell'])
                         dbentry = '\n<{}> \nREM {} \nRESI {} \n{} \n{} \n{} \n</{}>\n' \
-                                  ''.format(name, comment, resi_name, head, fragline, atoms, name)
+                                  ''.format(name, comments, resi_name, head, fragline, atoms, name)
                         fu.write(dbentry)
         except IOError as e:
             print(e)
