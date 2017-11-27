@@ -12,9 +12,9 @@
 
 from __future__ import print_function
 
-import copy
+from copy import deepcopy
 
-import atomhandling as at
+from atomhandling import get_atomtypes
 from atoms import Element
 from dbfile import ParseDB
 from misc import wrap_headlines
@@ -59,14 +59,15 @@ class Export():
         In calculated structure the cell is 1 1 1 90 90 90. Shelxle has problems
         with that when growing. So the cell is expanded to 50 50 50
         >>> gdb = ParseDB()
+        >>> foo = gdb.parse()
         >>> exp = Export(gdb)
         >>> exp.format_calced_coords([1, 1, 1, 90, 90, 90], "benzene")
-        [['50', '50', '50', 90, 90, 90], [['C1', '1', '  0.017600', ' -0.006618', '  0.005344'], ['C2', '1', '  0.015724', ' -0.007554', '  0.004762'], ['C3', '1', '  0.015212', ' -0.006368', '  0.003851'], ['C4', '1', '  0.016584', ' -0.004244', '  0.003510'], ['C5', '1', '  0.018464', ' -0.003288', '  0.004080'], ['C6', '1', '  0.018976', ' -0.004464', '  0.004998']]]
+        [['50', '50', '50', 90, 90, 90], [['C1', 1, '  0.017600', ' -0.006618', '  0.005344'], ['C2', 1, '  0.015724', ' -0.007554', '  0.004762'], ['C3', 1, '  0.015212', ' -0.006368', '  0.003851'], ['C4', 1, '  0.016584', ' -0.004244', '  0.003510'], ['C5', 1, '  0.018464', ' -0.003288', '  0.004080'], ['C6', 1, '  0.018976', ' -0.004464', '  0.004998']]]
         >>> exp.format_calced_coords([1, 1, 1, 90, 90, 90], "BENZENE")
-        [['50', '50', '50', 90, 90, 90], [['C1', '1', '  0.017600', ' -0.006618', '  0.005344'], ['C2', '1', '  0.015724', ' -0.007554', '  0.004762'], ['C3', '1', '  0.015212', ' -0.006368', '  0.003851'], ['C4', '1', '  0.016584', ' -0.004244', '  0.003510'], ['C5', '1', '  0.018464', ' -0.003288', '  0.004080'], ['C6', '1', '  0.018976', ' -0.004464', '  0.004998']]]
+        [['50', '50', '50', 90, 90, 90], [['C1', 1, '  0.017600', ' -0.006618', '  0.005344'], ['C2', 1, '  0.015724', ' -0.007554', '  0.004762'], ['C3', 1, '  0.015212', ' -0.006368', '  0.003851'], ['C4', 1, '  0.016584', ' -0.004244', '  0.003510'], ['C5', 1, '  0.018464', ' -0.003288', '  0.004080'], ['C6', 1, '  0.018976', ' -0.004464', '  0.004998']]]
         """
         fragment = fragment.lower()
-        atoms = copy.deepcopy(self._gdb.get_atoms(fragment))
+        atoms = deepcopy(self._gdb.get_atoms(fragment))
         summe = int(sum(cell[0:3]))  # this is to detect calculated structures
         if summe == 3:  # 1+1+1=3!
             for coord in range(2, 5):  # x, y, z of coordinates
@@ -119,11 +120,11 @@ class Export():
         res_export = []
         self._gdb.check_consistency(fragname)
         self._gdb.check_db_atom_consistency(fragname)
-        for i in at.get_atomtypes(atoms):  # build sfac table from atomtypes
+        for i in get_atomtypes(atoms):  # build sfac table from atomtypes
             if i not in sfac:
                 sfac.append(i)
         atlist = []
-        for i in at.get_atomtypes(atoms):  # atomtypes in the db_entry
+        for i in get_atomtypes(atoms):  # atomtypes in the db_entry
             for y, x in enumerate(sfac):
                 if x == i:
                     atlist.append(y + 1)
@@ -144,8 +145,8 @@ class Export():
             res_export.append('REM This file was exported by DSR version {}\n'.format(VERSION))
         except NameError:
             pass
-        res_export.append('REM {}\nREM Source: {}\n'.format(self._gdb[fragname]['name'], self._gdb[fragname]['source']))
-        res_export.append("{}\n".format('\n'.join(self._gdb[fragname]['comments'])))
+        res_export.append('REM Name: {}\nREM Source: {}\n'.format(self._gdb[fragname]['name'], self._gdb[fragname]['source']))
+        res_export.append("{}".format('\n'.join(self._gdb[fragname]['comments'])))
         res_export.append('CELL 0.71073 ' + cellstring + '\n')  # the cell with wavelength
         res_export.append('ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n')
         res_export.append('LATT  -1\n')
@@ -200,7 +201,8 @@ class Export():
         pyperclip.setcb(text)
         return True
 
-    def format_atoms_for_export(self, cell, atoms, gui=False):
+    @staticmethod
+    def format_atoms_for_export(cell, atoms, gui=False):
         """
         Returns properly formated cartesian coordinates for fragment export.
         Atom;;number;;x;;y;;z
@@ -208,7 +210,6 @@ class Export():
         >>> gdb = ParseDB()
         >>> foo = gdb.parse()
         >>> atoms = gdb.get_atoms('toluene')
-        >>> atoms
         >>> cell = gdb.get_cell('toluene')
         >>> exp = Export(gdb=gdb)
         >>> exp.format_atoms_for_export(cell, atoms, gui=False) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF
@@ -219,21 +220,19 @@ class Export():
          'C5      6  2.9808  10.4443   9.5173',
          'C6      6  3.9205   9.7497  10.2541',
          'C7      6  3.5389   8.6909  11.0530']
-
         >>> exp.format_atoms_for_export(cell, atoms, gui=True) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF
         ['C1 6 1.78099 7.14907 12.00423', 'C2 6 2.20089 8.30676 11.13758',
         'C3 6 1.26895 9.02168 10.39032', 'C4 6 1.64225 10.07768 9.58845',
         'C5 6 2.98081 10.44432 9.51725', 'C6 6 3.92045 9.74974 10.25408',
         'C7 6 3.53891 8.69091 11.05301']
-        
         >>> exp.format_atoms_for_export(cell, atoms, gui=True) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF
         ['C1 6 1.78099 7.14907 12.00423', 'C2 6 2.20089 8.30676 11.13758',
         'C3 6 1.26895 9.02168 10.39032', 'C4 6 1.64225 10.07768 9.58845',
         'C5 6 2.98081 10.44432 9.51725', 'C6 6 3.92045 9.74974 10.25408',
         'C7 6 3.53891 8.69091 11.05301']
-        
         """
         el = Element()
+        atoms = deepcopy(atoms)
         from misc import frac_to_cart
         for line in atoms:
             if int(line[1]) < 0:
