@@ -851,8 +851,9 @@ class globalDB(unittest.TestCase):
 
 class ImportGRADE_Test(unittest.TestCase):
     def setUp(self):
-        self.ig = ImportGRADE('./test-data/PFA.gradeserver_all.tgz')
-        self.igi = ImportGRADE('./test-data/PFA.gradeserver_all.tgz', invert=True)
+        gdb = dbfile.ParseDB('./userdb.txt')
+        self.ig = ImportGRADE('./test-data/PFA.gradeserver_all.tgz', gdb)
+        self.igi = ImportGRADE('./test-data/PFA.gradeserver_all.tgz', gdb, invert=True)
 
     # test for PFA1 is already in db and we want to import again
 
@@ -898,7 +899,8 @@ class ImportGRADE_Test(unittest.TestCase):
 
     def testrun_deleted_pdb_file(self):
         with self.assertRaises(SystemExit):
-            ImportGRADE('./PFA.gradeserver_all_2.tgz')
+            gdb = dbfile.ParseDB('./userdb.txt')
+            ImportGRADE('./PFA.gradeserver_all_2.tgz', gdb)
 
     def testrun_get_restaraints(self):
         self.maxDiff = None

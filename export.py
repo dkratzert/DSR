@@ -17,7 +17,7 @@ from copy import deepcopy
 from atomhandling import get_atomtypes
 from atoms import Element
 from dbfile import ParseDB
-from misc import wrap_headlines
+from misc import wrap_headlines, wrap_stringlist
 from restraints import Restraints
 
 __metaclass__ = type  # use new-style classes
@@ -104,7 +104,7 @@ class Export():
         >>> ex = Export(db)
         >>> ex.export_resfile('water') # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF
         ['TITL water\\n', 'REM This file was exported by DSR version 207\\n',
-        'REM Name: Water, H2O\\nREM Source: pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei\\n', '',
+        'REM Name: Water, H2O\\nREM Source: pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei\\n', '\\n',
         'CELL 0.71073  50.0000  50.0000  50.0000  90.0000  90.0000  90.0000\\n',
         'ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\\n',
         'LATT  -1\\n', 'SFAC O  H\\n', 'UNIT 1  1 \\n', 'REM  RESIDUE: H2O\\n',
@@ -160,8 +160,15 @@ class Export():
             res_export.append('REM This file was exported by DSR version {}\n'.format(VERSION))
         except NameError:
             pass
-        res_export.append('REM Name: {}\nREM Source: {}\n'.format(self._gdb[fragname]['name'], self._gdb[fragname]['source']))
-        res_export.append("{}".format('\n'.join(self._gdb[fragname]['comments'])))
+        comments = self._gdb[fragname]['comments']
+        comments = wrap_stringlist(comments, 75)
+        source = self._gdb[fragname]['source']
+        source = '\n'.join(wrap_stringlist([source], 70))
+        name = self._gdb[fragname]['name']
+        name = '\n'.join(wrap_stringlist([name], 75))
+        res_export.append('REM Name: {}'.format(name, source))
+        res_export.append('REM Source: {}'.format(name, source))
+        res_export.append("{}\n".format('\n'.join(comments)))
         res_export.append('CELL 0.71073 ' + cellstring + '\n')  # the cell with wavelength
         res_export.append('ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n')
         res_export.append('LATT  -1\n')
