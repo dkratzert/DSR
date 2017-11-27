@@ -58,13 +58,12 @@ class Export():
         TODO: make this crude hack more elegant!
         In calculated structure the cell is 1 1 1 90 90 90. Shelxle has problems
         with that when growing. So the cell is expanded to 50 50 50
-        >>> gdb = ParseDB()
-        >>> foo = gdb.parse()
+        >>> gdb = ParseDB('../dsr_db.txt')
         >>> exp = Export(gdb)
         >>> exp.format_calced_coords([1, 1, 1, 90, 90, 90], "benzene")
-        [['50', '50', '50', 90, 90, 90], [['C1', 1, '  0.017600', ' -0.006618', '  0.005344'], ['C2', 1, '  0.015724', ' -0.007554', '  0.004762'], ['C3', 1, '  0.015212', ' -0.006368', '  0.003851'], ['C4', 1, '  0.016584', ' -0.004244', '  0.003510'], ['C5', 1, '  0.018464', ' -0.003288', '  0.004080'], ['C6', 1, '  0.018976', ' -0.004464', '  0.004998']]]
+        [['50', '50', '50', '90', '90', '90'], [['C1', 1, '  0.017600', ' -0.006618', '  0.005344'], ['C2', 1, '  0.015724', ' -0.007554', '  0.004762'], ['C3', 1, '  0.015212', ' -0.006368', '  0.003851'], ['C4', 1, '  0.016584', ' -0.004244', '  0.003510'], ['C5', 1, '  0.018464', ' -0.003288', '  0.004080'], ['C6', 1, '  0.018976', ' -0.004464', '  0.004998']]]
         >>> exp.format_calced_coords([1, 1, 1, 90, 90, 90], "BENZENE")
-        [['50', '50', '50', 90, 90, 90], [['C1', 1, '  0.017600', ' -0.006618', '  0.005344'], ['C2', 1, '  0.015724', ' -0.007554', '  0.004762'], ['C3', 1, '  0.015212', ' -0.006368', '  0.003851'], ['C4', 1, '  0.016584', ' -0.004244', '  0.003510'], ['C5', 1, '  0.018464', ' -0.003288', '  0.004080'], ['C6', 1, '  0.018976', ' -0.004464', '  0.004998']]]
+        [['50', '50', '50', '90', '90', '90'], [['C1', 1, '  0.017600', ' -0.006618', '  0.005344'], ['C2', 1, '  0.015724', ' -0.007554', '  0.004762'], ['C3', 1, '  0.015212', ' -0.006368', '  0.003851'], ['C4', 1, '  0.016584', ' -0.004244', '  0.003510'], ['C5', 1, '  0.018464', ' -0.003288', '  0.004080'], ['C6', 1, '  0.018976', ' -0.004464', '  0.004998']]]
         """
         fragment = fragment.lower()
         atoms = deepcopy(self._gdb.get_atoms(fragment))
@@ -77,6 +76,7 @@ class Export():
             # now the new 50,50,50 cell:
             for n in range(0, 3):
                 cell[n] = '50'
+        cell = [str(x) for x in cell]
         return [cell, atoms]
 
     def make_dfix(self, fragname):
@@ -174,6 +174,7 @@ class Export():
         return res_export
 
     def copy_to_clipboard(self, fragname):
+        # type: (str) -> bool
         """
         copys the exported atoms to the clipboard including FRAG  FEND commands
 
@@ -192,7 +193,9 @@ class Export():
         import pyperclip
         fragname = fragname.lower()
         clip_text = []
-        atoms = self.format_atoms_for_export(fragname, False)
+        cell = self._gdb.get_cell(fragname)
+        atoms = self._gdb.get_atoms(fragname)
+        atoms = self.format_atoms_for_export(cell, atoms, False)
         atoms = '\n'.join(atoms)
         clip_text.append('FRAG')
         clip_text.append('\n' + atoms)
@@ -203,12 +206,12 @@ class Export():
 
     @staticmethod
     def format_atoms_for_export(cell, atoms, gui=False):
+        # type: (list, str, bool) -> list
         """
         Returns properly formated cartesian coordinates for fragment export.
         Atom;;number;;x;;y;;z
 
-        >>> gdb = ParseDB()
-        >>> foo = gdb.parse()
+        >>> gdb = ParseDB('../dsr_db.txt')
         >>> atoms = gdb.get_atoms('toluene')
         >>> cell = gdb.get_cell('toluene')
         >>> exp = Export(gdb=gdb)
@@ -266,8 +269,7 @@ class Export():
     def export_to_gui(self, fragname):
         """
         exports atoms to output for the DSRGui
-        >>> gdb = ParseDB()
-        >>> foo = gdb.parse()
+        >>> gdb = ParseDB('../dsr_db.txt')
         >>> exp = Export(gdb=gdb)
         >>> print(exp.export_to_gui(fragname="toluene")) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF +ELLIPSIS
         C1 6 1.78099 7.14907 12.00423;;C2 6 2.20089 8.30676 11.13758;;C3 6 1.26895 9.02168 10.39032;;C4

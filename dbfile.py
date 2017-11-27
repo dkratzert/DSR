@@ -166,7 +166,7 @@ class ParseDB(object):
     maindb = read_file_data(path_to_maindb)
     """
     def __init__(self, maindb_path=None, userdb_path=None):
-        # type: () -> NotImplemented
+        # type: (str, str) -> NotImplemented
         """
         self._databases: dictionary with the individial fragments
         """
@@ -233,6 +233,7 @@ class ParseDB(object):
                     print('\n*** Duplicate database entry "{}" found! Please remove/rename '
                           'second entry\nand/or check all end tags in the database dsr_usr_db.txt '
                           'or dsr_db.txt. ***'.format(frag))
+                    sys.exit()
                 starttag = True
                 startnum = num
                 db[frag] = {'dbname': dbname}
@@ -386,8 +387,7 @@ class ParseDB(object):
         returns header information of the specific fragment:
         tag, Name/comment, source, cell, residue, dbtype, restr, atoms
         >>> dbpath = os.path.abspath('dsr_db.txt')
-        >>> db = ParseDB()
-        >>> p = db.parse(dbpath, 'dsr_db')
+        >>> db = ParseDB(dbpath)
         >>> db.get_head_for_gui('benZene')
         ... # doctest: +NORMALIZE_WHITESPACE
         <tag>
@@ -428,6 +428,7 @@ class ParseDB(object):
         self.check_db_atom_consistency(fragment)
 
     def check_consistency(self, fragment):
+        # type: (str) -> bool
         """
         check if the fragline makes sense and if the fragment_dict is complete
         """
@@ -480,6 +481,7 @@ class ParseDB(object):
         return formula
 
     def check_db_atom_consistency(self, fragment):
+        # type: (str) -> bool
         """
         This method is for atoms only (without db header)!
         check the db for duplicates:
@@ -494,6 +496,7 @@ class ParseDB(object):
                       'found! Check your database... ***'
                       .format(at, fragment, self.databases[fragment]['name']))
                 sys.exit()
+        return True
 
     def check_db_header_consistency(self, fragment):
         """

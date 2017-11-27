@@ -104,7 +104,7 @@ class CF3(object):
         self.res_file = res_file
         self.rl = ResList(res_file)
         self.e2s = Elem_2_Sfac(sfac_table)
-        atoms = fa.atoms_as_residues
+        atoms = fa.atoms_as_residues()
         self.basefilename = basefilename
         atomlist = []
         # atomlist: ['C1', ['x', 'y', 'z'], linenumber, class, part, element, 

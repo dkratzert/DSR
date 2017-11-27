@@ -94,7 +94,6 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     :param cell: cell parameters
 
     >>> from resfile import ResList
-    >>> from dbfile import global_DB
     >>> from resfile import ResListEdit
     >>> from dsrparse import DSRParser
     >>> from resi import Resi
@@ -106,7 +105,7 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     >>> dsrp = DSRParser(reslist)
     >>> dbhead = ['RESI CF3']
     >>> db_residue_string='CF3'
-    >>> resi = Resi(reslist, dsrp, dbhead, db_residue_string, find_atoms)
+    >>> resi = Resi(dsrp, db_residue_string, find_atoms)
     No residue number was given. Using residue number 4.
     >>> fragment_numberscheme = ['O1_1', 'C1_1', 'C2_1', 'F1_1', 'F2', 'F3', 'C3', 'F4', 'F5', 'F6', 'C4', 'F7', 'F8', 'F9']
     >>> cell = rle.get_cell()
@@ -156,14 +155,15 @@ class FindAtoms():
         self.e2s = Elem_2_Sfac(self.sfac)
         self._residues = self.collect_residues()
 
-    @property
     def atoms_as_residues(self):
         """
-        returns   residues = {   #  0           1            2         3      4      5          6
-                            {'0': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number],
-                           ['C2', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number]},
-                     {'1': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number],
-                     []} }
+        returns   residues = { #        0           1            2         3      4      5          6
+                                {'0': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number],
+                                      ['C2', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number]
+                                },
+                             {'1': ['C1', ['x', 'y', 'z'], linenumber, class, part, element, sfac_number],
+                                   []}
+                             }
         """
         return self._residues
 
