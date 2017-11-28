@@ -20,7 +20,7 @@ import misc
 import networkx
 from afix import Afix
 from atomhandling import get_atomtypes, FindAtoms, check_source_target, \
-    rename_dbhead_atoms, SfacTable, Elem_2_Sfac, NumberScheme
+    rename_restraints_atoms, SfacTable, Elem_2_Sfac, NumberScheme
 from atoms import Element, atoms
 from dbfile import invert_atomic_coordinates, ImportGRADE
 import dsr
@@ -122,6 +122,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         regular dsr run with
         resi cf3 PART 2 occ -31
         """
+        self.maxDiff = None
         self.dsr_runtest(1, '-r')
 
     # @unittest.skip(" skipping2 ")
@@ -550,7 +551,7 @@ class rename_DBHeadatomsTest(unittest.TestCase):
             ['F9A', 'F8A', 'F7A', 'C4A', 'F6A', 'F5A', 'F4A', 'C3A', 'F3A', 'F2A', 'F1A', 'C2A', 'C1A', 'O1A']))
 
     def testrun_rename_dbheadatoms(self):
-        newhead = rename_dbhead_atoms(self.new, self.old, self.head)
+        newhead = rename_restraints_atoms(self.new, self.old, self.head)
         self.assertEqual(newhead[1].split()[5], self.new[8])
         self.assertEqual(newhead[6].split()[3], self.new[0])
         self.assertEqual(newhead[6].split()[0], 'SIMU_CF3')
@@ -852,7 +853,7 @@ class globalDB(unittest.TestCase):
 
 class ImportGRADE_Test(unittest.TestCase):
     def setUp(self):
-        gdb = dbfile.ParseDB('./userdb.txt')
+        gdb = dbfile.ParseDB('../userdb.txt')
         self.ig = ImportGRADE('./test-data/PFA.gradeserver_all.tgz', gdb)
         self.igi = ImportGRADE('./test-data/PFA.gradeserver_all.tgz', gdb, invert=True)
 
@@ -895,12 +896,12 @@ class ImportGRADE_Test(unittest.TestCase):
     def testrun_get_firstlast(self):
         files = self.ig.get_gradefiles('./test-data/PFA.gradeserver_all.tgz')
         atoms = self.ig.get_pdbatoms(files[0])
-        fl = self.ig.get_first_last_atom(atoms)
+        fl = dbfile.get_first_last_atom(atoms)
         self.assertTupleEqual(fl, ('AL1', 'F36'))
 
     def testrun_deleted_pdb_file(self):
         with self.assertRaises(SystemExit):
-            gdb = dbfile.ParseDB('./userdb.txt')
+            gdb = dbfile.ParseDB('../userdb.txt')
             ImportGRADE('./PFA.gradeserver_all_2.tgz', gdb)
 
     def testrun_get_restaraints(self):
