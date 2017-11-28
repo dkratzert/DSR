@@ -1095,5 +1095,5 @@ if __name__ == '__main__':
     #userdb_path = os.path.join(homedir, "dsr_db.txt")
     dbpath = os.path.abspath('../dsr_db.txt')
     db = ParseDB(dbpath)
-    pprint(db.databases['pyrazole'])
+    pprint(db.databases['toluene'])
     print(dbpath)
