@@ -122,7 +122,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         regular dsr run with
         resi cf3 PART 2 occ -31
         """
-        self.maxDiff = None
+        self.maxDiff = 10
         self.dsr_runtest(1, '-r')
 
     # @unittest.skip(" skipping2 ")
@@ -235,7 +235,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         regular dsr run without fit with
         resi cf3 PART 2 occ -31
         """
-        self.dsr_runtest(12, ending='ins', parameter='-n -r', remlines=[99, 114])
+        self.dsr_runtest(12, ending='ins', parameter='-n -r', remlines=[100, 115])
 
     # @unittest.skip(" skipping 13")
     def testrun_run13(self):
