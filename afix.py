@@ -17,7 +17,6 @@ import sys
 import constants
 import fnmatch
 from constants import RESTRAINT_CARDS
-from dbfile import get_first_last_atom
 from misc import id_generator
 
 
