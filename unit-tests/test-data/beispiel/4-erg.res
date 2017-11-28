@@ -71,6 +71,7 @@ RESI 0
 RESI 6 CCF3
 REM The restraints for residue CCF3 are in this file:
 +dsr_CCF3_6_4a.dfix
+SAME_CCF3 O1 F9
 PART 2 -31
 O1    3    0.081988    0.234653    0.402084   -31.00000    0.04000
 C1    1    0.033708    0.232973    0.336746   -31.00000    0.04000
@@ -314,7 +315,7 @@ HKLF 4
 
 REM  p21c in P2(1)/c
 REM R1 =  0.1447 for    7085 Fo > 4sig(Fo)  and  0.1893 for all   10786 data
-REM    840 parameters refined using   5905 restraints
+REM    840 parameters refined using   5945 restraints
 
 END  
      

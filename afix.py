@@ -346,14 +346,15 @@ class Afix(object):
                 except IndexError:
                     print('*** More source than target atoms present! Exiting... ***')
                     sys.exit(False)
-        newlist = []
-        for i in afix_list:
-            i[0] = new_atomnames.pop()
+        new_atom_list = []
+        new_atomnames.reverse()
+        for n, i in enumerate(afix_list):
+            i[0] = new_atomnames[n]
             i[2] = '{:>10.6f}'.format(float(i[2]))
             i[3] = '{:>10.6f}'.format(float(i[3]))
             i[4] = '{:>10.6f}'.format(float(i[4]))
-            newlist.append('   '.join(i).rstrip())
-        atoms = '\n'.join(newlist)
+            new_atom_list.append('   '.join(i).rstrip())
+        atoms = '\n'.join(new_atom_list)
         afixnumber = '179'   # makes afix 179 default
         if self.part:
             part = 'PART '+str(self.part)+' '+str(occ_part)
@@ -367,11 +368,11 @@ class Afix(object):
             resi_end = ''
         if external_restraints and not self.options.rigid_group:
             if self.dsrp.resiflag:
-                self._restraints += '\nREM The restraints for residue {} are in this ' \
-                                'file:\nrem +{}\nREM {}\n'.format(resi.get_residue_class, dfx_file_name, self.rand_id_dfx)
+                self._restraints += '\nREM The restraints for residue {} are in this file:\nrem +{}\nREM {}\n'\
+                                            .format(resi.get_residue_class, dfx_file_name, self.rand_id_dfx)
             else:
-                self._restraints += '\nREM The restraints for this moiety are in this'\
-                                ' file:\nrem +{}\nREM {}\n'.format(dfx_file_name, self.rand_id_dfx)
+                self._restraints += '\nREM The restraints for this moiety are in this file:\nrem +{}\nREM {}\n'\
+                                            .format(dfx_file_name, self.rand_id_dfx)
         if self.options.rigid_group:
             afixtag = ''
             if self.dsrp.resiflag:
@@ -381,9 +382,10 @@ class Afix(object):
         else:
             afixtag = 'REM '+self.rand_id_afix
             self._restraints = ''.join(self._restraints)
+        # Adds a "SAME_resiclass firstatom > lastatom" to the afix:
         same = ''
-        #if self.dsrp.resiflag:
-        #    same = "SAME_{} {} {}\n".format(resi.get_residue_class, *get_first_last_atom(atoms))
+        if self.dsrp.resiflag and not self.dsrp.dfix and not self.options.rigid_group:
+            same = "SAME_{} {} {}\n".format(resi.get_residue_class, new_atomnames[0], new_atomnames[-1])
         afix = '{0}{8}{1}\n' \
                'AFIX {2}\n' \
                '{3}\n' \
@@ -398,8 +400,8 @@ class Afix(object):
                                 atoms,  # 4
                                 afixtag,  # 5
                                 part2,  # 6
-                                resi_end,
-                                same)        # 7
+                                resi_end,  # 7
+                                same)        # 8
         return afix
 
     def write_dbhead_to_file(self, filename, dbhead, resi_class, resi_number):

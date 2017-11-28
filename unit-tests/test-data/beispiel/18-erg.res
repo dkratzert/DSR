@@ -76,7 +76,7 @@ SADI 0.04 C2A C3A C3A C4A C2A C4A
 SADI 0.04 O1A C2A O1A C3A O1A C4A
 SADI 0.04 F1A F2A F2A F3A F3A F1A F4A F5A F5A F6A F6A F4A F7A F8A F8A F9A =
    F9A F7A
-DFIX 1.35 O1A C1A
+SADI 0.02 O1A C1A
 SADI 0.1 F1A C1A F2A C1A F3A C1A F4A C1A F5A C1A F6A C1A F7A C1A F8A C1A =
    F9A C1A
 SIMU O1A > F9A
@@ -321,7 +321,7 @@ HKLF 4
 
 REM  p21c in P2(1)/c
 REM R1 =  0.1447 for    7085 Fo > 4sig(Fo)  and  0.1893 for all   10786 data
-REM    840 parameters refined using   4466 restraints
+REM    840 parameters refined using   4465 restraints
 
 END  
      

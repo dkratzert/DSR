@@ -69,7 +69,10 @@ F9    4    0.078594    0.131920    0.643553   -21.00000    0.05687    0.04924 =
 PART 0
 RESI 0
 
+SADI_CCF3 0.02 O1 C1
+
 RESI 6 CCF3
+SAME_CCF3 O1 F9
 PART 2 -31
 O1    3    0.080239    0.246630    0.396872   -31.00000    0.04000
 C1    1    0.038471    0.200357    0.350938   -31.00000    0.04000
@@ -313,7 +316,7 @@ HKLF 4
 
 REM  p21c in P2(1)/c
 REM R1 =  0.1667 for    7085 Fo > 4sig(Fo)  and  0.2106 for all   10786 data
-REM    840 parameters refined using   5866 restraints
+REM    840 parameters refined using   5906 restraints
 
 END  
      
