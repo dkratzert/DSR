@@ -217,7 +217,8 @@ class dsr_complete_runs_Test(unittest.TestCase):
         invert fragment
         -r -t
         """
-        self.dsr_runtest(10, '-t -r', limit_end=300)
+        # Line 74 has one digit difference in Windows and Mac:
+        self.dsr_runtest(10, '-t -r', limit_end=300, remlines=[74])
 
     # @unittest.skip(" skipping 11")
     def testrun_run11(self):
