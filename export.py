@@ -14,6 +14,8 @@ from __future__ import print_function
 
 from copy import deepcopy
 
+import re
+
 from atomhandling import get_atomtypes
 from atoms import Element
 from dbfile import ParseDB
@@ -102,18 +104,18 @@ class Export():
         exports a .res file from a database entry to be viewed in a GUI
         >>> db = ParseDB('../dsr_db.txt')
         >>> ex = Export(db)
-        >>> ex.export_resfile('water') # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF
+        >>> ex.export_resfile('water') # doctest: +NORMALIZE_WHITESPACE
         ['TITL water\\n', 'REM This file was exported by DSR version 207\\n',
-        'REM Name: Water, H2O\\nREM Source: pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei\\n', '\\n',
-        'CELL 0.71073  50.0000  50.0000  50.0000  90.0000  90.0000  90.0000\\n',
+        'REM Name: Water, H2O\\n', 'REM Source: pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei\\n',
+        '\\n', 'CELL 0.71073  50.0000  50.0000  50.0000  90.0000  90.0000  90.0000\\n',
         'ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\\n',
         'LATT  -1\\n', 'SFAC O  H\\n', 'UNIT 1  1 \\n', 'REM  RESIDUE: H2O\\n',
         'REM Sum formula: H2 O1 \\n', 'WGHT  0.1\\n', 'FVAR  1.0\\n',
         'rem Restraints from DSR database:\\n',
         'DFIX 0.9584 0.001 O1 H1 O1 H2\\nDFIX 1.5150 0.001 H1 H2\\n',
         'rem Restraints from atom connectivities:\\n',
-        ['DFIX 0.9584 H2   O1  \\n', 'DFIX 0.9584 H1   O1  \\n', 'DANG 1.5151 H1   H2  \\n'],
-        'rem end of restraints\\n', '\\n',
+        ['DFIX 0.9584 H2   O1  \\n', 'DFIX 0.9584 H1   O1  \\n',
+        'DANG 1.5151 H1   H2  \\n'], 'rem end of restraints\\n', '\\n',
         ['O1   1     0.00000   0.00000   0.00000   11.0   0.04\\n',
         'H1   2     0.01917   0.00000   0.00000   11.0   0.04\\n',
         'H2   2    -0.00478   0.01856   0.00000   11.0   0.04\\n'],
@@ -166,8 +168,8 @@ class Export():
         source = '\n'.join(wrap_stringlist([source], 70))
         name = self._gdb[fragname]['name']
         name = '\n'.join(wrap_stringlist([name], 75))
-        res_export.append('REM Name: {}'.format(name, source))
-        res_export.append('REM Source: {}'.format(name, source))
+        res_export.append('REM Name: {}'.format(name))
+        res_export.append('REM Source: {}'.format(source))
         res_export.append("{}\n".format('\n'.join(comments)))
         res_export.append('CELL 0.71073 ' + cellstring + '\n')  # the cell with wavelength
         res_export.append('ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\n')

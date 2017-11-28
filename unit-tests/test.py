@@ -99,14 +99,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
                 c = ext.readlines()
             with open('./test-data/beispiel/{}-erg.dfix'.format(external_file)) as ext2:
                 d = ext2.readlines()
-            misc.remove_file('./test-data/beispiel/{}.dfix'.format(external_file))
         print('{} test:'.format(nummer))
-        misc.remove_file('./test-data/beispiel/{}a.hkl'.format(nummer))
-        misc.remove_file('./test-data/beispiel/{}a.ins'.format(nummer))
-        misc.remove_file('./test-data/beispiel/{}a.res'.format(nummer))
-        misc.remove_file('./test-data/beispiel/{}a.lst'.format(nummer))
-        misc.remove_file('./test-data/beispiel/{}a.fcf'.format(nummer))
-        misc.remove_file('./test-data/beispiel/{}.fcf'.format(nummer))
         print("parameter:", parameter)
         for line in remlines:
             del a[line]
@@ -115,6 +108,13 @@ class dsr_complete_runs_Test(unittest.TestCase):
         if external_file:
             self.assertEqual(d, c)
         print('{} '.format(nummer) * 10, "ende")
+        misc.remove_file('./test-data/beispiel/{}a.hkl'.format(nummer))
+        misc.remove_file('./test-data/beispiel/{}a.ins'.format(nummer))
+        misc.remove_file('./test-data/beispiel/{}a.res'.format(nummer))
+        misc.remove_file('./test-data/beispiel/{}a.lst'.format(nummer))
+        misc.remove_file('./test-data/beispiel/{}a.fcf'.format(nummer))
+        misc.remove_file('./test-data/beispiel/{}.fcf'.format(nummer))
+        misc.remove_file('./test-data/beispiel/{}.dfix'.format(external_file))
 
     # @unittest.skip(" skipping1 ")
     def testrun_run1(self):
@@ -205,10 +205,10 @@ class dsr_complete_runs_Test(unittest.TestCase):
             ex = txt.readlines()
         with open('toluene-erg.res') as txt2:
             ex_erg = txt2.readlines()
-        misc.remove_file('toluene.res')
         del ex[1]  # line with the version number
         del ex_erg[1]
         self.assertEqual(ex, ex_erg)
+        misc.remove_file('toluene.res')
         print('9 ' * 10, 'ende')
 
     # @unittest.skip(" skipping 10")
@@ -334,7 +334,7 @@ db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
                'SIMU O1 > F9', 'RIGU O1 > F9']
 
 wraphead = ['SADI C1 C2 C1 C3 C1 C4\n',
-            'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 =\n   F7 C4 F8 C4 F9 C4\n',
+            'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 =\n   C3 F7 C4 F8 C4 F9 C4\n',
             'SADI 0.04 C2 C3 C3 C4 C2 C4\n', 'SADI 0.04 O1 C2 O1 C3 O1 C4\n',
             'SADI 0.04 F1 F2 F2 F3 F3 F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7\n',
             'SADI 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1\n',
