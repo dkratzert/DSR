@@ -326,7 +326,7 @@ class DSR():
                                     self.gdb.get_fragment_name(self.fragment),
                                     self.gdb.get_src(self.fragment)),
                                width=74, subsequent_indent='REM ')
-        # TODO: test if slow for big files:
+        # check if restraints already inserted:
         for line in self.reslist:
             try:
                 if line.split()[4] == self.fragment + ',':

@@ -772,6 +772,19 @@ class ParseDB(object):
         return tags
 
 
+def get_first_last_atom(atoms):
+    """
+    :type atoms: list
+    returns the first and the last atom from the imported atom list
+    """
+    try:
+        first = atoms[0][0]
+        last = atoms[-1][0]
+    except (KeyError, IndexError):
+        return False
+    return first, last
+
+
 class ImportGRADE():
     def __init__(self, grade_tar_file, db, invert=False, maindb=None, userdb=None):
         """
@@ -800,7 +813,7 @@ class ImportGRADE():
         self._dfixfile = gradefiles[1]
         # self._obpropfile = gradefiles[2]
         self._atoms = self.get_pdbatoms(self._pdbfile)
-        self._firstlast = self.get_first_last_atom(self._atoms)
+        self._firstlast = get_first_last_atom(self._atoms)
         self._restraints = self.get_restraints()
         self._resi_name = self.get_resi_from_pdbfile()
         self._frag_name = self.get_name_from_pdbfile()
@@ -929,18 +942,6 @@ class ImportGRADE():
                 if line.startswith(m):
                     comments.append(line.split())
         return comments
-
-    def get_first_last_atom(self, atoms):
-        """
-        :type atoms: list
-        returns the first and the last atom from the imported atom list
-        """
-        try:
-            first = atoms[0][0]
-            last = atoms[-1][0]
-        except:
-            return False
-        return first, last
 
     def get_restraints(self):
         """

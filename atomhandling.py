@@ -548,10 +548,10 @@ def check_source_target(db_source_atoms, res_target_atoms, dbatoms):
     return True
 
 
-def rename_dbhead_atoms(new_atoms, old_atoms, dbhead):
+def rename_restraints_atoms(new_atoms, old_atoms, dbhead):
     """
-    returns the dbentry header with the old atom names replaced by the new
-    number scheme
+    Returns the restraints with the old atom names replaced by the new
+    number scheme fitting to the structures sheme.
 
     :param new_atoms: ['C1A', 'O1A', 'C2A', ...]
     :param old_atoms: ['C1', 'O1', 'C2', ...]
