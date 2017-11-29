@@ -104,6 +104,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         misc.remove_file('./test-data/beispiel/{}a.hkl'.format(nummer))
         misc.remove_file('./test-data/beispiel/{}a.fcf'.format(nummer))
         misc.remove_file('./test-data/beispiel/{}.fcf'.format(nummer))
+        misc.remove_file('./test-data/beispiel/{}.2fcf'.format(nummer))
         misc.remove_file('./test-data/beispiel/{}a.lst'.format(nummer))
         for line in remlines:
             del a[line]
@@ -123,7 +124,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         resi cf3 PART 2 occ -31
         """
         self.maxDiff = 10
-        self.dsr_runtest(1, '-r')
+        self.dsr_runtest(1, '-r', remlines=[317])
 
     # @unittest.skip(" skipping2 ")
     def testrun_run2(self):
@@ -132,7 +133,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         resi cf3 dfix =
             PART 2 occ -31
         """
-        self.dsr_runtest(2, '-r')
+        self.dsr_runtest(2, '-r', remlines=[346])
 
     # @unittest.skip(" skipping3 ")
     def testrun_run3(self):
@@ -140,7 +141,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         regular run with:
          occ -31 PART 2
         """
-        self.dsr_runtest(3, '-r')
+        self.dsr_runtest(3, '-r', remlines=[318])
 
     # @unittest.skip(" skipping4 ")
     def testrun_run4(self):
@@ -149,7 +150,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         resi cf3 =
             PART 2 occ -31
         """
-        self.dsr_runtest(4, '-re', external_file='dsr_CCF3_6_4a')
+        self.dsr_runtest(4, '-re', external_file='dsr_CCF3_6_4a', remlines=[310])
 
     # @unittest.skip(" skipping5 ")
     def testrun_run5(self):
@@ -158,14 +159,14 @@ class dsr_complete_runs_Test(unittest.TestCase):
         REM dsr put oc(CF3)3 with o1 c1 c2 C3 on O1_4 C1_4 Q6 Q7 resi Ccf3 part 2 occ =
             -31 dfix
         """
-        self.dsr_runtest(5, '-re', external_file='dsr_CCF3_6_5a_dfx')
+        self.dsr_runtest(5, '-re', external_file='dsr_CCF3_6_5a_dfx', remlines=[310])
 
     # @unittest.skip(" skipping6 ")
     def testrun_run6(self):
         """
         -re   PART 2 occ -31
         """
-        self.dsr_runtest(6, '-re', external_file='dsr_1_6a')
+        self.dsr_runtest(6, '-re', external_file='dsr_1_6a', remlines=[310])
 
     # @unittest.skip(" skipping 7")
     def testrun_run7(self):
@@ -173,7 +174,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         rigid
 
         """
-        self.dsr_runtest(7, '-g -r')
+        self.dsr_runtest(7, '-g -r', remlines=[310])
 
     # @unittest.skip(" skipping 8")
     def testrun_8(self):
@@ -227,7 +228,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         regular dsr run with
         replace resi PART 0
         """
-        self.dsr_runtest(11, '-r', remlines=[108])
+        self.dsr_runtest(11, '-r', remlines=[108, 310])
 
     # @unittest.skip(" skipping 12")
     def testrun_run12(self):
@@ -243,7 +244,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         rem dsr put oc(cf3)3 with o1 c1 c2 c3 c4 on O1_3 c1_3 q6 Q4 q7 resi cf3 =
             PART 2 occ 501
         """
-        self.dsr_runtest(13, '-r', remlines=[331])
+        self.dsr_runtest(13, '-r', remlines=[330, 331, 332, 326])
 
     # @unittest.skip(" skipping 14")
     def testrun_run14(self):
@@ -252,7 +253,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         REM  dsr put oc(CF3)3 with o1 c1 c2 C3 on O1_4 C1_4 Q6 Q7 resi cf3 =
             PART 2
         """
-        self.dsr_runtest(14, '-r')
+        self.dsr_runtest(14, '-r', remlines=[319])
 
     # @unittest.skip(" skipping 15")
     def testrun_run15(self):
@@ -260,7 +261,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         dsr -r foo
         REM  dsr put oc(CF3)3 with o1 c1 c2 C3 on O1_4 C1_4 Q6 Q7
         """
-        self.dsr_runtest(15, '-r')
+        self.dsr_runtest(15, '-r', remlines=[317])
 
     # @unittest.skip(" skipping 16")
     def testrun_run16(self):
@@ -268,7 +269,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         dsr -r
         REM  dsr put oc(CF3)3 with o1 c1 c2 C3 on O1_4 C1_4 Q6 Q7 RESI
         """
-        self.dsr_runtest(16, '-r')
+        self.dsr_runtest(16, '-r', remlines=[310])
 
     # @unittest.skip(" skipping 17")
     def testrun_run17(self):
@@ -276,7 +277,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         dsr -r with:
         REM  dsr put oc(CF3)3 with o1 c1 c2 C3 on O1_4 C1_4 Q6 Q7 resi occ -31
         """
-        self.dsr_runtest(17, '-r')
+        self.dsr_runtest(17, '-r', remlines=[310])
 
     # @unittest.skip(" skipping 18")
     def testrun_run18(self):
@@ -284,7 +285,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         dsr -r foo
         REM  dsr put oc(CF3)3 with o1 c1 c2 C3 on O1_4 C1_4 Q6 Q7 occ -31
         """
-        self.dsr_runtest(18, '-r')
+        self.dsr_runtest(18, '-r', remlines=[317])
 
     # @unittest.skip(" skipping 19")
     def testrun_run19(self):
@@ -292,7 +293,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         occ -31 without FVAR
 
         """
-        self.dsr_runtest(19, '-re', external_file='dsr_1_19a')
+        self.dsr_runtest(19, '-re', external_file='dsr_1_19a', remlines=[310])
 
     # @unittest.skip(" skipping 20")
     def testrun_run20(self):
@@ -1099,10 +1100,10 @@ class ResidueTest(unittest.TestCase):
         self.assertNotEqual(num, '2')
 
     def testrun_get_resi_syntax(self):
-        empty_dict = {'alias': None, 'class': None, 'number': None}
-        only_number = {'alias': None, 'class': None, 'number': '2'}
-        class_number = {'alias': None, 'class': 'CF3', 'number': '2'}
-        only_class = {'alias': None, 'class': 'CF3', 'number': None}
+        empty_dict = {'alias': '', 'class': '', 'number': ''}
+        only_number = {'alias': '', 'class': '', 'number': '2'}
+        class_number = {'alias': '', 'class': 'CF3', 'number': '2'}
+        only_class = {'alias': '', 'class': 'CF3', 'number': ''}
         class_number_alias = {'alias': '3', 'class': 'CF3', 'number': '2'}
         self.assertDictEqual(empty_dict, self.resi.get_resi_syntax('RESI'))
         with self.assertRaises(SystemExit):
