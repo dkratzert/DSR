@@ -53,6 +53,7 @@ def format_atom_names(atoms, part='', resinum=''):
     :param part:  string, part number
     :param resinum: string, residue number
     """
+    numpart = ''
     part = str(part)
     resinum = str(resinum)
     if not resinum:
@@ -64,7 +65,7 @@ def format_atom_names(atoms, part='', resinum=''):
         else:
             print('Warning! Part symbol with non-numeric character detected.')
             partsymbol = ''
-    except(ValueError):
+    except ValueError:
         partsymbol = ''
     if resinum and partsymbol:
         numpart = '_' + resinum + partsymbol
