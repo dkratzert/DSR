@@ -21,7 +21,7 @@ from os.path import expanduser
 from terminalsize import get_terminal_size
 from dsrparse import DSRParser
 from dbfile import ImportGRADE, print_search_results
-from resi import Resi
+from resi import Resi, remove_resi
 from restraints import ListFile, Lst_Deviations, Restraints
 from afix import Afix
 from refine import ShelxlRefine
@@ -284,7 +284,7 @@ class DSR():
         self.gdb.check_sadi_consistence(self.fragment)
         if dsrp.occupancy:
             rle.set_free_variables(dsrp.occupancy)
-        restraints = resi.remove_resi(restraints)
+        restraints = remove_resi(restraints)
         # corrects the atom type according to the previous defined global sfac table:
         dbatoms = atomhandling.set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table)
 

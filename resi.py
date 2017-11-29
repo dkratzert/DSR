@@ -22,6 +22,32 @@ from constants import RESTRAINT_CARDS
 from dsrparse import DSRParser
 
 
+def remove_resi(head):
+    # type: (list) -> list
+    """
+    removes all resi commands and classes from restraints
+    :param head: database header of the current fragment
+    :type head: list
+    """
+    rhead = []  # head without resi
+    delhead = []
+    for dummy, line in enumerate(head):
+        line = line.split()
+        try:
+            if line[0][:4] in RESTRAINT_CARDS:
+                line[0] = line[0].split('_')[0]
+        except IndexError:
+            continue
+        line = ' '.join(line)
+        delhead.append(line)
+    for line in delhead:
+        line = line.strip(' \n\r').upper()
+        if line.startswith('RESI'):
+                continue
+        rhead.append(line)
+    return rhead
+
+
 class Resi(object):
     def __init__(self, dsrp, db_residue_string, find_atoms):
         # type: (DSRParser, str, FindAtoms) -> NotImplemented
@@ -76,30 +102,6 @@ class Resi(object):
         :rtype self._combined_resi['class']: str
         """
         return self._combined_resi['class']
-
-    def remove_resi(self, head):
-        """
-        removes all resi commands and classes from head
-        :param head: database header of the current fragment
-        :type head: list
-        """
-        rhead = []  # head without resi
-        delhead = []
-        for dummy, line in enumerate(head):
-            line = line.split()
-            try:
-                if line[0][:4] in RESTRAINT_CARDS:
-                    line[0] = line[0].split('_')[0]
-            except IndexError:
-                continue
-            line = ' '.join(line)
-            delhead.append(line)
-        for line in delhead:
-            line = line.strip(' \n\r').upper()
-            if line.startswith('RESI'):
-                    continue
-            rhead.append(line)
-        return rhead
 
     def format_restraints(self, head):
         """
@@ -202,9 +204,9 @@ class Resi(object):
         """
         resi = inresi[:]
         resi_dict = {
-            'class' : None,
-            'number': None,
-            'alias' : None}
+            'class' : '',
+            'number': '',
+            'alias' : ''}
         if not resi:
             print('No valid RESI instruction found in the database entry!')
             sys.exit()
@@ -212,10 +214,11 @@ class Resi(object):
             resi.sort()
         except AttributeError:
             return resi_dict
-        if any([x.isalpha() for x in resi[-1]]): # any character of class must be a letter
+        # any character of class must be a letter (New syntax in SHELXL 2017/1):
+        if any([x.isalpha() for x in resi[-1]]):
             resi_dict['class'] = resi.pop()
         if len(resi) > 0:
-            if str.isdigit(resi[0][0]): # first character of number must be an digit
+            if str.isdigit(resi[0][0]):  # first character of number must be an digit
                 resi_dict['number'] = resi[0]
                 del resi[0]
             else:
