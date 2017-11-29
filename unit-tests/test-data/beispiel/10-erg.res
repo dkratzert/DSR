@@ -15,8 +15,6 @@ TEMP -173.18
 BOND $H
 fmap 2
 
-SAME_CCF3 O1 > F9
-
 REM Restraints for Fragment oc(cf3)3, Nonafluoro-tert-butoxy, [(CF3)3CO]-
 REM from: TURBOMOLE V6.0 B-P86/def-SV(P). Please cite
 REM doi:10.1107/S1600576715005580
@@ -29,6 +27,7 @@ DFIX_CCF3 1.35 O1 C1
 SADI_CCF3 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1
 SIMU_CCF3 O1 > F9
 RIGU_CCF3 O1 > F9
+SAME_CCF3 O1 > F9
 
 WGHT    0.049400    0.393100
 FVAR       0.08683   0.48166   0.55540
@@ -72,7 +71,6 @@ RESI 0
 SADI_CCF3 0.02 O1 C1
 
 RESI 6 CCF3
-SAME_CCF3 O1 F9
 PART 2 -31
 O1    3    0.080239    0.246630    0.396872   -31.00000    0.04000
 C1    1    0.038471    0.200357    0.350938   -31.00000    0.04000
@@ -81,7 +79,7 @@ F1    4    0.239378    0.177134    0.306239   -31.00000    0.04000
 F2    4    0.070564    0.173250    0.238038   -31.00000    0.04000
 F3    4    0.142553    0.265299    0.275627   -31.00000    0.04000
 C3    1   -0.105276    0.212950    0.327687   -31.00000    0.04000
-F4    4   -0.173509    0.224775    0.379074   -31.00000    0.04000
+F4    4   -0.173509    0.224775    0.379075   -31.00000    0.04000
 F5    4   -0.112781    0.265695    0.288999   -31.00000    0.04000
 F6    4   -0.158639    0.163686    0.293705   -31.00000    0.04000
 C4    1    0.053795    0.134322    0.386817   -31.00000    0.04000
@@ -316,7 +314,7 @@ HKLF 4
 
 REM  p21c in P2(1)/c
 REM R1 =  0.1667 for    7085 Fo > 4sig(Fo)  and  0.2106 for all   10786 data
-REM    840 parameters refined using   5906 restraints
+REM    840 parameters refined using   5866 restraints
 
 END  
      

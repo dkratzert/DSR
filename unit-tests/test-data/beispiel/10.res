@@ -15,7 +15,6 @@ TEMP -173.18
 BOND $H
 fmap 2
 
-SAME_CCF3 O1 > F9
 
 REM Restraints for Fragment oc(cf3)3, Nonafluoro-tert-butoxy, [(CF3)3CO]-
 REM from: TURBOMOLE V6.0 B-P86/def-SV(P). Please cite
@@ -29,7 +28,7 @@ DFIX_CCF3 1.35 O1 C1
 SADI_CCF3 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1
 SIMU_CCF3 O1 > F9
 RIGU_CCF3 O1 > F9
-
+SAME_CCF3 O1 > F9
 
 WGHT    0.049400    0.393100
 FVAR       0.08683   0.48166   0.55540
