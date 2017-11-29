@@ -383,8 +383,8 @@ class Afix(object):
             self._restraints = ''.join(self._restraints)
         # Adds a "SAME_resiclass firstatom > lastatom" to the afix:
         same = ''
-        if self.dsrp.resiflag and not self.dsrp.dfix and not self.options.rigid_group:
-            same = "SAME_{} {} {}\n".format(resi.get_residue_class, new_atomnames[0], new_atomnames[-1])
+        #if self.dsrp.resiflag and not self.dsrp.dfix and not self.options.rigid_group:
+        #    same = "SAME_{} {} > {}\n".format(resi.get_residue_class, new_atomnames[0], new_atomnames[-1])
         afix = '{0}{8}{1}\n' \
                'AFIX {2}\n' \
                '{3}\n' \
