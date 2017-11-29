@@ -18,7 +18,7 @@ import re
 
 from atomhandling import get_atomtypes
 from atoms import Element
-from dbfile import ParseDB
+from dbfile import ParseDB, invert_atomic_coordinates
 from misc import wrap_headlines, wrap_stringlist
 from restraints import Restraints
 
@@ -55,21 +55,19 @@ class Export():
         self.invert = invert
         self._gdb = gdb
 
-    def format_calced_coords(self, cell, fragment):
-        # type: (list, str) -> list
+    def expand_calced_cell(self, cell, atoms):
+        # type: (list, list) -> list
         """
         TODO: make this crude hack more elegant!
         In calculated structure the cell is 1 1 1 90 90 90. Shelxle has problems
         with that when growing. So the cell is expanded to 50 50 50
         >>> gdb = ParseDB('../dsr_db.txt')
         >>> exp = Export(gdb)
-        >>> exp.format_calced_coords([1, 1, 1, 90, 90, 90], "benzene")
-        [[50, 50, 50, 90, 90, 90], [['C1', 1, 0.0176, -0.006618, 0.005344], ['C2', 1, 0.015724, -0.007554, 0.004762], ['C3', 1, 0.015212, -0.006368, 0.003851], ['C4', 1, 0.016584, -0.004244, 0.00351], ['C5', 1, 0.018464, -0.003288, 0.00408], ['C6', 1, 0.018976, -0.004464, 0.004998]]]
-        >>> exp.format_calced_coords([1, 1, 1, 90, 90, 90], "BENZENE")
+        >>> atoms = gdb.get_atoms('benzene')
+        >>> exp.expand_calced_cell([1, 1, 1, 90, 90, 90], atoms)
         [[50, 50, 50, 90, 90, 90], [['C1', 1, 0.0176, -0.006618, 0.005344], ['C2', 1, 0.015724, -0.007554, 0.004762], ['C3', 1, 0.015212, -0.006368, 0.003851], ['C4', 1, 0.016584, -0.004244, 0.00351], ['C5', 1, 0.018464, -0.003288, 0.00408], ['C6', 1, 0.018976, -0.004464, 0.004998]]]
         """
-        fragment = fragment.lower()
-        atoms = deepcopy(self._gdb.get_atoms(fragment))
+        atoms = deepcopy(atoms)
         summe = int(sum(cell[0:3]))  # this is to detect calculated structures
         if summe == 3:  # 1+1+1=3!
             for coord in range(2, 5):  # x, y, z of coordinates
@@ -123,12 +121,13 @@ class Export():
         """
         fragname = fragname.lower()
         cell = self._gdb.get_cell(fragname)
+        atoms = self._gdb.get_atoms(fragname)
         # expands the cell of calculated structures:
-        cell, atoms = self.format_calced_coords(cell=cell, fragment=fragname)
-#        atoms = self._gdb.get_atoms(fragname, cartesian=False)
+        cell, atoms = self.expand_calced_cell(cell, atoms)
         cellstring = '{:>8.4f} {:>8.4f} {:>8.4f} {:>8.4f} {:>8.4f} {:>8.4f}'.format(*cell)
         if self.invert:
             print("Fragment inverted.")
+            atoms = invert_atomic_coordinates(atoms)
         try:
             from dsr import VERSION
         except ImportError:
