@@ -101,6 +101,10 @@ class dsr_complete_runs_Test(unittest.TestCase):
                 d = ext2.readlines()
         print('{} test:'.format(nummer))
         print("parameter:", parameter)
+        misc.remove_file('./test-data/beispiel/{}a.hkl'.format(nummer))
+        misc.remove_file('./test-data/beispiel/{}a.fcf'.format(nummer))
+        misc.remove_file('./test-data/beispiel/{}.fcf'.format(nummer))
+        misc.remove_file('./test-data/beispiel/{}a.lst'.format(nummer))
         for line in remlines:
             del a[line]
             del b[line]
@@ -108,12 +112,8 @@ class dsr_complete_runs_Test(unittest.TestCase):
         if external_file:
             self.assertEqual(d, c)
         print('{} '.format(nummer) * 10, "ende")
-        misc.remove_file('./test-data/beispiel/{}a.hkl'.format(nummer))
         misc.remove_file('./test-data/beispiel/{}a.ins'.format(nummer))
         misc.remove_file('./test-data/beispiel/{}a.res'.format(nummer))
-        misc.remove_file('./test-data/beispiel/{}a.lst'.format(nummer))
-        misc.remove_file('./test-data/beispiel/{}a.fcf'.format(nummer))
-        misc.remove_file('./test-data/beispiel/{}.fcf'.format(nummer))
         misc.remove_file('./test-data/beispiel/{}.dfix'.format(external_file))
 
     # @unittest.skip(" skipping1 ")
