@@ -259,6 +259,10 @@ class Afix(object):
         # Residue is active:
         if self.dsrp.resiflag:
             self._restraints = resi.format_restraints(self._restraints)
+            # Adds a "SAME_resiclass firstatom > lastatom" to the afix:
+            if not self.dsrp.dfix and not self.options.rigid_group:
+                self._restraints += ["SAME_{} {} > {}".format(resi.get_residue_class,
+                                                                 new_atomnames[-1], new_atomnames[0])]
             self._restraints = self.remove_duplicate_restraints(self._restraints, self.collect_all_restraints(),
                                                                 resi.get_residue_class)
             if not external_restraints:
@@ -381,11 +385,7 @@ class Afix(object):
         else:
             afixtag = 'REM '+self.rand_id_afix
             self._restraints = ''.join(self._restraints)
-        # Adds a "SAME_resiclass firstatom > lastatom" to the afix:
-        same = ''
-        #if self.dsrp.resiflag and not self.dsrp.dfix and not self.options.rigid_group:
-        #    same = "SAME_{} {} > {}\n".format(resi.get_residue_class, new_atomnames[0], new_atomnames[-1])
-        afix = '{0}{8}{1}\n' \
+        afix = '{0}{1}\n' \
                'AFIX {2}\n' \
                '{3}\n' \
                '{4}\n' \
@@ -400,7 +400,7 @@ class Afix(object):
                                 afixtag,  # 5
                                 part2,  # 6
                                 resi_end,  # 7
-                                same)        # 8
+                                )        # 8
         return afix
 
     def write_dbhead_to_file(self, filename, dbhead, resi_class, resi_number):
