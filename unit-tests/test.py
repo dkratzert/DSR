@@ -82,7 +82,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         :param parameter: dsr command line parameter
         :return: None
         """
-        if remlines is None:
+        if not remlines:
             remlines = []
         d = []
         c = []
@@ -99,6 +99,9 @@ class dsr_complete_runs_Test(unittest.TestCase):
                 c = ext.readlines()
             with open('./test-data/beispiel/{}-erg.dfix'.format(external_file)) as ext2:
                 d = ext2.readlines()
+        for line in remlines:
+            a[line] = ''
+            b[line] = ''
         print('{} test:'.format(nummer))
         print("parameter:", parameter)
         misc.remove_file('./test-data/beispiel/{}a.hkl'.format(nummer))
@@ -106,9 +109,8 @@ class dsr_complete_runs_Test(unittest.TestCase):
         misc.remove_file('./test-data/beispiel/{}.fcf'.format(nummer))
         misc.remove_file('./test-data/beispiel/{}.2fcf'.format(nummer))
         misc.remove_file('./test-data/beispiel/{}a.lst'.format(nummer))
-        for line in remlines:
-            del a[line]
-            del b[line]
+        #a = remove_whitespace(a)
+        #b = remove_whitespace(b)
         self.assertEqual(b, a)
         if external_file:
             self.assertEqual(d, c)
@@ -236,7 +238,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         regular dsr run without fit with
         resi cf3 PART 2 occ -31
         """
-        self.dsr_runtest(12, ending='ins', parameter='-n -r', remlines=[100, 115])
+        self.dsr_runtest(12, ending='ins', parameter='-n -r', remlines=[100, 116])
 
     # @unittest.skip(" skipping 13")
     def testrun_run13(self):
@@ -328,6 +330,15 @@ class dsr_complete_runs_Test(unittest.TestCase):
         """
         self.dsr_runtest(23, '-target 1.0005 0.5447 0.5342 0.9314 0.5395 0.5126 0.9995 0.4553 0.4658 -r')
 
+
+def remove_whitespace(mystringlist):
+    newlist = []
+    for line in mystringlist:
+        line = ' '.join(line.split()).strip(' \r\n')
+        if line == ' ' or line == '':
+            continue
+        newlist.append(line)
+    return newlist
 
 db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
                'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
@@ -861,11 +872,11 @@ class ImportGRADE_Test(unittest.TestCase):
     # test for PFA1 is already in db and we want to import again
 
     def testrun_get_gradefiles(self):
-        '''
+        """
         files[0] = pdb
         files[1] = dfix
         files[2] = obprop
-        '''
+        """
         self.maxDiff = None
         files = self.ig.get_gradefiles('./test-data/PFA.gradeserver_all.tgz')
         filenames = ['./grade-PFA.pdb', './grade-PFA.dfix']
@@ -879,7 +890,7 @@ class ImportGRADE_Test(unittest.TestCase):
                         line = line.decode()
                     tmp.append(line)
                 endings.append(tmp)
-        self.assertListEqual(endings[num], files[num])
+            self.assertListEqual(endings[num], files[num])
 
     def testrun_get_comments(self):
         self.maxDiff = None
@@ -1026,8 +1037,8 @@ class ExportTest(unittest.TestCase):
 
     def testrun_format_calced_coords(self):
         export = Export(self.gdb, invert=False)
-        bigcell = export.expand_calced_cell([1, 1, 1, 90, 90, 90], )[0]
-        smallcell = export.expand_calced_cell([2, 1, 1, 90, 90, 90], )[0]
+        bigcell = export.expand_calced_cell([1, 1, 1, 90, 90, 90], self.gdb.get_atoms(self.export_clip))[0]
+        smallcell = export.expand_calced_cell([2, 1, 1, 90, 90, 90], self.gdb.get_atoms(self.export_clip))[0]
         cell1 = [50, 50, 50, 90, 90, 90]
         cell2 = [2, 1, 1, 90, 90, 90]
         self.assertListEqual(bigcell, cell1)
