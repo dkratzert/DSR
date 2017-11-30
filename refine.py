@@ -109,7 +109,7 @@ class ShelxlRefine():
         number_of_atoms = 0
         for residues in self._atoms_in_reslist:
             number_of_atoms += len(self._atoms_in_reslist[residues])
-        barray = number_of_atoms * 9
+        barray = number_of_atoms * 5
         if barray <= 3000:
             barray = 3000
         return barray
