@@ -318,7 +318,7 @@ class ParseDB(object):
                 if line[:4] in RESTRAINT_CARDS:
                     headlist.append(line)
             elif com:
-                print('*** Bad line {} in header of database entry "{}" found! ({}.txt) ***'
+                print('*** Bad line {} in database entry "{}" found! ({}.txt) ***'
                       .format(num+db[fragname]['startline']+1, fragname, db[fragname]['dbname']))
                 print(line)
         db[fragname].update({
@@ -1085,6 +1085,7 @@ class ImportGRADE():
 
 
 if __name__ == '__main__':
+    """
     import doctest
     failed, attempted = doctest.testmod()  # verbose=True)
     if failed == 0:
@@ -1093,7 +1094,12 @@ if __name__ == '__main__':
         print('{} of {} tests failed'.format(failed, attempted))
     #homedir = expanduser("~")
     #userdb_path = os.path.join(homedir, "dsr_db.txt")
+    """
     dbpath = os.path.abspath('../dsr_db.txt')
     db = ParseDB(dbpath)
-    pprint(db.databases['toluene'])
+    #pprint(db.databases['toluene'])
+    db.check_consistency('toluene')
+    db.check_db_atom_consistency('tolunene')
+
+    print(db.databases['toluene'])
     print(dbpath)
