@@ -373,23 +373,28 @@ class ParseDB(object):
     def get_atomic_numbers(self, fragment=''):
         # type: (str) -> list
         """
-        returns the atomic numbers of the atoms in a fragment in
-        same order as the dsr db as list
-        :param fragment: fragment name tag
-        :type fragment: basestring
+        Returns the atomic numbers of the atoms in a fragment in
+        same order as in the database as list.
         """
         atnumbers = []
         types = get_atomtypes(self.get_atoms(fragment))
+        el = Element()
         for i in types:
-            el = Element()
             atnumbers.append(el.get_atomic_number(i))
         return atnumbers
 
-    def get_atomnames(self, fragment=''):
-        atoms = self.databases[fragment]['atoms']
+    def get_atomnames(self, fragment='', uppercase=False):
+        # type: (str, bool) -> list
+        """
+        Returns a list of only the atom names of a fragment.
+        """
+        atoms = self.get_atoms(fragment)
         names = []
         for i in atoms:
-            names.append(i[0])
+            if uppercase:
+                names.append(i[0].upper())
+            else:
+                names.append(i[0])
         return names
 
     def get_head_for_gui(self, fragment):
@@ -496,8 +501,7 @@ class ParseDB(object):
         This method is for atoms only (without db header)!
         check the db for duplicates:
         """
-        fragment = fragment.lower()
-        dbatoms = [i[0].upper() for i in self.databases[fragment]['atoms']]
+        dbatoms = self.get_atomnames(fragment, uppercase=True)
         # check for duplicates:
         while dbatoms:
             at = dbatoms.pop()
@@ -549,11 +553,10 @@ class ParseDB(object):
         :param fragment: frag name
         :param factor: factor for confidence interval
         """
-        fragment = fragment.lower()
         atoms = self.get_atoms(fragment)
         restr = self.get_restraints(fragment)
         restraints = deepcopy(restr)
-        atnames = [i[0].upper() for i in atoms]
+        atnames = self.get_atomnames(fragment, uppercase=True)
         for num, line in enumerate(restraints):
             prefixes = []
             dev = 0.02
@@ -722,7 +725,7 @@ class ParseDB(object):
         """
         fragment = fragment.lower()
         try:
-            restr = self.databases[fragment]['restraints']
+            restr = [x.upper() for x in self.databases[fragment]['restraints']]
         except KeyError:
             print(not_existing_error.format(fragment))
             sys.exit()
@@ -815,7 +818,6 @@ class ImportGRADE():
         self._firstlast = get_first_last_atom(self._atoms)
         self._restraints = self.get_restraints()
         self._resi_name = self.get_resi_from_pdbfile()
-        self._frag_name = self.get_name_from_pdbfile()
         if not isinstance(self._resi_name, str):
             self._resi_name = self._resi_name.decode()
 
@@ -863,6 +865,7 @@ class ImportGRADE():
         return tmp
 
     def get_name_from_pdbfile(self):
+        # type: () -> str
         """
         get the fragment name from the pdbfile.txt file
         :param pdbfile: file with some information about the molecule
@@ -887,10 +890,10 @@ class ImportGRADE():
                 try:
                     line = line.split()
                     _ = line[4]
-                except(IndexError):
-                    full_name = None
-                full_name = line[5]
-                break
+                except IndexError:
+                    full_name = ''
+                else:
+                    full_name = line[5]
         return full_name
 
     def get_resi_from_pdbfile(self):
@@ -932,7 +935,7 @@ class ImportGRADE():
         """
         matches = ['REM Produced by Grade', 'REM GEN:', 'REM grade-cif2shelx', 'REM Version:', 'REM Total charge']
         comments = []
-        name = 'REM Name: ' + self._frag_name
+        name = 'REM Name: ' + self.get_name_from_pdbfile()
         comments.append(name.split())
         for m in matches:
             for line in self._dfixfile:
@@ -1021,12 +1024,14 @@ class ImportGRADE():
         }
         return db_import_dict
 
-    def import_error(self, filename):
+    @staticmethod
+    def import_error(filename):
+        # type: (str) -> NotImplemented
         """
         warns for import errors
         """
-        print('*** Unable to import GRADE file {}'.format(filename))
-        print('GRADE import relies on GRADE v1.100 and up. ***')
+        print('*** Unable to import GRADE file {} GRADE import to DSR '
+              'relies on GRADE v1.100 and up. ***'.format(filename))
         sys.exit()
 
     def write_user_database(self):
@@ -1064,19 +1069,17 @@ class ImportGRADE():
         # try to write existing dbentries:
         try:
             with open(self.user_db_path, 'a+') as fu:
-                for i in fragments:
-                    name = i
-                    if self._db[i]['dbname'] == 'dsr_user_db':
-                        # userdb = list(self._db[i])
-                        atomlist = self._db[i]['atoms']
-                        head = '\n'.join([''.join(x) for x in self._db[i]['restraints']])
+                for tag in fragments:
+                    if self._db[tag]['dbname'] == 'dsr_user_db':
+                        atomlist = self._db[tag]['atoms']
+                        head = '\n'.join([''.join(x) for x in self._db[tag]['restraints']])
                         atoms = '\n'.join(['{:<6}{:<2}{:>8.3f}{:>8.3f}{:>8.3f}'
                                           .format(y[0], y[1], float(y[2]), float(y[3]), float(y[4])) for y in atomlist])
-                        resi_name = self._db[i]['resi']
-                        comments = '\nREM '.join(self._db[i]['comments'])
-                        fragline = 'FRAG 17 {} {} {} {} {} {}'.format(*self._db[i]['cell'])
-                        dbentry = '\n<{}> \nREM {} \nRESI {} \n{} \n{} \n{} \n</{}>\n' \
-                                  ''.format(name, comments, resi_name, head, fragline, atoms, name)
+                        resi_name = self._db[tag]['resi']
+                        comments = '\n'.join(self._db[tag]['comments'])
+                        fragline = 'FRAG 17 {} {} {} {} {} {}'.format(*self._db[tag]['cell'])
+                        dbentry = '\n<{}> \n{} \nRESI {} \n{} \n{} \n{} \n</{}>\n' \
+                                  ''.format(tag, comments, resi_name, head, fragline, atoms, tag)
                         fu.write(dbentry)
         except IOError as e:
             print(e)
@@ -1099,7 +1102,8 @@ if __name__ == '__main__':
     db = ParseDB(dbpath)
     #pprint(db.databases['toluene'])
     db.check_consistency('toluene')
-    db.check_db_atom_consistency('tolunene')
-
+    db.check_db_atom_consistency('toluene')
+    db.check_db_header_consistency('toluene')
+    db.check_sadi_consistence('toluene')
     print(db.databases['toluene'])
     print(dbpath)
