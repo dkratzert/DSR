@@ -933,7 +933,8 @@ class ImportGRADE():
         #   REM grade-cif2shelx output
         #   REM Version: 0.0.5 <Dec 20 2013>
         """
-        matches = ['REM Produced by Grade', 'REM GEN:', 'REM grade-cif2shelx', 'REM Version:', 'REM Total charge']
+        matches = ['REM Produced by Grade', 'REM GEN:', 'REM grade-cif2shelx', 'REM Version:',
+                   'REM Total charge', 'REM Name:']
         comments = []
         name = 'REM Name: ' + self.get_name_from_pdbfile()
         comments.append(name.split())
@@ -1004,7 +1005,9 @@ class ImportGRADE():
             print('*** Unable to import fragment. Database is empty. ***')
             sys.exit()
         for i in self._db_tags:
-            while resi_name == i[0]:
+            # Check if anything is already in database:
+            while resi_name.upper() == i.upper():
+                # Already there, so add a number to the tag:
                 num = num + 1
                 resi_name = resi_name[:3] + str(num)
         if num == 0:
