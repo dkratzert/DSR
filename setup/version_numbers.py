@@ -22,28 +22,30 @@ def process_debian_and_spec(filepath):
     search for: Version: 203
     replace with "Version: VERSION"
     """
-    debfile = dbfile.read_file_data(filepath, with_comments=True)
-    for num, line in enumerate(debfile):
+    deb_file = dbfile.read_file_data(filepath)
+    for num, line in enumerate(deb_file):
         if line.startswith("Version:"):
             l = line.split()
             l[1] = VERSION
-            debfile[num] = " ".join(l)+"\n"
+            deb_file[num] = " ".join(l)
             break
-    misc.write_file(debfile, filepath)
+    deb_file = [x+'\n' for x in deb_file]
+    misc.write_file(deb_file, filepath)
 
 
 def process_iss(filepath):
     """
     #define MyAppVersion  "203"
     """
-    debfile = dbfile.read_file_data(filepath, with_comments=True)
-    for num, line in enumerate(debfile):
+    iss_file = dbfile.read_file_data(filepath)
+    for num, line in enumerate(iss_file):
         if line.startswith("#define MyAppVersion"):
             l = line.split()
             l[2] = '"{}"'.format(VERSION)
-            debfile[num] = " ".join(l)+"\n"
+            iss_file[num] = " ".join(l)
             break
-    misc.write_file(debfile, filepath)
+    iss_file = [x + '\n' for x in iss_file]
+    misc.write_file(iss_file, filepath)
 
 
 if __name__ == "__main__":
