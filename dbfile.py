@@ -312,8 +312,9 @@ class ParseDB(object):
                 if line[:4].upper().startswith('FRAG'):
                     try:
                         cell = [float(x) for x in line.split()[2:8]]
-                    except ValueError:
+                    except (ValueError, IndexError):
                         print('*** Invalid unit cell found in database entry {}. ***'.format(fragname))
+                        sys.exit()
                     continue
                 # these must be restraints:
                 if line[:4] in RESTRAINT_CARDS:
@@ -322,6 +323,10 @@ class ParseDB(object):
                 print('*** Bad line {} in database entry "{}" found! ({}.txt) ***'
                       .format(num+db[fragname]['startline']+1, fragname, db[fragname]['dbname']))
                 print(line)
+        if not cell:
+            print('*** Error. No cell parameters or malformed cell found in the database entry ' \
+                  'of "{}" ***'.format(fragname))
+            sys.exit()
         db[fragname].update({
             'restraints': headlist,  # header with just the restraints
             'resi': residue,  # the residue class
@@ -460,6 +465,7 @@ class ParseDB(object):
             print('*** Error. No cell parameters or malformed cell found in the database entry ' \
                   'of "{}" ***'.format(fragment))
             print('*** Please add these parameters! ***')
+            sys.exit()
         if not dbentry['restraints']:
             print('*** Restraints in the header of database entry "{}" ({}) missing! Check your Database! ***' \
                   .format(fragment, dbentry['name']))
