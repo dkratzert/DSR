@@ -200,7 +200,7 @@ class ParseDB(object):
         'endline': 2413,
         'dbname': 'dsr_db'}
         """
-        frag = ''
+        frag_tag = ''
         db = {}
         start_regex = re.compile(r'<[^/].*>', re.IGNORECASE)  # regular expression for db tag.
         starttag = False
@@ -215,12 +215,12 @@ class ParseDB(object):
             # matching end tag
             if end_regex and end_regex.match(line):
                 starttag = False
-                db[frag].update(
+                db[frag_tag].update(
                     {'endline': num + 1,
                      'startline': startnum + 1})
-                db = self.parse_fraglines(frag, fraglines, db)
-                if not db[frag]['atoms']:
-                    print('*** No atoms found in database entry {} line {} of {}.txt***'.format(frag, num+1, dbname))
+                db = self.parse_fraglines(frag_tag, fraglines, db)
+                if not db[frag_tag]['atoms']:
+                    print('*** No atoms found in database entry {} line {} of {}.txt***'.format(frag_tag, num+1, dbname))
                     sys.exit()
                 fraglines = []
             # start tag was found, appending lines to fragment list
@@ -230,16 +230,17 @@ class ParseDB(object):
             if start_regex.match(line):
                 if starttag:
                     print('*** Error in database "{}.txt" in line {}. End tag is missing ***'.format(dbname, num+1))
-                frag = line.strip('<> \n\r').lower()
-                if frag in db:
+                # lower case is essential here:
+                frag_tag = line.strip('<> \n\r').lower()
+                if frag_tag in db:
                     print('\n*** Duplicate database entry "{}" found! Please remove/rename '
                           'second entry\nand/or check all end tags in the database dsr_usr_db.txt '
-                          'or dsr_db.txt. ***'.format(frag))
+                          'or dsr_db.txt. ***'.format(frag_tag))
                     sys.exit()
                 starttag = True
                 startnum = num
-                db[frag] = {'dbname': dbname}
-                end_regex = re.compile(re.escape(r'</{}>'.format(frag)), re.IGNORECASE)
+                db[frag_tag] = {'dbname': dbname}
+                end_regex = re.compile(re.escape(r'</{}>'.format(frag_tag)), re.IGNORECASE)
                 continue
         self.databases.update(db)
         return db
@@ -997,19 +998,19 @@ class ImportGRADE():
         """
         db_import_dict = {}
         num = 0
-        name = self._resi_name[:3].upper()
+        name = self._resi_name[:4].upper()
         if not isinstance(name, str):
             name = name.decode()
         resi_name = name
         if not self._db_tags:
             print('*** Unable to import fragment. Database is empty. ***')
             sys.exit()
-        for i in self._db_tags:
-            # Check if anything is already in database:
-            while resi_name.upper() == i.upper():
-                # Already there, so add a number to the tag:
-                num = num + 1
-                resi_name = resi_name[:3] + str(num)
+        # Check if anything is already in database:
+        # tags are always lower case:
+        while resi_name.lower() in self._db_tags:
+            # Already there, so add a number to the tag:
+            num = num + 1
+            resi_name = resi_name[:3] + str(num)
         if num == 0:
             resi_name = resi_name[:3]
         else:
@@ -1080,6 +1081,8 @@ class ImportGRADE():
                                           .format(y[0], y[1], float(y[2]), float(y[3]), float(y[4])) for y in atomlist])
                         resi_name = self._db[tag]['resi']
                         comments = '\n'.join(self._db[tag]['comments'])
+                        name = self._db[tag]['name']
+                        comments = "REM Name: {}\n{}".format(name, comments)
                         fragline = 'FRAG 17 {} {} {} {} {} {}'.format(*self._db[tag]['cell'])
                         dbentry = '\n<{}> \n{} \nRESI {} \n{} \n{} \n{} \n</{}>\n' \
                                   ''.format(tag, comments, resi_name, head, fragline, atoms, tag)
