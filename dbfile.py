@@ -28,6 +28,7 @@ from misc import atomic_distance, nalimov_test, std_dev, median, pairwise, \
 atreg = re.compile(atomregex)
 not_existing_error = '*** Fragment "{}" not found in database ***'
 
+
 def invert_atomic_coordinates(atoms):
     """
     Inverts SHELXL atom coordinates.
@@ -165,6 +166,7 @@ class ParseDB(object):
     a dictionary of them.
     maindb = read_file_data(path_to_maindb)
     """
+
     def __init__(self, maindb_path=None, userdb_path=None):
         # type: (str, str) -> NotImplemented
         """
@@ -204,7 +206,7 @@ class ParseDB(object):
         db = {}
         start_regex = re.compile(r'<[^/].*>', re.IGNORECASE)  # regular expression for db tag.
         starttag = False
-        fraglines =[]
+        fraglines = []
         end_regex = None
         startnum = 0
         for num, line in enumerate(read_file_data(dbpath)):
@@ -216,11 +218,12 @@ class ParseDB(object):
             if end_regex and end_regex.match(line):
                 starttag = False
                 db[frag_tag].update(
-                    {'endline': num + 1,
-                     'startline': startnum + 1})
+                        {'endline'  : num + 1,
+                         'startline': startnum + 1})
                 db = self.parse_fraglines(frag_tag, fraglines, db)
                 if not db[frag_tag]['atoms']:
-                    print('*** No atoms found in database entry {} line {} of {}.txt***'.format(frag_tag, num+1, dbname))
+                    print('*** No atoms found in database entry {} line {} of {}.txt***'.format(frag_tag, num + 1,
+                                                                                                dbname))
                     sys.exit()
                 fraglines = []
             # start tag was found, appending lines to fragment list
@@ -229,7 +232,7 @@ class ParseDB(object):
             # matching start tag and compiling end regex
             if start_regex.match(line):
                 if starttag:
-                    print('*** Error in database "{}.txt" in line {}. End tag is missing ***'.format(dbname, num+1))
+                    print('*** Error in database "{}.txt" in line {}. End tag is missing ***'.format(dbname, num + 1))
                 # lower case is essential here:
                 frag_tag = line.strip('<> \n\r').lower()
                 if frag_tag in db:
@@ -273,7 +276,7 @@ class ParseDB(object):
                         atline[1] = int(atline[1])
                     except ValueError:
                         print("*** Invalid atomic coordinates in line {} of {}.txt (Fragment: {}) ***"
-                              .format(db[fragname]['startline']+num+1, db[fragname]['dbname'], fragname))
+                              .format(db[fragname]['startline'] + num + 1, db[fragname]['dbname'], fragname))
                         sys.exit()
                     atline[2:] = coords
                     atoms.append(atline)
@@ -321,7 +324,7 @@ class ParseDB(object):
                     headlist.append(line)
             elif com:
                 print('*** Bad line {} in database entry "{}" found! ({}.txt) ***'
-                      .format(num+db[fragname]['startline']+1, fragname, db[fragname]['dbname']))
+                      .format(num + db[fragname]['startline'] + 1, fragname, db[fragname]['dbname']))
                 print(line)
         if not cell:
             print('*** Error. No cell parameters or malformed cell found in the database entry ' \
@@ -329,12 +332,12 @@ class ParseDB(object):
             sys.exit()
         db[fragname].update({
             'restraints': headlist,  # header with just the restraints
-            'resi': residue,  # the residue class
-            'cell': cell,  # FRAG ...
-            'atoms': atoms,  # the atoms as lists of list
-            'comments': comments,  # the comment line
-            'source': source,
-            'name': name})
+            'resi'      : residue,  # the residue class
+            'cell'      : cell,  # FRAG ...
+            'atoms'     : atoms,  # the atoms as lists of list
+            'comments'  : comments,  # the comment line
+            'source'    : source,
+            'name'      : name})
         if not db:
             print('*** No database found! ***\n')
             sys.exit()
@@ -475,12 +478,12 @@ class ParseDB(object):
                   .format(fragment, dbentry['name']))
         if not dbentry['atoms']:
             print('*** Database entry of "{}" in line {} of "{}.txt" is corrupt. '
-                  'No atoms found! ***'.format(fragment, dbentry['startline']+1, dbentry['dbname']))
+                  'No atoms found! ***'.format(fragment, dbentry['startline'] + 1, dbentry['dbname']))
             print('*** Have you really followed the syntax? ***')
             sys.exit()
         if not dbentry['endline']:
             print('*** Could not find end of dbentry for fragment "{}" in line {} of "{}.txt". '
-                  'Check your database. ***'.format(fragment, dbentry['startline']+1, dbentry['dbname']))
+                  'Check your database. ***'.format(fragment, dbentry['startline'] + 1, dbentry['dbname']))
             sys.exit()
         return True
 
@@ -564,6 +567,7 @@ class ParseDB(object):
         restr = self.get_restraints(fragment)
         restraints = deepcopy(restr)
         atnames = self.get_atomnames(fragment, uppercase=True)
+        good = True
         for num, line in enumerate(restraints):
             prefixes = []
             dev = 0.02
@@ -607,21 +611,24 @@ class ParseDB(object):
                         print("\nFragment {}:".format(fragment))
                         for x in outliers:
                             pair = ' '.join(pairlist[x])
-                            print(
-                                '*** Suspicious deviation of atom pair "{}" ({:4.3f} A, median: {:4.3f}) after '
-                                'line {} of {}.txt ***'.format(pair, distances[x], median(distances),
-                                                              self.databases[fragment]['startline'] + num + 1,
-                                                              self.databases[fragment]['dbname']))
-                            print('*** ' + restr[num][:60] + ' ... ***')
-                            return False
-                if stdev > 2.5 * float(dev):
+                            print('*** Suspicious deviation of atom pair "{}" ({:4.3f} A, median: {:4.3f}) after '
+                                  'line {} in {}.txt ***'.format(pair, distances[x], median(distances),
+                                                                 self.get_startline(fragment) + num + 1,
+                                                                 self.get_db_name(fragment))
+                                  )
+                            print('*** {} ... ***'.format(restr[num][:60]))
+                            good = False
+                if (stdev > 2.5 * float(dev)) and good:
                     print("\nFragment {}:".format(fragment))
                     print(
-                        '*** Suspicious restraints in SADI line {} with high standard deviation {:4.3f} '
-                        '(median length: {:4.3f} A) ***'.format(num + 1, stdev, median(distances)))
+                            '*** Suspicious restraints in SADI line {} with high standard deviation {:4.3f} '
+                            '(median length: {:4.3f} A) ***'.format(num + 1, stdev, median(distances)))
                     print('*** ' + ' '.join(prefixes + line) + ' ***')
-                    return False
-        return True
+                    good = False
+        if good:
+            return True
+        else:
+            return False
 
     def search_for_error_response(self, fragment):
         """
@@ -685,14 +692,18 @@ class ParseDB(object):
         return cell
 
     def get_startline(self, fragment):
+        # type: (str) -> int
         """
         returns the line number from the dbentry
         """
         try:
-            return self.databases[fragment.lower()]['startline']
+            return int(self.databases[fragment.lower()]['startline'])
         except KeyError:
             print(not_existing_error.format(fragment))
-            sys.exit()
+            return 0
+        except ValueError:
+            print('Could not find startline of Fragment {}'.format(fragment))
+            return 0
 
     def get_coordinates(self, fragment, cartesian=False):
         # type: (str, bool) -> list
@@ -1024,13 +1035,13 @@ class ImportGRADE():
         fragline = 'FRAG 17 1  1  1  90  90  90'
         db_import_dict[resi_name] = {
             'restraints': self._restraints,
-            'resi': resi_name,
-            'cell': fragline.split(),
-            'atoms': self._atoms,
-            'line': None,
-            'db': 'dsr_user_db',
-            'comments': self.get_comments(),
-            'name': resi_name
+            'resi'      : resi_name,
+            'cell'      : fragline.split(),
+            'atoms'     : self._atoms,
+            'line'      : None,
+            'db'        : 'dsr_user_db',
+            'comments'  : self.get_comments(),
+            'name'      : resi_name
         }
         return db_import_dict
 
@@ -1111,6 +1122,7 @@ if __name__ == '__main__':
     #userdb_path = os.path.join(homedir, "dsr_db.txt")
     """
 
+
     def std_dev_test(fragment, restraints, atoms, atnames, cell):
         for num, line in enumerate(restraints):
             prefixes = []
@@ -1149,14 +1161,15 @@ if __name__ == '__main__':
                     distances.append(dist)
                 stdev = std_dev(distances)
                 print("esd < 0.065 ?: {:<4.4f}, esd < 2.5*sigma?: {:<4.4f} < {:<4.4f} -> {}".format(
-                        stdev, stdev, 2.5*float(dev), ("yes" if stdev < 2.5*float(dev) else "no")))
+                        stdev, stdev, 2.5 * float(dev), ("yes" if stdev < 2.5 * float(dev) else "no")))
 
 
-    frag='c70'
+    frag = 'WBVNT'
 
     dbpath = os.path.abspath('../dsr_db.txt')
-    db = ParseDB(dbpath)
-    #pprint(db.databases['toluene'])
+    userpath = os.path.abspath('c:/Users/daniel/dsr_user_db.txt')
+    db = ParseDB(dbpath, userdb_path=userpath)
+    # pprint(db.databases['toluene'])
     db.check_consistency(frag)
     db.check_db_atom_consistency(frag)
     db.check_db_header_consistency(frag)
@@ -1165,8 +1178,7 @@ if __name__ == '__main__':
     restr = db.get_restraints(frag)
     atoms = db.get_atoms(frag)
     cell = db.get_cell(frag)
-    #print(db.databases['toluene'])
+    # print(db.databases['toluene'])
     print(dbpath)
 
     std_dev_test(fragment=frag, restraints=restr, atnames=atnames, atoms=atoms, cell=cell)
-
