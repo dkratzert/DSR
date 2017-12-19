@@ -1110,12 +1110,63 @@ if __name__ == '__main__':
     #homedir = expanduser("~")
     #userdb_path = os.path.join(homedir, "dsr_db.txt")
     """
+
+    def std_dev_test(fragment, restraints, atoms, atnames, cell):
+        for num, line in enumerate(restraints):
+            prefixes = []
+            dev = 0.02
+            line = line.split()
+            if not line:
+                continue
+            if line[0].upper() == 'SADI':
+                prefixes.append(line[0])
+                del line[0]
+                try:
+                    if not str(line[0][0]).isalpha():
+                        prefixes.append(line[0])
+                        dev = line[0]
+                        del line[0]  # delete standard deviation
+                except IndexError:
+                    return False
+                if len(line) % 2 == 1:  # test for uneven atoms count
+                    print('*** Inconsistent SADI restraint line {} of "{}". '
+                          'Not all atoms form a pair ***'.format(num, fragment))
+                pairs = pairwise(line)
+                distances = []
+                pairlist = []
+                if len(pairs) <= 2:
+                    return True
+                for i in pairs:
+                    pairlist.append(i)
+                    try:
+                        a = atoms[atnames.index(i[0])][2:5]
+                        b = atoms[atnames.index(i[1])][2:5]
+                    except ValueError:
+                        return False
+                    a = [float(x) for x in a]
+                    b = [float(y) for y in b]
+                    dist = atomic_distance(a, b, cell)
+                    distances.append(dist)
+                stdev = std_dev(distances)
+                print("esd < 0.065 ?: {:<4.4f}, esd < 2.5*sigma?: {:<4.4f} < {:<4.4f} -> {}".format(
+                        stdev, stdev, 2.5*float(dev), ("yes" if stdev < 2.5*float(dev) else "no")))
+
+
+    frag='c70'
+
     dbpath = os.path.abspath('../dsr_db.txt')
     db = ParseDB(dbpath)
     #pprint(db.databases['toluene'])
-    db.check_consistency('toluene')
-    db.check_db_atom_consistency('toluene')
-    db.check_db_header_consistency('toluene')
-    db.check_sadi_consistence('toluene')
-    print(db.databases['toluene'])
+    db.check_consistency(frag)
+    db.check_db_atom_consistency(frag)
+    db.check_db_header_consistency(frag)
+    db.check_sadi_consistence(frag)
+    atnames = db.get_atomnames(frag)
+    restr = db.get_restraints(frag)
+    atoms = db.get_atoms(frag)
+    cell = db.get_cell(frag)
+    #print(db.databases['toluene'])
     print(dbpath)
+
+    std_dev_test(fragment=frag, restraints=restr, atnames=atnames, atoms=atoms, cell=cell)
+
