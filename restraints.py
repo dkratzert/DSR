@@ -133,7 +133,7 @@ class Restraints():
         returns a connectivity table from the atomic coordinates and the covalence
         radii of the atoms.
         TODO:
-        - read FREE command from db to contro binding here.
+        - read FREE command from db to control binding here.
         :param cart_coords: cartesian coordinates of the atoms
         :type cart_coords: list
         :param atom_types: Atomic elements
@@ -221,7 +221,7 @@ class Restraints():
                       ' Check your SHELXL listing file.')
                 sys.exit()
             for n in bonded:
-                nb = self._G.neighbors(n)
+                nb = list(self._G.neighbors(n))
                 if not nb:
                     continue
                 try:
@@ -231,7 +231,7 @@ class Restraints():
                     pass
                 for at in nb:  # nb -> neighbors of n
                     nn.append((atom1, at))
-        return (nn)
+        return nn
 
     def make_13_dist(self, nn):
         """
@@ -298,7 +298,7 @@ class Restraints():
                             for num, i in enumerate(reversed(ch), start=1):
                                 # print(ch, nbatom, ch[-num], num, '###')
                                 H.remove_node(ch[-num])
-                                comp = nx.connected_components(H)
+                                comp = list(nx.connected_components(H))
                                 # check if graph is disconnected now:
                                 if len(comp) > 1:
                                     continue
@@ -326,9 +326,12 @@ class Restraints():
         else:
             return False
 
-    def is_flat(self, chunk):
+    def is_flat(self, chunk, flat_tresh=0.085):
+        # type: (list, float) -> bool
         """
         check if four atoms are flat
+        chunk: a list of four atoms coordinates triples
+        flat_tresh: Threshold up to whic volume a tetrahedron is flat.
         """
         tetrahedron_atoms = []
         for atom in chunk:
@@ -336,7 +339,7 @@ class Restraints():
             tetrahedron_atoms.append(single_atom_coordinate)
         a, b, c, d = tetrahedron_atoms
         volume = (vol_tetrahedron(a, b, c, d))
-        if volume < 0.085:
+        if volume < flat_tresh:
             return True
         else:
             # print('volume of', chunk, 'too big:', volume)
