@@ -603,7 +603,7 @@ class ParseDB(object):
                     b = [float(y) for y in b]
                     dist = atomic_distance(a, b, self.get_cell(fragment))
                     distances.append(dist)
-                stdev = std_dev(distances)
+                stdev = std_dev(distances)  # Error distribution of
                 # only do outlier test if standard deviation is suspiciously large:
                 if stdev > 0.065:
                     outliers = nalimov_test(distances)
@@ -618,7 +618,7 @@ class ParseDB(object):
                                   )
                             print('*** {} ... ***'.format(restr[num][:60]))
                             good = False
-                if (stdev > 2.5 * float(dev)) and good:
+                if (stdev > (2.5 * float(dev))) and good:
                     print("\nFragment {}:".format(fragment))
                     print(
                             '*** Suspicious restraints in SADI line {} with high standard deviation {:4.3f} '
