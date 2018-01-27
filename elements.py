@@ -210,7 +210,7 @@ class Element(object):
         """Return mass number of most abundant natural stable isotope."""
         nominalmass = 0
         maxabundance = 0
-        for massnum, iso in self.isotopes.items():
+        for massnum, iso in list(self.isotopes.items()):
             if iso.abundance > maxabundance:
                 maxabundance = iso.abundance
                 nominalmass = massnum
@@ -224,7 +224,7 @@ class Element(object):
     @lazyattr
     def exactmass(self):
         """Return relative atomic mass calculated from isotopic composition."""
-        return sum(iso.mass * iso.abundance for iso in self.isotopes.values())
+        return sum(iso.mass * iso.abundance for iso in list(self.isotopes.values()))
 
     @lazyattr
     def eleconfig_dict(self):
@@ -241,7 +241,7 @@ class Element(object):
     def eleshells(self):
         """Return number of electrons in shell as tuple."""
         eleshells = [0, 0, 0, 0, 0, 0, 0]
-        for key, val in self.eleconfig_dict.items():
+        for key, val in list(self.eleconfig_dict.items()):
             eleshells[key[0] - 1] += val
         return tuple(ele for ele in eleshells if ele)
 
@@ -266,7 +266,7 @@ class Element(object):
 
         mass = 0.0
         frac = 0.0
-        for iso in self.isotopes.values():
+        for iso in list(self.isotopes.values()):
             mass += iso.abundance * iso.mass
             frac += iso.abundance
         if abs(mass - self.mass) > 0.03:

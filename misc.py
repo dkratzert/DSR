@@ -103,6 +103,42 @@ def check_file_exist(filename):
     return status
 
 
+def walkdir(rootdir, include="", exclude=""):
+    """
+    Returns a list of files in all subdirectories with full path.
+    :param rootdir: base path from which walk should start
+    :param filter: list of file endings to include only e.g. ['.py', '.res']
+    :return: list of files
+
+    >>> walkdir("./setup/debian-package") #doctest: +REPORT_NDIFF +NORMALIZE_WHITESPACE +ELLIPSIS
+    ['./setup/debian-package/.DS_Store', './setup/debian-package/howto.txt',
+    './setup/debian-package/DEBIAN/postinst', './setup/debian-package/DEBIAN/control']
+    >>> walkdir("./modpath.iss")
+    ['./modpath.iss']
+    >>> walkdir("./modpath.iss", exclude=['.iss'])
+    []
+    >>> walkdir("./setup/debian-package", exclude=['.txt']) #doctest: +REPORT_NDIFF +NORMALIZE_WHITESPACE +ELLIPSIS
+    ['./setup/debian-package/.DS_Store',
+    './setup/debian-package/DEBIAN/postinst', './setup/debian-package/DEBIAN/control']
+    """
+    results = []
+    if not os.path.isdir(rootdir):
+        if os.path.splitext(rootdir)[1] in exclude:
+            return []
+        return [rootdir]
+    for root, subFolders, files in os.walk(rootdir):
+        for file in files:
+            fullfilepath = os.path.join(root, file)
+            if exclude:
+                if os.path.splitext(fullfilepath)[1] in exclude:
+                    continue
+            if include:
+                if os.path.splitext(fullfilepath)[1] in include:
+                    results.append(fullfilepath)
+            else:
+                results.append(fullfilepath)
+    return results
+
 def pairwise(iterable):
     """
      s -> (s0,s1), (s2,s3), (s4, s5), ...

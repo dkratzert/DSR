@@ -4,7 +4,6 @@ import tempfile
 import misc
 import selfupdate
 
-
 try:  # Python2:
     # noinspection PyCompatibility
     import urllib2
@@ -13,10 +12,10 @@ except(ImportError, AttributeError):  # Python3:
     import urllib
     http_error = IOError
 
-version = "205"  # define the .dmg release version
+version = "207"  # define the .dmg release version
 
 volname = "DSR-"+version
-inputfile = "/Users/daniel/Downloads/DSR-{}.tar.gz".format(version, version)
+inputfile = "../setup/Output/DSR-{}.tar.gz".format(version, version)
 dmgname = os.path.abspath("../setup/Output/{}.dmg".format(volname))
 skeldmg = os.path.abspath("../setup/Output/DSR-skel-rw.dmg")
 finaltmpdmg = os.path.abspath("../setup/Output/DSR-tmp-rw.dmg")
@@ -33,7 +32,7 @@ convert_to_compressed = ["hdiutil", "convert", finaltmpdmg, "-format", "UDZO",
 subprocess.Popen(unmountcommmand, stderr=subprocess.PIPE)
 
 print('Mounting .dmg file for mac deployment')
-print(finaltmpdmg+"\n")
+print('Mounting: ', finaltmpdmg, '\n')
 subprocess.call(mountcommmand)
 
 """
@@ -52,7 +51,7 @@ except http_error:
 # use instead of webserver stuff above
 tmpdir = tempfile.mkdtemp()  # a temporary directory
 misc.extract_tarfile(inputfile, tmpdir)
-selfupdate.move_dir(tmpdir+"/DSR-{}".format(version), '/Volumes/DSR-install/DSR')
+selfupdate.move_dir(os.path.join(tmpdir, "DSR-{}".format(version)), '/Volumes/DSR-install/DSR/')
 # end
 
 #########################################################
