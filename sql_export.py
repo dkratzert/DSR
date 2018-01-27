@@ -168,7 +168,7 @@ def get_picture(name):
 
 
 def export_database():
-    for fid, fragment in enumerate(db.keys(), 1):
+    for fid, fragment in enumerate(list(db.keys()), 1):
         Name = gl.get_fragment_name(fragment)
         print("Exporting {}: {}: {}".format(fid, fragment, Name))
         head = db[fragment]['restraints']

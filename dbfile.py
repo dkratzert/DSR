@@ -357,7 +357,9 @@ class ParseDB(object):
         >>> [x for x in db][:3]
         ['napht', 'plusminus', 'fluorbenz']
         """
-        return iter(self.databases.keys())
+        # return iter(self.databases.keys()) #python2
+        return iter(list(self.databases.keys()))
+
 
     def list_fragments(self):
         # type: () -> list
