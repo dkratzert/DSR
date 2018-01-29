@@ -70,6 +70,17 @@ class dsr_complete_runs_Test(unittest.TestCase):
         # 10 -r -t
         # 11 -r replace
         # 12 -r resi replace
+        # 13 -r resi cf3 PART 2 occ 501
+        # 14 -r resi cf3 PART 2
+        # 15 -r only PUT
+        # 16 -r RESI
+        # 17 -r resi occ -31
+        # 18 occ -31
+        # 19 occ -31 without FVAR
+        # 20 put CF6 on C22 split (AFIX 120)
+        # 21 put CF3 on C22 (AFIX 130)
+        # 22 put CF9 on C1
+        # 23 -r -target x y z  PART -1 OCC 10.5 RESI TOL
         # 24 correctly restore res file after SHELXL failure
 
     def dsr_runtest(self, nummer=99, parameter='-r', external_file='', hkl=1,
