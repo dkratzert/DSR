@@ -1,9 +1,10 @@
 """
 Creates a zip file with the content of the StructureDB program.
 """
-from tarfile import TarFile
-
+import tarfile
+import tempfile
 import os
+import shutil
 
 from dsr import VERSION
 from misc import copy_file, remove_file, walkdir
@@ -51,25 +52,40 @@ files = [
     ]
 
 
+
+
 def make_zip(filelist):
     """
     :type filelist: list
     """
-    os.chdir('../')
-    zipfilen = 'setup/Output/DSR-{}.tar.gz'.format(version)
-    remove_file(zipfilen)
-    with TarFile(zipfilen, mode='w') as myzip:
-        for f in filelist:
-            print("Adding {}".format(f))
-            for file in walkdir(f, exclude=['.pyc']):
-                try:
-                    myzip.add(file)
-                except FileNotFoundError as e:
-                    print(e)
-                    print("#####################")
-                    return False
+    # Main path in tarfile:
+    maindir = 'DSR-{}/'.format(VERSION)
+    # tmpdir for file collection:
+    tmpdir = tempfile.mkdtemp()
+    # full directory in temp:
+    fulldir = os.path.abspath(os.path.join(tmpdir, maindir))
+    os.makedirs(fulldir)
+    # Tar output file
+    zipfilename = os.path.abspath('setup/Output/DSR-{}.tar.gz'.format(version))
+    remove_file(zipfilename)
+    # Go through DSR path and add files from list:
+    for f in filelist:
+        # Also add recoursive dirs:
+        for filen in walkdir(f, exclude=['.pyc']):
+            print(filen)
+            # need path without filename to create target directories:
+            path, _ = os.path.split(filen)
+            target_dir = os.path.join(fulldir, path)
+            if not os.path.exists(target_dir):
+                os.makedirs(target_dir)
+            copy_file(filen, target_dir)
+    with tarfile.open(zipfilename, mode='w:gz') as archive:
+        archive.add(fulldir, arcname=maindir, recursive=True)
     #copy_file(zipfilen, 'StructureFinder/scripts/Output/')
-    print("File written to {}".format(zipfilen))
+    print(fulldir)
+    print("File written to {}".format(zipfilename))
+    shutil.rmtree(tmpdir)
+
 
 if __name__ == "__main__":
     make_zip(files)

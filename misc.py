@@ -110,16 +110,14 @@ def walkdir(rootdir, include="", exclude=""):
     :param filter: list of file endings to include only e.g. ['.py', '.res']
     :return: list of files
 
-    >>> walkdir("./setup/debian-package") #doctest: +REPORT_NDIFF +NORMALIZE_WHITESPACE +ELLIPSIS
-    ['./setup/debian-package/.DS_Store', './setup/debian-package/howto.txt',
-    './setup/debian-package/DEBIAN/postinst', './setup/debian-package/DEBIAN/control']
-    >>> walkdir("./modpath.iss")
-    ['./modpath.iss']
-    >>> walkdir("./modpath.iss", exclude=['.iss'])
+    >>> walkdir("../docs") #doctest: +REPORT_NDIFF +NORMALIZE_WHITESPACE +ELLIPSIS
+    ['../docs/test.txt']
+    >>> walkdir("../setup/modpath.iss")
+    ['../setup/modpath.iss']
+    >>> walkdir("../setup/modpath.iss", exclude=['.iss'])
     []
-    >>> walkdir("./setup/debian-package", exclude=['.txt']) #doctest: +REPORT_NDIFF +NORMALIZE_WHITESPACE +ELLIPSIS
-    ['./setup/debian-package/.DS_Store',
-    './setup/debian-package/DEBIAN/postinst', './setup/debian-package/DEBIAN/control']
+    >>> walkdir("../docs", exclude=['.txt']) #doctest: +REPORT_NDIFF +NORMALIZE_WHITESPACE +ELLIPSIS
+    []
     """
     results = []
     if not os.path.isdir(rootdir):
@@ -134,9 +132,9 @@ def walkdir(rootdir, include="", exclude=""):
                     continue
             if include:
                 if os.path.splitext(fullfilepath)[1] in include:
-                    results.append(fullfilepath)
+                    results.append(os.path.normpath(fullfilepath).replace('\\', '/'))
             else:
-                results.append(fullfilepath)
+                results.append(os.path.normpath(fullfilepath).replace('\\', '/'))
     return results
 
 def pairwise(iterable):
@@ -500,9 +498,9 @@ def copy_file(source, target):
     try:
         if listcopy:
             for filen in source:
-                shutil.copyfile(filen, target)
+                shutil.copy(filen, target)
         else:
-            shutil.copyfile(source, target)
+            shutil.copy(source, target)
     except IOError as e:
         print('Unable to copy {}.'.format(source_file))
         print(e)
