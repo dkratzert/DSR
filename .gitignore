@@ -3,6 +3,7 @@ shelXlesaves
 dsrsaves
 dsrsaves/*
 *.ps
+*.dmg
 .idea/
 .olex/
 /setup/*.exe

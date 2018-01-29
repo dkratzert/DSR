@@ -3,6 +3,8 @@ import subprocess
 import tempfile
 import misc
 import selfupdate
+from dsr import VERSION
+from scripts.make_zipfile import make_zip, files
 
 try:  # Python2:
     # noinspection PyCompatibility
@@ -12,13 +14,15 @@ except(ImportError, AttributeError):  # Python3:
     import urllib
     http_error = IOError
 
-version = "207"  # define the .dmg release version
+version = VERSION
+
+make_zip(files)
 
 volname = "DSR-"+version
-inputfile = "../setup/Output/DSR-{}.tar.gz".format(version, version)
-dmgname = os.path.abspath("../setup/Output/{}.dmg".format(volname))
-skeldmg = os.path.abspath("../setup/Output/DSR-skel-rw.dmg")
-finaltmpdmg = os.path.abspath("../setup/Output/DSR-tmp-rw.dmg")
+inputfile = "setup/Output/DSR-{}.tar.gz".format(version, version)
+dmgname = os.path.abspath("setup/Output/{}.dmg".format(volname))
+skeldmg = os.path.abspath("setup/Output/DSR-skel-rw.dmg")
+finaltmpdmg = os.path.abspath("setup/Output/DSR-tmp-rw.dmg")
 
 # Make copy of skeleton dmg file:
 misc.copy_file(skeldmg, finaltmpdmg)
