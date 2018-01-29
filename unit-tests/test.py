@@ -70,6 +70,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         # 10 -r -t
         # 11 -r replace
         # 12 -r resi replace
+        # 24 correctly restore res file after SHELXL failure
 
     def dsr_runtest(self, nummer=99, parameter='-r', external_file='', hkl=1,
                     limit_start=6, limit_end=-1, ending='res', remlines=None):
@@ -328,7 +329,15 @@ class dsr_complete_runs_Test(unittest.TestCase):
         REM DSR PUT TOLUENE WITH C2 C3 C5 ON Q1 Q2 Q1 PART -1 OCC 10.5 RESI TOL
         1.0005, 0.5447, 0.5342, 0.9314, 0.5395, 0.5126, 0.9995, 0.4553, 0.4658
         """
-        self.dsr_runtest(23, '-target 1.0005 0.5447 0.5342 0.9314 0.5395 0.5126 0.9995 0.4553 0.4658 -r')
+        self.dsr_runtest(23, '-target 1.0005 0.5447 0.5342 0.9314 0.5395 0.5126 0.9995 0.4553 0.4658 -r', hkl=23, remlines=[97], limit_end=105)
+
+    # @unittest.skip(" skipping 24")
+    def testrun_run24(self):
+        """
+        rem dsr put toluene on C1 C2 C3
+
+        """
+        self.dsr_runtest(24, '-r', hkl=1)
 
 
 def remove_whitespace(mystringlist):
@@ -339,6 +348,7 @@ def remove_whitespace(mystringlist):
             continue
         newlist.append(line)
     return newlist
+
 
 db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
                'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
