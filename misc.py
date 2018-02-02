@@ -594,18 +594,6 @@ def unwrap_head_lines(headlines):
     return new_head
 
 
-def makelist(strng):
-    """
-    returns an upper-case list from a text strng
-    :type string: basestring
-    :param strng: converts space separated string into an upper case list
-    >>> makelist('hello world!')
-    ['HELLO', 'WORLD!']
-    """
-    stringlist = [i.upper() for i in strng.split()]
-    return stringlist
-
-
 def which(name, flags=os.X_OK, exts=['.exe', '.EXE', '.bat']):
     """
     Search PATH for executable files with the given name.
