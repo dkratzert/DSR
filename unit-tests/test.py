@@ -991,7 +991,7 @@ class DSRParse2Test(unittest.TestCase):
         line = self.dsrp.find_dsr_command(line=True)
         # self.assertEqual(num, 264)
         string = 'rem dsr put oc(cf3)3 with o1 c1 c2 c3 c4 on O1_3 c1_3 q6 Q4 q7 resi cf3  PART 2 occ -31 dfix\n'
-        self.assertEqual(string, line)
+        self.assertEqual(string.upper().split(), line)
 
 
 class ExportTest(unittest.TestCase):
@@ -1314,11 +1314,6 @@ class MiscTest(unittest.TestCase):
         self.assertListEqual(head, wraphead)
         unwrap = misc.unwrap_head_lines(wraphead)
         self.assertListEqual(unwraped, unwrap)
-
-    def testrun_makelist(self):
-        lst = misc.makelist('Hallo Daniel!')
-        self.assertListEqual(lst, ['HALLO', 'DANIEL!'])
-        self.assertNotEqual(lst, ['HALLO', 'DANIEL'])
 
     def disabled_testrun_which(self):
         which = misc.which('notepad')[0]

@@ -35,8 +35,7 @@ class DSRParser():
         """
         self._reslist = reslist
         self._dsr_regex = '^rem\s{1,5}DSR\s{1,5}.*'
-        self._dsr_string = self.find_dsr_command(line=True).upper()
-        self._dsr_list = misc.makelist(self._dsr_string)
+        self._dsr_list = self.find_dsr_command(line=True)
         # Indicates if RESI is on of off in dsr command. Turns True if activated:
         # class and number are defined in self.resi
         self._resiflag = False
@@ -80,10 +79,10 @@ class DSRParser():
                 dsr_str = dsr_str.rstrip('\n\r= ')
                 dsr_str = re.sub(' +', ' ', dsr_str)
                 dsr_str = dsr_str+self._reslist[line_number+1]
-                return dsr_str                    # return the dsr text string
+                return dsr_str.upper().split()           # return the dsr command as list
             else:
                 # just return the dsr command as string in one line
-                return dsr_str
+                return dsr_str.upper().split()
         else:  # returns the index number of the command
             dsr_str = str(self._reslist[line_number])
             dsr_str = re.sub(' +', ' ', dsr_str)
@@ -92,7 +91,7 @@ class DSRParser():
                 # in case of a multiline command, strip the '=' and the newline
                 dsr_str = dsr_str.rstrip('\n\r= ')
                 dsr_str = "{} {}".format(dsr_str, self._reslist[line_number+1])
-            dsr_list = dsr_str.split()
+            dsr_list = dsr_str.upper().split()
             txt = ' '.join(dsr_list)
             # wrap the line after 75 chars:
             dsrlines = textwrap.wrap(txt, 75, initial_indent='REM ', subsequent_indent='REM !')
@@ -109,16 +108,15 @@ class DSRParser():
         returns the value of the input string argument as string
         :param command: string
         """
-        # hier vielleicht sogar mit match, damit OCCC nicht gültig ist
         if command in self._dsr_list:
             try:
-                c_index = self._dsr_list.index(command)+1  # find the index of the command+1
-                cnum = self._dsr_list[c_index]             # get the index value
+                command_index = self._dsr_list.index(command)+1  # find the index of the command+1
+                command_argument = self._dsr_list[command_index]             # get the index value
             except IndexError:
-                cnum = False
+                command_argument = ''
         else:
-            cnum = False
-        return cnum
+            command_argument = ''
+        return command_argument
 
     def find_atoms(self, start, *stop):
         """
@@ -233,23 +231,24 @@ class DSRParser():
         if 'DFIX' in self._dsr_list:
             dfix = True
         part = self.find_commands('PART')
-        try:
-            float(part)
-        except ValueError:
-            print('*** Part without numerical value supplied.',
-                  'Please give a part number after PART in the DSR command. ***')
-            sys.exit(False)
-        if float(part) > 999:
-            print('*** only 999 parts allowed in SHELXL! ***')
-            sys.exit(False)
-        try:
-            if len(part) > 4:
-                print('*** Illegal part number supplied: {}. Please give just one digit '
-                      '(positive or negative) in the DSR command ***'.format(part))
+        if part:
+            try:
+                float(part)
+            except ValueError:
+                print('*** Part without numerical value supplied.',
+                      'Please give a part number after PART in the DSR command. ***')
                 sys.exit(False)
-        except TypeError:
-            # no part specified
-            pass
+            if float(part) > 999:
+                print('*** only 999 parts allowed in SHELXL! ***')
+                sys.exit(False)
+            try:
+                if len(part) > 4:
+                    print('*** Illegal part number supplied: {}. Please give just one digit '
+                          '(positive or negative) in the DSR command ***'.format(part))
+                    sys.exit(False)
+            except TypeError:
+                # no part specified
+                pass
         occupancy = self.find_commands('OCC')
         badocc_message = '*** Occupancy without numerical value supplied. Please define occupancy value after OCC ***'
         badocc_status = False
