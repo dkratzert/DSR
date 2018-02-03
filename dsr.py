@@ -35,6 +35,10 @@ program_name = '\n'+((width//2)-9)*'-'+' D S R - v{} '.format(VERSION)+((width//
 # TODO and ideas:
 """
 - Split mode
+  - calc principal axis for each ellipsoid
+  - generate atoms
+  - decide which new bond to new and old atoms would leave the bond length intact
+  - generate parts and restraints
 - refractor dsrparse
 - Add Rcomplete
 
