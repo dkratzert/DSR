@@ -337,7 +337,7 @@ class CF3(object):
                     if splb:
                         resline[2:5] = fsplit_b
                     if num == 2 and not splb:
-                        # switch to fsplit_b. I can not decide on num, because that goes twon times 
+                        # switch to fsplit_b. I can not decide on num, because that goes two times
                         # from 0 to 2 
                         splb = True
                     self.reslist[line+1+num] = '{:<5s} {:<3} {:>9.6f}   {:>9.6f}   {:>9.6f}   {:>8.4f}     0.04\n'\

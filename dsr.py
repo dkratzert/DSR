@@ -34,6 +34,8 @@ program_name = '\n'+((width//2)-9)*'-'+' D S R - v{} '.format(VERSION)+((width//
 
 # TODO and ideas:
 """
+- Split mode
+- refractor dsrparse
 - Add Rcomplete
 
 From SHELXL user guide:
