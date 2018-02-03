@@ -1,5 +1,5 @@
-#-*- encoding: utf-8 -*-
-#möp
+# -*- encoding: utf-8 -*-
+# möp
 #
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
@@ -10,32 +10,32 @@
 # ----------------------------------------------------------------------------
 #
 from __future__ import print_function
+
 import re
 import sys
-import misc
 import textwrap
 
+import misc
 
-__metaclass__ = type  # use new-style classes
 
-
-class DSRParser():
+class DSRParser(object):
     """
     handles the parsing of the DSR command
 
-    This Class should have the reslist object as input and
-    should output the dictionary of the parsed dsr command.
-
-    Additionally the FVAR line in the reslist gets corrected by set_fvar() at
-    the end of parse_dsr_line().
+    - get dsr command
+    - get line number
+    - remove old command
     """
+
     def __init__(self, reslist):
         """
         :param reslist: list of strings of .res file
         """
-        self._reslist = reslist
+        self.reslist = reslist
         self._dsr_regex = '^rem\s{1,5}DSR\s{1,5}.*'
-        self._dsr_list = self.find_dsr_command(line=True)
+        self.dsr_line_number = 0  # Will be set to real value by find_dsr_command()
+        self.multiline = False
+        self.dsr_command_list = self.find_dsr_command()
         # Indicates if RESI is on of off in dsr command. Turns True if activated:
         # class and number are defined in self.resi
         self._resiflag = False
@@ -44,8 +44,9 @@ class DSRParser():
         except Exception:
             print("*** No valid DSR command line found. ***")
             raise
+        self.remove_dsr_command()
 
-    def find_dsr_command(self, line=False):
+    def find_dsr_command(self):
         """
         line = False  -> Line number
         line = True  -> Text string
@@ -53,10 +54,8 @@ class DSRParser():
         default or the text string when line is set to True
         :param line: bool
         """
-        hklf_endline = misc.find_line(self._reslist, r'^HKLF\s+[1-6]')
-        dsr_str = ''
-        multiline = False
-        indexnum = misc.find_multi_lines(self._reslist, self._dsr_regex)
+        hklf_endline = misc.find_line(self.reslist, r'^HKLF\s+[1-6]')
+        indexnum = misc.find_multi_lines(self.reslist, self._dsr_regex)
         try:
             line_number = int(indexnum[0])
         except IndexError:
@@ -65,53 +64,45 @@ class DSRParser():
             sys.exit()
         if int(line_number) > int(hklf_endline):
             print('*** A DSR command after HKLF is not allowed! '
-                  'Check line {} ***'.format(line_number+1))
+                  'Check line {} ***'.format(line_number + 1))
             sys.exit()
         if len(indexnum) > 1:
             print('*** Only one DSR command at once is allowed! ***')
             sys.exit(-1)
-        # TODO: rip out dsr command removal:
-        if line:  # returns the string
-            dsr_str = str(self._reslist[line_number])
-            if misc.multiline_test(dsr_str):
-                multiline = True
-                # in case of a multiline command, strip the '=' and the newline
-                dsr_str = dsr_str.rstrip('\n\r= ')
-                dsr_str = re.sub(' +', ' ', dsr_str)
-                dsr_str = dsr_str+self._reslist[line_number+1]
-                return dsr_str.upper().split()           # return the dsr command as list
-            else:
-                # just return the dsr command as string in one line
-                return dsr_str.upper().split()
-        else:  # returns the index number of the command
-            dsr_str = str(self._reslist[line_number])
-            dsr_str = re.sub(' +', ' ', dsr_str)
-            if misc.multiline_test(dsr_str):
-                multiline = True
-                # in case of a multiline command, strip the '=' and the newline
-                dsr_str = dsr_str.rstrip('\n\r= ')
-                dsr_str = "{} {}".format(dsr_str, self._reslist[line_number+1])
-            dsr_list = dsr_str.upper().split()
-            txt = ' '.join(dsr_list)
-            # wrap the line after 75 chars:
-            dsrlines = textwrap.wrap(txt, 75, initial_indent='REM ', subsequent_indent='REM !')
-            dsrlines = '\n'.join(dsrlines)
-            dsrlines += '\n'
-            self._reslist[line_number] = ''  # delete old line
-            if multiline:
-                self._reslist[line_number+1] = ''  # delete old line
-            self._reslist[line_number] = dsrlines
-            return line_number                     # return the line index number
+        dsr_str = str(self.reslist[line_number]).encode('ascii')
+        if misc.multiline_test(dsr_str):
+            self.multiline = True
+            # in case of a multiline command, strip the '=' and the newline
+            dsr_str = dsr_str.rstrip('\n\r= ')
+            dsr_str = re.sub(' +', ' ', dsr_str)  # Why did I do this? At least it does no harm.
+            dsr_str = dsr_str + self.reslist[line_number + 1]
+        self.dsr_line_number = line_number
+        return dsr_str.upper().split()
+
+    def remove_dsr_command(self):
+        """
+        Removes the dsr command by adding REM in front of the command.
+        """
+        txt = ' '.join(self.dsr_command_list)
+        # wrap the line after 75 chars:
+        # The ! prevents weired code highlighting in ShelXle:
+        dsrlines = textwrap.wrap(txt, 75, initial_indent='REM ', subsequent_indent='REM !')
+        dsrlines = '\n'.join(dsrlines)
+        dsrlines += '\n'
+        self.reslist[self.dsr_line_number] = ''  # delete old line
+        if self.multiline:
+            self.reslist[self.dsr_line_number + 1] = ''  # delete second old line
+        self.reslist[self.dsr_line_number] = dsrlines
 
     def find_commands(self, command):
         """
         returns the value of the input string argument as string
         :param command: string
         """
-        if command in self._dsr_list:
+        if command in self.dsr_command_list:
             try:
-                command_index = self._dsr_list.index(command)+1  # find the index of the command+1
-                command_argument = self._dsr_list[command_index]             # get the index value
+                command_index = self.dsr_command_list.index(command)  # find the index of the command
+                command_argument = self.dsr_command_list[command_index + 1]  # get the command value
             except IndexError:
                 command_argument = ''
         else:
@@ -131,7 +122,7 @@ class DSRParser():
         """
         atindex = 0
         try:
-            atindex = self._dsr_list.index(start)+1
+            atindex = self.dsr_command_list.index(start)
         except ValueError:
             if start == 'WITH':
                 print('*** No source atoms given! ***')
@@ -140,10 +131,10 @@ class DSRParser():
                 print('*** No target atoms given! ***')
                 sys.exit()
         atoms = []
-        for i in self._dsr_list[atindex:]: # start at the position of the first atom
+        for i in self.dsr_command_list[atindex + 1:]:  # start at the position of the first atom
             atoms.append(i.upper())
-            if i in stop:   # stop if stop conditions met
-                atoms.pop() # erase the stop condition from the list
+            if i in stop:  # stop if stop conditions met
+                atoms.pop()  # erase the stop condition from the list
                 break
         return atoms
 
@@ -155,7 +146,7 @@ class DSRParser():
         check = ('WITH', 'ON')
         for i in check:
             try:
-                if i not in self._dsr_list:
+                if i not in self.dsr_command_list:
                     raise Exception
             except:
                 print('\n*** No "WITH" or "ON" statement in the dsr command line found! ***')
@@ -190,26 +181,26 @@ class DSRParser():
         source = None
         if self.cf3_active:
             splitatom = False
-            if 'SPLIT' in self._dsr_list:
+            if 'SPLIT' in self.dsr_command_list:
                 splitatom = True
         else:
             splitatom = False
             self.minimal_requirements()
         # syntax:
         # rem dsr put|add|replace fragment with source on target part xx AFIX 17x occ occupancy
-        command = self._dsr_list[2]
+        command = self.dsr_command_list[2]
         # get the fragment:
-        fragment = self._dsr_list[3]
-        if fragment in ['CF3', 'CF9'] and 'SPLIT' in self._dsr_list:
+        fragment = self.dsr_command_list[3]
+        if fragment in ['CF3', 'CF9'] and 'SPLIT' in self.dsr_command_list:
             print('*** Illegal combination of CF3 or CF9 with SPLIT! \nOnly CF6 with SPLIT is alowed! ***')
             sys.exit()
         # make sure the command is correct:
         command_list = ('PUT', 'REPLACE', 'ADD')
         if command not in command_list:
-            print('*** No proper put/replace string found in DSR command line! ***')#, self._dsr_list
+            print('*** No proper put/replace string found in DSR command line! ***')  # , self._dsr_list
             sys.exit()
         for com in command_list:
-            if com in self._dsr_list[3:]:
+            if com in self.dsr_command_list[3:]:
                 print('*** PUT or REPLACE must occure once and only directly after REM DSR ***')
                 sys.exit()
         # Source and target atoms:
@@ -218,7 +209,7 @@ class DSRParser():
             # we need no soure atoms for cf3 groups
             source = self.find_atoms('WITH', 'ON')
         target = self.find_atoms('ON', 'PART', 'OCC', 'RESI', 'DFIX', 'SPLIT', '')
-        if 'RESI' in self._dsr_list:
+        if 'RESI' in self.dsr_command_list:
             residue = self.find_atoms('RESI', 'PART', 'OCC', 'RESI', 'DFIX', '')
             # RESI is in dsr_list but no residue returns -> only RESI in command line:
             if not residue:
@@ -228,7 +219,7 @@ class DSRParser():
             residue = False
             self._resiflag = False  # residue completely turned off
         dfix = False
-        if 'DFIX' in self._dsr_list:
+        if 'DFIX' in self.dsr_command_list:
             dfix = True
         part = self.find_commands('PART')
         if part:
@@ -254,14 +245,14 @@ class DSRParser():
         badocc_status = False
         if occupancy:
             num = occupancy.split('.')
-            fvar = abs(int(num[0]))//10
+            fvar = abs(int(num[0])) // 10
             try:
                 if float(fvar) > 99:
                     print('*** Only 99 free variables allowed in SHELXL! ***')
                     sys.exit()
             except ValueError:
                 badocc_status = True
-        if 'OCC' in self._dsr_list and not occupancy:
+        if 'OCC' in self.dsr_command_list and not occupancy:
             badocc_status = True
         if badocc_status:
             print(badocc_message)
@@ -276,7 +267,7 @@ class DSRParser():
             'occupancy': occupancy,
             'resi': residue,
             'split': splitatom
-            }
+        }
         return dsr_dict
 
     @property
@@ -286,7 +277,7 @@ class DSRParser():
         :return: True/False
         """
         cf = False
-        if self._dsr_list[3] in ['CF3', 'CF6', 'CF9']:
+        if self.dsr_command_list[3] in ['CF3', 'CF6', 'CF9']:
             cf = True
         return cf
 
@@ -326,7 +317,7 @@ class DSRParser():
     @property
     def target(self):
         return self.dsr_dict['target']
-    
+
     @property
     def split(self):
         return self.dsr_dict['split']
@@ -376,7 +367,7 @@ class DSRParser():
 
 
 if __name__ == '__main__':
-    
+
     import doctest
 
     failed, attempted = doctest.testmod()  # verbose=True)

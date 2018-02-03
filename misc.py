@@ -452,8 +452,6 @@ def find_multi_lines(inputlist, regex):
     for i, string in enumerate(inputlist):
         if reg.match(string):
             foundlist.append(i)  # returns the index number if regex found
-        else:
-            continue
     return foundlist
 
 
