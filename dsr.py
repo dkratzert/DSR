@@ -1,6 +1,6 @@
-#/usr/bin/env python
-#-*- encoding: utf-8 -*-
-#möp
+# /usr/bin/env python
+# -*- encoding: utf-8 -*-
+# möp
 #
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
@@ -29,8 +29,8 @@ from resfile import ResList, filename_wo_ending, ResListEdit
 
 VERSION = '207'
 # dont forget to change version in Innoscript file, spec file and deb file.
-
-program_name = '\n'+((width//2)-9)*'-'+' D S R - v{} '.format(VERSION)+((width//2)-8)*'-'
+minuse = ((width // 2) - 7) * '-'
+program_name = '\n{} D S R - v{} {}'.format(minuse, VERSION, minuse)
 
 # TODO and ideas:
 """
@@ -39,7 +39,6 @@ program_name = '\n'+((width//2)-9)*'-'+' D S R - v{} '.format(VERSION)+((width//
   - generate atoms
   - decide which new bond to new and old atoms would leave the bond length intact
   - generate parts and restraints
-- refractor dsrparse
 - Add Rcomplete
 
 From SHELXL user guide:
@@ -59,6 +58,7 @@ class DSR():
     """
     main class
     """
+
     def __init__(self, options):
         """
         """
@@ -157,7 +157,7 @@ class DSR():
             mog = ImportGRADE(self.import_grade, self.gdb, self.invert, self.gdb.maindb_path, self.gdb.userdb_path)
             mog.write_user_database()
             sys.exit()
-        if not any(list(vars(self.options.all_options).values())+[self.res_file]):
+        if not any(list(vars(self.options.all_options).values()) + [self.res_file]):
             self.options.error()
         if not self.res_file:
             self.options.error()
@@ -169,7 +169,7 @@ class DSR():
         print('Runtime: {:>.1f} s'.format(runtime))
         print('DSR run complete.')
 
-###############################################################################
+    ###############################################################################
 
     def set_database_locations(self):
         """
@@ -201,7 +201,7 @@ class DSR():
         try:
             atoms = self.export.export_to_gui(self.fragment)
         except Exception as e:
-            #print(e)
+            # print(e)
             print("*** Could not get atom information ***")
             print(self.helpmsg)
             sys.exit()
@@ -238,7 +238,7 @@ class DSR():
             self.gdb.check_db_header_consistency(fragment)
             self.gdb.check_sadi_consistence(fragment)
         from selfupdate import is_update_needed
-        if is_update_needed(silent = True):
+        if is_update_needed(silent=True):
             print("\n*** An update for DSR is available. You can update with 'dsr -u' ***")
         sys.exit()
 
@@ -261,16 +261,16 @@ class DSR():
         dsrp = DSRParser(self.reslist)
         fvarlines = rle.find_fvarlines()
         self.fragment = dsrp.fragment
-        restraints = self.gdb.get_restraints(self.fragment)        # this is only executed once
+        restraints = self.gdb.get_restraints(self.fragment)  # this is only executed once
         db_residue_string = self.gdb.get_resi(self.fragment)
-        dbatoms = self.gdb.get_atoms(self.fragment, self.invert)      # only the atoms of the dbentry as list
+        dbatoms = self.gdb.get_atoms(self.fragment, self.invert)  # only the atoms of the dbentry as list
         # the atomtypes of the dbentry as list e.g. ['C', 'N', ...]
         db_atom_types = atomhandling.get_atomtypes(dbatoms)
         sf = atomhandling.SfacTable(self.reslist, db_atom_types)
-        sfac_table = sf.set_sfac_table()                 # from now on this sfac table is set
+        sfac_table = sf.set_sfac_table()  # from now on this sfac table is set
         resi = Resi(dsrp, db_residue_string, find_atoms)
         # line where the dsr command is found in the resfile:
-        dsr_line_number = dsrp.find_dsr_command(line=False)
+        dsr_line_number = dsrp.dsr_line_number
         if dsrp.cf3_active:
             from cf3fit import CF3
             cf3 = CF3(rle, find_atoms, self.reslist, self.fragment, sfac_table,
@@ -315,10 +315,10 @@ class DSR():
             dfix_12 = restr.get_formated_12_dfixes()
             dfix_13 = restr.get_formated_13_dfixes()
             flats = restr.get_formated_flats()
-            dfix_head = dfix_12+dfix_13+flats
+            dfix_head = dfix_12 + dfix_13 + flats
         afix = Afix(self.reslist, dbatoms, db_atom_types, restraints, dsrp,
                     sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
-        afix_entry = afix.build_afix_entry(self.external, basefilename+'.dfix', resi)
+        afix_entry = afix.build_afix_entry(self.external, basefilename + '.dfix', resi)
         if dsr_line_number < fvarlines[-1]:
             print('\n*** Warning! The DSR command line MUST NOT appear before FVAR '
                   'or the first atom in the .res file! ***')
@@ -328,10 +328,10 @@ class DSR():
         import textwrap
         source = textwrap.wrap("REM Restraints for Fragment {}, {} from: {}. "
                                "Please cite doi:10.1107/S1600576715005580".format(
-                                    self.fragment,
-                                    self.gdb.get_fragment_name(self.fragment),
-                                    self.gdb.get_src(self.fragment)),
-                               width=74, subsequent_indent='REM ')
+            self.fragment,
+            self.gdb.get_fragment_name(self.fragment),
+            self.gdb.get_src(self.fragment)),
+            width=74, subsequent_indent='REM ')
         # check if restraints already inserted:
         for line in self.reslist:
             try:
@@ -366,24 +366,24 @@ class DSR():
         self.rl = ResList(self.res_file)
         reslist = self.rl.get_res_list()
         # remove the "REM " instriction bevore the +dfixfile instruction
-        plusline = find_line(reslist, "REM "+afix.rand_id_dfx)
+        plusline = find_line(reslist, "REM " + afix.rand_id_dfx)
         if plusline:
-            reslist[plusline-1] = reslist[plusline-1][4:]
+            reslist[plusline - 1] = reslist[plusline - 1][4:]
             remove_line(reslist, plusline, remove=True)
         if dsrp.command == 'REPLACE':
             reslist, find_atoms = atomhandling.replace_after_fit(self.rl, reslist, resi,
-                                                    fragment_numberscheme, cell)
+                                                                 fragment_numberscheme, cell)
         shx = ShelxlRefine(reslist, basefilename, find_atoms, self.options)
         shx.restore_acta_card(acta_lines)
         try:
             if cycles:
-                shx.set_refinement_cycles(cycles) # restores last LS value
+                shx.set_refinement_cycles(cycles)  # restores last LS value
             else:
                 shx.set_refinement_cycles(8)
         except IndexError:
             print('*** Unable to set refinement cycles ***')
         if not self.options.rigid_group:
-            shx.remove_afix(afix.rand_id_afix)   # removes the afix 9
+            shx.remove_afix(afix.rand_id_afix)  # removes the afix 9
         # final resfile write:
         self.rl.write_resfile(reslist, '.res')
 
@@ -394,6 +394,7 @@ class multilog(object):
     It acts like tee with following usage:
     sys.stdout = multifile([sys.stdout, lstfileobj])
     """
+
     def __init__(self, files):
         self._files = files
 
@@ -406,6 +407,7 @@ class multilog(object):
             for f in self._files:
                 res = getattr(f, attr, *args)(*a, **kw)
             return res
+
         return g
 
 
@@ -429,6 +431,7 @@ if __name__ == '__main__':
         dsr = DSR(options)
     except Exception:
         import platform
+
         if is_listfile:
             lstpath = os.path.abspath(lstfile.name)
             lst = 'the file "{}" \nand '.format(lstpath)
@@ -441,5 +444,5 @@ if __name__ == '__main__':
         if options:
             print('Commandline: {}'.format(options.all_options))
         print('Platform: {} {}, {}'.format(platform.system(),
-                                            platform.release(), ' '.join(platform.uname())))
+                                           platform.release(), ' '.join(platform.uname())))
         raise
