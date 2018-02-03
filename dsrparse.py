@@ -20,11 +20,7 @@ import misc
 
 class DSRParser(object):
     """
-    handles the parsing of the DSR command
-
-    - get dsr command
-    - get line number
-    - remove old command
+    Handles the parsing of the DSR command. Run this class only once in a DSR run.
     """
 
     def __init__(self, reslist):
@@ -39,11 +35,7 @@ class DSRParser(object):
         # Indicates if RESI is on of off in dsr command. Turns True if activated:
         # class and number are defined in self.resi
         self._resiflag = False
-        try:
-            self.dsr_dict = self.parse_dsr_line()
-        except Exception:
-            print("*** No valid DSR command line found. ***")
-            raise
+        self.dsr_dict = self.parse_dsr_line()
         self.remove_dsr_command()
 
     def find_dsr_command(self):
@@ -56,10 +48,11 @@ class DSRParser(object):
         """
         hklf_endline = misc.find_line(self.reslist, r'^HKLF\s+[1-6]')
         indexnum = misc.find_multi_lines(self.reslist, self._dsr_regex)
+        # This is critical, DSR does not run without finding self._dsr_regex:
         try:
             line_number = int(indexnum[0])
         except IndexError:
-            print('*** no proper DSR command found! \n'
+            print('*** No proper DSR command found! '
                   'Have you really saved your .res file? ***\n')
             sys.exit()
         if int(line_number) > int(hklf_endline):
@@ -192,7 +185,7 @@ class DSRParser(object):
         # get the fragment:
         fragment = self.dsr_command_list[3]
         if fragment in ['CF3', 'CF9'] and 'SPLIT' in self.dsr_command_list:
-            print('*** Illegal combination of CF3 or CF9 with SPLIT! \nOnly CF6 with SPLIT is alowed! ***')
+            print('*** Illegal combination of CF3 or CF9 with SPLIT! Only CF6 with SPLIT is alowed! ***')
             sys.exit()
         # make sure the command is correct:
         command_list = ('PUT', 'REPLACE', 'ADD')
@@ -226,7 +219,7 @@ class DSRParser(object):
             try:
                 float(part)
             except ValueError:
-                print('*** Part without numerical value supplied.',
+                print('*** Part without numerical value supplied. '
                       'Please give a part number after PART in the DSR command. ***')
                 sys.exit(False)
             if float(part) > 999:
