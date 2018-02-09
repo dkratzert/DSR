@@ -34,6 +34,7 @@ program_name = '\n{} D S R - v{} {}'.format(minuse, VERSION, minuse)
 
 # TODO and ideas:
 """
+- Add sh256 check
 - Split mode
   - calc principal axis for each ellipsoid
   - generate atoms
