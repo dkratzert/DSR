@@ -8,6 +8,7 @@ import shutil
 
 from dsr import VERSION
 from misc import copy_file, remove_file, walkdir
+from selfupdate import sha256_checksum
 
 version = VERSION
 
@@ -85,7 +86,14 @@ def make_zip(filelist):
     print(fulldir)
     print("File written to {}".format(zipfilename))
     shutil.rmtree(tmpdir)
+    make_shasum(zipfilename)
 
+def make_shasum(filename):
+    sha = sha256_checksum(filename)
+    shafile = os.path.abspath('setup/Output/DSR-sha256-v{}.sha'.format(VERSION))
+    with open(shafile, 'w') as f:
+        f.write(sha)
+    print("SHA256: {}".format(sha))
 
 if __name__ == "__main__":
     make_zip(files)
