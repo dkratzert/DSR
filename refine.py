@@ -19,7 +19,6 @@ from misc import find_line, check_file_exist, remove_line
 from constants import sep_line
 
 
-
 __metaclass__ = type  # use new-style classes
 
 
