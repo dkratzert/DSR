@@ -1,13 +1,11 @@
 """
 Creates a zip file with the content of the StructureDB program.
 """
-import mimetypes
 import string
 import tarfile
 import tempfile
 import os
 import shutil
-
 import sys
 
 from dsr import VERSION

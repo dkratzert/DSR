@@ -14,8 +14,6 @@ from __future__ import print_function
 
 from copy import deepcopy
 
-import re
-
 from atomhandling import get_atomtypes
 from atoms import Element
 from dbfile import ParseDB, invert_atomic_coordinates
