@@ -102,7 +102,7 @@ def update_dsr(force=False, version=None):
         else:
             return False
     if int(VERSION) < int(version):
-        print('*** Current available version of DSR is {}. Performing upate ***'.format(version))
+        print('*** Current available version of DSR is {}. Performing upate ... ***'.format(version))
         status = get_update_package(version)
         if status:
             print('*** Finished updating to version {} ***'.format(version))
@@ -206,7 +206,7 @@ def get_update_package(version, destdir=None, post=True):
         tmpfile.write(response.read())
     downloaded_sha, tgz_sha = check_checksum(tmpfile, version)
     if not downloaded_sha == tgz_sha:
-        print('*** Warning! Update file damaged. Update canceled. ***')
+        print('*** Checksum mismatch. Unable to update. If this problem persists, please update manually! ***')
         return False
     else:
         print("*** Checksums matched ***")
