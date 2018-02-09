@@ -11,6 +11,7 @@
 #
 from __future__ import print_function
 
+import hashlib
 import os
 import shutil
 import tarfile
@@ -19,7 +20,7 @@ import sys
 
 from dsr import VERSION
 
-urlprefix = "http://www.xs3-data.uni-freiburg.de/data"
+urlprefix = "https://www.xs3-data.uni-freiburg.de/data"
 
 # changes the user-agent of the http request:
 # Python 2 and 3: alternative 4
@@ -223,6 +224,23 @@ def get_update_package(version, destdir=None, post=True):
     if post:
         post_update_things(dsrdir)
     return True
+
+
+def sha256_checksum(filename, block_size=65536):
+    """
+    Calculates a SHA256 checksum from a file.
+    DSR-207.tar.gz mac 2.7: 'e8d14033578e0ecce0d6c123a947060f9883fa735d1d3226b4f03f08a7eacecd'
+    :param filename:
+    :param block_size:
+    :return: str
+    >>> sha256_checksum("../DSR-207.tar.gz")
+    'e8d14033578e0ecce0d6c123a947060f9883fa735d1d3226b4f03f08a7eacecd'
+    """
+    sha256 = hashlib.sha256()
+    with open(filename, 'rb') as f:
+        for block in iter(lambda: f.read(block_size), b''):
+            sha256.update(block)
+    return sha256.hexdigest()
 
 
 if __name__ == '__main__':
