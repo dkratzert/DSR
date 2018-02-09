@@ -1,10 +1,13 @@
 """
 Creates a zip file with the content of the StructureDB program.
 """
+import mimetypes
 import tarfile
 import tempfile
 import os
 import shutil
+
+import sys
 
 from dsr import VERSION
 from misc import copy_file, remove_file, walkdir
@@ -50,9 +53,7 @@ files = [
     "example/p21n_cf3.res",
     "networkx",
     "mpmath"
-    ]
-
-
+]
 
 
 def make_zip(filelist):
@@ -82,11 +83,12 @@ def make_zip(filelist):
             copy_file(filen, target_dir)
     with tarfile.open(zipfilename, mode='w:gz') as archive:
         archive.add(fulldir, arcname=maindir, recursive=True)
-    #copy_file(zipfilen, 'StructureFinder/scripts/Output/')
+    # copy_file(zipfilen, 'StructureFinder/scripts/Output/')
     print(fulldir)
     print("File written to {}".format(zipfilename))
     shutil.rmtree(tmpdir)
     make_shasum(zipfilename)
+
 
 def make_shasum(filename):
     sha = sha256_checksum(filename)
@@ -95,5 +97,22 @@ def make_shasum(filename):
         f.write(sha)
     print("SHA256: {}".format(sha))
 
+
+def dos2unix(filename):
+    """
+    >>> dos2unix('./profiling.bat')
+    """
+    if sys.version_info[0] > 2:
+        fileContents = open(filename, "r").read()
+        f = open(filename, "w")
+        f.write(fileContents)
+        f.close()
+    else:
+        text = open(filename, 'rb').read().replace('\r\n', '\n')
+        open(filename, 'wb').write(text)
+
+
+
 if __name__ == "__main__":
-    make_zip(files)
+    dos2unix('./scripts/profiling.bat')
+    # make_zip(files)
