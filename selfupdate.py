@@ -229,7 +229,7 @@ def get_update_package(version, destdir=None, post=True):
 def sha256_checksum(filename, block_size=65536):
     """
     Calculates a SHA256 checksum from a file.
-    DSR-207.tar.gz mac 2.7: 'e8d14033578e0ecce0d6c123a947060f9883fa735d1d3226b4f03f08a7eacecd'
+
     :param filename:
     :param block_size:
     :return: str
