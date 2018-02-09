@@ -204,13 +204,12 @@ def get_update_package(version, destdir=None, post=True):
     response = myurlopen.open('{}/DSR-{}.tar.gz'.format(urlprefix, version))
     with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
         tmpfile.write(response.read())
-    # SHA file:
-    response2 = myurlopen.open('{}/DSR-sha256-v{}.sha'.format(urlprefix, version))
-    downloaded_sha = response2.read()
-    tgz_sha = sha256_checksum(tmpfile.name)
+    downloaded_sha, tgz_sha = check_checksum(tmpfile, version)
     if not downloaded_sha == tgz_sha:
         print('*** Warning! Update file damaged. Update canceled. ***')
         return False
+    else:
+        print("*** Checksums matched ***")
     # a temporary directory:
     tmpdir = tempfile.mkdtemp()
     try:
@@ -233,6 +232,15 @@ def get_update_package(version, destdir=None, post=True):
     if post:
         post_update_things(dsrdir)
     return True
+
+
+def check_checksum(tmpfile, version):
+    # download SHA file:
+    response2 = myurlopen.open('{}/DSR-{}-sha256.sha'.format(urlprefix, version))
+    downloaded_sha = response2.read()
+    # Checksum for program package:
+    tgz_sha = sha256_checksum(tmpfile.name)
+    return downloaded_sha, tgz_sha
 
 
 def sha256_checksum(filename, block_size=65536):

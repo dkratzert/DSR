@@ -90,7 +90,7 @@ def make_zip(filelist):
 
 def make_shasum(filename):
     sha = sha256_checksum(filename)
-    shafile = os.path.abspath('setup/Output/DSR-sha256-v{}.sha'.format(VERSION))
+    shafile = os.path.abspath('setup/Output/DSR-{}-sha256.sha'.format(VERSION))
     with open(shafile, 'w') as f:
         f.write(sha)
     print("SHA256: {}".format(sha))
