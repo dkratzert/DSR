@@ -2,6 +2,7 @@
 Creates a zip file with the content of the StructureDB program.
 """
 import mimetypes
+import string
 import tarfile
 import tempfile
 import os
@@ -11,7 +12,7 @@ import sys
 
 from dsr import VERSION
 from misc import copy_file, remove_file, walkdir
-from selfupdate import sha256_checksum
+from selfupdate import sha512_checksum
 
 version = VERSION
 
@@ -75,6 +76,7 @@ def make_zip(filelist):
         # Also add recoursive dirs:
         for filen in walkdir(f, exclude=['.pyc']):
             print(filen)
+            dos2unix(filen)
             # need path without filename to create target directories:
             path, _ = os.path.split(filen)
             target_dir = os.path.join(fulldir, path)
@@ -84,24 +86,25 @@ def make_zip(filelist):
     with tarfile.open(zipfilename, mode='w:gz') as archive:
         archive.add(fulldir, arcname=maindir, recursive=True)
     # copy_file(zipfilen, 'StructureFinder/scripts/Output/')
-    print(fulldir)
-    print("File written to {}".format(zipfilename))
+    print("\nFile written to {}".format(zipfilename))
     shutil.rmtree(tmpdir)
     make_shasum(zipfilename)
 
 
 def make_shasum(filename):
-    sha = sha256_checksum(filename)
-    shafile = os.path.abspath('setup/Output/DSR-{}-sha256.sha'.format(VERSION))
+    sha = sha512_checksum(filename)
+    shafile = os.path.abspath('setup/Output/DSR-{}-sha512.sha'.format(VERSION))
     with open(shafile, 'w') as f:
         f.write(sha)
-    print("SHA256: {}".format(sha))
+    print("SHA512: {}".format(sha))
 
 
 def dos2unix(filename):
     """
     >>> dos2unix('./profiling.bat')
     """
+    if is_binary(filename):
+        return
     if sys.version_info[0] > 2:
         fileContents = open(filename, "r").read()
         f = open(filename, "w")
@@ -112,7 +115,53 @@ def dos2unix(filename):
         open(filename, 'wb').write(text)
 
 
+def istext(filename):
+    """
+    Got this from https://stackoverflow.com/questions/1446549/
+                    how-to-identify-binary-and-text-files-using-python
+    Not compatible to Python3
+    """
+    s=open(filename).read(1024)
+    text_characters = "".join(map(chr, range(32, 127)) + list("\n\r\t\b"))
+    _null_trans = string.maketrans("", "")
+    if not s:
+        # Empty files are considered text
+        return True
+    if "\0" in s:
+        # Files with null bytes are likely binary
+        return False
+    # Get the non-text characters (maps a character to itself then
+    # use the 'remove' option to get rid of the text characters.)
+    t = s.translate(_null_trans, text_characters)
+    # If more than 30% non-text characters, then
+    # this is considered a binary file
+    if float(len(t))/float(len(s)) > 0.30:
+        return False
+    return True
+
+
+def is_binary(filename):
+    """
+    Return true if the given filename is binary.
+
+    @raise EnvironmentError: if the file does not exist or cannot be accessed.
+    @attention: found @ http://bytes.com/topic/python/answers/21222-determine-file-type-binary-text on 6/08/2010
+    @author: Trent Mick <TrentM@ActiveState.com>
+    @author: Jorge Orpinel <jorge@orpinel.com>"""
+    fin = open(filename, 'rb')
+    try:
+        CHUNKSIZE = 1024
+        while 1:
+            chunk = fin.read(CHUNKSIZE)
+            if b'\0' in chunk: # found null byte
+                return True
+            if len(chunk) < CHUNKSIZE:
+                break # done
+    # A-wooo! Mira, python no necesita el "except:". Achis... Que listo es.
+    finally:
+        fin.close()
+    return False
+
 
 if __name__ == "__main__":
-    dos2unix('./scripts/profiling.bat')
-    # make_zip(files)
+    make_zip(files)

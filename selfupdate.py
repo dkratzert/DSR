@@ -236,28 +236,28 @@ def get_update_package(version, destdir=None, post=True):
 
 def check_checksum(tmpfile, version):
     # download SHA file:
-    response2 = myurlopen.open('{}/DSR-{}-sha256.sha'.format(urlprefix, version))
+    response2 = myurlopen.open('{}/DSR-{}-sha512.sha'.format(urlprefix, version))
     downloaded_sha = response2.read()
     # Checksum for program package:
-    tgz_sha = sha256_checksum(tmpfile.name)
+    tgz_sha = sha512_checksum(tmpfile.name)
     return downloaded_sha, tgz_sha
 
 
-def sha256_checksum(filename, block_size=65536):
+def sha512_checksum(filename, block_size=65536):
     """
-    Calculates a SHA256 checksum from a file.
+    Calculates a SHA512 checksum from a file.
 
     :param filename:
     :param block_size:
     :return: str
-    >>> sha256_checksum("../DSR-207.tar.gz")
+    >>> sha512_checksum("../DSR-207.tar.gz")
     'e8d14033578e0ecce0d6c123a947060f9883fa735d1d3226b4f03f08a7eacecd'
     """
-    sha256 = hashlib.sha256()
+    sha512 = hashlib.sha512()
     with open(filename, 'rb') as f:
         for block in iter(lambda: f.read(block_size), b''):
-            sha256.update(block)
-    return sha256.hexdigest()
+            sha512.update(block)
+    return sha512.hexdigest()
 
 
 if __name__ == '__main__':
