@@ -200,10 +200,19 @@ def get_update_package(version, destdir=None, post=True):
     except KeyError:
         print("*** Could not determine the location of DSR. Can not update. ***" )
         sys.exit()
+    # DSR file:
     response = myurlopen.open('{}/DSR-{}.tar.gz'.format(urlprefix, version))
     with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
         tmpfile.write(response.read())
-    tmpdir = tempfile.mkdtemp()  # a temporary directory
+    # SHA file:
+    response2 = myurlopen.open('{}/DSR-sha256-v{}.sha'.format(urlprefix, version))
+    downloaded_sha = response2.read()
+    tgz_sha = sha256_checksum(tmpfile.name)
+    if not downloaded_sha == tgz_sha:
+        print('*** Warning! Update file damaged. Update canceled. ***')
+        return False
+    # a temporary directory:
+    tmpdir = tempfile.mkdtemp()
     try:
         with tarfile.open(tmpfile.name) as tarobj:
             tarobj.extractall(path=tmpdir)
