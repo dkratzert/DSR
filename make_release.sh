@@ -37,11 +37,11 @@ mkdir $DEBDIR/etc/profile.d
 mkdir $DEBDIR/opt
 mkdir $DEBDIR/opt/DSR
 cp $TMPDIR/* $DEBDIR/opt/DSR
-cp -r $TMPDIR/example $DEBDIR/opt/DSR
-cp -r $TMPDIR/manuals $DEBDIR/opt/DSR
-cp -r $TMPDIR/networkx $DEBDIR/opt/DSR
-cp -r $TMPDIR/mpmath $DEBDIR/opt/DSR
-cp $TMPDIR/setup/* $DEBDIR/etc/profile.d
+cp -r $TMPDIR/example $DEBDIR/opt/DSR/
+cp -r $TMPDIR/manuals $DEBDIR/opt/DSR/
+cp -r $TMPDIR/networkx $DEBDIR/opt/DSR/
+cp -r $TMPDIR/mpmath $DEBDIR/opt/DSR/
+cp $TMPDIR/setup/* $DEBDIR/etc/profile.d/
 
 ##########################################
 
