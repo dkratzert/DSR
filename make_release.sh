@@ -11,6 +11,8 @@ TMPDIR=/tmp/DSR-${VERSION}
 BUILDDIR=/usr/src/packages/BUILD/DSR-${VERSION}
 DEBDIR=/usr/src/packages/BUILD/dsr
 
+mkdir ${BUILDDIR}
+
 cd $GIT
 
 #cd setup
