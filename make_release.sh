@@ -12,7 +12,8 @@ VERSION=$(cat $GIT/dsr.py|grep -e "VERSION ="|cut -d ' ' -f3|tr -d "\'")
 cd $GIT
 
 #cd setup
-sh ./setup/build_linux_distrib.sh
+#sh ./setup/build_linux_distrib.sh
+python ./scripts/make_zipfile.py
 
 cd $GIT
 
