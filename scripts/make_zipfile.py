@@ -1,6 +1,7 @@
 """
 Creates a zip file with the content of the StructureDB program.
 """
+from __future__ import print_function
 import string
 import tarfile
 import tempfile
@@ -11,8 +12,6 @@ import sys
 from dsr import VERSION
 from misc import copy_file, remove_file, walkdir
 from selfupdate import sha512_checksum
-
-version = VERSION
 
 files = [
     "afix.py",
@@ -67,7 +66,7 @@ def make_zip(filelist):
     fulldir = os.path.abspath(os.path.join(tmpdir, maindir))
     os.makedirs(fulldir)
     # Tar output file
-    zipfilename = os.path.abspath('setup/Output/DSR-{}.tar.gz'.format(version))
+    zipfilename = os.path.abspath('setup/Output/DSR-{}.tar.gz'.format(VERSION))
     remove_file(zipfilename)
     # Go through DSR path and add files from list:
     for f in filelist:
