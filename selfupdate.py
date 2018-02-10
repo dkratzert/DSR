@@ -134,7 +134,7 @@ def get_system():
 def post_update_things(dsrdir):
     """
     Performs some file operations after the update.
-    :return:
+    :return: None
     """
     import stat
     plat = get_system()
@@ -187,10 +187,7 @@ def get_update_package(version, destdir=None, post=True):
     :param post: Defines if post_update_things() should be executed
     :param destdir: Optional destdir instead of DSR_DIR
     :type version: int or string
-
-    Returns
-    -------
-    True/False
+    :return True/False
 
     >>> get_update_package('202')
     True
@@ -235,6 +232,12 @@ def get_update_package(version, destdir=None, post=True):
 
 
 def check_checksum(tmpfile, version):
+    """
+    Creates a SHA512 checksum for the downloaded update package.
+    :param tmpfile: dowloadad update package
+    :param version: version numberof update
+    :return: the two checksums
+    """
     # download SHA file:
     response2 = myurlopen.open('{}/DSR-{}-sha512.sha'.format(urlprefix, version))
     downloaded_sha = response2.read()
@@ -250,6 +253,7 @@ def sha512_checksum(filename, block_size=65536):
     :param filename:
     :param block_size:
     :return: str
+
     >>> sha512_checksum("../DSR-207.tar.gz")
     'e8d14033578e0ecce0d6c123a947060f9883fa735d1d3226b4f03f08a7eacecd'
     """
