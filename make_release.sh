@@ -13,6 +13,7 @@ cd $GIT
 
 #cd setup
 #sh ./setup/build_linux_distrib.sh
+PYTHONPATH=$GIT
 python ./scripts/make_zipfile.py
 
 cd $GIT
