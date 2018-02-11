@@ -199,8 +199,13 @@ def get_update_package(version, destdir=None, post=True):
         sys.exit()
     # DSR file:
     response = myurlopen.open('{}/DSR-{}.tar.gz'.format(urlprefix, version))
-    with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
-        tmpfile.write(response.read())
+    try:
+        with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
+            tmpfile.write(response.read())
+    except Exception as e:
+        print('*** Update timed out. Try again later. ***')
+        print(e)
+        return False
     downloaded_sha, tgz_sha = check_checksum(tmpfile, version)
     if not downloaded_sha == tgz_sha:
         print('*** Checksum mismatch. Unable to update. If this problem persists, please update manually! ***')
