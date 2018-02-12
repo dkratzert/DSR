@@ -23,7 +23,7 @@ REM Restraints for Fragment toluene, Toluene, C7H8 from: CCDC CESLUJ.
 REM Please cite doi:10.1107/S1600576715005580
 SADI_TOL C2 C3 C3 C4 C4 C5 C5 C6 C6 C7 C7 C2
 SADI_TOL 0.04 C2 C6 C2 C4 C7 C5 C3 C7 C4 C6 C3 C5
-DFIX_TOL 1.51 C1 C2
+SADI_TOL 0.02 C1 C2
 SADI_TOL 0.04 C1 C7 C1 C3
 FLAT_TOL C1 > C7
 SIMU_TOL C1 > C7
@@ -102,7 +102,7 @@ HKLF 4
 
 REM  Pbcn in Pbcn
 REM R1 =  0.7091 for    4117 Fo > 4sig(Fo)  and  0.7522 for all    5655 data
-REM    216 parameters refined using     43 restraints
+REM    216 parameters refined using     42 restraints
 
 END  
      
