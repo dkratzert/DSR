@@ -63,8 +63,8 @@ def make_zip(filelist):
     # tmpdir for file collection:
     tmpdir = tempfile.mkdtemp()
     # full directory in temp:
-    fulldir = os.path.abspath(os.path.join(tmpdir, maindir))
-    os.makedirs(fulldir)
+    full_tmp_dir = os.path.abspath(os.path.join(tmpdir, maindir))
+    os.makedirs(full_tmp_dir)
     # Tar output file
     zipfilename = os.path.abspath('setup/Output/DSR-{}.tar.gz'.format(VERSION))
     remove_file(zipfilename)
@@ -73,15 +73,15 @@ def make_zip(filelist):
         # Also add recoursive dirs:
         for filen in walkdir(f, exclude=['.pyc']):
             print(filen)
-            dos2unix(filen)
             # need path without filename to create target directories:
             path, _ = os.path.split(filen)
-            target_dir = os.path.join(fulldir, path)
-            if not os.path.exists(target_dir):
-                os.makedirs(target_dir)
-            copy_file(filen, target_dir)
+            target_tmp_dir = os.path.join(full_tmp_dir, path)
+            if not os.path.exists(target_tmp_dir):
+                os.makedirs(target_tmp_dir)
+            copy_file(filen, target_tmp_dir)
+            dos2unix(os.path.join(target_tmp_dir, os.path.split(filen)[1]))  # dos2unix only in target tmp
     with tarfile.open(zipfilename, mode='w:gz') as archive:
-        archive.add(fulldir, arcname=maindir, recursive=True)
+        archive.add(full_tmp_dir, arcname=maindir, recursive=True)
     # copy_file(zipfilen, 'StructureFinder/scripts/Output/')
     print("\nFile written to {}".format(zipfilename))
     shutil.rmtree(tmpdir)
