@@ -91,6 +91,7 @@ def make_zip(filelist):
 def make_shasum(filename):
     sha = sha512_checksum(filename)
     shafile = os.path.abspath('setup/Output/DSR-{}-sha512.sha'.format(VERSION))
+    remove_file(shafile)
     with open(shafile, 'w') as f:
         f.write(sha)
     print("SHA512: {}".format(sha))
