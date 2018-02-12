@@ -212,3 +212,4 @@ unit-tests/test-data/search.txt
 
 feed.rss
 *.sqlite
+*.sha
