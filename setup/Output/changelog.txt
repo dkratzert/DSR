@@ -1,4 +1,5 @@
 Recent changes
+-208    Changed self-update process to be secured by checksums and ssl.
 -207    When using residues, DSR will now introduce a SAME_name 'first atom' > 'last atom'
         to the list of restraints. First/last atom means first and last atom from the
         respective fragment. This will make distances in all residues more consisten but should

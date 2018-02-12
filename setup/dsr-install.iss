@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "DSR - Disordered Structure Refinement"
-#define MyAppVersion "207"
+#define MyAppVersion "208"
 #define MyAppPublisher "Daniel Kratzert"
 
 [Setup]
@@ -73,7 +73,7 @@ Source: "..\dbfile.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\dsrparse.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\export.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\cf3fit.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\selfupdate.py"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\selfupdate.py"; DestDir: "{app}"; Flags: ignoreversion; Permissions: users-readexec
 Source: "..\terminalsize.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\misc.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\options.py"; DestDir: "{app}"; Flags: ignoreversion
@@ -89,14 +89,12 @@ Source: "..\example\p21c.hkl"; DestDir: "{app}\example"; Flags: ignoreversion cr
 Source: "..\example\p21c.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs; Permissions: everyone-full
 Source: "..\example\p21c_step0.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\example\p21c_step1.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
-;Source: "..\example\p21c_step2.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\example\p21c_step3.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\example\p21c_step2.ins"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\example\p21c_final.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\example\p21n_cf3.hkl"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\example\p21n_cf3.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: ".\Output\changelog.txt"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "..\dsr_user_db.txt"; DestDir: "{app}"; Flags: ignoreversion confirmoverwrite uninsneveruninstall onlyifdoesntexist; Permissions: users-modify
 Source: "..\networkx\*"; DestDir: "{app}\networkx"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
 Source: "..\mpmath\*"; DestDir: "{app}\mpmath"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
 

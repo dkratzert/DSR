@@ -2,7 +2,7 @@ Summary: DSR - A program for modelling of disordered solvents with SHELXL
 Name: DSR
 Provides: DSR
 Packager: dkratzert@gmx.de
-Version: 207
+Version: 208
 Release: 0
 Requires: python, xclip
 Prefix: /opt

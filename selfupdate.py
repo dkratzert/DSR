@@ -11,6 +11,7 @@
 #
 from __future__ import print_function
 
+import hashlib
 import os
 import shutil
 import tarfile
@@ -19,7 +20,7 @@ import sys
 
 from dsr import VERSION
 
-urlprefix = "http://www.xs3-data.uni-freiburg.de/data"
+urlprefix = "https://www.xs3-data.uni-freiburg.de/data"
 
 # changes the user-agent of the http request:
 # Python 2 and 3: alternative 4
@@ -101,7 +102,7 @@ def update_dsr(force=False, version=None):
         else:
             return False
     if int(VERSION) < int(version):
-        print('*** Current available version of DSR is {}. Performing upate ***'.format(version))
+        print('*** Current available version of DSR is {}. Performing upate ... ***'.format(version))
         status = get_update_package(version)
         if status:
             print('*** Finished updating to version {} ***'.format(version))
@@ -133,7 +134,7 @@ def get_system():
 def post_update_things(dsrdir):
     """
     Performs some file operations after the update.
-    :return:
+    :return: None
     """
     import stat
     plat = get_system()
@@ -186,10 +187,7 @@ def get_update_package(version, destdir=None, post=True):
     :param post: Defines if post_update_things() should be executed
     :param destdir: Optional destdir instead of DSR_DIR
     :type version: int or string
-
-    Returns
-    -------
-    True/False
+    :return True/False
 
     >>> get_update_package('202')
     True
@@ -199,10 +197,23 @@ def get_update_package(version, destdir=None, post=True):
     except KeyError:
         print("*** Could not determine the location of DSR. Can not update. ***" )
         sys.exit()
+    # DSR file:
     response = myurlopen.open('{}/DSR-{}.tar.gz'.format(urlprefix, version))
-    with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
-        tmpfile.write(response.read())
-    tmpdir = tempfile.mkdtemp()  # a temporary directory
+    try:
+        with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
+            tmpfile.write(response.read())
+    except Exception as e:
+        print('*** Update timed out. Try again later. ***')
+        print(e)
+        return False
+    downloaded_sha, tgz_sha = check_checksum(tmpfile, version)
+    if not downloaded_sha == tgz_sha:
+        print('*** Checksum mismatch. Unable to update. If this problem persists, please update manually! ***')
+        return False
+    else:
+        print("*** Checksums matched ***")
+    # a temporary directory:
+    tmpdir = tempfile.mkdtemp()
     try:
         with tarfile.open(tmpfile.name) as tarobj:
             tarobj.extractall(path=tmpdir)
@@ -223,6 +234,39 @@ def get_update_package(version, destdir=None, post=True):
     if post:
         post_update_things(dsrdir)
     return True
+
+
+def check_checksum(tmpfile, version):
+    """
+    Creates a SHA512 checksum for the downloaded update package.
+    :param tmpfile: dowloadad update package
+    :param version: version numberof update
+    :return: the two checksums
+    """
+    # download SHA file:
+    response2 = myurlopen.open('{}/DSR-{}-sha512.sha'.format(urlprefix, version))
+    downloaded_sha = response2.read()
+    # Checksum for program package:
+    tgz_sha = sha512_checksum(tmpfile.name)
+    return downloaded_sha, tgz_sha
+
+
+def sha512_checksum(filename, block_size=65536):
+    """
+    Calculates a SHA512 checksum from a file.
+
+    :param filename:
+    :param block_size:
+    :return: str
+
+    >>> sha512_checksum("../DSR-207.tar.gz")
+    'e8d14033578e0ecce0d6c123a947060f9883fa735d1d3226b4f03f08a7eacecd'
+    """
+    sha512 = hashlib.sha512()
+    with open(filename, 'rb') as f:
+        for block in iter(lambda: f.read(block_size), b''):
+            sha512.update(block)
+    return sha512.hexdigest()
 
 
 if __name__ == '__main__':

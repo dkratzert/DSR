@@ -4,7 +4,7 @@ import tempfile
 import misc
 import selfupdate
 from dsr import VERSION
-from scripts.make_zipfile import make_zip, files
+from scripts.make_zipfile import files, make_zip
 
 try:  # Python2:
     # noinspection PyCompatibility
@@ -16,6 +16,7 @@ except(ImportError, AttributeError):  # Python3:
 
 version = VERSION
 
+# First, create a .tar.gz file with the DSR program:
 make_zip(files)
 
 volname = "DSR-"+version
