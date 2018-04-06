@@ -329,14 +329,15 @@ HKLF 4
 
 
 REM  p21c in P2(1)/c
-REM R1 =  0.1527 for    7085 Fo > 4sig(Fo)  and  0.1983 for all   10786 data
-REM    887 parameters refined using   4465 restraints
+REM wR2 = 0.4430, GooF = S = 4.907, Restrained GooF = 4.200 for all data
+REM R1 = 0.1527 for 7085 Fo > 4sig(Fo) and 0.1983 for all 10786 data
+REM 887 parameters refined using 4465 restraints
 
 END  
      
 WGHT      0.2000      0.0000 
 
-REM Highest difference peak  5.305,  deepest hole -5.430,  1-sigma level  0.307
+REM Highest difference peak  5.304,  deepest hole -5.430,  1-sigma level  0.307
 Q1    1   0.1016  0.1291  0.3105  11.00000  0.05    4.70
 Q2    1  -0.1953  0.2479  0.3448  11.00000  0.05    4.68
 Q3    1   0.1322  0.3250  0.2911  11.00000  0.05    4.41

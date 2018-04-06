@@ -10,6 +10,8 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
+import re
+
 from terminalsize import get_terminal_size
 
 
@@ -37,7 +39,7 @@ DIST_RESTRAINT_CARDS = ('SAME', 'SADI', 'FREE', 'DFIX', 'BUMP', 'CHIV', 'FLAT', 
     # one or more whitespaces, one digit, one or more whitespaces, one or more digits,
     # a dot, one or more digits, ...
 
-atomregex = r'^(([A-Za-z]{1,3})[0-9]{0,3}[A-Za-z\'\"]{0,2}\d{0,1})\s+[-]?[0-9]{1,2}\s+[-+]?[0-9]*\.?[0-9]+\s+[-+]?[0-9]*\.?[0-9]+\s+[-+]?[0-9]*\.?[0-9]+'
+atomregex = re.compile(r'^(([A-Za-z]{1,3})[0-9]{0,3}[A-Za-z\'\"]{0,2}\d{0,1})\s+[-]?[0-9]{1,2}\s+[-+]?[0-9]*\.?[0-9]+\s+[-+]?[0-9]*\.?[0-9]+\s+[-+]?[0-9]*\.?[0-9]+')
 
 try:
     (width, height) = get_terminal_size()  # @UnusedVariable

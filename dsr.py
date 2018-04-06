@@ -17,7 +17,6 @@ from dbfile import search_fragment_name, ParseDB
 from constants import width, sep_line
 from misc import find_line, remove_line, touch
 from options import OptionsParser
-from os.path import expanduser
 from terminalsize import get_terminal_size
 from dsrparse import DSRParser
 from dbfile import ImportGRADE, print_search_results
@@ -180,7 +179,7 @@ class DSR():
         """
         if not self.userdb_path:
             # using the environment variable turned out to be too complicated.
-            homedir = expanduser("~")
+            homedir = os.path.expanduser("~")
             self.userdb_path = os.path.join(homedir, "dsr_user_db.txt")
             if not os.path.isfile(self.userdb_path):
                 touch(self.userdb_path)
@@ -216,7 +215,7 @@ class DSR():
         """
         list all entries in the db.
         """
-        dbdir = expanduser('~')
+        dbdir = os.path.expanduser('~')
         fragnames = []
         num = 0
         try:

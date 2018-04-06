@@ -141,7 +141,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         resi cf3 PART 2 occ -31
         """
         self.maxDiff = 10
-        self.dsr_runtest(1, '-r', remlines=[317])
+        self.dsr_runtest(1, '-r', remlines=[316, 317, 319])
 
     # @unittest.skip(" skipping2 ")
     def testrun_run2(self):
@@ -150,7 +150,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         resi cf3 dfix =
             PART 2 occ -31
         """
-        self.dsr_runtest(2, '-r', remlines=[346])
+        self.dsr_runtest(2, '-r', remlines=[345, 346])
 
     # @unittest.skip(" skipping3 ")
     def testrun_run3(self):
@@ -261,7 +261,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         rem dsr put oc(cf3)3 with o1 c1 c2 c3 c4 on O1_3 c1_3 q6 Q4 q7 resi cf3 =
             PART 2 occ 501
         """
-        self.dsr_runtest(13, '-r', remlines=[330, 331, 332, 326])
+        self.dsr_runtest(13, '-r', remlines=[330, 331, 332, 333, 326])
 
     # @unittest.skip(" skipping 14")
     def testrun_run14(self):
@@ -310,7 +310,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         occ -31 without FVAR
 
         """
-        self.dsr_runtest(19, '-re', external_file='dsr_1_19a', remlines=[310])
+        self.dsr_runtest(19, '-re', external_file='dsr_1_19a', remlines=[309, 310])
 
     # @unittest.skip(" skipping 20")
     def testrun_run20(self):
@@ -777,7 +777,7 @@ class globalDB(unittest.TestCase):
                       'SAME C2 > C6 C1 ', 'FLAT C1 > Cl2 ',
                       'SIMU C1 > Cl2 ', 'RIGU C1 > Cl2']
         self.result = {'dmx': {'startline': 2,
-                               'name': '',
+                               'name': 'dmx',
                                'comments': ['REM test'],
                                'atoms': [['O1', 1, -1.3542148, -0.478099, -0.5279749]],
                                'cell': [1.0, 1.0, 1.0, 90.0, 90.0, 90.0],
@@ -787,7 +787,7 @@ class globalDB(unittest.TestCase):
                                'endline': 8,
                                'dbname': 'dsr_user_db'},
                        'dme': {'startline': 1,
-                               'name': '',
+                               'name': 'dme',
                                'comments': ['REM test'],
                                'atoms': [['O1', 1, -1.3542148, -0.478099, -0.5279749]],
                                'cell': [1.0, 1.0, 1.0, 90.0, 90.0, 90.0],
@@ -802,7 +802,7 @@ class globalDB(unittest.TestCase):
         gdb = dbfile.ParseDB("db1_klein.TXT", "db2_klein.TXT")
         db = gdb.databases
         self.assertEqual(db['dmx']['startline'], 2)
-        self.assertEqual(db['dmx']['name'], '')
+        self.assertEqual(db['dmx']['name'], 'dmx')  # no name given, so name is fragment tag
         self.assertEqual(db['dmx']['dbname'], 'dsr_user_db')
         self.assertEqual(db['dmx']['restraints'], ['SIMU C1'])
         self.assertEqual(db['dmx']['cell'], [1, 1, 1, 90, 90, 90])
