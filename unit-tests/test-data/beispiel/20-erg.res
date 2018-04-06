@@ -153,8 +153,9 @@ HKLF 4
 
 
 REM  p21n in P2(1)/n
-REM R1 =  0.1882 for    3554 Fo > 4sig(Fo)  and  0.2054 for all    4254 data
-REM    267 parameters refined using      0 restraints
+REM wR2 = 0.4550, GooF = S = 3.384, Restrained GooF = 3.384 for all data
+REM R1 = 0.1882 for 3554 Fo > 4sig(Fo) and 0.2054 for all 4254 data
+REM 267 parameters refined using 0 restraints
 
 END  
      

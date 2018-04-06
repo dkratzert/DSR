@@ -16,7 +16,6 @@ import re
 import sys
 import tarfile
 from copy import deepcopy
-from os.path import expanduser
 from pprint import pprint
 
 from atomhandling import get_atomtypes
@@ -25,7 +24,6 @@ from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
 from misc import atomic_distance, nalimov_test, std_dev, median, pairwise, \
     unwrap_head_lines, dice_coefficient2, frac_to_cart
 
-atreg = re.compile(atomregex)
 not_existing_error = '*** Fragment "{}" not found in database ***'
 
 
@@ -187,8 +185,8 @@ class ParseDB(object):
 
         >>> dbpath = os.path.abspath('../dsr_db.txt')
         >>> db = ParseDB(dbpath)
-        >>> db.parse(dbpath, 'dsr_db')['water'] # doctest: +NORMALIZE_WHITESPACE
-        {'startline': 2403,
+        >>> db.parse(dbpath, 'dsr_db')['water'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+        {'startline': ...,
         'name': 'Water, H2O',
         'comments': [],
         'atoms': [['O1', 4, 0.0, 0.0, 0.0],
@@ -199,7 +197,7 @@ class ParseDB(object):
         'resi': 'H2O',
         'restraints': ['DFIX 0.9584 0.001 O1 H1 O1 H2',
                        'DFIX 1.5150 0.001 H1 H2'],
-        'endline': 2413,
+        'endline': ...,
         'dbname': 'dsr_db'}
         """
         frag_tag = ''
@@ -267,7 +265,7 @@ class ParseDB(object):
         srcregex = re.compile(r'REM\s+(SRC:|SOURCE:)', re.IGNORECASE)
         # devide atoms and the rest:
         for num, aline in enumerate(fraglines):
-            if atreg.match(aline):  # search atoms
+            if atomregex.match(aline):  # search atoms
                 atline = aline.split()[:5]  # convert to list and use only first 5 columns
                 if atline[0] not in SHX_CARDS:  # exclude all non-atom cards
                     coords = []
@@ -330,6 +328,9 @@ class ParseDB(object):
             print('*** Error. No cell parameters or malformed cell found in the database entry ' \
                   'of "{}" ***'.format(fragname))
             sys.exit()
+        if not name:
+            # This happens if no name is given or "REM Name:" has errors (The name is explicitely not mandatory!).
+            name = fragname
         db[fragname].update({
             'restraints': headlist,  # header with just the restraints
             'resi'      : residue,  # the residue class
@@ -827,7 +828,7 @@ class ImportGRADE():
         self.el = Element()
         self.invert = invert
         self._db = db
-        self._db_dir = expanduser("~")
+        self._db_dir = os.path.expanduser("~")
         self._db_tags = self._db.get_fragment_tags()
         self._db = self._db.databases
         gradefiles = self.get_gradefiles(grade_tar_file)
