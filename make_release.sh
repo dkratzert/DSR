@@ -15,10 +15,10 @@ mkdir ${BUILDDIR}
 
 cd $GIT
 
-#cd setup
-#sh ./setup/build_linux_distrib.sh
 rm $GIT/setup/Output/DSR-${VERSION}.tar.gz
+
 PYTHONPATH=$GIT python ./scripts/make_zipfile.py
+
 cp setup/Output/DSR-${VERSION}.tar.gz /usr/src/packages/BUILD/
 cp setup/Output/DSR-${VERSION}.tar.gz /usr/src/packages/SOURCES
 cd ${GIT}
