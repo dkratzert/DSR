@@ -124,6 +124,8 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     if atoms_to_delete:
         print('Replacing following atoms (< {0} A near fragment):\n'.format(remdist),
               ' '.join(sorted(set(atoms_to_delete))))
+    else:
+        print("No replaceable atoms found.")
     target_lines = set(find_atoms.get_atom_line_numbers(atoms_to_delete))
     rle = ResListEdit(reslist, find_atoms)
     for i in target_lines:
