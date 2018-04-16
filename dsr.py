@@ -370,6 +370,7 @@ class DSR():
             reslist[plusline - 1] = reslist[plusline - 1][4:]
             remove_line(reslist, plusline, remove=True)
         if dsrp.command == 'REPLACE':
+            print("Replace mode active\n")
             reslist, find_atoms = atomhandling.replace_after_fit(self.rl, reslist, resi,
                                                                  fragment_numberscheme, cell)
         shx = ShelxlRefine(reslist, basefilename, find_atoms, self.options)

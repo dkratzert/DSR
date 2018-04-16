@@ -272,25 +272,25 @@ class ShelxlRefine():
                 print(' SHELXL {}'.format(' '.join(out.split()[6:8])))
             # wR2
             # These values are always bad after a simple LS fit without any atom movement:
-            if out.startswith(' wR2') and not wr2:
-                wr2 = True
-                line = out[:].split()
-                print(' {}  {} {:>6}'.format(line[0], line[1], line[2][:6]))
+            #if out.startswith(' wR2') and not wr2:
+            #    wr2 = True
+            #    line = out[:].split()
+            #    print(' {}  {} {:>6}'.format(line[0], line[1], line[2][:6]))
             # R1
-            if out.startswith(' R1') and not r1:
-                r1 = True
-                line = out[:].split()
-                print(' {}   {} {:>6}'.format(line[0], line[1], line[2][:6]))
+            #if out.startswith(' R1') and not r1:
+            #    r1 = True
+            #    line = out[:].split()
+            #    print(' {}   {} {:>6}'.format(line[0], line[1], line[2][:6]))
             # GooF
-            if re.match(r'.*GooF.*', out) and not gof:
-                gof = True
-                line = out.split()
-                print(' {} {} {:>5}0'.format(line[0], line[1], line[4][:5]))
+            #if re.match(r'.*GooF.*', out) and not gof:
+            #    gof = True
+            #    line = out.split()
+            #    print(' {} {} {:>5}0'.format(line[0], line[1], line[4][:5]))
             if re.match(r'.*CANNOT RESOLVE (SAME|RIGU|SIMU|DELU)', out):
                 print('\nWarning: Are you sure that all atoms are in the correct order?\n')
             if re.match(r'.*CANNOT\s+OPEN\s+FILE.*hkl.*', out):
-                print(' No hkl file found!')
-                print('You need a proper hkl file to use DSR!')
+                print('*** No hkl file found! ***')
+                print('*** You need a proper hkl file to use DSR! ***')
                 sys.exit()    
             if re.match(r'.*\*\* Extinction \(EXTI\) or solvent.*', out):
                 continue
@@ -301,7 +301,7 @@ class ShelxlRefine():
                 # disable this output
                 continue
             if re.match(r'.*\*\*.*', out):
-                print(' SHELXL says:')
+                print('\n SHELXL says:')
                 print(' {}'.format(out.strip('\n\r')))
 
     def run_shelxl(self):
