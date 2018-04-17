@@ -1,4 +1,6 @@
 Recent changes
+-209    Added 4,4'-Di-tert-butyl-2,2'-bipyridine and TEMPO fragments, users manual updated esp. residues 
+        chapter, optimized restraints, fixed Acetonitrile restraints (why did nobody noticed this?).
 -208    Changed self-update process to be secured by checksums and ssl.
 -207    When using residues, DSR will now introduce a SAME_name 'first atom' > 'last atom'
         to the list of restraints. First/last atom means first and last atom from the
