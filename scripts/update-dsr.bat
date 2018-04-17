@@ -5,7 +5,7 @@ echo %DSR_DIR%
 
 rem set DSRDIR="d:\Programme\DSR"
 rem cd C:\Users\ntrapp\Documents\GitHub\DSR
-set GIT="D:\GitHub\DSR"
+set GIT="C:\Program Files (x86)\DSR"
 rem set GIT="."
 
 cd %GIT%
