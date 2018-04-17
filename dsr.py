@@ -40,16 +40,6 @@ program_name = '\n{} D S R - v{} {}'.format(minuse, VERSION, minuse)
   - generate parts and restraints
 - Add Rcomplete
 
-From SHELXL user guide:
-A free variable is a refinable parameter that can be used to impose a variety of additional
-linear constraints, e.g. to atomic coordinates, occupancies or displacement parameters.
-Starting values for all free variables are supplied on the FVAR instruction. Since the first
-FVAR parameter is the overall scale factor, there is no free variable number 1. If an atom
-parameter is given a value greater than 15 or less than -15, it is interpreted as a reference to
-a free variable. A positive value (10k+p) is decoded as p times free variable number k [fv(k)],
-and a negative value (i.e. k and p both negative) means p times [fv(–k)–1].
-
-
 """
 
 
@@ -388,7 +378,7 @@ class DSR():
         self.rl.write_resfile(reslist, '.res')
 
 
-class multilog(object):
+class Multilog(object):
     """
     This class copies all output from stdout and stderr to a file
     It acts like tee with following usage:
@@ -421,8 +411,8 @@ if __name__ == '__main__':
     except IOError:
         pass
     else:
-        sys.stdout = multilog([sys.stdout, lstfile])
-        sys.stderr = multilog([sys.stderr, lstfile])
+        sys.stdout = Multilog([sys.stdout, lstfile])
+        sys.stderr = Multilog([sys.stderr, lstfile])
         is_listfile = True
     try:
         options = OptionsParser(program_name)

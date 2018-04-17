@@ -48,6 +48,51 @@
 #   in the SHELXL file automatically.
 ########################################################################################
 
+
+<DTBPY>
+REM Name: 4,4'-Di-tert-butyl-2,2'-bipyridine, DTBPY, C18H24N2
+REM Src: Daniel Kratzert, Freiburg
+RESI TBPY
+SADI 0.02 N1 C1 N1 C5 N2 C6 N2 C10
+SADI 0.02 C1 C2 C2 C3 C3 C4 C4 C5 C6 C7 C7 C8 C8 C9 C9 C10
+SADI 0.02 C11 C12 C11 C13 C11 C14 C15 C16 C15 C17 C15 C18
+SADI 0.02 C5 C6
+SADI 0.04 N1 C4 N1 C2 N2 C7 N2 C9
+SADI 0.04 C1 C3 C8 C10
+SADI 0.04 C2 C4 C7 C9
+SADI 0.04 C3 C5 C6 C8
+SADI 0.04 C1 C5 C6 C10
+SADI 0.04 N1 C6 N2 C5
+SADI 0.04 C4 C6 C5 C7
+SADI 0.02 C8 C15 C3 C11
+SADI 0.04 C3 C12 C3 C13 C3 C14 C8 C16 C8 C17 C8 C18
+FLAT N1 > C10
+SIMU N1 > C10
+RIGU N1 > C10
+FRAG 17 1 1 1 90 90 90
+N1    7     24.32004   24.96216   20.67961
+C1    6     25.54284   24.38377   20.77784
+C2    6     25.96724   23.44670   19.87666
+C3    6     25.16839   23.07481   18.81378
+C4    6     23.92540   23.69518   18.69921
+C5    6     23.51638   24.61841   19.64788
+C6    6     22.20898   25.31744   19.62389
+C7    6     21.22643   25.10400   18.66267
+C8    6     19.99646   25.75200   18.76981
+C9    6     19.81143   26.62653   19.82999
+C10   6     20.84213   26.84554   20.73017
+N2    7     22.00344   26.18397   20.64606
+C11   6     25.59319   22.03968   17.76975
+C12   6     26.92062   21.32472   18.18426
+C13   6     24.50548   20.96386   17.61436
+C14   6     25.81282   22.79891   16.44497
+C15   6     18.89417   25.56716   17.70003
+C16   6     18.81329   24.09015   17.29055
+C17   6     19.24973   26.42635   16.47860
+C18   6     17.54065   26.01836   18.22818
+</DTBPY>
+
+
 <tempo>
 rem Name: (2,2,6,6-Tetramethylpiperidin-1-yl)oxyl, TEMPO, C9H18NO
 rem Src: CCDC ELARAL
@@ -1328,7 +1373,7 @@ C5      1  0.763400  0.525190  0.270460  1.000000 0.05000
 
 <Bipyridine>
 rem Src: CCDC DOCYEB
-REM Name: 2,2'-Bipyridine, C10H8N2, bipy
+REM Name: 2,2'-Bipyridine, bipy, C10H8N2
 RESI BIP
 SADI N1 C1 N1 C5 N2 C6 N2 C10
 SADI C2 C3 C3 C4 C4 C5 C6 C7 C7 C8 C8 C9 C9 C10
@@ -1515,7 +1560,7 @@ F36   3   1.30411   -0.43804   0.35185
 
 <hfipO>
 REM Src: Turbomole, B3LYP/def2-TZVPP
-rem Name: Hexafluoroisopropanol, C3H2F6O, hfip
+rem Name: Hexafluoroisopropanol, hfip, C3H2F6O
 RESI HFIP
 SADI C2 F1 C2 F2 C2 F3  C3 F4 C3 F5 C3 F6
 SADI C1 C2 C1 C3
@@ -1740,7 +1785,7 @@ C20   1  -0.793376   0.229548   0.949140  11.00000   0.02592
 
 <THF>
 rem Src: Gaussian 03 B3LYP/6-311++G(d,p) Opt
-Rem Name: Tetrahydrofurane, thf
+Rem Name: Tetrahydrofurane, thf, C4H8O
 RESI THF
 SADI 0.02  C1 C2  C2 C3  C3 C4
 SADI 0.02  O1 C1  O1 C4
@@ -1832,11 +1877,11 @@ C8A   1   0.048140   0.105520   0.037400   1.00000   0.05000
 
 <Acetonitrile>
 rem Src: CCDC CISDOZ
-rem Name: Acetonitrile, C2H3N, NMe
+rem Name: Acetonitrile, NMe, C2H3N
 RESI MeCN
-DFIX 0.01 1.137 C1 N1
-DFIX 0.01 1.456 C1 C2
-DFIX 0.02 2.593 C2 N1
+DFIX 1.137 0.01 C1 N1
+DFIX 1.456 0.01 C1 C2
+DFIX 2.593 0.02 C2 N1
 SIMU N1 > C2
 RIGU N1 > C2
 FRAG 17 7.7312 11.868 23.69 90 90 90
@@ -2011,7 +2056,7 @@ C5   1   -1.157659   -0.339847   0.000001
 
 
 <Cpstar>
-REM Name: Pentamethylcyclopentadienyl, [C5Me5]-, Cp*
+REM Name: Pentamethylcyclopentadienyl, Cp*, [C5Me5]-
 REM Src: Gaussian 03 B3LYP/6-31G(d,p) Opt
 RESI CPST
 SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C1
@@ -2038,7 +2083,7 @@ C10    6    -2.388757   -1.277095    0.008582
 
 
 <TIP>
-REM Name: 2,4,6-Triisopropylphenyl, TIP
+REM Name: 2,4,6-Triisopropylphenyl, TIP, C15H25
 rem Src: Turbomole, B3LYP/def2-TZVPP
 SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1
 SADI 0.04 C1 C3 C3 C5 C5 C1 C2 C4 C4 C6 C6 C2
