@@ -5,11 +5,11 @@ echo %DSR_DIR%
 
 rem set DSRDIR="d:\Programme\DSR"
 rem cd C:\Users\ntrapp\Documents\GitHub\DSR
-set GIT="C:\Program Files (x86)\DSR"
+set GIT=D:\GitHub\DSR
 rem set GIT="."
 
 cd %GIT%
-python %GIT%\rss-feed.py
+rem python %GIT%\rss-feed.py
 
 xcopy /Y "%GIT%\afix.py" "%DSR_DIR%"
 xcopy /Y "%GIT%\atomhandling.py" "%DSR_DIR%"

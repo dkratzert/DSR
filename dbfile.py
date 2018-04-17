@@ -538,13 +538,30 @@ class ParseDB(object):
         restraint_atoms_list = set([])
         for line in self.get_restraints(fragment):
             for i in line.split():
-                if i in SHX_CARDS:
-                    continue
+                # Todo: resolve ranges:
                 if i in ('>', '<'):
                     continue
                 try:
-                    float(i)
+                    # Test if first parameter is a distance or a standard deviation:
+                    if i in ['DFIX', 'DANG']:
+                        #print('####')
+                        if len(line.split()) > 1:  # there is more than just DFIX
+                            # Test if this is correct: DFIX d s[0.02] atom pairs (d should be greater s)
+                            if float(line.split()[1]) < float(line.split()[2]):
+                                print('\n*** Sigma > d in DFIX/DANG of "{}: {}" '
+                                      'in database {}. ***'
+                                      .format(fragment, self.get_fragment_name(fragment), self.get_db_name(fragment)))
+                        else:
+                            print('\n*** Incomplete DFIX/DANG in restraints of "{}: {}" in database {}. ***'
+                                  .format(fragment, self.get_fragment_name(fragment), self.get_db_name(fragment)))
+                    #if i in SHX_CARDS:
+                    #    continue
+                    else:
+                        # just test if there is not a number:
+                        float(i)
                 except ValueError:
+                    if i in SHX_CARDS:
+                        continue
                     restraint_atoms_list.add(i)
         for atom in restraint_atoms_list:
             if atom.upper() not in atoms:
