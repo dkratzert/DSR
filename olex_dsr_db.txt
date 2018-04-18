@@ -49,6 +49,27 @@
 ########################################################################################
 
 
+<tbuisocyan>
+rem Name: tert-Butyl isocyanide, t-BuNC, C5H9N
+rem Src: Daniel Kratzert, Freiburg
+RESI TBNC
+SIMU C1 > C5
+RIGU C1 > C5
+SADI C1 N1
+SADI N1 C2
+SADI C2 C3 C2 C4 C2 C5
+SADI 0.04 C3 C4 C4 C5 C5 C3
+SADI 0.05 N1 C3 N1 C4 N1 C5
+FRAG 17 1 1 1 90 90 90
+C1    6      8.17276   11.90151   16.26337
+N1    7      8.40408   12.60251   17.12966
+C2    6      8.68213   13.54392   18.23346
+C3    6      7.35141   14.16823   18.61785
+C4    6      9.25330   12.70401   19.37174
+C5    6      9.67538   14.54799   17.72350
+</tbuisocyan>
+
+
 <DTBPY>
 REM Name: 4,4'-Di-tert-butyl-2,2'-bipyridine, DTBPY, C18H24N2
 REM Src: Daniel Kratzert, Freiburg
