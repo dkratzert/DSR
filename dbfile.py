@@ -219,10 +219,6 @@ class ParseDB(object):
                         {'endline'  : num + 1,
                          'startline': startnum + 1})
                 db = self.parse_fraglines(frag_tag, fraglines, db)
-                if not db[frag_tag]['atoms']:
-                    print('*** No atoms found in database entry {} line {} of {}.txt***'.format(frag_tag, num + 1,
-                                                                                                dbname))
-                    sys.exit()
                 fraglines = []
             # start tag was found, appending lines to fragment list
             if starttag:
@@ -247,12 +243,12 @@ class ParseDB(object):
         return db
 
     @staticmethod
-    def parse_fraglines(fragname, fraglines, db):
+    def parse_fraglines(fragname_tag, fraglines, db):
         # type: (str, list, dict) -> dict
         """
         Fills the database dictionary with fragment data.
         """
-        fragname = fragname.lower()
+        fragname_tag = fragname_tag.lower()
         headlist = []
         comments = []
         residue = ''
@@ -274,7 +270,7 @@ class ParseDB(object):
                         atline[1] = int(atline[1])
                     except ValueError:
                         print("*** Invalid atomic coordinates in line {} of {}.txt (Fragment: {}) ***"
-                              .format(db[fragname]['startline'] + num + 1, db[fragname]['dbname'], fragname))
+                              .format(db[fragname_tag]['startline'] + num + 1, db[fragname_tag]['dbname'], fragname_tag))
                         sys.exit()
                     atline[2:] = coords
                     atoms.append(atline)
@@ -307,14 +303,14 @@ class ParseDB(object):
                         residue = resiline[1].upper()
                         continue
                     except IndexError:
-                        print('*** Invalid residue definition in database entry {}. ***'.format(fragname))
+                        print('*** Invalid residue definition in database entry {}. ***'.format(fragname_tag))
                         sys.exit()
                 # collect the unit cell of the fragment:
                 if line[:4].upper().startswith('FRAG'):
                     try:
                         cell = [float(x) for x in line.split()[2:8]]
                     except (ValueError, IndexError):
-                        print('*** Invalid unit cell found in database entry {}. ***'.format(fragname))
+                        print('*** Invalid unit cell found in database entry {}. ***'.format(fragname_tag))
                         sys.exit()
                     continue
                 # these must be restraints:
@@ -322,16 +318,25 @@ class ParseDB(object):
                     headlist.append(line)
             elif com:
                 print('*** Bad line {} in database entry "{}" found! ({}.txt) ***'
-                      .format(num + db[fragname]['startline'] + 1, fragname, db[fragname]['dbname']))
+                      .format(num + db[fragname_tag]['startline'] + 1, fragname_tag, db[fragname_tag]['dbname']))
                 print(line)
         if not cell:
             print('*** Error. No cell parameters or malformed cell found in the database entry ' \
-                  'of "{}" ***'.format(fragname))
+                  'of "{}" ***'.format(fragname_tag))
             sys.exit()
         if not name:
             # This happens if no name is given or "REM Name:" has errors (The name is explicitely not mandatory!).
-            name = fragname
-        db[fragname].update({
+            name = fragname_tag
+        if not db:
+            print('*** No database found! ***\n')
+            sys.exit()
+        if not atoms:
+            # Can not print this out, because shelXle GUI will fail if text is printed.
+            #print('*** No atoms found in database entry {} line {} of {}.txt***'.format(fragname_tag,
+            #                                    db[fragname_tag]['startline'] + 1, db[fragname_tag]['dbname']))
+            del db[fragname_tag]
+            return db
+        db[fragname_tag].update({
             'restraints': headlist,  # header with just the restraints
             'resi'      : residue,  # the residue class
             'cell'      : cell,  # FRAG ...
@@ -339,9 +344,6 @@ class ParseDB(object):
             'comments'  : comments,  # the comment line
             'source'    : source,
             'name'      : name})
-        if not db:
-            print('*** No database found! ***\n')
-            sys.exit()
         return db
 
     def __getitem__(self, fragment):
@@ -360,7 +362,6 @@ class ParseDB(object):
         """
         # return iter(self.databases.keys()) #python2
         return iter(list(self.databases.keys()))
-
 
     def list_fragments(self):
         # type: () -> list
@@ -480,8 +481,8 @@ class ParseDB(object):
             print('*** Residue in the header of database entry "{}" ({}) missing! Check your Database! ***' \
                   .format(fragment, dbentry['name']))
         if not dbentry['atoms']:
-            print('*** Database entry of "{}" in line {} of "{}.txt" is corrupt. '
-                  'No atoms found! ***'.format(fragment, dbentry['startline'] + 1, dbentry['dbname']))
+            print('*** No atoms found in database entry {} line {} of {}.txt***'.format(fragment,
+                                                                dbentry['startline'] + 1, dbentry['dbname']))
             print('*** Have you really followed the syntax? ***')
             sys.exit()
         if not dbentry['endline']:
