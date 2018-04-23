@@ -38,7 +38,7 @@ xcopy /Y "%GIT%\example\p21c.hkl" "%DSR_DIR%\example"
 
 rem xcopy /Y %GIT%\update-dsr.bat %DSRDIR%
 
-del %DSR_DIR%\*.pyc
+del "%DSR_DIR%\*.pyc"
 
 rem copy %GIT%\dsr.bat %DSRDIR%
 rem sleep 2s
