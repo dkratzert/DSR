@@ -116,7 +116,7 @@ def update_dsr(force=False, version=None):
         else:
             print('*** Could not update DSR. ***')
             return False
-    if int(VERSION) >= int(version):
+    if (int(VERSION) >= int(version)) and version > 0:
         print('*** DSR is already up to date (version {}) ***'.format(version))
         return False
 
