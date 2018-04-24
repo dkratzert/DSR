@@ -102,14 +102,15 @@ def dos2unix(filename):
     >>> dos2unix('./profiling.bat')
     """
     if is_binary(filename):
+        print('Binary file {} ignored.'.format(filename))
         return
     if sys.version_info[0] > 2:
-        fileContents = open(filename, "r").read()
+        file_contents = open(filename, "r").read()
         f = open(filename, "w")
-        f.write(fileContents)
+        f.write(file_contents)
         f.close()
     else:
-        text = open(filename, 'rb').read().replace('\r\n', '\n')
+        text = open(filename, 'rb').read().replace(b'\r\n', b'\n')
         open(filename, 'wb').write(text)
 
 
