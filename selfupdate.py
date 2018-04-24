@@ -77,7 +77,11 @@ def is_update_needed(silent=False):
     >>> is_update_needed()
     False
     """
-    version = get_current_dsr_version(silent)
+    try:
+        version = int(get_current_dsr_version(silent))
+    except ValueError:
+        print('*** Could not get version number from update server. ***')
+        return False
     if int(VERSION) < int(version):
         return True
     else:
@@ -94,6 +98,8 @@ def update_dsr(force=False, version=None):
         version = version
     else:
         version = get_current_dsr_version()
+    if not version:
+        print('*** Could not get current version from server. ***')
     if force:
         status = get_update_package(version)
         if status:
@@ -108,6 +114,7 @@ def update_dsr(force=False, version=None):
             print('*** Finished updating to version {} ***'.format(version))
             return True
         else:
+            print('*** Could not update DSR. ***')
             return False
     if int(VERSION) >= int(version):
         print('*** DSR is already up to date (version {}) ***'.format(version))
