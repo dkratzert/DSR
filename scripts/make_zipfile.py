@@ -110,7 +110,7 @@ def dos2unix(filename):
         f.write(file_contents)
         f.close()
     else:
-        text = open(filename, 'rb').read().replace(b'\r\n', b'\n')
+        text = open(filename, 'rb').read().replace(b'\r\n', b'\n').replace(b'\r', b'\n')
         open(filename, 'wb').write(text)
 
 
