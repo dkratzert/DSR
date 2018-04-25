@@ -107,6 +107,11 @@ def dos2unix(filename):
     if sys.version_info[0] > 2:
         file_contents = open(filename, "r").read()
         f = open(filename, "w")
+        file_contents = '\n'.join(open(filename, mode="r", newline='').read().splitlines(keepends=False))
+        #file_contents = open(filename, mode="r").read()  # Does not work
+        if filename.endswith("dsr"):
+            print(file_contents)
+        f = open(filename, "w", newline='\n')
         f.write(file_contents)
         f.close()
     else:
