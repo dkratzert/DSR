@@ -1,5 +1,8 @@
 Recent changes
--209    Added 4,4'-Di-tert-butyl-2,2'-bipyridine and TEMPO fragments, users manual updated esp. residues 
+-210    Added check for DFIX/DANK if the d value is larger than the sigma (as it should be). DSR now ignores
+        fragments that do not contain atoms. Less output during fragment fit (wR2 and Gof were useless).
+        Fixed line endings in start script. This should fix updates on Unix systems.
+-209    Added 4,4'-Di-tert-butyl-2,2'-bipyridine and TEMPO fragments, users manual updated esp. residues
         chapter, optimized restraints, fixed Acetonitrile restraints (why did nobody noticed this?).
 -208    Changed self-update process to be secured by checksums and ssl.
 -207    When using residues, DSR will now introduce a SAME_name 'first atom' > 'last atom'
