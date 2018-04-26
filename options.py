@@ -215,12 +215,13 @@ class OptionsParser():
     def all_options(self):
         return self._options
 
-
+    def __repr__(self):
+        return self._options.__str__()
 
 
 if __name__ == '__main__':
-    optparse = OptionsParser()
-    print(optparse.res_file)
+    optparse = OptionsParser(200)
+    print(optparse)
     optparse.parser.print_help()
 
 
