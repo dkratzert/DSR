@@ -691,33 +691,43 @@ def shift(seq, n):
     return seq[n:] + seq[:n]
 
 
-def atomic_distance(p1, p2, cell):
+def atomic_distance(p1, p2, cell, shortest_dist=False):
     """
     p1 and p2 are x, y , z coordinates as list ['x', 'y', 'z']
     cell are the cell parameters as list: ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
-    returns the distance between the two points.
+
+    Returns the distance between the two points (Atoms). If shortest_dist is True, the
+    shortest distance ignoring translation is computed.
 
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     >>> coord1 = (-0.186843,   0.282708,   0.526803)
     >>> coord2 = (-0.155278,   0.264593,   0.600644)
     >>> atomic_distance(coord1, coord2, cell)
     1.5729229943265979
+    >>> cell = [14.0452, 14.0452, 12.2008, 90.000, 90.000, 90.000]
+    >>> atomic_distance([-0.184235, 0.955143, -0.181577], [0.437437, 1.162938, 0.182932], cell)
+    10.224259725884533
+    >>> atomic_distance([0.455143, 1.184235, 0.181577], [0.437437, 1.162938, 0.182932], cell, shortest_dist=True)
+    0.38934604708396064
     """
     a, b, c = cell[:3]
     al = radians(cell[3])
     be = radians(cell[4])
     ga = radians(cell[5])
-    x1, y1, z1 = p1
-    x2, y2, z2 = p2
-    dx = (x1 - x2)
-    dy = (y1 - y2)
-    dz = (z1 - z2)
-    dsq = (a * dx) ** 2 + \
-          (b * dy) ** 2 + \
-          (c * dz) ** 2 + \
-          2 * b * c * cos(al) * dy * dz + \
-          2 * dx * dz * a * c * cos(be) + \
-          2 * dx * dy * a * b * cos(ga)
+    if shortest_dist:
+        x1, y1, z1 = [x + 99.5 for x in p1]
+        x2, y2, z2 = p2
+        dx = (x1 - x2) % 1 - 0.5
+        dy = (y1 - y2) % 1 - 0.5
+        dz = (z1 - z2) % 1 - 0.5
+    else:
+        x1, y1, z1 = p1
+        x2, y2, z2 = p2
+        dx = (x1 - x2)
+        dy = (y1 - y2)
+        dz = (z1 - z2)
+    dsq = (a * dx) ** 2 + (b * dy) ** 2 + (c * dz) ** 2 + 2 * b * c * cos(al) * dy * dz + \
+          2 * dx * dz * a * c * cos(be) + 2 * dx * dy * a * b * cos(ga)
     return sqrt(dsq)
 
 
