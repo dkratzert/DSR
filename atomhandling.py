@@ -285,9 +285,7 @@ class FindAtoms():
                             # do not delete atoms on exactly the same position
                             # and same residue
                             break
-                        d = atomic_distance(at1, at2, cell)
-                        # now get the atom types of the pair atoms and with that
-                        # the covalence radius. 
+                        d = atomic_distance(at1, at2, cell, shortest_dist=True)
                         if d < remdist:
                             atoms_to_delete.append(atom[0]+suffix)
         return sorted(atoms_to_delete)
