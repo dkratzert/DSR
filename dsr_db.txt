@@ -49,7 +49,7 @@
 ########################################################################################
 
 <dma>
-rem Name: Dimethyl ammonium
+rem Name: Dimethyl ammonium, C2H8N+
 rem Src: rem Src: CCDC QEHPOL
 RESI DMA
 SADI N1 C1 N1 C2
