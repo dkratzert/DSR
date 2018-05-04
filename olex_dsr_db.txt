@@ -51,7 +51,7 @@
 
 <dma>
 rem Name: Dimethyl ammonium
-rem Src: ShelXle DSR GUI
+rem Src: CCDC QEHPOL
 RESI DMA
 SADI N1 C1 N1 C2
 SADI 0.04 C1 C2
