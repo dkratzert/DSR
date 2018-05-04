@@ -49,6 +49,20 @@
 ########################################################################################
 
 
+<dma>
+rem Name: Dimethyl ammonium
+rem Src: ShelXle DSR GUI
+RESI DMA
+SADI N1 C1 N1 C2
+SADI 0.04 C1 C2
+SIMU N1 > C2
+RIGU N1 > C2
+FRAG 17 1 1 1 90 90 90
+N1    7      9.87801    6.58129    0.91953
+C1    6     11.07355    6.06146    0.22242
+C2    6      9.61381    5.92324    2.21098
+</dma>
+
 <tbuisocyan>
 rem Name: tert-Butyl isocyanide, t-BuNC, C5H9N
 rem Src: Daniel Kratzert, Freiburg
@@ -578,7 +592,7 @@ C3    6     4.12100   13.56200   15.81600
 C4    6     1.45100   11.69500   17.38100
 </imi>
 
-<dma>
+<dmac>
 REM Name: N,N-dimethylacetylamide, C4H9NO, DMA
 REM Src: Produced by Grade Web Server http://grade.globalphasing.org
 DFIX  1.220 0.005 C2 O1
@@ -587,7 +601,7 @@ DFIX  1.322 0.005 C2 N4
 DFIX  1.459 0.005 C5 N4
 DFIX  1.459 0.005 C6 N4
 FLAT O1 > C6
-RESI DMA
+RESI DMAC
 FRAG 17 1 1 1 90 90 90
 O1    1    8.0500  -1.2400  -1.0600
 C2    1    7.9400  -2.4600  -1.0900
@@ -595,7 +609,7 @@ C3    1    6.6000  -3.1200  -1.0400
 N4    1    9.0300  -3.2300  -1.1800
 C5    1    8.9500  -4.6900  -1.2000
 C6    1   10.3800  -2.6700  -1.2500
-</dma>
+</dmac>
 
 <phen>
 rem Name: Phenanthroline, 1,10-phenanthroline, C12H8N2
