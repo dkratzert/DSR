@@ -585,14 +585,14 @@ def unwrap_head_lines(headlines):
         tmp = tmp + ' ' + line
     line = tmp.split()
     for n, i in enumerate(line):
-        if i[:4] in constants.SHX_CARDS:
+        if i[:4].upper() in constants.SHX_CARDS:
             line[n] = '\n' + line[n]
     new_head = ' '.join(line).strip().split('\n')
     new_head = [i.rstrip(' ') for i in new_head]
     return new_head
 
 
-def which(name, flags=os.X_OK, exts=['.exe', '.EXE', '.bat']):
+def which(name, flags=os.X_OK, exts=None):
     """
     Search PATH for executable files with the given name.
 
@@ -601,6 +601,8 @@ def which(name, flags=os.X_OK, exts=['.exe', '.EXE', '.bat']):
     #>>> which('dsr.bat') # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF +ELLIPSIS
     ['d:\\\Programme\\\DSR\\\dsr.bat']
     """
+    if exts is None:
+        exts = ['.exe', '.EXE', '.bat']
     result = []
     # exts = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))
     path = os.getenv('PATH', None)
