@@ -343,7 +343,8 @@ class dsr_complete_runs_Test(unittest.TestCase):
         REM DSR PUT TOLUENE WITH C2 C3 C5 ON Q1 Q2 Q1 PART -1 OCC 10.5 RESI TOL
         1.0005, 0.5447, 0.5342, 0.9314, 0.5395, 0.5126, 0.9995, 0.4553, 0.4658
         """
-        self.dsr_runtest(23, '-target 1.0005 0.5447 0.5342 0.9314 0.5395 0.5126 0.9995 0.4553 0.4658 -r', hkl=23, remlines=[97], limit_end=105)
+        self.dsr_runtest(23, '-target 1.0005 0.5447 0.5342 0.9314 0.5395 0.5126 0.9995 0.4553 0.4658 -r',
+                         hkl=23, remlines=[16, 97], limit_end=105)
 
     # @unittest.skip(" skipping 24")
     def testrun_run24(self):

@@ -292,8 +292,8 @@ class ParseDB(object):
                     continue
                 comments.append(line)
                 continue
-            com = line[:4].upper()
-            if com and com in SHX_CARDS:
+            command = line[:4].upper().strip()
+            if command and command in SHX_CARDS:
                 if line[:4].upper() == 'RESI':  # faster than startswith()?
                     resiline = line.split()
                     for n, i in enumerate(resiline):
@@ -316,7 +316,7 @@ class ParseDB(object):
                 # these must be restraints:
                 if line[:4] in RESTRAINT_CARDS:
                     headlist.append(line)
-            elif com:
+            elif command:
                 print('*** Bad line {} in database entry "{}" found! ({}.txt) ***'
                       .format(num + db[fragname_tag]['startline'] + 1, fragname_tag, db[fragname_tag]['dbname']))
                 print(line)
