@@ -48,6 +48,32 @@
 #   in the SHELXL file automatically.
 ########################################################################################
 
+
+<trifluorbenz>
+rem Name: Trifluorbenzene, C6F3H3
+rem Src: CCDC 754266
+RESI TFBE
+RIGU F1 > C6
+SIMU F1 > C6
+RIGU F1 > C6
+SIMU F1 > C6
+SADI 0.02 C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1
+SADI 0.02 C6 F1 C1 F2 C2 F3
+SADI 0.04 C1 C3 C3 C5 C5 C1 C2 C4 C4 C6 C6 C2
+SADI 0.04 C5 F1 C1 F1 C6 F2 C2 F2 C1 F3 C3 F3
+FRAG 17 1 1 1 90 90 90
+F1    9      8.96448    4.84810    2.22473
+F2    9      6.74155    3.54167    1.62436
+F3    9      4.51861    4.84810    1.02400
+C1    6      6.74155    4.88287    1.62436
+C2    6      5.61207    5.56668    1.32288
+C3    6      5.58369    6.92271    1.31444
+C4    6      6.74155    7.60072    1.62436
+C5    6      7.89940    6.92271    1.93429
+C6    6      7.87103    5.56668    1.92585
+</trifluorbenz>
+
+
 <dma>
 rem Name: Dimethyl ammonium, C2H8N+
 rem Src: rem Src: CCDC QEHPOL
