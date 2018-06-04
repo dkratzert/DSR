@@ -50,7 +50,7 @@
 
 
 <trifluorbenz>
-rem Name: Trifluorbenzene, C6F3H3
+rem Name: 1,2,3-Trifluorobenzene, C6H3F3
 rem Src: CCDC 754266
 RESI TFBE
 RIGU F1 > C6
