@@ -13,6 +13,8 @@
 from __future__ import print_function
 import sys
 import os
+from datetime import datetime
+
 from dbfile import search_fragment_name, ParseDB
 from constants import width, sep_line
 from misc import find_line, remove_line, touch
@@ -418,11 +420,11 @@ if __name__ == '__main__':
         options = OptionsParser(program_name)
         if is_listfile:
             lstfile.write('Python version: {}\n'.format(sys.version))
+            lstfile.write("Date: {} \n".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
             lstfile.write(options.__str__())
         dsr = DSR(options)
     except Exception:
         import platform
-
         if is_listfile:
             lstpath = os.path.abspath(lstfile.name)
             lst = 'the file "{}" \nand '.format(lstpath)
@@ -436,4 +438,5 @@ if __name__ == '__main__':
             print('Commandline: {}'.format(options.all_options))
         print('Platform: {} {}, {}'.format(platform.system(),
                                            platform.release(), ' '.join(platform.uname())))
+        print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         raise
