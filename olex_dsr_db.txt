@@ -49,6 +49,28 @@
 ########################################################################################
 
 
+<teflat>
+rem Name: Pentafluoroorthotellurate, Perfluorotelluroxide Anion, OTeF5-, 
+rem Src: Simon Steinhauer, FU Berlin
+RESI TEFL
+RIGU O1 > F5
+SIMU O1 > F5
+SADI TE1 F1 TE1 F2 TE1 F3 TE1 F4 TE1 F5
+SADI O1 TE1
+SADI 0.04 F2 F4 F4 F3 F3 F5 F5 F2
+SADI 0.05 F1 F2 F1 F3 F1 F4 F1 F5
+SADI 0.05 O1 F2 O1 F3 O1 F4 O1 F5
+FRAG 17 1 1 1 90 90 90
+O1    8      1.30695   12.97259    6.06273
+Te1   52     2.45710   14.34406    6.30216
+F1    9      3.63303   15.71819    6.59118
+F2    9      2.41687   14.12341    8.12009
+F3    9      2.60825   14.70887    4.51675
+F4    9      1.11291   15.58101    6.43747
+F5    9      3.91920   13.25560    6.22154
+</teflat>
+
+
 <trifluorbenz>
 rem Name: 1,2,3-Trifluorobenzene, C6H3F3
 rem Src: CCDC 754266
