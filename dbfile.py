@@ -753,14 +753,6 @@ class ParseDB(object):
         """
         returns the header of the dbentry of fragment.
         This header does not include comments, only the restraints.
-
-        Parameters
-        ----------
-        fragment : str
-
-        Returns
-        ----------
-        list
         """
         fragment = fragment.lower()
         try:

@@ -620,13 +620,13 @@ class SfacTable():
         unit = []
         explicit_scat = []
         regular_sfac_line_num = False
+        sfac = []
         if len(sfacline) == 1:
             # regular SFAC table
             sfac = self._reslist[sfacline[0]].split()[1:]      # SFAC string in the reslist
             sfacline = sfacline[0]
         elif len(sfacline) > 1:
             # first and second type of sfac:
-            sfac = []
             for i in sfacline:
                 if not ''.join(self._reslist[i].split()).isalpha(): # SFAC with scattering factor
                     # in this case the SFAC command defines also a scattering factor:
@@ -654,8 +654,9 @@ class SfacTable():
             i = str(i).upper()
             unit.append(i)
         # now the sfac and unit tables are written to the resfile
-        self._reslist[sfacline] = 'SFAC  {}\n'.format('  '.join(sfac))
-        self._reslist[unitline] = 'UNIT  {}\n'.format('  '.join(unit))  # builds the UNIT line
+        if not explicit_scat:
+            self._reslist[sfacline] = 'SFAC  {}\n'.format('  '.join(sfac))
+            self._reslist[unitline] = 'UNIT  {}\n'.format('  '.join(unit))  # builds the UNIT line
         return sfac+explicit_scat
 
 
