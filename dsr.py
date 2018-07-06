@@ -28,7 +28,7 @@ from afix import Afix
 from refine import ShelxlRefine
 from resfile import ResList, filename_wo_ending, ResListEdit
 
-VERSION = '211'
+VERSION = '212'
 # dont forget to change version in Innoscript file, spec file and deb file.
 minuse = ((width // 2) - 7) * '-'
 program_name = '\n{} D S R - v{} {}'.format(minuse, VERSION, minuse)
