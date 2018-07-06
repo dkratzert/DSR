@@ -10,16 +10,16 @@ or automatically generated.
 You have either a command line version:
 ```
 C:\Users\daniel>dsr
------------------------------------------------------ D S R - v211 -----------------------------------------------------
+----------------------------------------------------- D S R - v211 -------------------------------------
 Disordered Structure Refinement (DSR)
 
 Example DSR .res file command line:
 REM DSR PUT/REPLACE "Fragment" WITH C1 C2 C3 ON Q1 Q2 Q3 PART 1 OCC -21 =
   RESI DFIX
------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
    PUT:     Just put the fragment source atoms here.
    REPLACE: Replace atoms of PART 0 in 1.3 A distance around target atoms.
------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
 
 optional arguments:
   -h, --help            show this help message and exit
