@@ -8,7 +8,7 @@ of the target atoms or q-peaks in the unit cell. Bond restraints can be either a
 or automatically generated.
 
 You have either a command line version:
-
+```
 C:\Users\daniel>dsr
 ----------------------------------------------------- D S R - v211 -----------------------------------------------------
 Disordered Structure Refinement (DSR)
@@ -36,6 +36,7 @@ optional arguments:
   -g                    keep group rigid (no restraints)
   -u                    Update DSR to the most current version
   -n                    do not refine after fragment transfer
+```
 
 Or a graphical user interface in ShelXle:
 
