@@ -7,6 +7,6 @@ and the DSR program reads this information to put a molecule or fragment with th
 of the target atoms or q-peaks in the unit cell. Bond restraints can be either applied from the database to the molecule 
 or automatically generated.
 
-[DSR main window](https://github.com/dkratzert/DSR/blob/master/pictures/dsr_shelxle.png?raw=true)
+![DSR main window](https://github.com/dkratzert/DSR/blob/master/pictures/dsr_shelxle.png?raw=true)
 
-[DSR editor](https://github.com/dkratzert/DSR/blob/master/pictures/dsr_editor.png?raw=true)
+![DSR editor](https://github.com/dkratzert/DSR/blob/master/pictures/dsr_editor.png?raw=true)
