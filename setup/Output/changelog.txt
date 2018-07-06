@@ -1,4 +1,5 @@
 Recent changes
+-212    Fixed SFAC with exponential parameters. Teflat fragment added. Added Trifluorbenzene. 
 -211    More fragments: Dimethyl ammonium, tert-Butyl isocyanide, improved replace mode.
 -210    Added check for DFIX/DANG if the d value is larger than the sigma (as it should be). DSR now ignores
         fragments that do not contain atoms. Less output during fragment fit (wR2 and Gof were useless).
