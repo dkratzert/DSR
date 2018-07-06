@@ -38,7 +38,7 @@ optional arguments:
   -n                    do not refine after fragment transfer
 ```
 
-Or a graphical user interface in ShelXle:
+Or a graphical user interface in [ShelXle](https://www.shelxle.org/shelx/eingabe.php):
 
 ![DSR main window](https://github.com/dkratzert/DSR/blob/master/pictures/dsr_shelxle.png?raw=true)
 
