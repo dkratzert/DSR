@@ -281,15 +281,13 @@ def print_coordinates(atoms, V):
         print("{0:2s}   1 {1:15.8f} {2:15.8f} {3:15.8f}   11.0  0.04".format(atom, *V[n]))
 
 
-def fit_fragment(cell, fragment_atoms, source_atoms, target_atoms):
+def fit_fragment(fragment_atoms, source_atoms, target_atoms):
     """
     Takes a list of fragment atoms and fits them to the position of target atoms. source_atoms are a fraction 
     of the fragment to be fitted on the target_atoms.
 
     Parameters
     ----------
-    cell: list
-        unit cell
     fragment_atoms: list
         complete set of atoms of a fragment 
     source_atoms: list
@@ -328,7 +326,6 @@ def fit_fragment(cell, fragment_atoms, source_atoms, target_atoms):
     # translate to source_atoms position, because center of fragment_atoms != center of source_atoms,
     # because its a subsection:
     rotated_fragment += center_difference
-    rotated_fragment = np.array([cart_to_frac(x, cell) for x in rotated_fragment])  # back to fractional coordinates
     rmsd = kabsch_rmsd(P, Q)
     return rotated_fragment, rmsd
 
@@ -385,7 +382,8 @@ def test():
         fragment_atom_names.append(at)
     fragment_atom_names = np.array(fragment_atom_names)
     source_atoms = [fragment_atoms[0], fragment_atoms[1], fragment_atoms[10]]
-    rotated_fragment, rmsd = fit_fragment(cell, fragment_atoms, source_atoms, target_atoms)
+    rotated_fragment, rmsd = fit_fragment(fragment_atoms, source_atoms, target_atoms)
+    rotated_fragment = np.array([cart_to_frac(x, cell) for x in rotated_fragment])  # back to fractional coordinates
     print('Kabsch RMSD: {0:8.3}'.format(rmsd))
     print_coordinates(fragment_atom_names, rotated_fragment)
 
