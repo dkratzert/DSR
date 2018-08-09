@@ -57,11 +57,6 @@ class DSR(object):
         import time
         time1 = time.clock()
         self.numpy_installed = False
-        try:
-            import numpy as np
-            self.numpy_installed = True
-        except ImportError:
-            print('Numpy not installed. Using slow SHELXL fragment fit.')
         # options from the commandline options parser:
         self.options = options
         self.external = False
@@ -161,6 +156,11 @@ class DSR(object):
             self.options.error()
         self.rl = ResList(self.res_file)
         self.reslist = self.rl.get_res_list()
+        try:
+            import numpy as np
+            self.numpy_installed = True
+        except ImportError:
+            print('Numpy not installed. Using slow SHELXL fragment fit.')
         self.main()
         time2 = time.clock()
         runtime = (time2 - time1)
