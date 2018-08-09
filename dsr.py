@@ -351,12 +351,12 @@ class DSR(object):
             restraints = afix.remove_duplicate_restraints(restraints, afix.collect_all_restraints(),
                                                                 resi.get_residue_class)
             restraints = wrap_headlines(restraints)
-            afix_entry = ''.join(restraints) + afix_entry 
             if dsrp.part:
                 afix_entry = "PART {}  {}\n".format(dsrp.part, dsrp.occupancy) + afix_entry + "\nPART 0"
             if dsrp.resiflag:
                 afix_entry = 'RESI {} {}\n'.format(resi.get_residue_class, resi.get_resinumber) + \
                              afix_entry + "\nRESI 0\n"
+            afix_entry = ''.join(restraints) + afix_entry + '\n'
         else:
             afix = Afix(self.reslist, dbatoms, db_atom_types, restraints, dsrp,
                         sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
