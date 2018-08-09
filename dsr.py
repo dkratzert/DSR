@@ -18,7 +18,7 @@ from datetime import datetime
 from atomhandling import Elem_2_Sfac, rename_restraints_atoms
 from dbfile import search_fragment_name, ParseDB
 from constants import width, sep_line, isoatomstr
-from misc import find_line, remove_line, touch, cart_to_frac, frac_to_cart, wrap_headlines
+from misc import find_line, remove_line, touch, cart_to_frac, frac_to_cart, wrap_headlines, remove_partsymbol, chunks
 from options import OptionsParser
 from terminalsize import get_terminal_size
 from dsrparse import DSRParser
@@ -319,14 +319,14 @@ class DSR(object):
                         sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
             if self.options.target_coords:
                 # {'C1': ['1.123', '0.7456', '3.245']}
-                target_coordinates = afix.combine_names_and_coordinates()
+                target_coords = chunks(self.options.target_coords, 3)
             else:
                 target_coordinates = afix._find_atoms.get_atomcoordinates(dsrp.target)
+                target_coords = [target_coordinates[remove_partsymbol(key)] for key in dsrp.target]
             source_atoms = dict(zip(self.gdb.get_atomnames(self.fragment),
                                     self.gdb.get_coordinates(self.fragment, cartesian=True)))
             source_coords = [source_atoms[x] for x in dsrp.source]
             from rmsd import fit_fragment
-            target_coords = [target_coordinates[key] for key in dsrp.target]
             target_coords = [frac_to_cart(x, rle.get_cell()) for x in target_coords]
             #                                    (fragment_atoms, source_atoms, target_atoms)
             fitted_fragment, rmsd = fit_fragment(self.gdb.get_coordinates(self.fragment, cartesian=True),
@@ -355,7 +355,8 @@ class DSR(object):
             if dsrp.part:
                 afix_entry = "PART {}  {}\n".format(dsrp.part, dsrp.occupancy) + afix_entry + "\nPART 0"
             if dsrp.resiflag:
-                afix_entry = 'RESI {} {}\n'.format(resi.get_residue_class, resi.get_resinumber) + afix_entry + "\nRESI 0"
+                afix_entry = 'RESI {} {}\n'.format(resi.get_residue_class, resi.get_resinumber) + \
+                             afix_entry + "\nRESI 0\n"
         else:
             afix = Afix(self.reslist, dbatoms, db_atom_types, restraints, dsrp,
                         sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
@@ -385,6 +386,13 @@ class DSR(object):
         # write to file:
         if self.numpy_installed:
             self.rl.write_resfile(self.reslist, '.res')
+            if dsrp.command == 'REPLACE':
+                print("Replace mode active\n")
+                self.rl = ResList(self.res_file)
+                reslist = self.rl.get_res_list()
+                self.reslist, find_atoms = atomhandling.replace_after_fit(self.rl, reslist, resi,
+                                                                     fragment_numberscheme, rle.get_cell())
+                self.rl.write_resfile(self.reslist, '.res')
         else:
             shx = ShelxlRefine(self.reslist, basefilename, find_atoms, self.options)
             acta_lines = shx.remove_acta_card()

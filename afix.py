@@ -145,14 +145,14 @@ class Afix(object):
         >>> Afix.remove_duplicate_restraints(dbhead, all_restraints)
         <BLANKLINE>
         Already existing restraints were not applied again.
-        ['', '', '']
+        []
 
         >>> all_restraints = ["SADI 0.02 C1 C2 C2 C3 C3 C4", "SADI 0.04 C1 C3 C3 C5", "DFIX 1.45 C1 C2"]
         >>> dbhead = ["SADI C1 C2 C2 C3 C3 C4", "SADI C1 C3 C3 C5", "DFIX C1 C2", "SADI C4 C5 C5 C6"]
         >>> Afix.remove_duplicate_restraints(dbhead, all_restraints)        
         <BLANKLINE>
         Already existing restraints were not applied again.
-        ['', '', '', 'SADI C4 C5 C5 C6']
+        ['SADI C4 C5 C5 C6']
         """
         modified = False
         new_restr = restraints[:]
@@ -171,6 +171,7 @@ class Afix(object):
                       'applied again.'.format(residue_class))
             else:
                 print('\nAlready existing restraints were not applied again.')
+        new_restr = [x for x in new_restr if x]
         return new_restr
 
     @staticmethod
