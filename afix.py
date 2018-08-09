@@ -271,7 +271,7 @@ class Afix(object):
         # No residue:
         else:
             # applies new naming scheme to head:
-            old_atoms = [ i[0] for i in self._dbatoms]
+            old_atoms = [i[0] for i in self._dbatoms]
             self._restraints = rename_restraints_atoms(new_atomnames, old_atoms, self._restraints)
             self._restraints = self.remove_duplicate_restraints(self._restraints, self.collect_all_restraints())
         # decide if restraints to external file or internal:

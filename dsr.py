@@ -19,6 +19,7 @@ from dbfile import search_fragment_name, ParseDB
 from constants import width, sep_line
 from misc import find_line, remove_line, touch
 from options import OptionsParser
+from rmsd import fit_fragment
 from terminalsize import get_terminal_size
 from dsrparse import DSRParser
 from dbfile import ImportGRADE, print_search_results
@@ -45,7 +46,7 @@ program_name = '\n{} D S R - v{} {}'.format(minuse, VERSION, minuse)
 """
 
 
-class DSR():
+class DSR(object):
     """
     main class
     """
@@ -55,6 +56,12 @@ class DSR():
         """
         import time
         time1 = time.clock()
+        self.numpy_installed = False
+        try:
+            import numpy as np
+            self.numpy_installed = True
+        except ImportError:
+            pass
         # options from the commandline options parser:
         self.options = options
         self.external = False
@@ -284,9 +291,17 @@ class DSR():
         restraints = remove_resi(restraints)
         # corrects the atom type according to the previous defined global sfac table:
         dbatoms = atomhandling.set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table)
-
-        # Insert FRAG ... FEND entry:
-        rle.insert_frag_fend_entry(dbatoms, self.gdb.get_cell(self.fragment), fvarlines)
+        
+        if self.numpy_installed:
+             
+            source_coords = [self.gdb.get_atoms(self.fragment)[0].index(x) for x in dsrp.source]
+            fitted_fragment, rmsd = fit_fragment(self.gdb.get_cell(self.fragment), 
+                                                 self.gdb.get_coordinates(self.fragment, cartesian=True), 
+                                                 ,
+                                                 self.options.target_coords)
+        else:
+            # Insert FRAG ... FEND entry:
+            rle.insert_frag_fend_entry(dbatoms, self.gdb.get_cell(self.fragment), fvarlines)
 
         print('Inserting {} into res File.'.format(self.fragment))
         if self.invert:
