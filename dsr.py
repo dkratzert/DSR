@@ -15,9 +15,10 @@ import sys
 import os
 from datetime import datetime
 
+from atomhandling import Elem_2_Sfac, rename_restraints_atoms
 from dbfile import search_fragment_name, ParseDB
-from constants import width, sep_line
-from misc import find_line, remove_line, touch, cart_to_frac
+from constants import width, sep_line, isoatomstr
+from misc import find_line, remove_line, touch, cart_to_frac, frac_to_cart, wrap_headlines
 from options import OptionsParser
 from terminalsize import get_terminal_size
 from dsrparse import DSRParser
@@ -60,7 +61,7 @@ class DSR(object):
             import numpy as np
             self.numpy_installed = True
         except ImportError:
-            print('Numpy not installed!')
+            print('Numpy not installed. Using slow SHELXL fragment fit.')
         # options from the commandline options parser:
         self.options = options
         self.external = False
@@ -321,15 +322,43 @@ class DSR(object):
                 target_coordinates = afix.combine_names_and_coordinates()
             else:
                 target_coordinates = afix._find_atoms.get_atomcoordinates(dsrp.target)
-            source_coords = self.gdb.get_coordinates(self.fragment, cartesian=True)
+            source_atoms = dict(zip(self.gdb.get_atomnames(self.fragment),
+                                    self.gdb.get_coordinates(self.fragment, cartesian=True)))
+            source_coords = [source_atoms[x] for x in dsrp.source]
             from rmsd import fit_fragment
+            target_coords = [target_coordinates[key] for key in dsrp.target]
+            target_coords = [frac_to_cart(x, rle.get_cell()) for x in target_coords]
+            #                                    (fragment_atoms, source_atoms, target_atoms)
             fitted_fragment, rmsd = fit_fragment(self.gdb.get_coordinates(self.fragment, cartesian=True),
                                                  source_atoms=source_coords,
-                                                 target_atoms=target_coordinates.values())
-            fitted_fragment = [cart_to_frac(x, self.gdb.get_cell(self.fragment)) for x in fitted_fragment]
+                                                 target_atoms=target_coords)
+            fitted_fragment = [cart_to_frac(x, rle.get_cell()) for x in fitted_fragment]
+            afix_entry = []
+            e2s = Elem_2_Sfac(sfac_table)
+            for at, coord, type in zip(fragment_numberscheme, fitted_fragment, db_atom_types):
+                sfac_num = str(e2s.elem_2_sfac(type))
+                afix_entry.append(isoatomstr.format(at, sfac_num, coord[0], coord[1], coord[2], 
+                                                    float(dsrp.occupancy), 0.04))
+            afix_entry = "\n".join(afix_entry)
+            new_atomnames = list(reversed(fragment_numberscheme))
+            restraints = rename_restraints_atoms(new_atomnames, self.gdb.get_atomnames(self.fragment), restraints)
+            if dsrp.resi:
+                restraints = resi.format_restraints(restraints)
+            # Adds a "SAME_resiclass firstatom > lastatom" to the afix:
+            if not dsrp.dfix and not self.options.rigid_group:
+                restraints += ["SAME_{} {} > {}".format(resi.get_residue_class,
+                                                              new_atomnames[-1], new_atomnames[0])]
+            restraints = afix.remove_duplicate_restraints(restraints, afix.collect_all_restraints(),
+                                                                resi.get_residue_class)
+            restraints = wrap_headlines(restraints)
+            afix_entry = ''.join(restraints) + afix_entry 
+            if dsrp.part:
+                afix_entry = "PART {}  {}\n".format(dsrp.part, dsrp.occupancy) + afix_entry + "\nPART 0"
+            if dsrp.resiflag:
+                afix_entry = 'RESI {} {}\n'.format(resi.get_residue_class, resi.get_resinumber) + afix_entry + "\nRESI 0"
         else:
             afix = Afix(self.reslist, dbatoms, db_atom_types, restraints, dsrp,
-                    sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
+                        sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
             afix_entry = afix.build_afix_entry(self.external, basefilename + '.dfix', resi)
         if dsr_line_number < fvarlines[-1]:
             print('\n*** Warning! The DSR command line MUST NOT appear before FVAR '
@@ -354,51 +383,54 @@ class DSR(object):
                 continue
         self.reslist[dsr_line_number] = self.reslist[dsr_line_number] + '\n' + '\n'.join(source) + '\n' + afix_entry
         # write to file:
-        shx = ShelxlRefine(self.reslist, basefilename, find_atoms, self.options)
-        acta_lines = shx.remove_acta_card()
-        cycles = shx.get_refinement_cycles
-        shx.set_refinement_cycles('0')  # also sets shx.cycles to current value
-        self.rl.write_resfile(self.reslist, '.ins')
-        if self.no_refine:
-            print('\nPerforming no fragment fit. Just prepared the .ins file for you.')
-            return
-        #  Refine with L.S. 0 to insert the fragment
-        try:
-            shx.run_shelxl()
-        except:
-            raise
-        # Display the results from the list file:
-        lf = ListFile(basefilename)
-        lst_file = lf.read_lst_file()
-        shx.check_refinement_results(lst_file)
-        lfd = Lst_Deviations(lst_file)
-        lfd.print_LS_fit_deviations()
-        cell = rle.get_cell()
-        # open res file again to restore 8 refinement cycles:
-        self.rl = ResList(self.res_file)
-        reslist = self.rl.get_res_list()
-        # remove the "REM " instriction bevore the +dfixfile instruction
-        plusline = find_line(reslist, "REM " + afix.rand_id_dfx)
-        if plusline:
-            reslist[plusline - 1] = reslist[plusline - 1][4:]
-            remove_line(reslist, plusline, remove=True)
-        if dsrp.command == 'REPLACE':
-            print("Replace mode active\n")
-            reslist, find_atoms = atomhandling.replace_after_fit(self.rl, reslist, resi,
-                                                                 fragment_numberscheme, cell)
-        shx = ShelxlRefine(reslist, basefilename, find_atoms, self.options)
-        shx.restore_acta_card(acta_lines)
-        try:
-            if cycles:
-                shx.set_refinement_cycles(cycles)  # restores last LS value
-            else:
-                shx.set_refinement_cycles(8)
-        except IndexError:
-            print('*** Unable to set refinement cycles ***')
-        if not self.options.rigid_group:
-            shx.remove_afix(afix.rand_id_afix)  # removes the afix 9
-        # final resfile write:
-        self.rl.write_resfile(reslist, '.res')
+        if self.numpy_installed:
+            self.rl.write_resfile(self.reslist, '.res')
+        else:
+            shx = ShelxlRefine(self.reslist, basefilename, find_atoms, self.options)
+            acta_lines = shx.remove_acta_card()
+            cycles = shx.get_refinement_cycles
+            shx.set_refinement_cycles('0')  # also sets shx.cycles to current value
+            self.rl.write_resfile(self.reslist, '.ins')
+            if self.no_refine:
+                print('\nPerforming no fragment fit. Just prepared the .ins file for you.')
+                return
+            #  Refine with L.S. 0 to insert the fragment
+            try:
+                shx.run_shelxl()
+            except:
+                raise
+            # Display the results from the list file:
+            lf = ListFile(basefilename)
+            lst_file = lf.read_lst_file()
+            shx.check_refinement_results(lst_file)
+            lfd = Lst_Deviations(lst_file)
+            lfd.print_LS_fit_deviations()
+            cell = rle.get_cell()
+            # open res file again to restore 8 refinement cycles:
+            self.rl = ResList(self.res_file)
+            reslist = self.rl.get_res_list()
+            # remove the "REM " instriction bevore the +dfixfile instruction
+            plusline = find_line(reslist, "REM " + afix.rand_id_dfx)
+            if plusline:
+                reslist[plusline - 1] = reslist[plusline - 1][4:]
+                remove_line(reslist, plusline, remove=True)
+            if dsrp.command == 'REPLACE':
+                print("Replace mode active\n")
+                reslist, find_atoms = atomhandling.replace_after_fit(self.rl, reslist, resi,
+                                                                     fragment_numberscheme, cell)
+            shx = ShelxlRefine(reslist, basefilename, find_atoms, self.options)
+            shx.restore_acta_card(acta_lines)
+            try:
+                if cycles:
+                    shx.set_refinement_cycles(cycles)  # restores last LS value
+                else:
+                    shx.set_refinement_cycles(8)
+            except IndexError:
+                print('*** Unable to set refinement cycles ***')
+            if not self.options.rigid_group:
+                shx.remove_afix(afix.rand_id_afix)  # removes the afix 9
+            # final resfile write:
+            self.rl.write_resfile(reslist, '.res')
 
 
 class Multilog(object):

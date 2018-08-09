@@ -47,3 +47,4 @@ except():
     width = 80
 sep_line = (width-1)*'-'
 
+isoatomstr = '{:<5.5s} {:<3}{:>10.6f}  {:>10.6f}  {:>9.6f}  {:>9.5f}  {:>9.5f}'

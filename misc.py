@@ -763,7 +763,7 @@ def frac_to_cart(frac_coord, cell):
     Xc = a * x + (b * cos(gamma)) * y + (c * cos(beta)) * z
     Yc = 0 + (b * sin(gamma)) * y + (-c * sin(beta) * cosastar) * z
     Zc = 0 + 0 + (c * sin(beta) * sinastar) * z
-    return Xc, Yc, Zc
+    return [Xc, Yc, Zc]
 
 
 class A(object):
@@ -829,7 +829,7 @@ def cart_to_frac(cart_coord, cell):
     z = Z / (c * sin(beta) * sinastar) 
     y = (Y - (-c * sin(beta) * cosastar) * z) / (b * sin(gamma))
     x = (X - (b * cos(gamma)) * y - (c * cos(beta)) * z) / a
-    return round(x, 8), round(y, 8), round(z, 8)
+    return [round(x, 8), round(y, 8), round(z, 8)]
 
 
 def zero(m, n):
