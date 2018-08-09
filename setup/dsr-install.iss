@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "DSR - Disordered Structure Refinement"
-#define MyAppVersion "212"
+#define MyAppVersion "213"
 #define MyAppPublisher "Daniel Kratzert"
 
 [Setup]
@@ -97,6 +97,7 @@ Source: "..\example\p21n_cf3.res"; DestDir: "{app}\example"; Flags: ignoreversio
 Source: ".\Output\changelog.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\networkx\*"; DestDir: "{app}\networkx"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
 Source: "..\mpmath\*"; DestDir: "{app}\mpmath"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
+Source: "..\rmsd\*"; DestDir: "{app}\rmsd"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
 
 [Icons]
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
