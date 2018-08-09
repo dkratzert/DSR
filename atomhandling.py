@@ -597,9 +597,10 @@ class SfacTable():
     def __init__(self, reslist, dbatom_types):
         """
 
-        :param reslist:  SHELXL .res file as list
-        :param fragment_atom_types:  list ['N', 'C', 'C', 'C']
-        :param res_file_name: str file name like 'p21c.res'
+        :param reslist: list  
+                SHELXL .res file as list
+        :param dbatom_types: list 
+                ['N', 'C', 'C', 'C']
         """
         self._reslist = reslist
         self._db_atom_types = dbatom_types

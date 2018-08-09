@@ -17,9 +17,8 @@ from datetime import datetime
 
 from dbfile import search_fragment_name, ParseDB
 from constants import width, sep_line
-from misc import find_line, remove_line, touch
+from misc import find_line, remove_line, touch, cart_to_frac
 from options import OptionsParser
-from rmsd import fit_fragment
 from terminalsize import get_terminal_size
 from dsrparse import DSRParser
 from dbfile import ImportGRADE, print_search_results
@@ -29,7 +28,7 @@ from afix import Afix
 from refine import ShelxlRefine
 from resfile import ResList, filename_wo_ending, ResListEdit
 
-VERSION = '212'
+VERSION = '213'
 # dont forget to change version in Innoscript file, spec file and deb file.
 minuse = ((width // 2) - 7) * '-'
 program_name = '\n{} D S R - v{} {}'.format(minuse, VERSION, minuse)
@@ -61,7 +60,7 @@ class DSR(object):
             import numpy as np
             self.numpy_installed = True
         except ImportError:
-            pass
+            print('Numpy not installed!')
         # options from the commandline options parser:
         self.options = options
         self.external = False
@@ -291,18 +290,10 @@ class DSR(object):
         restraints = remove_resi(restraints)
         # corrects the atom type according to the previous defined global sfac table:
         dbatoms = atomhandling.set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table)
-        
-        if self.numpy_installed:
-             
-            source_coords = [self.gdb.get_atoms(self.fragment)[0].index(x) for x in dsrp.source]
-            fitted_fragment, rmsd = fit_fragment(self.gdb.get_cell(self.fragment), 
-                                                 self.gdb.get_coordinates(self.fragment, cartesian=True), 
-                                                 ,
-                                                 self.options.target_coords)
-        else:
+
+        if not self.numpy_installed:
             # Insert FRAG ... FEND entry:
             rle.insert_frag_fend_entry(dbatoms, self.gdb.get_cell(self.fragment), fvarlines)
-
         print('Inserting {} into res File.'.format(self.fragment))
         if self.invert:
             print('Fragment inverted.')
@@ -322,9 +313,24 @@ class DSR(object):
             dfix_13 = restr.get_formated_13_dfixes()
             flats = restr.get_formated_flats()
             dfix_head = dfix_12 + dfix_13 + flats
-        afix = Afix(self.reslist, dbatoms, db_atom_types, restraints, dsrp,
+        if self.numpy_installed:
+            afix = Afix(self.reslist, dbatoms, db_atom_types, restraints, dsrp,
+                        sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
+            if self.options.target_coords:
+                # {'C1': ['1.123', '0.7456', '3.245']}
+                target_coordinates = afix.combine_names_and_coordinates()
+            else:
+                target_coordinates = afix._find_atoms.get_atomcoordinates(dsrp.target)
+            source_coords = self.gdb.get_coordinates(self.fragment, cartesian=True)
+            from rmsd import fit_fragment
+            fitted_fragment, rmsd = fit_fragment(self.gdb.get_coordinates(self.fragment, cartesian=True),
+                                                 source_atoms=source_coords,
+                                                 target_atoms=target_coordinates.values())
+            fitted_fragment = [cart_to_frac(x, self.gdb.get_cell(self.fragment)) for x in fitted_fragment]
+        else:
+            afix = Afix(self.reslist, dbatoms, db_atom_types, restraints, dsrp,
                     sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
-        afix_entry = afix.build_afix_entry(self.external, basefilename + '.dfix', resi)
+            afix_entry = afix.build_afix_entry(self.external, basefilename + '.dfix', resi)
         if dsr_line_number < fvarlines[-1]:
             print('\n*** Warning! The DSR command line MUST NOT appear before FVAR '
                   'or the first atom in the .res file! ***')
