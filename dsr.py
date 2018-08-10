@@ -25,11 +25,11 @@ from dsrparse import DSRParser
 from dbfile import ImportGRADE, print_search_results
 from resi import Resi, remove_resi
 from restraints import ListFile, Lst_Deviations, Restraints
-from afix import Afix
+from afix import Afix, add_residue_to_dfix
 from refine import ShelxlRefine
 from resfile import ResList, filename_wo_ending, ResListEdit
 
-VERSION = '213'
+VERSION = '214'
 # dont forget to change version in Innoscript file, spec file and deb file.
 minuse = ((width // 2) - 7) * '-'
 program_name = '\n{} D S R - v{} {}'.format(minuse, VERSION, minuse)
@@ -314,6 +314,7 @@ class DSR(object):
             dfix_13 = restr.get_formated_13_dfixes()
             flats = restr.get_formated_flats()
             dfix_head = dfix_12 + dfix_13 + flats
+        # ##########Not using SHELXL for fragment fit: ###########
         if self.numpy_installed:
             afix = Afix(self.reslist, dbatoms, db_atom_types, restraints, dsrp,
                         sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
@@ -332,6 +333,10 @@ class DSR(object):
             fitted_fragment, rmsd = fit_fragment(self.gdb.get_coordinates(self.fragment, cartesian=True),
                                                  source_atoms=source_coords,
                                                  target_atoms=target_coords)
+            if rmsd < 0.1:
+                print('Fragment fit susessful with RMSD of: {:8.3}'.format(rmsd))
+            else:
+                print('Fragment fit wight have failed with RMSD of: {:8.3}'.format(rmsd))
             fitted_fragment = [cart_to_frac(x, rle.get_cell()) for x in fitted_fragment]
             afix_entry = []
             e2s = Elem_2_Sfac(sfac_table)
@@ -341,23 +346,49 @@ class DSR(object):
                                                     float(dsrp.occupancy), 0.04))
             afix_entry = "\n".join(afix_entry)
             new_atomnames = list(reversed(fragment_numberscheme))
-            restraints = rename_restraints_atoms(new_atomnames, self.gdb.get_atomnames(self.fragment), restraints)
-            if dsrp.resi:
+            same_resi = ''
+            if not dsrp.resiflag:
+                restraints = rename_restraints_atoms(new_atomnames, self.gdb.get_atomnames(self.fragment), restraints)
+            else:
                 restraints = resi.format_restraints(restraints)
+                same_resi = ["SAME_{} {} > {}".format(resi.get_residue_class, new_atomnames[-1], new_atomnames[0])]
             # Adds a "SAME_resiclass firstatom > lastatom" to the afix:
             if not dsrp.dfix and not self.options.rigid_group:
-                restraints += ["SAME_{} {} > {}".format(resi.get_residue_class,
-                                                              new_atomnames[-1], new_atomnames[0])]
-            restraints = afix.remove_duplicate_restraints(restraints, afix.collect_all_restraints(),
-                                                                resi.get_residue_class)
+                restraints += same_resi
+            if not options.external_restr:
+                restraints = afix.remove_duplicate_restraints(restraints, afix.collect_all_restraints(),
+                                                          resi.get_residue_class)
             restraints = wrap_headlines(restraints)
+            if self.options.rigid_group:
+                restraints = '\n'
+            dfx_file_name = ''
+            if dsrp.dfix:
+                if dsrp.resiflag:
+                    restraints = add_residue_to_dfix(dfix_head, resi.get_resinumber) + ['\n'] + same_resi
+                else:
+                    restraints = rename_restraints_atoms(new_atomnames, 
+                                                         [x[0] for x in self.gdb.get_atomnames(self.fragment)],
+                                                         dfix_head)
             if dsrp.part:
                 afix_entry = "PART {}  {}\n".format(dsrp.part, dsrp.occupancy) + afix_entry + "\nPART 0"
             if dsrp.resiflag:
                 afix_entry = 'RESI {} {}\n'.format(resi.get_residue_class, resi.get_resinumber) + \
                              afix_entry + "\nRESI 0\n"
-            afix_entry = ''.join(restraints) + afix_entry + '\n'
-        else:
+            if options.external_restr:
+                pname, ext = os.path.splitext(basefilename + '.dfix')
+                dfx_file_name = pname+"_dfx"+ext
+                dfx_file_name = afix.write_dbhead_to_file(dfx_file_name, restraints, resi.get_residue_class,
+                                                          resi.get_resinumber)
+                if dsrp.resiflag:
+                    restraints = '\nREM The restraints for residue {} are in this file:\n+{}\n' \
+                        .format(resi.get_residue_class, dfx_file_name)
+                else:
+                    restraints = '\nREM The restraints for this moiety are in this file:\n+{}\n' \
+                        .format(dfx_file_name)
+                afix_entry = ''.join(restraints) + afix_entry + '\n'
+            else:
+                afix_entry = ''.join(restraints) + afix_entry + '\n'
+        else:  # SHELXL fit
             afix = Afix(self.reslist, dbatoms, db_atom_types, restraints, dsrp,
                         sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
             afix_entry = afix.build_afix_entry(self.external, basefilename + '.dfix', resi)
