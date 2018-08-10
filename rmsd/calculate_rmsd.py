@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from misc import cart_to_frac, frac_to_cart
+from rmsd.match import match_point_clouds
 
 __doc__ = \
     """
@@ -200,7 +201,7 @@ def quaternion_rotate(X, Y):
 
     Returns
     -------
-    rot : matrix
+    rot : np.matrix
         Rotation matrix (D,D)
     """
     N = X.shape[0]
@@ -316,6 +317,7 @@ def fit_fragment(fragment_atoms, source_atoms, target_atoms):
     P -= Pcentroid
     Q -= Qcentroid
     U = kabsch(P, Q)  # get the Kabsch rotation matrix
+    #U = quaternion_rotate(P, Q)  # get the Kabsch rotation matrix
     source_atoms -= Pcentroid  # translate source_atoms onto center
     rotated_fragment = np.dot(fragment_atoms, U)  # rotate fragment_atoms
     source_atoms = np.dot(source_atoms, U)  # rotate source_atoms (the subsection for position definition)
@@ -328,6 +330,55 @@ def fit_fragment(fragment_atoms, source_atoms, target_atoms):
     rotated_fragment += center_difference
     rmsd = kabsch_rmsd(P, Q)
     return rotated_fragment, rmsd
+
+
+def fit_fragment_match(fragment_atoms, source_atoms, target_atoms):
+    """
+    Takes a list of fragment atoms and fits them to the position of target atoms. source_atoms are a fraction 
+    of the fragment to be fitted on the target_atoms.
+
+    Parameters
+    ----------
+    fragment_atoms: list
+        complete set of atoms of a fragment 
+    source_atoms: list
+        subsection of fragment atoms
+    target_atoms: list
+        target position for source_atoms
+
+    Returns
+    -------
+    rotated_fragment: list
+        list of coordinates from the fitted fragment
+    rmsd: float
+        RMSD (root mean square deviation)
+    """
+    source_atoms = np.array(source_atoms)
+    target_atoms = np.array(target_atoms)
+    fragment_atoms = np.array(fragment_atoms)
+    P = copy.deepcopy(source_atoms)
+    Q = copy.deepcopy(target_atoms)
+    # Create the centroid of P and Q which is the geometric center of a
+    # N-dimensional region and translate P and Q onto that center.
+    # http://en.wikipedia.org/wiki/Centroid
+    Pcentroid = centroid(P)
+    Qcentroid = centroid(Q)
+    # Move P and Q to origin:
+    P -= Pcentroid
+    Q -= Qcentroid
+    # U -> rotation_matrix
+    matchlist, U, rotated_frag, quat = match_point_clouds(P, Q, threshold=1, same_order=True)
+    rotated_fragment = np.dot(fragment_atoms, U)  # rotate fragment_atoms
+    source_atoms = np.dot(source_atoms, U)  # rotate source_atoms (the subsection for position definition)
+    rotated_fragment += Qcentroid  # move fragment back from zero
+    source_atoms += Qcentroid  # move source_atoms back from zero
+    # vector from first source_atoms and first rotated_fragment atom:
+    center_difference = source_atoms[0] - rotated_fragment[0]
+    # translate to source_atoms position, because center of fragment_atoms != center of source_atoms,
+    # because its a subsection:
+    rotated_fragment += center_difference
+    rmsd = kabsch_rmsd(P, Q)
+    return rotated_fragment.tolist(), rmsd
 
 
 def test():
