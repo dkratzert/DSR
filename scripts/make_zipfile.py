@@ -50,7 +50,8 @@ files = [
     "example/p21n_cf3.hkl",
     "example/p21n_cf3.res",
     "networkx",
-    "mpmath"
+    "mpmath",
+    "rmsd"
 ]
 
 
