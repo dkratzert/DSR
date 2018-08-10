@@ -276,9 +276,7 @@ class Afix(object):
             self._restraints = rename_restraints_atoms(new_atomnames, old_atoms, self._restraints)
             self._restraints = self.remove_duplicate_restraints(self._restraints, self.collect_all_restraints())
         # decide if restraints to external file or internal:
-        distance_and_other = self.distance_and_other_restraints(self._restraints)
-        distance = distance_and_other[0]
-        other_head = distance_and_other[1]
+        distance, other_head = self.distance_and_other_restraints(self._restraints)
         # External restraints:
         if external_restraints and not self.options.rigid_group:
             # in case of dfix, write restraints to file after fragment fit
