@@ -119,11 +119,12 @@ Type: filesandordirs; Name: "{app}\mpmath"
 Type: filesandordirs; Name: "{app}\example"
 Type: filesandordirs; Name: "{app}\manuals"
 Type: filesandordirs; Name: "{app}\setup"
+Type: filesandordirs; Name: "{app}"
 
 [Dirs]
 Name: "{app}\example"; Permissions: everyone-full
-Name: "{app}\manuals"
-Name: "{app}\."; Permissions: authusers-full
+Name: "{app}\manuals"; Permissions: everyone-full
+Name: "{app}\."; Permissions: everyone-full
 
 [Code]
 const
