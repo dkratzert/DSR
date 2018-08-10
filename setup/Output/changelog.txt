@@ -1,5 +1,6 @@
 Recent changes
--213    Added fragment fit with Kabsh algorythm instead of FRAG/FEND fit. This runs much faster for large structures. 
+-214    Fixed external restraints with Kabsch fit
+-213    Added fragment fit with Kabsch algorithm instead of FRAG/FEND fit. This runs much faster for large structures. 
         This version might be unstable and not all features are suported, but regular fragment fit with or without 
         RESIdues and PARTs work.
 -212    Fixed SFAC with exponential parameters. Teflat fragment added. Added Trifluorbenzene. 
