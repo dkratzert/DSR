@@ -35,6 +35,7 @@ xcopy /Y "%GIT%\dsr_db.txt" "%DSR_DIR%"
 xcopy /Y "%GIT%\manuals\DSR-manual.pdf" "%DSR_DIR%\manuals"
 xcopy /Y "%GIT%\example\p21c.res" "%DSR_DIR%\example"
 xcopy /Y "%GIT%\example\p21c.hkl" "%DSR_DIR%\example"
+xcopy /Y "%GIT%\rmsd" "%DSR_DIR%\"
 
 rem xcopy /Y %GIT%\update-dsr.bat %DSRDIR%
 
