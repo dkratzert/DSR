@@ -328,10 +328,10 @@ class DSR(object):
             source_atoms = dict(zip(self.gdb.get_atomnames(self.fragment),
                                     self.gdb.get_coordinates(self.fragment, cartesian=True)))
             source_coords = [source_atoms[x] for x in dsrp.source]
-            from rmsd.calculate_rmsd import fit_fragment_match
             target_coords = [frac_to_cart(x, rle.get_cell()) for x in target_coords]
             #                                    (fragment_atoms, source_atoms, target_atoms)
-            fitted_fragment, rmsd = fit_fragment_match(self.gdb.get_coordinates(self.fragment, cartesian=True),
+            from rmsd import fit_fragment
+            fitted_fragment, rmsd = fit_fragment(self.gdb.get_coordinates(self.fragment, cartesian=True),
                                                  source_atoms=source_coords,
                                                  target_atoms=target_coords)
             if rmsd < 0.1:
