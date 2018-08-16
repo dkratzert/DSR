@@ -317,13 +317,13 @@ def fit_fragment(fragment_atoms, source_atoms, target_atoms):
     # Move P_source and Q_target to origin:
     P_source -= Pcentroid
     Q_target -= Qcentroid
-    #U = kabsch(P_source, Q_target)  # get the Kabsch rotation matrix
-    U = quaternion_rotate(P_source, Q_target)  # get the Kabsch rotation matrix
+    U = kabsch(P_source, Q_target)  # get the Kabsch rotation matrix
+    #U = quaternion_rotate(P_source, Q_target)  # get the Kabsch rotation matrix
     source_atoms -= Pcentroid  # translate source_atoms onto center
-    rotated_fragment = np.dot(fragment_atoms, U)  # rotate fragment_atoms
-    rotated_fragment += Qcentroid  # move fragment back from zero
+    rotated_fragment = np.dot(fragment_atoms, U)  # rotate fragment_atoms (instead of source_atoms)
+    rotated_fragment += Qcentroid  # move fragment back from zero (be aware that the translation is still wrong!)
     rmsd = kabsch_rmsd(P_source, Q_target)
-    return rotated_fragment, rmsd
+    return list(rotated_fragment), rmsd
 
 
 def test():

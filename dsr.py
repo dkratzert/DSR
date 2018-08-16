@@ -340,14 +340,16 @@ class DSR(object):
             # Moving back to the position of the first atom to have a reference:
             import numpy as np
             from rmsd import centroid
-            # I have to make sure that I use the center of the correct atoms from target and source,
-            # otherwise the fragment is shifted
+            # I have to make sure that I use the centroid of the correct atoms from target and source,
+            # otherwise the fragment is shifted to a wrong position.
             # The third atom from the fragment e.g. has to be the third from the fragment to get
             # the correct centroid:
             center_difference = centroid(np.array(target_coords)) - \
                                 centroid(np.array([list(fitted_fragment)[atnames.index(dsrp.source[x])] 
                                                    for x in range(len(source_coords))]))
+            # finishing shift to correct centroid: 
             fitted_fragment += center_difference
+            # Or even lower than 0.1?
             if rmsd < 0.1:
                 print('Fragment fit successful with RMSD of: {:8.3}'.format(rmsd))
             else:
