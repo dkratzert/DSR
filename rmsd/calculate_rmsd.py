@@ -317,6 +317,13 @@ def rigid_transform_3D(A, B):
     return R, t
 
 
+def normalize_vec(v):
+    erg = np.array([1, 0, 0])
+    if v[0]**2+v[1]**2+v[2]**2:
+        erg = v * (1.0/sqrt(v[0]**2+v[1]**2+v[2]**2))
+    return erg
+
+
 def prealign_molecule(source_atoms, target_atoms):
     """
     source_atoms: np.array
@@ -336,42 +343,39 @@ def prealign_molecule(source_atoms, target_atoms):
     #>>> source_atoms = np.array([[-0.012117, 1.808873, 0.051461], [0.000953, 0.411113, 0.005311], [-1.130997, -0.089497, -0.965499]])
     #>>> target_atoms = np.array([[0.268891, 4.920914, 8.180802], [-0.147396, 4.860837, 6.898053], [0.848510, 3.988388, 6.076868]])
     #>>> prealign_molecule(source_atoms, target_atoms)
-    
     """
+    source_atoms = np.array(source_atoms)
+    target_atoms = np.array(copy.deepcopy(target_atoms))
     if len(source_atoms) < 3 or len(target_atoms) < 3:
+        print('foo1 ###')
         return None
     # Tree orthogonal vectors of unit size form a rotation matrix
     # the transponse of the latter is its inverse
-    a1 = np.linalg.norm((target_atoms[0] - target_atoms[1]))  # a1 = (A-B)/|A-B|
-    a2 = np.linalg.norm((target_atoms[0] - target_atoms[2]))  # a2 = (A-C)/|A-B|
-    a3 = np.linalg.norm(a1 / a2)  # a3 = (a1 x a2)/(a1 x a2)
-    a2 = a3 / a1  # a2 = a3 x a1
-    amat = np.matrix([a1, a2, a3]).reshape(3, 1)  # rotation matrix a
+    a1 = normalize_vec((target_atoms[0] - target_atoms[1]))  # a1 = (A-B)/|A-B|
+    a2 = normalize_vec((target_atoms[0] - target_atoms[2]))  # a2 = (A-C)/|A-B|
+    a3 = normalize_vec(np.cross(a1, a2))  # a3 = (a1 x a2)/(a1 x a2)
+    a2 = np.cross(a3, a1)  # a2 = a3 x a1
+    amat = np.matrix([a1, a2, a3])  # rotation matrix a
 
-    b1 = np.linalg.norm(source_atoms[0] - source_atoms[1])
-    b2 = np.linalg.norm(source_atoms[0] - source_atoms[2])
-    b3 = np.linalg.norm(b1 / b2)
-    b2 = b3 / b1
-    bmat = np.matrix([b1, b2, b3]).transpose().reshape(1, 3)
-    if ((a1 * (a2 / a3) < 0.9) or (b1 * (b2 / b3) < 0.9)):  # linear dependence id determinant is 0
+    b1 = normalize_vec(source_atoms[0] - source_atoms[1])
+    b2 = normalize_vec(source_atoms[0] - source_atoms[2])
+    b3 = normalize_vec(np.cross(b1, b2))
+    b2 = np.cross(b3, b1)
+    bmat = np.matrix([b1, b2, b3]).transpose()
+    if (np.linalg.det(amat) < 0.9) or (np.linalg.det(bmat) < 0.9):  # linear dependence id determinant is 0
         return None
-
-    print("FIT:\n================================================================================\n")
-    for nsource, satom in enumerate(source_atoms):
-        imin = 0
-        dmin = 10.0
-        for ntarget, _ in enumerate(target_atoms):
-            ort = target_atoms[ntarget]
-            ort += -1.0 * target_atoms[0]
-            ort = ort.reshape(3, 1) * amat
-            ort = ort.reshape(3, 1) * bmat
-            ort += source_atoms[0]
-
-            d = distance(ort[0], ort[1], ort[2], satom[0], satom[1], satom[2])
-            if d < dmin:
-                imin = ntarget
-                dmin = d if (d < dmin) else dmin
-        print("%-8s <==> %-8s %f\n".format("Source", nsource, "target", imin, sqrt(dmin)))
+    s = copy.deepcopy(source_atoms)
+    t = copy.deepcopy(target_atoms)
+    tcent = centroid(t)
+    scent = centroid(s)
+    s -= scent
+    t -= tcent
+    newpos = np.dot(source_atoms, bmat)
+    newpos = np.dot(newpos, amat)
+    newpos += tcent
+    #center_difference = target_atoms[0] - newpos[0]
+    #newpos += center_difference
+    return newpos.tolist()
 
 
 def fit_fragment(fragment_atoms, source_atoms, target_atoms):
@@ -398,29 +402,24 @@ def fit_fragment(fragment_atoms, source_atoms, target_atoms):
     source_atoms = np.array(source_atoms)
     target_atoms = np.array(target_atoms)
     fragment_atoms = np.array(fragment_atoms)
-    P = copy.deepcopy(source_atoms)
-    Q = copy.deepcopy(target_atoms)
-    # Create the centroid of P and Q which is the geometric center of a
-    # N-dimensional region and translate P and Q onto that center.
+    P_source = copy.deepcopy(source_atoms)
+    Q_target = copy.deepcopy(target_atoms)
+    # Create the centroid of P_source and Q_target which is the geometric center of a
+    # N-dimensional region and translate P_source and Q_target onto that center.
     # http://en.wikipedia.org/wiki/Centroid
-    Pcentroid = centroid(P)
-    Qcentroid = centroid(Q)
-    # Move P and Q to origin:
-    P -= Pcentroid
-    Q -= Qcentroid
-    U = kabsch(P, Q)  # get the Kabsch rotation matrix
-    # U = quaternion_rotate(P, Q)  # get the Kabsch rotation matrix
+    Pcentroid = centroid(P_source)
+    Qcentroid = centroid(Q_target)
+    # Move P_source and Q_target to origin:
+    P_source -= Pcentroid
+    Q_target -= Qcentroid
+    U = kabsch(P_source, Q_target)  # get the Kabsch rotation matrix
+    # U = quaternion_rotate(P_source, Q_target)  # get the Kabsch rotation matrix
     source_atoms -= Pcentroid  # translate source_atoms onto center
     rotated_fragment = np.dot(fragment_atoms, U)  # rotate fragment_atoms
     source_atoms = np.dot(source_atoms, U)  # rotate source_atoms (the subsection for position definition)
     rotated_fragment += Qcentroid  # move fragment back from zero
-    source_atoms += Qcentroid  # move source_atoms back from zero
-    # vector from first source_atoms and first rotated_fragment atom:
-    center_difference = source_atoms[0] - rotated_fragment[0]
-    # translate to source_atoms position, because center of fragment_atoms != center of source_atoms,
-    # because its a subsection:
-    rotated_fragment += center_difference
-    rmsd = kabsch_rmsd(P, Q)
+    #source_atoms += Qcentroid  # move source_atoms back from zero
+    rmsd = kabsch_rmsd(P_source, Q_target)
     return rotated_fragment, rmsd
 
 
