@@ -353,7 +353,7 @@ class DSR(object):
             if rmsd < 0.1:
                 print('Fragment fit successful with RMSD of: {:8.3}'.format(rmsd))
             else:
-                print('Fragment fit wight have failed with RMSD of: {:8.3}'.format(rmsd))
+                print('Fragment fit might have failed with RMSD of: {:8.3}'.format(rmsd))
             fitted_fragment = [cart_to_frac(x, rle.get_cell()) for x in fitted_fragment]
             afix_entry = []
             e2s = Elem_2_Sfac(sfac_table)
