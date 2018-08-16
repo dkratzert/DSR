@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "DSR - Disordered Structure Refinement"
-#define MyAppVersion "212"
+#define MyAppVersion "215"
 #define MyAppPublisher "Daniel Kratzert"
 
 [Setup]
@@ -97,6 +97,7 @@ Source: "..\example\p21n_cf3.res"; DestDir: "{app}\example"; Flags: ignoreversio
 Source: ".\Output\changelog.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\networkx\*"; DestDir: "{app}\networkx"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
 Source: "..\mpmath\*"; DestDir: "{app}\mpmath"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
+Source: "..\rmsd\*"; DestDir: "{app}\rmsd"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
 
 [Icons]
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
@@ -118,11 +119,12 @@ Type: filesandordirs; Name: "{app}\mpmath"
 Type: filesandordirs; Name: "{app}\example"
 Type: filesandordirs; Name: "{app}\manuals"
 Type: filesandordirs; Name: "{app}\setup"
+Type: filesandordirs; Name: "{app}"
 
 [Dirs]
 Name: "{app}\example"; Permissions: everyone-full
-Name: "{app}\manuals"
-Name: "{app}\."; Permissions: authusers-full
+Name: "{app}\manuals"; Permissions: everyone-full
+Name: "{app}\."; Permissions: everyone-full
 
 [Code]
 const

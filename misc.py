@@ -18,6 +18,8 @@ import shutil
 import string
 from math import cos, sqrt, radians, sin
 
+from constants import isoatomstr
+
 alphabet = string.ascii_uppercase
 
 __metaclass__ = type  # use new-style classes
@@ -763,7 +765,7 @@ def frac_to_cart(frac_coord, cell):
     Xc = a * x + (b * cos(gamma)) * y + (c * cos(beta)) * z
     Yc = 0 + (b * sin(gamma)) * y + (-c * sin(beta) * cosastar) * z
     Zc = 0 + 0 + (c * sin(beta) * sinastar) * z
-    return Xc, Yc, Zc
+    return [Xc, Yc, Zc]
 
 
 class A(object):
@@ -829,7 +831,7 @@ def cart_to_frac(cart_coord, cell):
     z = Z / (c * sin(beta) * sinastar) 
     y = (Y - (-c * sin(beta) * cosastar) * z) / (b * sin(gamma))
     x = (X - (b * cos(gamma)) * y - (c * cos(beta)) * z) / a
-    return round(x, 8), round(y, 8), round(z, 8)
+    return [round(x, 8), round(y, 8), round(z, 8)]
 
 
 def zero(m, n):
@@ -1141,12 +1143,25 @@ def distance(x1, y1, z1, x2, y2, z2, round_out=False):
     >>> distance(1, 0, 0, 2, 0, 0, 4)
     1.0
     """
-    import math as m
-    d = m.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
+    from math import sqrt
+    d = sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
     if round_out:
         return round(d, round_out)
     else:
         return d
+
+
+def coord_to_shx_atom(coordinates):
+    """
+    Transformes a list of coordinates to a list of shelxl atom strings.
+    """
+    strlist = []
+    sfac_num = 1
+    for num, coord in enumerate(coordinates):
+        at = "AX"+str(num)
+        s = isoatomstr.format(at, sfac_num, coord[0], coord[1], coord[2], 11.0000, 0.03)
+        strlist.append(s)
+    return strlist
 
 
 def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
