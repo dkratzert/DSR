@@ -18,9 +18,8 @@ from datetime import datetime
 from atomhandling import Elem_2_Sfac, rename_restraints_atoms
 from dbfile import search_fragment_name, ParseDB
 from constants import width, sep_line, isoatomstr
-from misc import find_line, remove_line, touch, cart_to_frac, frac_to_cart, wrap_headlines, chunks, coord_to_shx_atom
+from misc import find_line, remove_line, touch, cart_to_frac, frac_to_cart, wrap_headlines, chunks
 from options import OptionsParser
-from rmsd import prealign_molecule, centroid
 from terminalsize import get_terminal_size
 from dsrparse import DSRParser
 from dbfile import ImportGRADE, print_search_results
@@ -340,6 +339,7 @@ class DSR(object):
                                                  target_atoms=target_coords)
             # Moving back to the position of the first atom to have a reference:
             import numpy as np
+            from rmsd import centroid
             # I have to make sure that I use the center of the correct atoms from target and source,
             # otherwise the fragment is shifted
             # The third atom from the fragment e.g. has to be the third from the fragment to get
@@ -349,7 +349,7 @@ class DSR(object):
                                                    for x in range(len(source_coords))]))
             fitted_fragment += center_difference
             if rmsd < 0.1:
-                print('Fragment fit susessful with RMSD of: {:8.3}'.format(rmsd))
+                print('Fragment fit successful with RMSD of: {:8.3}'.format(rmsd))
             else:
                 print('Fragment fit wight have failed with RMSD of: {:8.3}'.format(rmsd))
             fitted_fragment = [cart_to_frac(x, rle.get_cell()) for x in fitted_fragment]

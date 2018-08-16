@@ -283,101 +283,6 @@ def print_coordinates(atoms, V):
         print("{0:2s}   1 {1:15.8f} {2:15.8f} {3:15.8f}   11.0  0.04".format(atom, *V[n]))
 
 
-def rigid_transform_3D(A, B):
-    """
-    # Input: expects Nx3 matrix of points
-    # Returns R,t
-    # R = 3x3 rotation matrix
-    # t = 3x1 column vector
-    """
-    #print(A)
-    assert len(A) == len(B)
-
-    N = A.shape[0]  # total points
-
-    centroid_A = np.mean(A, axis=0)
-    centroid_B = np.mean(B, axis=0)
-
-    # centre the points
-    AA = A - np.tile(centroid_A, (N, 1))
-    BB = B - np.tile(centroid_B, (N, 1))
-
-    H = np.dot(np.transpose(AA), BB)
-    U, S, Vt = np.linalg.svd(H)
-    R = np.dot(U, Vt)
-
-    # special reflection case
-    if np.linalg.det(R) < 0:
-        print("Reflection detected")
-        Vt[2, :] *= -1
-        R = Vt.T * U.T
-
-    t = -R * centroid_A.T + centroid_B.T
-    #print t
-    return R, t
-
-
-def normalize_vec(v):
-    erg = np.array([1, 0, 0])
-    if v[0]**2+v[1]**2+v[2]**2:
-        erg = v * (1.0/sqrt(v[0]**2+v[1]**2+v[2]**2))
-    return erg
-
-
-def prealign_molecule(source_atoms, target_atoms):
-    """
-    source_atoms: np.array
-        subsection of fragment atoms
-    target_atoms: np.array
-        target position for source_atoms
-
-    scoord: -0.012117, 1.808873, 0.051461
-    scoord: 0.000953, 0.411113, 0.005311
-    scoord: -1.130997, -0.089497, -0.965499
-    FIT:
-    ================================================================================
-    O1       <==> O1_3a    0.000000 tcoord: 0.268891, 4.920914, 8.180802, scoord: 0.713445, 3.256968, 0.621513
-    C1       <==> C1_3a    0.048639 tcoord: -0.147396, 4.860837, 6.898053, scoord: -0.012117, 1.808873, 0.051461
-    C2       <==> Q4       0.061290 tcoord: 0.848510, 3.988388, 6.076868, scoord: 0.000498, 0.459723, 0.006916
-
-    #>>> source_atoms = np.array([[-0.012117, 1.808873, 0.051461], [0.000953, 0.411113, 0.005311], [-1.130997, -0.089497, -0.965499]])
-    #>>> target_atoms = np.array([[0.268891, 4.920914, 8.180802], [-0.147396, 4.860837, 6.898053], [0.848510, 3.988388, 6.076868]])
-    #>>> prealign_molecule(source_atoms, target_atoms)
-    """
-    source_atoms = np.array(source_atoms)
-    target_atoms = np.array(copy.deepcopy(target_atoms))
-    if len(source_atoms) < 3 or len(target_atoms) < 3:
-        print('foo1 ###')
-        return None
-    # Tree orthogonal vectors of unit size form a rotation matrix
-    # the transponse of the latter is its inverse
-    a1 = normalize_vec((target_atoms[0] - target_atoms[1]))  # a1 = (A-B)/|A-B|
-    a2 = normalize_vec((target_atoms[0] - target_atoms[2]))  # a2 = (A-C)/|A-B|
-    a3 = normalize_vec(np.cross(a1, a2))  # a3 = (a1 x a2)/(a1 x a2)
-    a2 = np.cross(a3, a1)  # a2 = a3 x a1
-    amat = np.matrix([a1, a2, a3])  # rotation matrix a
-
-    b1 = normalize_vec(source_atoms[0] - source_atoms[1])
-    b2 = normalize_vec(source_atoms[0] - source_atoms[2])
-    b3 = normalize_vec(np.cross(b1, b2))
-    b2 = np.cross(b3, b1)
-    bmat = np.matrix([b1, b2, b3]).transpose()
-    if (np.linalg.det(amat) < 0.9) or (np.linalg.det(bmat) < 0.9):  # linear dependence id determinant is 0
-        return None
-    s = copy.deepcopy(source_atoms)
-    t = copy.deepcopy(target_atoms)
-    tcent = centroid(t)
-    scent = centroid(s)
-    s -= scent
-    t -= tcent
-    newpos = np.dot(source_atoms, bmat)
-    newpos = np.dot(newpos, amat)
-    newpos += tcent
-    #center_difference = target_atoms[0] - newpos[0]
-    #newpos += center_difference
-    return newpos.tolist()
-
-
 def fit_fragment(fragment_atoms, source_atoms, target_atoms):
     """
     Takes a list of fragment atoms and fits them to the position of target atoms. source_atoms are a fraction 
@@ -412,95 +317,13 @@ def fit_fragment(fragment_atoms, source_atoms, target_atoms):
     # Move P_source and Q_target to origin:
     P_source -= Pcentroid
     Q_target -= Qcentroid
-    U = kabsch(P_source, Q_target)  # get the Kabsch rotation matrix
-    # U = quaternion_rotate(P_source, Q_target)  # get the Kabsch rotation matrix
+    #U = kabsch(P_source, Q_target)  # get the Kabsch rotation matrix
+    U = quaternion_rotate(P_source, Q_target)  # get the Kabsch rotation matrix
     source_atoms -= Pcentroid  # translate source_atoms onto center
     rotated_fragment = np.dot(fragment_atoms, U)  # rotate fragment_atoms
-    source_atoms = np.dot(source_atoms, U)  # rotate source_atoms (the subsection for position definition)
     rotated_fragment += Qcentroid  # move fragment back from zero
-    #source_atoms += Qcentroid  # move source_atoms back from zero
     rmsd = kabsch_rmsd(P_source, Q_target)
     return rotated_fragment, rmsd
-
-
-def fit_fragment_rtansform(fragment_atoms, source_atoms, target_atoms):
-    """
-    Takes a list of fragment atoms and fits them to the position of target atoms. source_atoms are a fraction 
-    of the fragment to be fitted on the target_atoms.
-
-    Parameters
-    ----------
-    fragment_atoms: list
-        complete set of atoms of a fragment 
-    source_atoms: list
-        subsection of fragment atoms
-    target_atoms: list
-        target position for source_atoms
-
-    Returns
-    -------
-    rotated_fragment: list
-        list of coordinates from the fitted fragment
-    rmsd: float
-        RMSD (root mean square deviation)
-    """
-    source_atoms = np.array(source_atoms)
-    target_atoms = np.array(target_atoms)
-    fragment_atoms = np.array(fragment_atoms)
-    R, t = rigid_transform_3D(source_atoms, target_atoms)
-    A2 = (R * fragment_atoms.T) + np.tile(t, (1, 14))
-    A2 = A2.T
-    return A2, 0.01
-
-
-def fit_fragment_match(fragment_atoms, source_atoms, target_atoms):
-    """
-    Takes a list of fragment atoms and fits them to the position of target atoms. source_atoms are a fraction 
-    of the fragment to be fitted on the target_atoms.
-
-    Parameters
-    ----------
-    fragment_atoms: list
-        complete set of atoms of a fragment 
-    source_atoms: list
-        subsection of fragment atoms
-    target_atoms: list
-        target position for source_atoms
-
-    Returns
-    -------
-    rotated_fragment: list
-        list of coordinates from the fitted fragment
-    rmsd: float
-        RMSD (root mean square deviation)
-    """
-    source_atoms = np.array(source_atoms)
-    target_atoms = np.array(target_atoms)
-    fragment_atoms = np.array(fragment_atoms)
-    P = copy.deepcopy(source_atoms)
-    Q = copy.deepcopy(target_atoms)
-    # Create the centroid of P and Q which is the geometric center of a
-    # N-dimensional region and translate P and Q onto that center.
-    # http://en.wikipedia.org/wiki/Centroid
-    Pcentroid = centroid(P)
-    Qcentroid = centroid(Q)
-    # Move P and Q to origin:
-    P -= Pcentroid
-    Q -= Qcentroid
-    # U -> rotation_matrix
-    from rmsd.match import match_point_clouds
-    matchlist, U, rotated_frag, quat = match_point_clouds(P, Q, threshold=1, same_order=True)
-    rotated_fragment = np.dot(fragment_atoms, U)  # rotate fragment_atoms
-    source_atoms = np.dot(source_atoms, U)  # rotate source_atoms (the subsection for position definition)
-    rotated_fragment += Qcentroid  # move fragment back from zero
-    source_atoms += Qcentroid  # move source_atoms back from zero
-    # vector from first source_atoms and first rotated_fragment atom:
-    center_difference = source_atoms[0] - rotated_fragment[0]
-    # translate to source_atoms position, because center of fragment_atoms != center of source_atoms,
-    # because its a subsection:
-    rotated_fragment += center_difference
-    rmsd = kabsch_rmsd(P, Q)
-    return rotated_fragment.tolist(), rmsd
 
 
 def test():
