@@ -302,10 +302,9 @@ def rigid_transform_3D(A, B):
     AA = A - np.tile(centroid_A, (N, 1))
     BB = B - np.tile(centroid_B, (N, 1))
 
-    # dot is matrix multiplication for array
-    H = np.dot(AA.T, BB)
+    H = np.dot(np.transpose(AA), BB)
     U, S, Vt = np.linalg.svd(H)
-    R = Vt.T * U.T
+    R = np.dot(U, Vt)
 
     # special reflection case
     if np.linalg.det(R) < 0:
@@ -450,12 +449,9 @@ def fit_fragment_rtansform(fragment_atoms, source_atoms, target_atoms):
     target_atoms = np.array(target_atoms)
     fragment_atoms = np.array(fragment_atoms)
     R, t = rigid_transform_3D(source_atoms, target_atoms)
-    rotated_fragment = np.dot(R, fragment_atoms.T)  # rotate fragment_atoms
-    #rotated_fragment = np.dot(R, fragment_atoms.T)
-    #print(rotated_fragment, t)
-    N = rotated_fragment.shape[0]
-    #rotated_fragment += np.tile(t, N)
-    return rotated_fragment.T.tolist(), 0.01
+    A2 = (R * fragment_atoms.T) + np.tile(t, (1, 14))
+    A2 = A2.T
+    return A2, 0.01
 
 
 def fit_fragment_match(fragment_atoms, source_atoms, target_atoms):
