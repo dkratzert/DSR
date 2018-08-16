@@ -691,6 +691,8 @@ class ParseDB(object):
             cell = self.get_cell(fragment)
             for num, c in enumerate(self.get_coordinates(fragment)):
                 atoms[num][2:5] = frac_to_cart(c, cell)
+            if invert:
+                atoms = invert_atomic_coordinates(atoms)
         return atoms
 
     def get_cell(self, fragment):
@@ -736,13 +738,8 @@ class ParseDB(object):
         :return:
         """
         try:
-            if cartesian:
-                atoms = self.get_atoms(fragment, invert=invert, cartesian=True)
-            else:
-                atoms = self.get_atoms(fragment)
-            coords = []
-            for i in atoms:
-                coords.append(i[2:5])
+            atoms = self.get_atoms(fragment, invert=invert, cartesian=cartesian)
+            coords = [i[2:5] for i in atoms]
         except KeyError:
             print(not_existing_error.format(fragment))
             sys.exit()

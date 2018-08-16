@@ -326,7 +326,7 @@ class DSR(object):
                 target_coordinates = afix._find_atoms.get_atomcoordinates(dsrp.target)
                 target_coords = [target_coordinates[key] for key in dsrp.target]
             atnames = self.gdb.get_atomnames(self.fragment)
-            source_atoms = dict(zip(atnames, self.gdb.get_coordinates(self.fragment, cartesian=True, 
+            source_atoms = dict(zip(atnames, self.gdb.get_coordinates(self.fragment, cartesian=True,
                                                                       invert=self.invert)))
             source_coords = [source_atoms[x] for x in dsrp.source]
             target_coords = [frac_to_cart(x, rle.get_cell()) for x in target_coords]
