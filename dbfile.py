@@ -726,8 +726,8 @@ class ParseDB(object):
             print('Could not find startline of Fragment {}'.format(fragment))
             return 0
 
-    def get_coordinates(self, fragment, cartesian=False):
-        # type: (str, bool) -> list
+    def get_coordinates(self, fragment, cartesian=False, invert=False):
+        # type: (str, bool, bool) -> list
         """
         Returns the coordinates of the fragment. Optionally is direct conversion to cartesian coordinates.
         [['0.01453', '-1.6659', '-0.10966'], [...] ]
@@ -737,7 +737,7 @@ class ParseDB(object):
         """
         try:
             if cartesian:
-                atoms = self.get_atoms(fragment, cartesian=True)
+                atoms = self.get_atoms(fragment, invert=invert, cartesian=True)
             else:
                 atoms = self.get_atoms(fragment)
             coords = []
