@@ -145,14 +145,14 @@ class Afix(object):
         >>> Afix.remove_duplicate_restraints(dbhead, all_restraints)
         <BLANKLINE>
         Already existing restraints were not applied again.
-        ['', '', '']
+        []
 
         >>> all_restraints = ["SADI 0.02 C1 C2 C2 C3 C3 C4", "SADI 0.04 C1 C3 C3 C5", "DFIX 1.45 C1 C2"]
         >>> dbhead = ["SADI C1 C2 C2 C3 C3 C4", "SADI C1 C3 C3 C5", "DFIX C1 C2", "SADI C4 C5 C5 C6"]
         >>> Afix.remove_duplicate_restraints(dbhead, all_restraints)        
         <BLANKLINE>
         Already existing restraints were not applied again.
-        ['', '', '', 'SADI C4 C5 C5 C6']
+        ['SADI C4 C5 C5 C6']
         """
         modified = False
         new_restr = restraints[:]
@@ -171,6 +171,7 @@ class Afix(object):
                       'applied again.'.format(residue_class))
             else:
                 print('\nAlready existing restraints were not applied again.')
+        new_restr = [x for x in new_restr if x]
         return new_restr
 
     @staticmethod
@@ -271,13 +272,11 @@ class Afix(object):
         # No residue:
         else:
             # applies new naming scheme to head:
-            old_atoms = [ i[0] for i in self._dbatoms]
+            old_atoms = [i[0] for i in self._dbatoms]
             self._restraints = rename_restraints_atoms(new_atomnames, old_atoms, self._restraints)
             self._restraints = self.remove_duplicate_restraints(self._restraints, self.collect_all_restraints())
         # decide if restraints to external file or internal:
-        distance_and_other = self.distance_and_other_restraints(self._restraints)
-        distance = distance_and_other[0]
-        other_head = distance_and_other[1]
+        distance, other_head = self.distance_and_other_restraints(self._restraints)
         # External restraints:
         if external_restraints and not self.options.rigid_group:
             # in case of dfix, write restraints to file after fragment fit
