@@ -1141,8 +1141,8 @@ def distance(x1, y1, z1, x2, y2, z2, round_out=False):
     >>> distance(1, 0, 0, 2, 0, 0, 4)
     1.0
     """
-    import math as m
-    d = m.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
+    from math import sqrt
+    d = sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
     if round_out:
         return round(d, round_out)
     else:

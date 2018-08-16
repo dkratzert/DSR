@@ -20,6 +20,7 @@ from dbfile import search_fragment_name, ParseDB
 from constants import width, sep_line, isoatomstr
 from misc import find_line, remove_line, touch, cart_to_frac, frac_to_cart, wrap_headlines, remove_partsymbol, chunks
 from options import OptionsParser
+from rmsd import fit_fragment_rtansform
 from terminalsize import get_terminal_size
 from dsrparse import DSRParser
 from dbfile import ImportGRADE, print_search_results
@@ -324,14 +325,14 @@ class DSR(object):
                 target_coords = chunks(self.options.target_coords, 3)
             else:
                 target_coordinates = afix._find_atoms.get_atomcoordinates(dsrp.target)
-                target_coords = [target_coordinates[remove_partsymbol(key)] for key in dsrp.target]
+                target_coords = [target_coordinates[key] for key in dsrp.target]
             source_atoms = dict(zip(self.gdb.get_atomnames(self.fragment),
                                     self.gdb.get_coordinates(self.fragment, cartesian=True)))
             source_coords = [source_atoms[x] for x in dsrp.source]
             target_coords = [frac_to_cart(x, rle.get_cell()) for x in target_coords]
             #                                    (fragment_atoms, source_atoms, target_atoms)
             from rmsd import fit_fragment
-            fitted_fragment, rmsd = fit_fragment(self.gdb.get_coordinates(self.fragment, cartesian=True),
+            fitted_fragment, rmsd = fit_fragment_rtansform(self.gdb.get_coordinates(self.fragment, cartesian=True),
                                                  source_atoms=source_coords,
                                                  target_atoms=target_coords)
             if rmsd < 0.1:
