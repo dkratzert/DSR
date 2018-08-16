@@ -18,8 +18,9 @@ from datetime import datetime
 from atomhandling import Elem_2_Sfac, rename_restraints_atoms
 from dbfile import search_fragment_name, ParseDB
 from constants import width, sep_line, isoatomstr
-from misc import find_line, remove_line, touch, cart_to_frac, frac_to_cart, wrap_headlines, chunks
+from misc import find_line, remove_line, touch, cart_to_frac, frac_to_cart, wrap_headlines, chunks, coord_to_shx_atom
 from options import OptionsParser
+from rmsd import prealign_molecule, centroid
 from terminalsize import get_terminal_size
 from dsrparse import DSRParser
 from dbfile import ImportGRADE, print_search_results
@@ -320,20 +321,33 @@ class DSR(object):
             afix = Afix(self.reslist, dbatoms, db_atom_types, restraints, dsrp,
                         sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
             if self.options.target_coords:
-                # {'C1': ['1.123', '0.7456', '3.245']}
                 target_coords = chunks(self.options.target_coords, 3)
             else:
+                # {'C1': ['1.123', '0.7456', '3.245']}
                 target_coordinates = afix._find_atoms.get_atomcoordinates(dsrp.target)
                 target_coords = [target_coordinates[key] for key in dsrp.target]
-            source_atoms = dict(zip(self.gdb.get_atomnames(self.fragment),
-                                    self.gdb.get_coordinates(self.fragment, cartesian=True)))
+            atnames = self.gdb.get_atomnames(self.fragment)
+            source_atoms = dict(zip(atnames, self.gdb.get_coordinates(self.fragment, cartesian=True)))
             source_coords = [source_atoms[x] for x in dsrp.source]
             target_coords = [frac_to_cart(x, rle.get_cell()) for x in target_coords]
             #                                    (fragment_atoms, source_atoms, target_atoms)
             from rmsd import fit_fragment
-            fitted_fragment, rmsd = fit_fragment(self.gdb.get_coordinates(self.fragment, cartesian=True),
+            # The source and target atom coordinates are fitted first. Then The complete fragment
+            # is rotated and translated to the target position as calculated before.
+            fragment_coords = self.gdb.get_coordinates(self.fragment, cartesian=True)
+            fitted_fragment, rmsd = fit_fragment(fragment_coords,
                                                  source_atoms=source_coords,
                                                  target_atoms=target_coords)
+            # Moving back to the position of the first atom to have a reference:
+            import numpy as np
+            # I have to make sure that I use the center of the correct atoms from target and source,
+            # otherwise the fragment is shifted
+            # The third atom from the fragment e.g. has to be the third from the fragment to get
+            # the correct centroid:
+            center_difference = centroid(np.array(target_coords)) - \
+                                centroid(np.array([list(fitted_fragment)[atnames.index(dsrp.source[x])] 
+                                                   for x in range(len(source_coords))]))
+            fitted_fragment += center_difference
             if rmsd < 0.1:
                 print('Fragment fit susessful with RMSD of: {:8.3}'.format(rmsd))
             else:
@@ -344,7 +358,7 @@ class DSR(object):
             for at, coord, type in zip(fragment_numberscheme, fitted_fragment, db_atom_types):
                 sfac_num = str(e2s.elem_2_sfac(type))
                 afix_entry.append(isoatomstr.format(at, sfac_num, coord[0], coord[1], coord[2], 
-                                                    float(dsrp.occupancy), 0.04))
+                                                    float(dsrp.occupancy), 0.03))
             afix_entry = "\n".join(afix_entry)
             new_atomnames = list(reversed(fragment_numberscheme))
             same_resi = ''

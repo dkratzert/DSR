@@ -18,6 +18,8 @@ import shutil
 import string
 from math import cos, sqrt, radians, sin
 
+from constants import isoatomstr
+
 alphabet = string.ascii_uppercase
 
 __metaclass__ = type  # use new-style classes
@@ -1147,6 +1149,19 @@ def distance(x1, y1, z1, x2, y2, z2, round_out=False):
         return round(d, round_out)
     else:
         return d
+
+
+def coord_to_shx_atom(coordinates):
+    """
+    Transformes a list of coordinates to a list of shelxl atom strings.
+    """
+    strlist = []
+    sfac_num = 1
+    for num, coord in enumerate(coordinates):
+        at = "AX"+str(num)
+        s = isoatomstr.format(at, sfac_num, coord[0], coord[1], coord[2], 11.0000, 0.03)
+        strlist.append(s)
+    return strlist
 
 
 def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
