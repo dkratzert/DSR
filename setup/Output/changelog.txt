@@ -1,4 +1,5 @@
 Recent changes
+-215    Kabsch fit resulted in wrong translation of the fragment in some cases. This is fixed now.
 -214    Fixed external restraints with Kabsch fit
 -213    Added fragment fit with Kabsch algorithm instead of FRAG/FEND fit. This runs much faster for large structures. 
         This version might be unstable and not all features are suported, but regular fragment fit with or without 
