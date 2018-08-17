@@ -9,7 +9,7 @@ SFAC  C  H  O  F  AL  GA
 UNIT  1  2  3  4  5  6
 LIST 4 ! automatically inserted. Change 6 to 4 for CHECKCIF!!
 
-L.S.  0
+L.S.  10
 PLAN  20
 TEMP -173.18
 BOND $H
