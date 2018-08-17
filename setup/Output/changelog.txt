@@ -1,17 +1,21 @@
 Recent changes
-
+-216    New fit procedure should be stable now. In windows, you need to install the installer 
+        executable once! DSR needs numpy for the faster fit now. Without numpy, the old 
+        fragment fit is used.
 -215    Kabsch fit resulted in wrong translation of the fragment in some cases. This is fixed now.
 -214    Fixed external restraints with Kabsch fit. All feature should work now.
--213    Added fragment fit with Kabsch algorithm instead of FRAG/FEND fit. This runs much faster for large structures. 
-        This version might be unstable and not all features are suported, but regular fragment fit with or without 
-        RESIdues and PARTs work.
+-213    Added fragment fit with Kabsch algorithm instead of FRAG/FEND fit. This runs much faster 
+        for large structures. This version might be unstable and not all features are suported, 
+        but regular fragment fit with or without RESIdues and PARTs work.
 -212    Fixed SFAC with exponential parameters. Teflat fragment added. Added Trifluorbenzene. 
 -211    More fragments: Dimethyl ammonium, tert-Butyl isocyanide, improved replace mode.
--210    Added check for DFIX/DANG if the d value is larger than the sigma (as it should be). DSR now ignores
-        fragments that do not contain atoms. Less output during fragment fit (wR2 and Gof were useless).
-        Fixed line endings in start script. This should fix updates on Unix systems.
--209    Added 4,4'-Di-tert-butyl-2,2'-bipyridine and TEMPO fragments, users manual updated esp. residues
-        chapter, optimized restraints, fixed Acetonitrile restraints (why did nobody noticed this?).
+-210    Added check for DFIX/DANG if the d value is larger than the sigma (as it should be). 
+        DSR now ignores fragments that do not contain atoms. Less output during fragment fit 
+        (wR2 and Gof were useless). Fixed line endings in start script. This should fix 
+        updates on Unix systems.
+-209    Added 4,4'-Di-tert-butyl-2,2'-bipyridine and TEMPO fragments, users manual updated esp. 
+        residues chapter, optimized restraints, fixed Acetonitrile restraints (why did nobody 
+        noticed this?).
 -208    Changed self-update process to be secured by checksums and ssl.
 -207    When using residues, DSR will now introduce a SAME_name 'first atom' > 'last atom'
         to the list of restraints. First/last atom means first and last atom from the
