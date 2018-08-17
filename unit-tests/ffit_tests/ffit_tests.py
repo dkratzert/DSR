@@ -60,7 +60,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         prefix = '.'
         #parameter = '-noffit ' + parameter
         print('{} '.format(nummer) * 10, 'start:')
-        #copy_file('test-data/beispiel/{}.hkl'.format(hkl), 'test-data/beispiel/{}a.hkl'.format(nummer))
+        copy_file('{}.hkl'.format(hkl), '{}a.hkl'.format(nummer))
         copy_file(prefix + '/{}.res'.format(nummer), prefix + '/{}a.res'.format(nummer))
         os.system('{0} {1} {3}/{2}a.res'.format(self.dsr, parameter, nummer, prefix))
         with open(prefix + '/{}a.{}'.format(nummer, ending)) as txt:
@@ -68,7 +68,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         with open(prefix + '/{}-erg.{}'.format(nummer, ending)) as txt2:
             b = txt2.readlines()[limit_start:limit_end]
         if external_file:
-            with open(prefix + './{}.dfix'.format(external_file)) as ext:
+            with open(prefix + '/{}.dfix'.format(external_file)) as ext:
                 c = ext.readlines()
             with open(prefix + '/{}-erg.dfix'.format(external_file)) as ext2:
                 d = ext2.readlines()
@@ -77,11 +77,11 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
             b[line] = ''
         print('{} test:'.format(nummer))
         print("parameter:", parameter)
-        #remove_file('./test-data/beispiel/{}a.hkl'.format(nummer))
-        #remove_file('./test-data/beispiel/{}a.fcf'.format(nummer))
-        #remove_file('./test-data/beispiel/{}.fcf'.format(nummer))
-        #remove_file('./test-data/beispiel/{}.2fcf'.format(nummer))
-        #remove_file('./test-data/beispiel/{}a.lst'.format(nummer))
+        remove_file('{}a.hkl'.format(nummer))
+        remove_file('{}a.fcf'.format(nummer))
+        remove_file('{}.fcf'.format(nummer))
+        remove_file('{}.2fcf'.format(nummer))
+        remove_file('{}a.lst'.format(nummer))
         #a = remove_whitespace(a)
         #b = remove_whitespace(b)
         self.assertEqual(b, a)
@@ -158,7 +158,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
 
         """
         print('8 ' * 10, 'start')
-        system("{} -s tol > search.txt".format(self.dsr))
+        os.system("{} -s tol > search.txt".format(self.dsr))
         with open('search.txt') as txt:
             se = txt.readlines()
         remove_file('./search.txt')
@@ -177,7 +177,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         """
         print('9 ' * 10, 'start')
         print("{} -e tolUene".format(self.dsr))
-        system("{} -e tolUene".format(self.dsr))
+        os.system("{} -e tolUene".format(self.dsr))
         with open('toluene.res') as txt:
             ex = txt.readlines()
         with open('toluene-erg.res') as txt2:
@@ -185,7 +185,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         del ex[1]  # line with the version number
         del ex_erg[1]
         self.assertEqual(ex, ex_erg)
-        misc.remove_file('toluene.res')
+        remove_file('toluene.res')
         print('9 ' * 10, 'ende')
 
     # @unittest.skip(" skipping 10")
@@ -211,7 +211,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         regular dsr run without fit with
         resi cf3 PART 2 occ -31
         """
-        self.dsr_runtest(12, ending='ins', parameter='-n -r', remlines=[])
+        self.dsr_runtest(12, ending='res', parameter='-n -r', remlines=[])
 
     # @unittest.skip(" skipping 13")
     def testrun_run13(self):

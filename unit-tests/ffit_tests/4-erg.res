@@ -75,7 +75,7 @@ REM !2 OCC -31
 
 
 REM The restraints for residue CCF3 are in this file:
-+dsr_CCF3_6_4a_dfx.dfix
++dsr_CCF3_6_4a.dfix
 RESI CCF3 6
 PART 2  -31
 O1    3    0.081989    0.234639   0.402088  -31.00000    0.03000

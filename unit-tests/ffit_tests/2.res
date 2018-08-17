@@ -7,6 +7,7 @@ LATT 1
 SYMM -X,0.5+Y,0.5-Z
 SFAC  C  H  O  F  AL  GA
 UNIT  1  2  3  4  5  6
+ANIS ! automatically inserted
 LIST 4 ! automatically inserted. Change 6 to 4 for CHECKCIF!!
 
 L.S.  8
