@@ -361,8 +361,12 @@ class DSR(object):
             e2s = Elem_2_Sfac(sfac_table)
             for at, coord, type in zip(fragment_numberscheme, fitted_fragment, db_atom_types):
                 sfac_num = str(e2s.elem_2_sfac(type))
+                if dsrp.occupancy:
+                    occ = float(dsrp.occupancy)
+                else:
+                    occ = 11.0
                 afix_entry.append(isoatomstr.format(at, sfac_num, coord[0], coord[1], coord[2], 
-                                                    float(dsrp.occupancy), 0.03))
+                                                    occ, 0.03))
             afix_entry = "\n".join(afix_entry)
             new_atomnames = list(reversed(fragment_numberscheme))
             same_resi = ''
@@ -370,13 +374,13 @@ class DSR(object):
                 restraints = rename_restraints_atoms(new_atomnames, self.gdb.get_atomnames(self.fragment), restraints)
             else:
                 restraints = resi.format_restraints(restraints)
-                same_resi = ["SAME_{} {} > {}".format(resi.get_residue_class, new_atomnames[-1], new_atomnames[0])]
+                same_resi = ["SAME_{} {} > {}\n".format(resi.get_residue_class, new_atomnames[-1], new_atomnames[0])]
             # Adds a "SAME_resiclass firstatom > lastatom" to the afix:
             if not dsrp.dfix and not self.options.rigid_group:
                 restraints += same_resi
             if not options.external_restr:
                 restraints = afix.remove_duplicate_restraints(restraints, afix.collect_all_restraints(),
-                                                          resi.get_residue_class)
+                                                              resi.get_residue_class)
             restraints = wrap_headlines(restraints)
             if self.options.rigid_group:
                 restraints = '\n'
