@@ -682,8 +682,6 @@ class ParseDB(object):
         fragment = fragment.lower()
         try:
             atoms = self.databases[fragment]['atoms']
-            if invert:
-                atoms = invert_atomic_coordinates(atoms)
         except KeyError:
             print('*** Could not find {} in database ***'.format(fragment))
             sys.exit()
@@ -691,8 +689,8 @@ class ParseDB(object):
             cell = self.get_cell(fragment)
             for num, c in enumerate(self.get_coordinates(fragment)):
                 atoms[num][2:5] = frac_to_cart(c, cell)
-            if invert:
-                atoms = invert_atomic_coordinates(atoms)
+        if invert:
+            atoms = invert_atomic_coordinates(atoms)
         return atoms
 
     def get_cell(self, fragment):

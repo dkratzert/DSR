@@ -272,6 +272,7 @@ class DSR(object):
         # line where the dsr command is found in the resfile:
         dsr_line_number = dsrp.dsr_line_number
         if dsrp.cf3_active:
+            self.numpy_installed = False  # Runs SHELXL part for cf3 group addition
             from cf3fit import CF3
             cf3 = CF3(rle, find_atoms, self.reslist, self.fragment, sfac_table,
                       basefilename, dsrp, resi, self.res_file, self.options)
@@ -330,12 +331,14 @@ class DSR(object):
             atnames = self.gdb.get_atomnames(self.fragment)
             source_atoms = dict(zip(atnames, self.gdb.get_coordinates(self.fragment, cartesian=True,
                                                                       invert=self.invert)))
+            # Coordinates only from the source, not the entire fragment:
             source_coords = [source_atoms[x] for x in dsrp.source]
             target_coords = [frac_to_cart(x, rle.get_cell()) for x in target_coords]
             from rmsd import fit_fragment
             # The source and target atom coordinates are fitted first. Then The complete fragment
             # is rotated and translated to the target position as calculated before.
-            fragment_coords = self.gdb.get_coordinates(self.fragment, cartesian=True, invert=self.invert)
+            # parameter cartiesian has to be false here:
+            fragment_coords = self.gdb.get_coordinates(self.fragment, cartesian=False, invert=self.invert)
             fitted_fragment, rmsd = fit_fragment(fragment_coords,
                                                  source_atoms=source_coords,
                                                  target_atoms=target_coords)
@@ -399,7 +402,10 @@ class DSR(object):
                              afix_entry + "\nRESI 0\n"
             if options.external_restr:
                 pname, ext = os.path.splitext(basefilename + '.dfix')
-                dfx_file_name = pname+"_dfx"+ext
+                if dsrp.dfix:
+                    dfx_file_name = pname+"_dfx"+ext
+                else:
+                    dfx_file_name = pname + ext
                 dfx_file_name = afix.write_dbhead_to_file(dfx_file_name, restraints, resi.get_residue_class,
                                                           resi.get_resinumber)
                 if dsrp.resiflag:

@@ -74,7 +74,7 @@ REM REM DSR PUT OC(CF3)3 WITH O1 C1 C2 ON O1_4 C1_4 Q6 PART 2 OCC -31
 
 
 REM The restraints for this moiety are in this file:
-+dsr_9_6a_dfx.dfix
++dsr_1_6a.dfix
 PART 2  -31
 O1A   3    0.082286    0.234803   0.402096  -31.00000    0.03000
 C1A   1    0.033150    0.232540   0.336918  -31.00000    0.03000
