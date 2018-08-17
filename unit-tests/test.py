@@ -101,6 +101,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
             remlines = []
         d = []
         c = []
+        parameter = '-noffit ' + parameter
         print('{} '.format(nummer) * 10, 'start:')
         misc.copy_file('test-data/beispiel/{}.hkl'.format(hkl), 'test-data/beispiel/{}a.hkl'.format(nummer))
         misc.copy_file('test-data/beispiel/{}.res'.format(nummer), 'test-data/beispiel/{}a.res'.format(nummer))
@@ -729,7 +730,7 @@ class removeDublicatesAfixTest(unittest.TestCase):
                                                         self.afix.collect_all_restraints())  # , self.resi.get_resiclass)
         newhead2 = self.afix.remove_duplicate_restraints(self.db_testhead2,
                                                          self.afix.collect_all_restraints())  # , self.resi.get_resiclass)
-        self.assertListEqual(['', '', 'REM test'], newhead)
+        self.assertListEqual(['REM test'], newhead)
         self.assertListEqual(self.db_testhead2, newhead2)
 
 

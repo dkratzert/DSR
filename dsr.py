@@ -159,6 +159,8 @@ class DSR(object):
         try:
             import numpy as np
             self.numpy_installed = True
+            if self.options.noffit:
+                self.numpy_installed = False
         except ImportError:
             print('Numpy not installed. Using slow SHELXL fragment fit.')
         self.main()
