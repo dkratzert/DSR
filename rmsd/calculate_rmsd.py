@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-from math import sqrt
 
-from misc import cart_to_frac, frac_to_cart, distance
+from misc import cart_to_frac, frac_to_cart
 
 __doc__ = \
     """
@@ -285,13 +284,13 @@ def print_coordinates(atoms, V):
 
 def fit_fragment(fragment_atoms, source_atoms, target_atoms):
     """
-    Takes a list of fragment atoms and fits them to the position of target atoms. source_atoms are a fraction 
+    Takes a list of fragment atoms and fits them to the position of target atoms. source_atoms are a fraction
     of the fragment to be fitted on the target_atoms.
 
     Parameters
     ----------
     fragment_atoms: list
-        complete set of atoms of a fragment 
+        complete set of atoms of a fragment
     source_atoms: list
         subsection of fragment atoms
     target_atoms: list

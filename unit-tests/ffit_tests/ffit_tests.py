@@ -285,7 +285,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         rem dsr put CF3 on C22
         (AFIX 130)
         """
-        self.dsr_runtest(21, '-r', hkl=20, remlines=[])
+        self.dsr_runtest(21, '-r', hkl=20, remlines=[27])
 
     # @unittest.skip(" skipping 22")
     def testrun_run22(self):

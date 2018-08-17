@@ -11,23 +11,24 @@
 # ----------------------------------------------------------------------------
 #
 from __future__ import print_function
-import sys
+
 import os
+import sys
 from datetime import datetime
 
+from afix import Afix, add_residue_to_dfix
 from atomhandling import Elem_2_Sfac, rename_restraints_atoms
-from dbfile import search_fragment_name, ParseDB
 from constants import width, sep_line, isoatomstr
+from dbfile import ImportGRADE, print_search_results
+from dbfile import search_fragment_name, ParseDB
+from dsrparse import DSRParser
 from misc import find_line, remove_line, touch, cart_to_frac, frac_to_cart, wrap_headlines, chunks
 from options import OptionsParser
-from terminalsize import get_terminal_size
-from dsrparse import DSRParser
-from dbfile import ImportGRADE, print_search_results
-from resi import Resi, remove_resi
-from restraints import ListFile, Lst_Deviations, Restraints
-from afix import Afix, add_residue_to_dfix
 from refine import ShelxlRefine
 from resfile import ResList, filename_wo_ending, ResListEdit
+from resi import Resi, remove_resi
+from restraints import ListFile, Lst_Deviations, Restraints
+from terminalsize import get_terminal_size
 
 VERSION = '216'
 # dont forget to change version in Innoscript file, spec file and deb file.
@@ -350,9 +351,9 @@ class DSR(object):
             # The third atom from the fragment e.g. has to be the third from the fragment to get
             # the correct centroid:
             center_difference = centroid(np.array(target_coords)) - \
-                                centroid(np.array([list(fitted_fragment)[atnames.index(dsrp.source[x])] 
+                                centroid(np.array([list(fitted_fragment)[atnames.index(dsrp.source[x])]
                                                    for x in range(len(source_coords))]))
-            # finishing shift to correct centroid: 
+            # finishing shift to correct centroid:
             fitted_fragment += center_difference
             # Or even lower than 0.1?
             if rmsd < 0.1:
@@ -362,13 +363,13 @@ class DSR(object):
             fitted_fragment = [cart_to_frac(x, rle.get_cell()) for x in fitted_fragment]
             afix_entry = []
             e2s = Elem_2_Sfac(sfac_table)
-            for at, coord, type in zip(fragment_numberscheme, fitted_fragment, db_atom_types):
-                sfac_num = str(e2s.elem_2_sfac(type))
+            for at, coord, atype in zip(fragment_numberscheme, fitted_fragment, db_atom_types):
+                sfac_num = str(e2s.elem_2_sfac(atype))
                 if dsrp.occupancy:
                     occ = float(dsrp.occupancy)
                 else:
                     occ = 11.0
-                afix_entry.append(isoatomstr.format(at, sfac_num, coord[0], coord[1], coord[2], 
+                afix_entry.append(isoatomstr.format(at, sfac_num, coord[0], coord[1], coord[2],
                                                     occ, 0.03))
             afix_entry = "\n".join(afix_entry)
             new_atomnames = list(reversed(fragment_numberscheme))
@@ -392,7 +393,7 @@ class DSR(object):
                 if dsrp.resiflag:
                     restraints = add_residue_to_dfix(dfix_head, resi.get_resinumber) + ['\n'] + same_resi
                 else:
-                    restraints = rename_restraints_atoms(new_atomnames, 
+                    restraints = rename_restraints_atoms(new_atomnames,
                                                          [x[0] for x in self.gdb.get_atomnames(self.fragment)],
                                                          dfix_head)
             if dsrp.part:
