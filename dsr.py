@@ -415,9 +415,9 @@ class DSR(object):
                 else:
                     restraints = '\nREM The restraints for this moiety are in this file:\n+{}\n' \
                         .format(dfx_file_name)
-                afix_entry = ''.join(restraints) + afix_entry + '\n'
+                afix_entry = ''.join(restraints) + afix_entry
             else:
-                afix_entry = ''.join(restraints) + afix_entry + '\n'
+                afix_entry = ''.join(restraints) + afix_entry
             if self.options.rigid_group:
                 afix_entry += 'AFIX 0\n'
         else:  # SHELXL fit
@@ -445,7 +445,8 @@ class DSR(object):
                     break
             except IndexError:
                 continue
-        self.reslist[dsr_line_number] = self.reslist[dsr_line_number] + '\n' + '\n'.join(source) + '\n' + afix_entry
+        self.reslist[dsr_line_number] = self.reslist[dsr_line_number] + '\n' + '\n'.join(source) + '\n' + afix_entry \
+                                        + '\n'
         # write to file:
         if self.numpy_installed:
             self.rl.write_resfile(self.reslist, '.res')
