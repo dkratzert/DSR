@@ -387,7 +387,7 @@ class DSR(object):
                                                               resi.get_residue_class)
             restraints = wrap_headlines(restraints)
             if self.options.rigid_group:
-                restraints = '\n'
+                restraints = 'AFIX 9\n'
             dfx_file_name = ''
             if dsrp.dfix:
                 if dsrp.resiflag:
@@ -418,6 +418,8 @@ class DSR(object):
                 afix_entry = ''.join(restraints) + afix_entry + '\n'
             else:
                 afix_entry = ''.join(restraints) + afix_entry + '\n'
+            if self.options.rigid_group:
+                afix_entry += 'AFIX 0\n'
         else:  # SHELXL fit
             afix = Afix(self.reslist, dbatoms, db_atom_types, restraints, dsrp,
                         sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
