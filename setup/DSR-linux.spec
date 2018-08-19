@@ -41,6 +41,10 @@ mkdir -p %buildroot%_datadir/%name
 mkdir -p %buildroot%_datadir/%name/manuals
 mkdir -p %buildroot%_datadir/%name/example
 mkdir -p %buildroot%_datadir/%name/mpmath
+mkdir -p %buildroot%_datadir/%name/mpmath/calculus
+mkdir -p %buildroot%_datadir/%name/mpmath/functions
+mkdir -p %buildroot%_datadir/%name/mpmath/libmp
+mkdir -p %buildroot%_datadir/%name/mpmath/matrices
 mkdir -p %buildroot%_datadir/%name/rmsd
 mkdir -p %buildroot%_datadir/%name/networkx
 mkdir -p %buildroot%_datadir/%name/networkx/external/decorator/decorator3
@@ -68,17 +72,16 @@ mkdir -p %buildroot%_datadir/%name/networkx/readwrite/tests
 mkdir -p %buildroot%_datadir/%name/networkx/classes/tests
 mkdir -p %buildroot%_datadir/%name/networkx/utils/tests
 mkdir -p %buildroot%_datadir/%name/networkx/drawing/tests
-mkdir -p %buildroot%_datadir/%name/mpmath/calculus
-mkdir -p %buildroot%_datadir/%name/mpmath/functions
-mkdir -p %buildroot%_datadir/%name/mpmath/libmp
-mkdir -p %buildroot%_datadir/%name/mpmath/matrices
+cp -r networkx %buildroot%_datadir/%name/networkx
+cp -r rmsd %buildroot%_datadir/%name/rmsd
+cp -r mpmath %buildroot%_datadir/%name/mpmath
 
 install -m 755 %name.sh %buildroot%_bindir/dsr
 install -m 644 *.py %buildroot%_datadir/%name
 install -m 644 dsr_db.txt %buildroot%_datadir/%name
 install -m 644 manuals/DSR-manual.pdf %buildroot%_datadir/%name/manuals
 install -m 644 example/* %buildroot%_datadir/%name/example
-install -m 644 mpmath/* %buildroot%_datadir/%name/mpmath
+install -mr 644 mpmath/* %buildroot%_datadir/%name/mpmath
 install -m 644 rmsd/* %buildroot%_datadir/%name/rmsd
 install -m 644 networkx/* %buildroot%_datadir/%name/networkx
 
