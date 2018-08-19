@@ -72,9 +72,9 @@ mkdir -p %buildroot%_datadir/%name/networkx/readwrite/tests
 mkdir -p %buildroot%_datadir/%name/networkx/classes/tests
 mkdir -p %buildroot%_datadir/%name/networkx/utils/tests
 mkdir -p %buildroot%_datadir/%name/networkx/drawing/tests
-cp -r networkx %buildroot%_datadir/%name/networkx
-cp -r rmsd %buildroot%_datadir/%name/rmsd
-cp -r mpmath %buildroot%_datadir/%name/mpmath
+cp -R networkx %buildroot%_datadir/%name/networkx
+cp -R rmsd %buildroot%_datadir/%name/rmsd
+cp -R mpmath %buildroot%_datadir/%name/mpmath
 
 install -m 755 %name.sh %buildroot%_bindir/dsr
 install -m 644 *.py %buildroot%_datadir/%name
