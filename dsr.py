@@ -30,13 +30,15 @@ from resi import Resi, remove_resi
 from restraints import ListFile, Lst_Deviations, Restraints
 from terminalsize import get_terminal_size
 
-VERSION = '216'
+VERSION = '217'
 # dont forget to change version in Innoscript file, spec file and deb file.
 minuse = ((width // 2) - 7) * '-'
 program_name = '\n{} D S R - v{} {}'.format(minuse, VERSION, minuse)
 
 # TODO and ideas:
 """
+- Add backup of res file for fast fit.
+
 - Split mode
   - calc principal axis for each ellipsoid
   - generate atoms
