@@ -7,11 +7,8 @@ URL: https://www.xs3.uni-freiburg.de/research/dsr
 License: Beerware
 Group: Sciences/Chemistry
 Source: %name-%version.tar.gz
-Source1: changelog.txt
 
-%add_python_compile_include %_datadir/%name
-
-PreReq: xclip %py_requires numpy
+PreReq: xclip %py_requires python2-numpy
 
 %description
 This program consists of a text database with fragments of molecules and
@@ -24,7 +21,7 @@ Development is on GitHub: https://github.com/dkratzert/dsr
 
 %prep
 %setup -q
-cp -a %SOURCE1 .
+
 
 %build
 cat > %name.sh << EOF
@@ -46,19 +43,55 @@ mkdir -p %buildroot%_datadir/%name/example
 mkdir -p %buildroot%_datadir/%name/mpmath
 mkdir -p %buildroot%_datadir/%name/rmsd
 mkdir -p %buildroot%_datadir/%name/networkx
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/external/decorator/decorator3
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/external/decorator/decorator2
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/algorithms/assortativity/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/algorithms/link_analysis/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/algorithms/shortest_paths/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/algorithms/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/algorithms/approximation/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/algorithms/chordal/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/algorithms/components/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/algorithms/centrality/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/algorithms/flow/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/algorithms/community/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/algorithms/connectivity/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/algorithms/bipartite/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/algorithms/traversal/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/algorithms/operators/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/algorithms/isomorphism/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/generators/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/linalg/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/readwrite/json_graph/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/readwrite/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/classes/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/utils/tests
+mkdir -p %{buildroot}%{prefix}/DSR/networkx/drawing/tests
+
+mkdir -p %{buildroot}%{prefix}/DSR/mpmath/calculus
+mkdir -p %{buildroot}%{prefix}/DSR/mpmath/functions
+mkdir -p %{buildroot}%{prefix}/DSR/mpmath/libmp
+mkdir -p %{buildroot}%{prefix}/DSR/mpmath/matrices
 
 install -m 755 %name.sh %buildroot%_bindir/dsr
 install -m 644 *.py %buildroot%_datadir/%name
 install -m 644 dsr_db.txt %buildroot%_datadir/%name
 install -m 644 manuals/DSR-manual.pdf %buildroot%_datadir/%name/manuals
 install -m 644 example/* %buildroot%_datadir/%name/example
+install -m 644 mpmath/* %buildroot%_datadir/%name/mpmath
+install -m 644 rmsd/* %buildroot%_datadir/%name/rmsd
+install -m 644 networkx/* %buildroot%_datadir/%name/networkx
 
 %files
-%doc README changelog.txt
+%doc README
 %_bindir/dsr
 %_datadir/%name
+%_datadir/rmsd/*
+%_datadir/mpmath/*
+%_datadir/networkx/*
 
 %changelog
-* Aug 19 2018 Daniel Kratzert
+* Sun Aug 19 2018 Daniel Kratzert
 * Thu Jan 04 2018 Denis G. Samsonenko <ogion@altlinux.org> 205-alt1
 - initial build for ALT
