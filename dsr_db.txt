@@ -48,7 +48,25 @@
 #   in the SHELXL file automatically.
 ########################################################################################
 
-
+<furan>
+rem Name: Furan, Furfuran, Oxole, C4H4O
+rem Src: CCDC FURANE10
+RESI FURA
+RIGU O1 > C4
+SIMU O1 > C4
+SADI O1 C1 O1 C4
+SADI C1 C2 C2 C3 C3 C4
+SADI 0.04 O1 C3 O1 C2
+SADI 0.04 C1 C3 C2 C4
+SADI 0.04 C1 C4
+FLAT O1 > C4
+FRAG 17 1 1 1 90 90 90
+O1    8     -0.45290   -0.45290    0.00000
+C1    6     -0.40060    0.65720    0.79860
+C2    6      0.68000    1.36730    0.52090
+C3    6      1.36730    0.68000   -0.52090
+C4    6      0.65720   -0.40060   -0.79860
+</furan>
 
 <teflat>
 rem Name: Pentafluoroorthotellurate, Perfluorotelluroxide Anion, OTeF5-
