@@ -92,7 +92,7 @@ class ResListEdit():
         self._reslist = reslist
         self._find_atoms = find_atoms
         self.fvarlines = self.find_fvarlines()
-    
+
     def get_cell(self):
         """
         returns cell parameters of the res file
@@ -236,7 +236,7 @@ class ResListEdit():
         occupancynumber = occupancynumber.strip('-')
         # how many numbers do we have?:
         # the occupancynumber is split in the fvar part and the occupancy part:
-        num = occupancynumber.split('.')   
+        num = occupancynumber.split('.')
         fvar = int(num[0])//10       # e.g. 20.5 is fvar 2 and occupancy 0.5
         if fvar == 0:
             fvar = 1

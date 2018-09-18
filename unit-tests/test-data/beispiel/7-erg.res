@@ -313,8 +313,9 @@ HKLF 4
 
 
 REM  p21c in P2(1)/c
-REM R1 =  0.1450 for    7085 Fo > 4sig(Fo)  and  0.1895 for all   10786 data
-REM    840 parameters refined using   5905 restraints
+REM wR2 = 0.4225, GooF = S = 4.588, Restrained GooF = 3.891 for all data
+REM R1 = 0.1450 for 7085 Fo > 4sig(Fo) and 0.1895 for all 10786 data
+REM 840 parameters refined using 5905 restraints
 
 END  
      

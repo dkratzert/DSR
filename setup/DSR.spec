@@ -1,7 +1,6 @@
 Summary: DSR - A program for modelling of disordered solvents with SHELXL
 Name: DSR
-Version: 205
-Packager: dkratzert@gmx.de
+Version: 217
 Release: 0
 BuildArch: noarch
 URL: https://www.xs3.uni-freiburg.de/research/dsr
@@ -12,7 +11,7 @@ Source1: changelog.txt
 
 %add_python_compile_include %_datadir/%name
 
-PreReq: xclip %py_requires
+PreReq: xclip %py_requires numpy
 
 %description
 This program consists of a text database with fragments of molecules and
@@ -44,16 +43,15 @@ mkdir -p %buildroot%_bindir
 mkdir -p %buildroot%_datadir/%name
 mkdir -p %buildroot%_datadir/%name/manuals
 mkdir -p %buildroot%_datadir/%name/example
-mkdir -p %buildroot%_datadir/%name/networkx
 mkdir -p %buildroot%_datadir/%name/mpmath
+mkdir -p %buildroot%_datadir/%name/rmsd
+mkdir -p %buildroot%_datadir/%name/networkx
 
 install -m 755 %name.sh %buildroot%_bindir/dsr
 install -m 644 *.py %buildroot%_datadir/%name
 install -m 644 dsr_db.txt %buildroot%_datadir/%name
 install -m 644 manuals/DSR-manual.pdf %buildroot%_datadir/%name/manuals
 install -m 644 example/* %buildroot%_datadir/%name/example
-install -m 644 mpmath/* %buildroot%_datadir/%name/mpmath
-install -m 644 networkx/* %buildroot%_datadir/%name/networkx
 
 %files
 %doc README changelog.txt
@@ -61,7 +59,6 @@ install -m 644 networkx/* %buildroot%_datadir/%name/networkx
 %_datadir/%name
 
 %changelog
-* Feb 10 2018 Daniel Kratzert
-- Changed for DSR distribution. Thanks to Denis Samsonenko! My spec was really bad.
+* Aug 19 2018 Daniel Kratzert
 * Thu Jan 04 2018 Denis G. Samsonenko <ogion@altlinux.org> 205-alt1
 - initial build for ALT
