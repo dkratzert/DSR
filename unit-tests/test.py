@@ -287,7 +287,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         dsr -r
         REM  dsr put oc(CF3)3 with o1 c1 c2 C3 on O1_4 C1_4 Q6 Q7 RESI
         """
-        self.dsr_runtest(16, '-r', remlines=[309, 310])
+        self.dsr_runtest(16, '-r', remlines=[308, 309, 310])
 
     # @unittest.skip(" skipping 17")
     def testrun_run17(self):
