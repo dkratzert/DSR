@@ -82,6 +82,8 @@ class OptionsParser():
                                  help="do not refine after fragment transfer", default=False)
         self.parser.add_argument("-target", dest="target", nargs='+', type=float,
                                  help=SUPPRESS, default=False)
+        self.parser.add_argument("-noffit", dest="noffit", action='store_true', default=False,
+                                 help="Use SHELXL for fragment fit. Do not use Kabsch fit.")
         self._options = self.parser.parse_args()
 
     def error(self):
@@ -147,6 +149,10 @@ class OptionsParser():
     @property
     def selfupdate(self):
         return self._options.selfupdate
+
+    @property
+    def noffit(self):
+        return self._options.noffit
 
     @property
     def head_for_gui(self):
@@ -215,12 +221,13 @@ class OptionsParser():
     def all_options(self):
         return self._options
 
-
+    def __repr__(self):
+        return self._options.__str__()
 
 
 if __name__ == '__main__':
-    optparse = OptionsParser()
-    print(optparse.res_file)
+    optparse = OptionsParser(200)
+    print(optparse)
     optparse.parser.print_help()
 
 

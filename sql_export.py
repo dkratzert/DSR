@@ -172,7 +172,7 @@ def export_database():
         Name = gl.get_fragment_name(fragment)
         print("Exporting {}: {}: {}".format(fid, fragment, Name))
         head = db[fragment]['restraints']
-        name = ' '.join(db[fragment]['name'])
+        name = db[fragment]['name']
         # formula = db.get_sum_formula(fragment)
         reference = gl.get_src(fragment)
         resiclass = gl.get_resi(fragment)

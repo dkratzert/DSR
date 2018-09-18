@@ -101,8 +101,9 @@ HKLF 4
 
 
 REM  Pbcn in Pbcn
-REM R1 =  0.7091 for    4117 Fo > 4sig(Fo)  and  0.7522 for all    5655 data
-REM    216 parameters refined using     42 restraints
+REM wR2 = 0.5254, GooF = S = 3.098, Restrained GooF = 3.092 for all data
+REM R1 = 0.3525 for 7495 Fo > 4sig(Fo) and 0.3686 for all 9596 data
+REM 216 parameters refined using 42 restraints
 
 END  
      

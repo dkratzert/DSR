@@ -50,7 +50,8 @@ files = [
     "example/p21n_cf3.hkl",
     "example/p21n_cf3.res",
     "networkx",
-    "mpmath"
+    "mpmath",
+    "rmsd"
 ]
 
 
@@ -102,14 +103,16 @@ def dos2unix(filename):
     >>> dos2unix('./profiling.bat')
     """
     if is_binary(filename):
+        print('Binary file {} ignored.'.format(filename))
         return
     if sys.version_info[0] > 2:
-        fileContents = open(filename, "r").read()
-        f = open(filename, "w")
-        f.write(fileContents)
+        file_contents = '\n'.join(open(filename, mode="r", newline='').read().splitlines(keepends=False))
+        #file_contents = open(filename, mode="r").read()  # Does not work
+        f = open(filename, "w", newline='\n')
+        f.write(file_contents)
         f.close()
     else:
-        text = open(filename, 'rb').read().replace('\r\n', '\n')
+        text = open(filename, 'rb').read().replace(b'\r\n', b'\n').replace(b'\r', b'\n')
         open(filename, 'wb').write(text)
 
 

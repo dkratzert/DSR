@@ -16,7 +16,6 @@ import re
 import sys
 import tarfile
 from copy import deepcopy
-from os.path import expanduser
 from pprint import pprint
 
 from atomhandling import get_atomtypes
@@ -25,7 +24,6 @@ from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
 from misc import atomic_distance, nalimov_test, std_dev, median, pairwise, \
     unwrap_head_lines, dice_coefficient2, frac_to_cart
 
-atreg = re.compile(atomregex)
 not_existing_error = '*** Fragment "{}" not found in database ***'
 
 
@@ -187,8 +185,8 @@ class ParseDB(object):
 
         >>> dbpath = os.path.abspath('../dsr_db.txt')
         >>> db = ParseDB(dbpath)
-        >>> db.parse(dbpath, 'dsr_db')['water'] # doctest: +NORMALIZE_WHITESPACE
-        {'startline': 2403,
+        >>> db.parse(dbpath, 'dsr_db')['water'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+        {'startline': ...,
         'name': 'Water, H2O',
         'comments': [],
         'atoms': [['O1', 4, 0.0, 0.0, 0.0],
@@ -199,7 +197,7 @@ class ParseDB(object):
         'resi': 'H2O',
         'restraints': ['DFIX 0.9584 0.001 O1 H1 O1 H2',
                        'DFIX 1.5150 0.001 H1 H2'],
-        'endline': 2413,
+        'endline': ...,
         'dbname': 'dsr_db'}
         """
         frag_tag = ''
@@ -221,10 +219,6 @@ class ParseDB(object):
                         {'endline'  : num + 1,
                          'startline': startnum + 1})
                 db = self.parse_fraglines(frag_tag, fraglines, db)
-                if not db[frag_tag]['atoms']:
-                    print('*** No atoms found in database entry {} line {} of {}.txt***'.format(frag_tag, num + 1,
-                                                                                                dbname))
-                    sys.exit()
                 fraglines = []
             # start tag was found, appending lines to fragment list
             if starttag:
@@ -249,12 +243,12 @@ class ParseDB(object):
         return db
 
     @staticmethod
-    def parse_fraglines(fragname, fraglines, db):
+    def parse_fraglines(fragname_tag, fraglines, db):
         # type: (str, list, dict) -> dict
         """
         Fills the database dictionary with fragment data.
         """
-        fragname = fragname.lower()
+        fragname_tag = fragname_tag.lower()
         headlist = []
         comments = []
         residue = ''
@@ -267,7 +261,7 @@ class ParseDB(object):
         srcregex = re.compile(r'REM\s+(SRC:|SOURCE:)', re.IGNORECASE)
         # devide atoms and the rest:
         for num, aline in enumerate(fraglines):
-            if atreg.match(aline):  # search atoms
+            if atomregex.match(aline):  # search atoms
                 atline = aline.split()[:5]  # convert to list and use only first 5 columns
                 if atline[0] not in SHX_CARDS:  # exclude all non-atom cards
                     coords = []
@@ -276,7 +270,7 @@ class ParseDB(object):
                         atline[1] = int(atline[1])
                     except ValueError:
                         print("*** Invalid atomic coordinates in line {} of {}.txt (Fragment: {}) ***"
-                              .format(db[fragname]['startline'] + num + 1, db[fragname]['dbname'], fragname))
+                              .format(db[fragname_tag]['startline'] + num + 1, db[fragname_tag]['dbname'], fragname_tag))
                         sys.exit()
                     atline[2:] = coords
                     atoms.append(atline)
@@ -298,8 +292,8 @@ class ParseDB(object):
                     continue
                 comments.append(line)
                 continue
-            com = line[:4].upper()
-            if com and com in SHX_CARDS:
+            command = line[:4].upper().strip()
+            if command and command in SHX_CARDS:
                 if line[:4].upper() == 'RESI':  # faster than startswith()?
                     resiline = line.split()
                     for n, i in enumerate(resiline):
@@ -309,28 +303,40 @@ class ParseDB(object):
                         residue = resiline[1].upper()
                         continue
                     except IndexError:
-                        print('*** Invalid residue definition in database entry {}. ***'.format(fragname))
+                        print('*** Invalid residue definition in database entry {}. ***'.format(fragname_tag))
                         sys.exit()
                 # collect the unit cell of the fragment:
                 if line[:4].upper().startswith('FRAG'):
                     try:
                         cell = [float(x) for x in line.split()[2:8]]
                     except (ValueError, IndexError):
-                        print('*** Invalid unit cell found in database entry {}. ***'.format(fragname))
+                        print('*** Invalid unit cell found in database entry {}. ***'.format(fragname_tag))
                         sys.exit()
                     continue
                 # these must be restraints:
                 if line[:4] in RESTRAINT_CARDS:
                     headlist.append(line)
-            elif com:
+            elif command:
                 print('*** Bad line {} in database entry "{}" found! ({}.txt) ***'
-                      .format(num + db[fragname]['startline'] + 1, fragname, db[fragname]['dbname']))
+                      .format(num + db[fragname_tag]['startline'] + 1, fragname_tag, db[fragname_tag]['dbname']))
                 print(line)
         if not cell:
             print('*** Error. No cell parameters or malformed cell found in the database entry ' \
-                  'of "{}" ***'.format(fragname))
+                  'of "{}" ***'.format(fragname_tag))
             sys.exit()
-        db[fragname].update({
+        if not name:
+            # This happens if no name is given or "REM Name:" has errors (The name is explicitely not mandatory!).
+            name = fragname_tag
+        if not db:
+            print('*** No database found! ***\n')
+            sys.exit()
+        if not atoms:
+            # Can not print this out, because shelXle GUI will fail if text is printed.
+            #print('*** No atoms found in database entry {} line {} of {}.txt***'.format(fragname_tag,
+            #                                    db[fragname_tag]['startline'] + 1, db[fragname_tag]['dbname']))
+            del db[fragname_tag]
+            return db
+        db[fragname_tag].update({
             'restraints': headlist,  # header with just the restraints
             'resi'      : residue,  # the residue class
             'cell'      : cell,  # FRAG ...
@@ -338,9 +344,6 @@ class ParseDB(object):
             'comments'  : comments,  # the comment line
             'source'    : source,
             'name'      : name})
-        if not db:
-            print('*** No database found! ***\n')
-            sys.exit()
         return db
 
     def __getitem__(self, fragment):
@@ -359,7 +362,6 @@ class ParseDB(object):
         """
         # return iter(self.databases.keys()) #python2
         return iter(list(self.databases.keys()))
-
 
     def list_fragments(self):
         # type: () -> list
@@ -479,8 +481,8 @@ class ParseDB(object):
             print('*** Residue in the header of database entry "{}" ({}) missing! Check your Database! ***' \
                   .format(fragment, dbentry['name']))
         if not dbentry['atoms']:
-            print('*** Database entry of "{}" in line {} of "{}.txt" is corrupt. '
-                  'No atoms found! ***'.format(fragment, dbentry['startline'] + 1, dbentry['dbname']))
+            print('*** No atoms found in database entry {} line {} of {}.txt***'.format(fragment,
+                                                                dbentry['startline'] + 1, dbentry['dbname']))
             print('*** Have you really followed the syntax? ***')
             sys.exit()
         if not dbentry['endline']:
@@ -537,13 +539,30 @@ class ParseDB(object):
         restraint_atoms_list = set([])
         for line in self.get_restraints(fragment):
             for i in line.split():
-                if i in SHX_CARDS:
-                    continue
+                # Todo: resolve ranges:
                 if i in ('>', '<'):
                     continue
                 try:
-                    float(i)
+                    # Test if first parameter is a distance or a standard deviation:
+                    if i in ['DFIX', 'DANG']:
+                        #print('####')
+                        if len(line.split()) > 1:  # there is more than just DFIX
+                            # Test if this is correct: DFIX d s[0.02] atom pairs (d should be greater s)
+                            if float(line.split()[1]) < float(line.split()[2]):
+                                print('\n*** Sigma > d in DFIX/DANG of "{}: {}" '
+                                      'in database {}. ***'
+                                      .format(fragment, self.get_fragment_name(fragment), self.get_db_name(fragment)))
+                        else:
+                            print('\n*** Incomplete DFIX/DANG in restraints of "{}: {}" in database {}. ***'
+                                  .format(fragment, self.get_fragment_name(fragment), self.get_db_name(fragment)))
+                    #if i in SHX_CARDS:
+                    #    continue
+                    else:
+                        # just test if there is not a number:
+                        float(i)
                 except ValueError:
+                    if i in SHX_CARDS:
+                        continue
                     restraint_atoms_list.add(i)
         for atom in restraint_atoms_list:
             if atom.upper() not in atoms:
@@ -663,8 +682,6 @@ class ParseDB(object):
         fragment = fragment.lower()
         try:
             atoms = self.databases[fragment]['atoms']
-            if invert:
-                atoms = invert_atomic_coordinates(atoms)
         except KeyError:
             print('*** Could not find {} in database ***'.format(fragment))
             sys.exit()
@@ -672,6 +689,8 @@ class ParseDB(object):
             cell = self.get_cell(fragment)
             for num, c in enumerate(self.get_coordinates(fragment)):
                 atoms[num][2:5] = frac_to_cart(c, cell)
+        if invert:
+            atoms = invert_atomic_coordinates(atoms)
         return atoms
 
     def get_cell(self, fragment):
@@ -707,8 +726,8 @@ class ParseDB(object):
             print('Could not find startline of Fragment {}'.format(fragment))
             return 0
 
-    def get_coordinates(self, fragment, cartesian=False):
-        # type: (str, bool) -> list
+    def get_coordinates(self, fragment, cartesian=False, invert=False):
+        # type: (str, bool, bool) -> list
         """
         Returns the coordinates of the fragment. Optionally is direct conversion to cartesian coordinates.
         [['0.01453', '-1.6659', '-0.10966'], [...] ]
@@ -717,13 +736,8 @@ class ParseDB(object):
         :return:
         """
         try:
-            if cartesian:
-                atoms = self.get_atoms(fragment, cartesian=True)
-            else:
-                atoms = self.get_atoms(fragment)
-            coords = []
-            for i in atoms:
-                coords.append(i[2:5])
+            atoms = self.get_atoms(fragment, invert=invert, cartesian=cartesian)
+            coords = [i[2:5] for i in atoms]
         except KeyError:
             print(not_existing_error.format(fragment))
             sys.exit()
@@ -734,14 +748,6 @@ class ParseDB(object):
         """
         returns the header of the dbentry of fragment.
         This header does not include comments, only the restraints.
-
-        Parameters
-        ----------
-        fragment : str
-
-        Returns
-        ----------
-        list
         """
         fragment = fragment.lower()
         try:
@@ -827,7 +833,7 @@ class ImportGRADE():
         self.el = Element()
         self.invert = invert
         self._db = db
-        self._db_dir = expanduser("~")
+        self._db_dir = os.path.expanduser("~")
         self._db_tags = self._db.get_fragment_tags()
         self._db = self._db.databases
         gradefiles = self.get_gradefiles(grade_tar_file)

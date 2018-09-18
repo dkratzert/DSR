@@ -18,6 +18,8 @@ import shutil
 import string
 from math import cos, sqrt, radians, sin
 
+from constants import isoatomstr
+
 alphabet = string.ascii_uppercase
 
 __metaclass__ = type  # use new-style classes
@@ -585,14 +587,14 @@ def unwrap_head_lines(headlines):
         tmp = tmp + ' ' + line
     line = tmp.split()
     for n, i in enumerate(line):
-        if i[:4] in constants.SHX_CARDS:
+        if i[:4].upper() in constants.SHX_CARDS:
             line[n] = '\n' + line[n]
     new_head = ' '.join(line).strip().split('\n')
     new_head = [i.rstrip(' ') for i in new_head]
     return new_head
 
 
-def which(name, flags=os.X_OK, exts=['.exe', '.EXE', '.bat']):
+def which(name, flags=os.X_OK, exts=None):
     """
     Search PATH for executable files with the given name.
 
@@ -601,6 +603,8 @@ def which(name, flags=os.X_OK, exts=['.exe', '.EXE', '.bat']):
     #>>> which('dsr.bat') # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF +ELLIPSIS
     ['d:\\\Programme\\\DSR\\\dsr.bat']
     """
+    if exts is None:
+        exts = ['.exe', '.EXE', '.bat']
     result = []
     # exts = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))
     path = os.getenv('PATH', None)
@@ -691,33 +695,43 @@ def shift(seq, n):
     return seq[n:] + seq[:n]
 
 
-def atomic_distance(p1, p2, cell):
+def atomic_distance(p1, p2, cell, shortest_dist=False):
     """
     p1 and p2 are x, y , z coordinates as list ['x', 'y', 'z']
     cell are the cell parameters as list: ['a', 'b', 'c', 'alpha', 'beta', 'gamma']
-    returns the distance between the two points.
+
+    Returns the distance between the two points (Atoms). If shortest_dist is True, the
+    shortest distance ignoring translation is computed.
 
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     >>> coord1 = (-0.186843,   0.282708,   0.526803)
     >>> coord2 = (-0.155278,   0.264593,   0.600644)
     >>> atomic_distance(coord1, coord2, cell)
     1.5729229943265979
+    >>> cell = [14.0452, 14.0452, 12.2008, 90.000, 90.000, 90.000]
+    >>> atomic_distance([-0.184235, 0.955143, -0.181577], [0.437437, 1.162938, 0.182932], cell)
+    10.224259725884533
+    >>> atomic_distance([0.455143, 1.184235, 0.181577], [0.437437, 1.162938, 0.182932], cell, shortest_dist=True)
+    0.38934604708396064
     """
     a, b, c = cell[:3]
     al = radians(cell[3])
     be = radians(cell[4])
     ga = radians(cell[5])
-    x1, y1, z1 = p1
-    x2, y2, z2 = p2
-    dx = (x1 - x2)
-    dy = (y1 - y2)
-    dz = (z1 - z2)
-    dsq = (a * dx) ** 2 + \
-          (b * dy) ** 2 + \
-          (c * dz) ** 2 + \
-          2 * b * c * cos(al) * dy * dz + \
-          2 * dx * dz * a * c * cos(be) + \
-          2 * dx * dy * a * b * cos(ga)
+    if shortest_dist:
+        x1, y1, z1 = [x + 99.5 for x in p1]
+        x2, y2, z2 = p2
+        dx = (x1 - x2) % 1 - 0.5
+        dy = (y1 - y2) % 1 - 0.5
+        dz = (z1 - z2) % 1 - 0.5
+    else:
+        x1, y1, z1 = p1
+        x2, y2, z2 = p2
+        dx = (x1 - x2)
+        dy = (y1 - y2)
+        dz = (z1 - z2)
+    dsq = (a * dx) ** 2 + (b * dy) ** 2 + (c * dz) ** 2 + 2 * b * c * cos(al) * dy * dz + \
+          2 * dx * dz * a * c * cos(be) + 2 * dx * dy * a * b * cos(ga)
     return sqrt(dsq)
 
 
@@ -730,7 +744,7 @@ def frac_to_cart(frac_coord, cell):
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     >>> coord1 = (-0.186843,   0.282708,   0.526803)
     >>> print(frac_to_cart(coord1, cell))
-    (-2.741505423999065, 5.909586678000002, 10.775200700893734)
+    [-2.741505423999065, 5.909586678000002, 10.775200700893734]
     >>> A = A(cell).orthogonal_matrix
     >>> print(mpm.nstr(A*mpm.matrix(coord1)))
     [-2.74151]
@@ -751,7 +765,7 @@ def frac_to_cart(frac_coord, cell):
     Xc = a * x + (b * cos(gamma)) * y + (c * cos(beta)) * z
     Yc = 0 + (b * sin(gamma)) * y + (-c * sin(beta) * cosastar) * z
     Zc = 0 + 0 + (c * sin(beta) * sinastar) * z
-    return Xc, Yc, Zc
+    return [Xc, Yc, Zc]
 
 
 class A(object):
@@ -817,7 +831,7 @@ def cart_to_frac(cart_coord, cell):
     z = Z / (c * sin(beta) * sinastar) 
     y = (Y - (-c * sin(beta) * cosastar) * z) / (b * sin(gamma))
     x = (X - (b * cos(gamma)) * y - (c * cos(beta)) * z) / a
-    return round(x, 8), round(y, 8), round(z, 8)
+    return [round(x, 8), round(y, 8), round(z, 8)]
 
 
 def zero(m, n):
@@ -1129,12 +1143,25 @@ def distance(x1, y1, z1, x2, y2, z2, round_out=False):
     >>> distance(1, 0, 0, 2, 0, 0, 4)
     1.0
     """
-    import math as m
-    d = m.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
+    from math import sqrt
+    d = sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
     if round_out:
         return round(d, round_out)
     else:
         return d
+
+
+def coord_to_shx_atom(coordinates):
+    """
+    Transformes a list of coordinates to a list of shelxl atom strings.
+    """
+    strlist = []
+    sfac_num = 1
+    for num, coord in enumerate(coordinates):
+        at = "AX"+str(num)
+        s = isoatomstr.format(at, sfac_num, coord[0], coord[1], coord[2], 11.0000, 0.03)
+        strlist.append(s)
+    return strlist
 
 
 def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
@@ -1158,9 +1185,9 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     >>> uvals = [0.07243, 0.03058, 0.03216, -0.01057, -0.01708, 0.03014]
     >>> l = calc_ellipsoid_axes(coords, uvals, cell, longest=True)
     >>> print(mpm.nstr(l))
-    [(0.24765096, 0.11383281, 0.43064756), (0.17401904, 0.09430119, 0.44519644)]
+    [[0.24765096, 0.11383281, 0.43064756], [0.17401904, 0.09430119, 0.44519644]]
     >>> calc_ellipsoid_axes(coords, uvals, cell, longest=False)
-    [[(0.24765096, 0.11383281, 0.43064756), (0.218406, 0.09626142, 0.43746127), (0.21924358, 0.10514684, 0.44886868)], [(0.17401904, 0.09430119, 0.44519644), (0.203264, 0.11187258, 0.43838273), (0.20242642, 0.10298716, 0.42697532)]]
+    [[[0.24765096, 0.11383281, 0.43064756], [0.218406, 0.09626142, 0.43746127], [0.21924358, 0.10514684, 0.44886868]], [[0.17401904, 0.09430119, 0.44519644], [0.203264, 0.11187258, 0.43838273], [0.20242642, 0.10298716, 0.42697532]]]
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     >>> coords = [0.210835,   0.104067,   0.437922]
     >>> uvals = [0.07243, -0.03058, 0.03216, -0.01057, -0.01708, 0.03014]

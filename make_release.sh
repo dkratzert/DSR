@@ -6,6 +6,8 @@ PACK="/usr/src/packages"
 
 cd $GIT
 
+echo "#### Building tgz file ####"
+
 VERSION=$(cat ${GIT}/dsr.py|grep -e "VERSION ="|cut -d ' ' -f3|tr -d "\'")
 TMPDIR=/tmp/DSR-${VERSION}
 BUILDDIR=/usr/src/packages/BUILD/DSR-${VERSION}
@@ -15,15 +17,17 @@ mkdir ${BUILDDIR}
 
 cd $GIT
 
-#cd setup
-#sh ./setup/build_linux_distrib.sh
 rm $GIT/setup/Output/DSR-${VERSION}.tar.gz
+
 PYTHONPATH=$GIT python ./scripts/make_zipfile.py
+
 cp setup/Output/DSR-${VERSION}.tar.gz /usr/src/packages/BUILD/
 cp setup/Output/DSR-${VERSION}.tar.gz /usr/src/packages/SOURCES
 cd ${GIT}
 
-############  Prepare debian package  ########################
+echo "#### tgz file finished ####"
+
+echo "############  Prepare debian package  ########################"
 
 rm -rf /tmp/DSR-${VERSION}
 tar -xf setup/Output/DSR-$VERSION.tar.gz -C /tmp
@@ -41,15 +45,18 @@ cp -r $TMPDIR/example $DEBDIR/opt/DSR/
 cp -r $TMPDIR/manuals $DEBDIR/opt/DSR/
 cp -r $TMPDIR/networkx $DEBDIR/opt/DSR/
 cp -r $TMPDIR/mpmath $DEBDIR/opt/DSR/
+cp -r $TMPDIR/rmsd $DEBDIR/opt/DSR/
 cp $TMPDIR/setup/* $DEBDIR/etc/profile.d/
 
-##########################################
+echo "################### deb file finished  ####################"
 
 cp $GIT/setup/dsr-linux.spec $PACK/SPECS
 
 cd $PACK/SPECS
 
+echo "### running dos2unix ###"
 dos2unix dsr-linux.spec
+echo "## dos2unix finished ###"
 
 echo -e "\n####### building rpm #########" 
 

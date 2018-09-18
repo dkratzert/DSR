@@ -9,7 +9,7 @@ Vcs-Git: <git://git.debian.org/collab-maint/dsr.git>
 Package: dsr
 Architecture: all
 Installed-Size: 29296
-Depends: xclip
+Depends: python-numpy
 Description: DSR - Disordered Structure Refinement
  This program consists of a text database with fragments of molecules and
  the DSR program. It acts as a preprocessor for SHELXL .res files. The user.
@@ -18,4 +18,4 @@ Description: DSR - Disordered Structure Refinement
  position of the target atoms specified by the user. Bond restraints are applied
  from the database to the molecule.
  Development is on GitHub: https://github.com/dkratzert/dsr
-Version: 208
+Version: 217

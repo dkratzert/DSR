@@ -100,8 +100,8 @@ class Export():
         exports a .res file from a database entry to be viewed in a GUI
         >>> db = ParseDB('../dsr_db.txt')
         >>> ex = Export(db)
-        >>> ex.export_resfile('water') # doctest: +NORMALIZE_WHITESPACE
-        ['TITL water\\n', 'REM This file was exported by DSR version 208\\n',
+        >>> ex.export_resfile('water') # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+        ['TITL water\\n', 'REM This file was exported by DSR version ...\\n',
         'REM Name: Water, H2O\\n', 'REM Source: pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei\\n',
         '\\n', 'CELL 0.71073  50.0000  50.0000  50.0000  90.0000  90.0000  90.0000\\n',
         'ZERR    1.00   0.000    0.000    0.000    0.000    0.000    0.000\\n',

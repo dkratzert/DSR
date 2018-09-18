@@ -10,6 +10,8 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
+import re
+
 from terminalsize import get_terminal_size
 
 
@@ -22,7 +24,7 @@ SHX_CARDS = ('TITL', 'CELL', 'ZERR', 'LATT', 'SYMM', 'SFAC', 'UNIT', 'LIST', 'L.
              'BLOC', 'DAMP', 'STIR', 'MPLA', 'RTAB', 'HTAB', 'SIZE', 'WPDB', 'GRID', 'MOLE',
              'XNPD', 'REST', 'CHAN', 'FLAP', 'RNUM', 'SOCC', 'PRIG', 'WIGL', 'RANG', 'TANG',
              'ADDA', 'STAG', 'NEUT', 'ABIN', 'ANSC', 'ANSR', 'NOTR', 'TWST', 'PART', 'DANG',
-             'BEDE', 'LONE')
+             'BEDE', 'LONE', 'REM', 'END')
 
 
 RESTRAINT_CARDS = ('SIMU', 'RIGU', 'DELU', 'SAME', 'FREE', 'DFIX', 'BUMP', 'HFIX', 'BIND',
@@ -37,7 +39,7 @@ DIST_RESTRAINT_CARDS = ('SAME', 'SADI', 'FREE', 'DFIX', 'BUMP', 'CHIV', 'FLAT', 
     # one or more whitespaces, one digit, one or more whitespaces, one or more digits,
     # a dot, one or more digits, ...
 
-atomregex = r'^(([A-Za-z]{1,3})[0-9]{0,3}[A-Za-z\'\"]{0,2}\d{0,1})\s+[-]?[0-9]{1,2}\s+[-+]?[0-9]*\.?[0-9]+\s+[-+]?[0-9]*\.?[0-9]+\s+[-+]?[0-9]*\.?[0-9]+'
+atomregex = re.compile(r'^(([A-Za-z]{1,3})[0-9]{0,3}[A-Za-z\'\"]{0,2}\d{0,1})\s+[-]?[0-9]{1,2}\s+[-+]?[0-9]*\.?[0-9]+\s+[-+]?[0-9]*\.?[0-9]+\s+[-+]?[0-9]*\.?[0-9]+')
 
 try:
     (width, height) = get_terminal_size()  # @UnusedVariable
@@ -45,3 +47,4 @@ except():
     width = 80
 sep_line = (width-1)*'-'
 
+isoatomstr = '{:<5.5s} {:<3}{:>10.6f}  {:>10.6f}  {:>9.6f}  {:>9.5f}  {:>9.5f}'

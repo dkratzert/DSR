@@ -16,8 +16,6 @@ from atoms import Element, atoms
 from misc import find_line, find_multi_lines, atomic_distance
 from constants import atomregex, SHX_CARDS
 
-atreg = re.compile(atomregex)
-
 __metaclass__ = type  # use new-style classes
 
 
@@ -33,7 +31,7 @@ def get_atoms(atlist):
     except IndexError:
         return []
     for i in atlist:
-        if atreg.match(str(i)):  # search atoms
+        if atomregex.match(str(i)):  # search atoms
             l = i.split()[:5]  # convert to list and use only first 5 columns
             if l[0].upper() not in SHX_CARDS:  # exclude all non-atom cards
                 atoms.append(l)
@@ -126,6 +124,8 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     if atoms_to_delete:
         print('Replacing following atoms (< {0} A near fragment):\n'.format(remdist),
               ' '.join(sorted(set(atoms_to_delete))))
+    else:
+        print("No replaceable atoms found.")
     target_lines = set(find_atoms.get_atom_line_numbers(atoms_to_delete))
     rle = ResListEdit(reslist, find_atoms)
     for i in target_lines:
@@ -180,7 +180,7 @@ class FindAtoms():
         >>> FindAtoms.is_atom(atomline = 'O1    0.120080   0.336659   0.494426  11.00000   0.01445 ...')
         []
         """
-        if atreg.match(str(atomline)):        # search atoms
+        if atomregex.match(str(atomline)):        # search atoms
             atom = atomline.split()[:5]              # convert to list and use only first 5 columns
             if atom[0].upper() not in SHX_CARDS:      # exclude all non-atom cards
                 return atom
@@ -285,9 +285,7 @@ class FindAtoms():
                             # do not delete atoms on exactly the same position
                             # and same residue
                             break
-                        d = atomic_distance(at1, at2, cell)
-                        # now get the atom types of the pair atoms and with that
-                        # the covalence radius. 
+                        d = atomic_distance(at1, at2, cell, shortest_dist=True)
                         if d < remdist:
                             atoms_to_delete.append(atom[0]+suffix)
         return sorted(atoms_to_delete)
@@ -489,7 +487,7 @@ class FindAtoms():
                     continue
                 if line.startswith('HKLF'):
                     break # stop in this case because the file has ended anyway
-                if atreg.match(line) and not afix:
+                if atomregex.match(line) and not afix:
                     # stop if next line is an atom and we are not inside an "AFIX MN"
                     if str(line.split()[1]) == str(hydrogen_sfac):
                         print('Deleted {0} atom {1}'.format(name, atom))
@@ -599,9 +597,10 @@ class SfacTable():
     def __init__(self, reslist, dbatom_types):
         """
 
-        :param reslist:  SHELXL .res file as list
-        :param fragment_atom_types:  list ['N', 'C', 'C', 'C']
-        :param res_file_name: str file name like 'p21c.res'
+        :param reslist: list  
+                SHELXL .res file as list
+        :param dbatom_types: list 
+                ['N', 'C', 'C', 'C']
         """
         self._reslist = reslist
         self._db_atom_types = dbatom_types
@@ -622,13 +621,13 @@ class SfacTable():
         unit = []
         explicit_scat = []
         regular_sfac_line_num = False
+        sfac = []
         if len(sfacline) == 1:
             # regular SFAC table
             sfac = self._reslist[sfacline[0]].split()[1:]      # SFAC string in the reslist
             sfacline = sfacline[0]
         elif len(sfacline) > 1:
             # first and second type of sfac:
-            sfac = []
             for i in sfacline:
                 if not ''.join(self._reslist[i].split()).isalpha(): # SFAC with scattering factor
                     # in this case the SFAC command defines also a scattering factor:
@@ -656,8 +655,9 @@ class SfacTable():
             i = str(i).upper()
             unit.append(i)
         # now the sfac and unit tables are written to the resfile
-        self._reslist[sfacline] = 'SFAC  {}\n'.format('  '.join(sfac))
-        self._reslist[unitline] = 'UNIT  {}\n'.format('  '.join(unit))  # builds the UNIT line
+        if not explicit_scat:
+            self._reslist[sfacline] = 'SFAC  {}\n'.format('  '.join(sfac))
+            self._reslist[unitline] = 'UNIT  {}\n'.format('  '.join(unit))  # builds the UNIT line
         return sfac+explicit_scat
 
 
