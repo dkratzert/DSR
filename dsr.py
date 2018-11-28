@@ -331,7 +331,7 @@ class DSR(object):
                 # {'C1': ['1.123', '0.7456', '3.245']}
                 target_coordinates = afix._find_atoms.get_atomcoordinates(dsrp.target)
                 target_coords = [target_coordinates[key] for key in dsrp.target]
-            atnames = self.gdb.get_atomnames(self.fragment)
+            atnames = self.gdb.get_atomnames(self.fragment, uppercase=True)
             source_atoms = dict(zip(atnames, self.gdb.get_coordinates(self.fragment, cartesian=True,
                                                                       invert=self.invert)))
             # Coordinates only from the source, not the entire fragment:
