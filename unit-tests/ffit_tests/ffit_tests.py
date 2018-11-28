@@ -312,6 +312,14 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         """
         self.dsr_runtest(24, '-r', hkl=1)
 
+    # @unittest.skip(" skipping 25")
+    def testrun_run25(self):
+        """
+        REM DSR PUT CH2CL2 WITH CL1 C1 CL2 ON C01P Q1 C01M PART 1 OCC 71 RESI CCL2
+        Test for problems with upper/lower case source atom names
+        """
+        self.dsr_runtest(25, '-target 0.12127 0.47704 0.70694 0.38298 0.29146 0.52138 0.2512 0.3015 0.6978 -r')
+
 
 def remove_whitespace(mystringlist):
     newlist = []
