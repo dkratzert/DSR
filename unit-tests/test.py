@@ -238,7 +238,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         -r -t
         """
         # Line 74 has one digit difference in Windows and Mac:
-        self.dsr_runtest(10, '-t -r', limit_end=300, remlines=[75])
+        self.dsr_runtest(10, '-t -r', limit_end=300, remlines=[74, 75])
 
     # @unittest.skip(" skipping 11")
     def testrun_run11(self):
@@ -246,7 +246,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         regular dsr run with
         replace resi PART 0
         """
-        self.dsr_runtest(11, '-r', remlines=[110, 310])
+        self.dsr_runtest(11, '-r', remlines=[109, 110, 310])
 
     # @unittest.skip(" skipping 12")
     def testrun_run12(self):
