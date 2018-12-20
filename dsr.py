@@ -30,7 +30,7 @@ from resi import Resi, remove_resi
 from restraints import ListFile, Lst_Deviations, Restraints
 from terminalsize import get_terminal_size
 
-VERSION = '218'
+VERSION = '219'
 # dont forget to change version in Innoscript file, spec file and deb file.
 minuse = ((width // 2) - 7) * '-'
 program_name = '\n{} D S R - v{} {}'.format(minuse, VERSION, minuse)
