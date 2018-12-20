@@ -246,7 +246,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         regular dsr run with
         replace resi PART 0
         """
-        self.dsr_runtest(11, '-r', remlines=[109, 110, 310])
+        self.dsr_runtest(11, '-r', remlines=[109, 110, 310, 316])
 
     # @unittest.skip(" skipping 12")
     def testrun_run12(self):
@@ -254,7 +254,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         regular dsr run without fit with
         resi cf3 PART 2 occ -31
         """
-        self.dsr_runtest(12, ending='ins', parameter='-n -r', remlines=[100, 116])
+        self.dsr_runtest(12, ending='ins', parameter='-n -r', remlines=[99, 115])
 
     # @unittest.skip(" skipping 13")
     def testrun_run13(self):

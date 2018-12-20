@@ -322,7 +322,7 @@ class DSRParser(object):
     @property
     def resi(self):
         """
-        resi: empty list, class, number or class and number
+        resi: empty list, resi class, number or resi class and number
         :rtype: list
         """
         return self.dsr_dict['resi']

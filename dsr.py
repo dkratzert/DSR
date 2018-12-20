@@ -385,6 +385,7 @@ class DSR(object):
             # Adds a "SAME_resiclass firstatom > lastatom" to the afix:
             if not dsrp.dfix and not self.options.rigid_group:
                 restraints += same_resi
+                #if dsrp.resiflag:  # <- Or should I do this?
                 restraints += ["SIMU 0.04 0.08 1"]
             if not options.external_restr:
                 restraints = afix.remove_duplicate_restraints(restraints, afix.collect_all_restraints(),

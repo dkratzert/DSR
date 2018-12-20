@@ -210,7 +210,7 @@ class ResListEdit():
         dblines = 'FRAG 17 {} {} {} {} {} {}'.format(*cell) + '\n' + dblines
         dblines = '\n The following is from DSR:\n'+dblines
         dblines = dblines+'\nFEND\n\n'
-        self._reslist.insert(fvarlines[-1]+1, dblines)   # insert the db entry right after FVAR
+        self._reslist.insert(fvarlines[-1], dblines)   # insert the db entry right after FVAR
 
     def get_fvarlist(self):
         fvar_list = []
