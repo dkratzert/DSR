@@ -48,6 +48,8 @@
 #   in the SHELXL file automatically.
 ########################################################################################
 
+
+
 <furan>
 rem Name: Furan, Furfuran, Oxole, C4H4O
 rem Src: CCDC FURANE10
@@ -404,7 +406,7 @@ C6    6      4.16246    6.44065    7.95446
 </26dcb>
 
 <dce>
-rem Name: 1,2-Dichloroethane (flat), DCE, Ethylene dichloride, C2H4Cl2
+rem Name: 1,2-Dichloroethane, (flat), DCE, C2H4Cl2
 rem Src: CCDC IVAHEU
 RESI DCE
 RIGU CL1 > CL2
@@ -420,7 +422,7 @@ Cl2   17     3.04427   -0.17443   10.19596
 </dce>
 
 <dce2>
-rem Name: 1,2-Dichloroethane (angled), DCE, Ethylene dichloride, C2H4Cl2
+rem Name: 1,2-Dichloroethane, (angled), DCE, C2H4Cl2
 rem Src: CCDC BUHXUZ
 RESI DCE
 RIGU CL1 > CL2
