@@ -40,11 +40,8 @@ class DSRParser(object):
 
     def find_dsr_command(self):
         """
-        line = False  -> Line number
-        line = True  -> Text string
         find the lines with a DSR command entry and return its line number as
         default or the text string when line is set to True
-        :param line: bool
         """
         hklf_endline = misc.find_line(self.reslist, r'^HKLF\s+[1-6]')
         indexnum = misc.find_multi_lines(self.reslist, self._dsr_regex)
@@ -109,7 +106,7 @@ class DSRParser(object):
         other Parameters
 
         ----------
-        :type start: str 
+        :type start: str
         :type stop: str
         :rtype: list
         """
@@ -337,7 +334,7 @@ class DSRParser(object):
 
     @resiflag.setter
     def resiflag(self, value):
-        """ 
+        """
         Setter for resiflag
         :type value: bool
         """
@@ -354,7 +351,7 @@ class DSRParser(object):
     def all(self):
         """
         Returns the complete dsr command dictionary
-        :return: dict 
+        :return: dict
         """
         return self.dsr_dict
 
