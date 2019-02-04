@@ -81,9 +81,9 @@ REM  Pbcn in Pbcn
 REM R1 =  0.3685 for    7495 Fo > 4sig(Fo)  and  0.3852 for all    9596 data
 REM    202 parameters refined using      0 restraints
 
-END
-
-WGHT      0.2000      0.0000
+END  
+     
+WGHT      0.2000      0.0000 
 
 REM Highest difference peak 11.361,  deepest hole -6.314,  1-sigma level  0.382
 Q1    1   1.0005  0.5447  0.5342  11.00000  0.05    4.63
