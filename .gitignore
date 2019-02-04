@@ -1,6 +1,8 @@
 SAVEHIST
 shelXlesaves
 dsrsaves
+venv
+venv_py3
 dsrsaves/*
 *.ps
 *.dmg
