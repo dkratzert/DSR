@@ -222,7 +222,7 @@ class FindAtoms():
                 resi_dict['number'] = resi[0]
                 del resi[0]
         return resi_dict
-    
+
     @staticmethod
     def get_partnumber(partstring):
         """
@@ -242,7 +242,7 @@ class FindAtoms():
             print('*** Wrong PART definition found! Check your PART instructions ***')
             partnum = 0
         return partnum
-    
+
     def find_atoms_to_replace(self, frag_atoms, cell, remdist=1.2, only_this=None):
         """
         this method looks around every atom of the fitted fragment and removes
@@ -357,7 +357,7 @@ class FindAtoms():
         """
         returns the residue class of a given atom. C1 would be 'None'
         C1_1 would be 'CF3' for example
-        
+
         :param atom: an atom name with or without residue number like C1 or C1_1
         :type atom: string
         """
@@ -438,7 +438,7 @@ class FindAtoms():
         :type atoms: list
         :return lines: list of integers
         """
-        # this is to make sure the atomlines are correct: 
+        # this is to make sure the atomlines are correct:
         residues = self.collect_residues()
         lines = []
         for at in atoms:
@@ -597,9 +597,9 @@ class SfacTable():
     def __init__(self, reslist, dbatom_types):
         """
 
-        :param reslist: list  
+        :param reslist: list
                 SHELXL .res file as list
-        :param dbatom_types: list 
+        :param dbatom_types: list
                 ['N', 'C', 'C', 'C']
         """
         self._reslist = reslist
@@ -785,7 +785,7 @@ class NumberScheme():
         else:
             return True
 
-    def get_fragment_number_scheme(self, extranames=[]):
+    def get_fragment_number_scheme(self, extranames=None):
         """
         returns a list of atoms of length len(self.__dbatome) whith a
         naming scheme which fits into the resfile. extraname is a list of atoms
@@ -793,6 +793,8 @@ class NumberScheme():
         :param extranames: list of excluding atoms e.g. ['O1A']
         :type extranames: list
         """
+        if extranames is None:
+            extranames = []
         self.__rlist.extend(extranames)
         if self.dsrp.resiflag:
             print('RESI instruction is enabled. Leaving atom numbers as they are.')
