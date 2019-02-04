@@ -36,7 +36,6 @@ REM !BF4
 REM REM DSR PUT BF4 WITH F1 B1 F3 ON Q10 Q54 F2_6A PART 2 OCC -51 RESI BF4
 WGHT    0.100000
 FVAR 0.19261 0.87434 0.53257 0.83155 0.47353 0.32938
-
 REM Restraints for Fragment ch2cl2, Dichloromethane, CH2Cl2, DCM from:
 REM CCDC ASOMAX. Please cite https://doi.org/10.1107/S1600576718004508
 DFIX_CCL2 1.771 0.01 CL1 C1 CL2 C1
@@ -212,9 +211,9 @@ REM wR2 = 0.1183, GooF = S = 1.013, Restrained GooF = 1.099 for all data
 REM R1 = 0.0335 for 8839 Fo > 4sig(Fo) and 0.0379 for all 10249 data
 REM 681 parameters refined using 2247 restraints
 
-END 
- 
-WGHT      0.0841      0.7053 
+END
+
+WGHT      0.0841      0.7053
 
 REM Highest difference peak  2.490,  deepest hole -0.702,  1-sigma level  0.159
 Q1    1   0.2512  0.3015  0.6978  11.00000  0.05    2.49

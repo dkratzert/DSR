@@ -21,7 +21,6 @@ TEMP -173.000
 
 WGHT    0.044800   37.513683
 FVAR 0.04009 0.50000
-
 REM Restraints for Fragment toluene, Toluene, C7H8 from: CCDC CESLUJ.
 REM Please cite https://doi.org/10.1107/S1600576718004508
 SADI_TOL C2 C3 C3 C4 C4 C5 C5 C6 C6 C7 C7 C2
@@ -105,9 +104,9 @@ REM  Pbcn in Pbcn
 REM R1 =  0.3685 for    7495 Fo > 4sig(Fo)  and  0.3852 for all    9596 data
 REM    202 parameters refined using      0 restraints
 
-END  
-     
-WGHT      0.2000      0.0000 
+END
+
+WGHT      0.2000      0.0000
 
 REM Highest difference peak 11.361,  deepest hole -6.314,  1-sigma level  0.382
 Q1    1   1.0005  0.5447  0.5342  11.00000  0.05    4.63
