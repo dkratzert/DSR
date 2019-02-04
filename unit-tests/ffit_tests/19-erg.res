@@ -72,7 +72,6 @@ RESI 0
 
 
 
-
 REM The restraints for this moiety are in this file:
 +dsr_1_19a.dfix
 O1A   3    0.081989    0.234639   0.402088  -31.00000    0.03000
@@ -314,9 +313,9 @@ REM  p21c in P2(1)/c
 REM R1 =  0.136322 for    7085 Fo > 4sig(Fo)  and  0.177571 for all   10786
 REM    819 parameters refined using   4335 restraints
 
-END 
- 
-WGHT      0.2000      0.0000 
+END
+
+WGHT      0.2000      0.0000
 
 REM Highest difference peak  5.851,  deepest hole -0.898,  1-sigma level  0.296
 Q1    1   0.1023  0.1998  0.2335  11.00000  0.05    5.58

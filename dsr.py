@@ -450,7 +450,7 @@ class DSR(object):
                     break
             except IndexError:
                 continue
-        self.reslist[dsr_line_number - 1] = self.reslist[dsr_line_number - 1] + '\n' + '\n'.join(source) \
+        self.reslist[dsr_line_number - 1] = self.reslist[dsr_line_number - 1] + '\n'.join(source) \
                                             + '\n' + afix_entry + '\n'
         # write to file:
         if self.numpy_installed:

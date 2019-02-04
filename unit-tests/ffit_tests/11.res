@@ -326,9 +326,9 @@ REM  p21c in P2(1)/c
 REM R1 =  0.039956 for    7085 Fo > 4sig(Fo)  and  0.079394 for all   10786
 REM    945 parameters refined using   6042 restraints
 
-END 
- 
-WGHT      0.0493      0.0000 
+END
+
+WGHT      0.0493      0.0000
 
 REM Highest difference peak  0.404,  deepest hole -0.690,  1-sigma level  0.073
 Q1    1   0.6920  0.6019  0.2175  11.00000  0.05    0.40
