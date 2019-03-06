@@ -65,8 +65,10 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         os.system('{0} {1} {3}/{2}a.res'.format(self.dsr, parameter, nummer, prefix))
         with open(prefix + '/{}a.{}'.format(nummer, ending)) as txt:
             a = txt.readlines()[limit_start:limit_end]
+            a = [x.strip(' \n\r') for x in a]
         with open(prefix + '/{}-erg.{}'.format(nummer, ending)) as txt2:
             b = txt2.readlines()[limit_start:limit_end]
+            b = [x.strip(' \n\r') for x in b]
         if external_file:
             with open(prefix + '/{}.dfix'.format(external_file)) as ext:
                 c = ext.readlines()
