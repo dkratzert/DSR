@@ -1,4 +1,5 @@
 Recent changes
+-220    Allowing space characters in fragment search. Fixed bug where cf3 group generation could fail.
 -219    Adding "SIMU 0.04 0.08 1" to all restraints. This is necessary, because "SIMU_XYZ atoms"
         only affects each residue in itself and not to atoms of residues near each other. 
 -218    Fixed Exception occouring when source atoms had lower-case names.
