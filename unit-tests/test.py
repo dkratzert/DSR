@@ -108,8 +108,10 @@ class dsr_complete_runs_Test(unittest.TestCase):
         system('{0} {1} ./test-data/beispiel/{2}a.res'.format(self.dsr, parameter, nummer))
         with open('./test-data/beispiel/{}a.{}'.format(nummer, ending)) as txt:
             a = txt.readlines()[limit_start:limit_end]
+            a = [x.strip(' \n\r') for x in a]
         with open('./test-data/beispiel/{}-erg.{}'.format(nummer, ending)) as txt2:
             b = txt2.readlines()[limit_start:limit_end]
+            b = [x.strip(' \n\r') for x in b]
         if external_file:
             with open('./test-data/beispiel/{}.dfix'.format(external_file)) as ext:
                 c = ext.readlines()
@@ -799,7 +801,7 @@ class globalDB(unittest.TestCase):
                                'endline': 5,
                                'dbname': 'dsr_db'}
                        }
-    
+
     def testrun_build_db_dict(self):
         gdb = dbfile.ParseDB("db1_klein.TXT", "db2_klein.TXT")
         db = gdb.databases
