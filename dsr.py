@@ -30,7 +30,7 @@ from resi import Resi, remove_resi
 from restraints import ListFile, Lst_Deviations, Restraints
 from terminalsize import get_terminal_size
 
-VERSION = '217'
+VERSION = '219'
 # dont forget to change version in Innoscript file, spec file and deb file.
 minuse = ((width // 2) - 7) * '-'
 program_name = '\n{} D S R - v{} {}'.format(minuse, VERSION, minuse)
@@ -331,7 +331,8 @@ class DSR(object):
                 # {'C1': ['1.123', '0.7456', '3.245']}
                 target_coordinates = afix._find_atoms.get_atomcoordinates(dsrp.target)
                 target_coords = [target_coordinates[key] for key in dsrp.target]
-            atnames = self.gdb.get_atomnames(self.fragment)
+            # Uppercase is important here to avoid KeyErrors in source_atoms generation
+            atnames = self.gdb.get_atomnames(self.fragment, uppercase=True)
             source_atoms = dict(zip(atnames, self.gdb.get_coordinates(self.fragment, cartesian=True,
                                                                       invert=self.invert)))
             # Coordinates only from the source, not the entire fragment:
@@ -384,6 +385,8 @@ class DSR(object):
             # Adds a "SAME_resiclass firstatom > lastatom" to the afix:
             if not dsrp.dfix and not self.options.rigid_group:
                 restraints += same_resi
+                #if dsrp.resiflag:  # <- Or should I do this?
+                restraints += ["SIMU 0.04 0.08 1"]
             if not options.external_restr:
                 restraints = afix.remove_duplicate_restraints(restraints, afix.collect_all_restraints(),
                                                               resi.get_residue_class)
@@ -406,7 +409,7 @@ class DSR(object):
             if options.external_restr:
                 pname, ext = os.path.splitext(basefilename + '.dfix')
                 if dsrp.dfix:
-                    dfx_file_name = pname+"_dfx"+ext
+                    dfx_file_name = pname + "_dfx" + ext
                 else:
                     dfx_file_name = pname + ext
                 dfx_file_name = afix.write_dbhead_to_file(dfx_file_name, restraints, resi.get_residue_class,
@@ -435,10 +438,10 @@ class DSR(object):
         import textwrap
         source = textwrap.wrap("REM Restraints for Fragment {}, {} from: {}. "
                                "Please cite https://doi.org/10.1107/S1600576718004508".format(
-            self.fragment,
-            self.gdb.get_fragment_name(self.fragment),
-            self.gdb.get_src(self.fragment)),
-            width=74, subsequent_indent='REM ')
+                self.fragment,
+                self.gdb.get_fragment_name(self.fragment),
+                self.gdb.get_src(self.fragment)),
+                width=74, subsequent_indent='REM ')
         # check if restraints already inserted:
         for line in self.reslist:
             try:
@@ -447,8 +450,8 @@ class DSR(object):
                     break
             except IndexError:
                 continue
-        self.reslist[dsr_line_number] = self.reslist[dsr_line_number] + '\n' + '\n'.join(source) + '\n' + afix_entry \
-                                        + '\n'
+        self.reslist[dsr_line_number - 1] = self.reslist[dsr_line_number - 1] + '\n' + '\n'.join(source) \
+                                            + '\n' + afix_entry + '\n'
         # write to file:
         if self.numpy_installed:
             self.rl.write_resfile(self.reslist, '.res')
@@ -457,7 +460,7 @@ class DSR(object):
                 self.rl = ResList(self.res_file)
                 reslist = self.rl.get_res_list()
                 self.reslist, find_atoms = atomhandling.replace_after_fit(self.rl, reslist, resi,
-                                                                     fragment_numberscheme, rle.get_cell())
+                                                                          fragment_numberscheme, rle.get_cell())
                 self.rl.write_resfile(self.reslist, '.res')
         else:
             shx = ShelxlRefine(self.reslist, basefilename, find_atoms, self.options)
@@ -552,6 +555,7 @@ if __name__ == '__main__':
         dsr = DSR(options)
     except Exception:
         import platform
+
         if is_listfile:
             lstpath = os.path.abspath(lstfile.name)
             lst = 'the file "{}" \nand '.format(lstpath)
