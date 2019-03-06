@@ -96,6 +96,7 @@ class CF3(object):
         self.options = options
         self.resi = resi
         self.rand_id = id_generator(size=7)
+        self.rand_id_part_neg = id_generator(size=7)
         self.fa = fa
         self.rle = rle
         self.dsrp = dsrp
@@ -290,9 +291,8 @@ class CF3(object):
             axes = calc_ellipsoid_axes(c_coords, uvals, self.cell)
         else:
             splitatoms = False
-        joined_pivot = ' '.join([str(round(float(x), 3)) for x in c_coords])
         # The fluorine atoms are generated here:
-        fatoms = self.make_afix(afixnum=int(afix), linenumber=atomline, pivot_coord=joined_pivot)
+        fatoms = self.make_afix(afixnum=int(afix), linenumber=atomline)
         if not fatoms:
             return False
         self.do_refine_cycle(self.rl, self.reslist)
@@ -310,8 +310,8 @@ class CF3(object):
         else:
             self.reslist[atomline] = ''
             self.reslist[atomline + 1] = self.reslist[atomline] + self.startm + restr
-        regex = r'.*{}'.format(self.rand_id)
-        id_lines = find_multi_lines(self.reslist, regex)
+        id_lines = find_multi_lines(self.reslist, r'.*{}'.format(self.rand_id))
+        neg_part_id_lines = find_multi_lines(self.reslist, r'.*{}'.format(self.rand_id_part_neg))
         # replace dummy PART with real part definition and C-atom coords with split coords
         if self.dsrp.split and afix == '120':
             at1 = '{:<5s} {:<3} {:>9.6f}   {:>9.6f}   {:>9.6f}   {:>8.4f}     0.04\n' \
@@ -347,8 +347,12 @@ class CF3(object):
                         .format(*resline)
         else:
             for line in id_lines:
+                # replacing "REM PART 1 !QNGUYQ2" with "PART 1"
                 # restraints should never be placed in this reslist[line]:
                 self.reslist[line] = ' '.join(self.reslist[line].split()[1:3]) + '\n'
+        # remove PART -1 around AFIX 130:
+        for line in neg_part_id_lines:
+            self.reslist[line] = ''
         # set refinement cycles back to 8
         shx = ShelxlRefine(self.reslist, self.basefilename, self.fa, self.options)
         shx.set_refinement_cycles('8')
@@ -378,6 +382,8 @@ class CF3(object):
         Y = remove_partsymbol(Y)
         Z = remove_partsymbol(Z)
         numberedatoms = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9']
+        resistr = ''
+        resi0 = ''
         if self.dsrp.resiflag:
             F1, F2, F3, F4, F5, F6, F7, F8, F9 = numberedatoms
             resiclass = self.resi.get_residue_class
@@ -387,7 +393,7 @@ class CF3(object):
         else:
             nums = NumberScheme(self.reslist, numberedatoms, self.dsrp)
             F1, F2, F3, F4, F5, F6, F7, F8, F9 = nums.get_fragment_number_scheme()
-        start_f_coord = self.lf.get_single_coordinate(fatoms[0])
+        start_f_coord = self.lf.get_single_coordinate(fatoms[0]+'^A')
         replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3),
                        ('F4', F4), ('F5', F5), ('F6', F6), ('F7', F7),
                        ('F8', F8), ('F9', F9))
@@ -445,14 +451,13 @@ class CF3(object):
         self.rl.write_resfile(self.reslist, '.res')
         return fatoms
 
-    def make_afix(self, afixnum, linenumber, resioff=False, pivot_coord=' 0 0 0 '):
+    def make_afix(self, afixnum, linenumber, resioff=False):
         """
         create an afix to build a CF3 or CH3 group
         :param resioff: bool
         :param linenumber:  line number in the reslist where fragment is placed
         :param afixnum: afix number
         :type afixnum: int
-        :param pivot_coord: coorinates of the pivot atom
         """
         resistr = ''
         resi0 = ''
@@ -484,30 +489,32 @@ class CF3(object):
         if int(afixnum) == 130:
             # CF3:
             afix_130 = [resistr,
-                        'AFIX {0}',  # AFIX 120 or 130
+                        'AFIX {0}\nPART -1 !{4}',  # AFIX 120 or 130
                         # 'REM AFIX made by DSR: {3}',
-                        numberscheme_130[0] + ' {1}  ' + pivot_coord + '  11.0  0.04',
-                        numberscheme_130[1] + ' {1}  ' + pivot_coord + '  11.0  0.04',
-                        numberscheme_130[2] + ' {1}  ' + pivot_coord + '  11.0  0.04',
+                        numberscheme_130[0] + ' {1}   0 0 0   11.0  0.04',
+                        numberscheme_130[1] + ' {1}   0 0 0   11.0  0.04',
+                        numberscheme_130[2] + ' {1}   0 0 0   11.0  0.04',
                         # 'REM end of AFIX by DSR {3}', # insert ID and later change it to the PART usw.
-                        'AFIX 0',
+                        'PART 0 !{4}\nAFIX 0',
                         resi0]
             afix_130 = '\n'.join(afix_130)
             afix = afix_130
         elif int(afixnum) == 120:
             # CF6:
+            # {4} is a second id behind the PART -1 to get rid of it later
+            # We need a negative part here to prevent accidental bonding to the pivot atom
             afix_120 = [resistr,
-                        'AFIX {0}',
+                        'AFIX {0}\nPART -1 !{4}',
                         '\nREM PART 1 !{3}',
-                        numberscheme_120[0] + ' {1} ' + pivot_coord + '   {2}  0.04',
-                        numberscheme_120[1] + ' {1} ' + pivot_coord + '   {2}  0.04',
-                        numberscheme_120[2] + ' {1} ' + pivot_coord + '   {2}  0.04',
+                        numberscheme_120[0] + ' {1}  0 0 0   {2}  0.04',
+                        numberscheme_120[1] + ' {1}  0 0 0   {2}  0.04',
+                        numberscheme_120[2] + ' {1}  0 0 0   {2}  0.04',
                         'REM PART 2 !{3}',
-                        numberscheme_120[3] + ' {1} ' + pivot_coord + '  -{2}  0.04',
-                        numberscheme_120[4] + ' {1} ' + pivot_coord + '  -{2}  0.04',
-                        numberscheme_120[5] + ' {1} ' + pivot_coord + '  -{2}  0.04',
+                        numberscheme_120[3] + ' {1}  0 0 0  -{2}  0.04',
+                        numberscheme_120[4] + ' {1}  0 0 0  -{2}  0.04',
+                        numberscheme_120[5] + ' {1}  0 0 0  -{2}  0.04',
                         'REM PART 0 !{3}',
-                        'AFIX 0',
+                        'PART 0 !{4}\nAFIX 0',
                         resi0,
                         self.endm]
             afix_120 = '\n'.join(afix_120)
@@ -516,7 +523,7 @@ class CF3(object):
             print('Only AFIX 130 and 120 are implemented yet.')
             return False
         # insert the afix (the rand_id is to recognize this line later):
-        self.reslist[linenumber] += afix.format(afixnum, sfac, occ, self.rand_id)
+        self.reslist[linenumber] += afix.format(afixnum, sfac, occ, self.rand_id, self.rand_id_part_neg)
         if str(afixnum) == '120':
             return numberscheme_120
         if str(afixnum) == '130':
@@ -691,7 +698,6 @@ class CF3(object):
             d += dif / 2760.0
         # print('PART 0')
         print('AFIX 0')
-        print
         print(d)
 
 
