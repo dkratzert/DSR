@@ -36,6 +36,8 @@ class OptionsParser():
     """
     def __init__(self, progname):
         self.progname = progname
+        # search characters allowed: a-z A-Z 0-9 _ - , () {} [] ' " + * | = .
+        self.allowed_chars = re.compile(r'^[\w\-,\(\)\[\]\{\}\'\"\+\*\|\=\.]+$')
         self.parser = ArgumentParser(prog='dsr', formatter_class=RawTextHelpFormatter,
                                      description='{}\nDisordered Structure Refinement (DSR)\n'.format(progname)
                                      + '\nExample DSR .res file command line:'
@@ -195,10 +197,7 @@ class OptionsParser():
     def search_string(self):
         if not self._options.search_string:
             return None
-        # search characters allowed: a-z A-Z 0-9 _ - , () {} [] ' " + * | = .
-        chars = re.match(r'^[\w\-,\(\)\[\]\{\}\'\"\+\*\|\=\.]+$', 
-                         ''.join(self._options.search_string))
-        if not chars:
+        if not self.allowed_chars.match(''.join(self._options.search_string)):
             print('*** Characters not allowed for searching. ***')
             sys.exit()
         else:
@@ -208,10 +207,7 @@ class OptionsParser():
     def search_extern(self):
         if not self._options.search_extern:
             return None
-        # search characters allowed: a-z A-Z 0-9 _ - , () {} [] ' " + * | = .
-        chars = re.match(r'^[\w\-,\(\)\[\]\{\}\'\"\+\*\|\=\.]+$', 
-                         ''.join(self._options.search_extern))
-        if not chars:
+        if not self.allowed_chars.match(''.join(self._options.search_extern)):
             print('*** Characters not allowed for searching. ***')
             sys.exit()
         else:

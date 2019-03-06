@@ -107,7 +107,7 @@ class CF3(object):
         atoms = fa.atoms_as_residues()
         self.basefilename = basefilename
         atomlist = []
-        # atomlist: ['C1', ['x', 'y', 'z'], linenumber, class, part, element, 
+        # atomlist: ['C1', ['x', 'y', 'z'], linenumber, class, part, element,
         #                                           sfac_number, residue_num]
         for i in atoms:
             for y in atoms[i]:
@@ -181,20 +181,20 @@ class CF3(object):
         make sure the pivot atom of a cf3 group is isotropic
         :param linenumber: line number (index) in self.reslist of the pivot atom
         :type linenumber: integer
-        :return Uij values, coordinates: U and xyz values of the atom as lists
+        :return Uij values, coordinates: U and xyz values of the pivot atom as lists
         """
         atomline = self.reslist[linenumber].split()
+        coords = [atomline[2], atomline[3], atomline[4]]
         if atomline[-1] == '=':
             nextline = self.reslist[linenumber + 1].split()
             try:
-                coords = [atomline[2], atomline[3], atomline[4]]
                 U11, U22 = atomline[6], atomline[7]
                 U33, U23, U13, U12 = nextline[0], nextline[1], nextline[2], nextline[3]
             except:
                 # In this case we have a U value missing
-                print('Incomplete Uij values. Atom split not possible!')
+                print('*** Incomplete Uij values. Atom split not possible! ***')
                 self.dsrp.split = False
-                return [[], []]
+                return [[], coords]
             self.reslist[linenumber] = '{:5.4s}{:4.2s}{:>10.8s} {:>10.8s} {:>10.8s}  {:8.6s}  0.04'.format(*atomline)
             self.reslist[linenumber + 1] = ''
             return [[U11, U22, U33, U23, U13, U12], coords]
@@ -203,7 +203,7 @@ class CF3(object):
             if self.dsrp.split:
                 print('Pivot atom is isotropic. Atom split not possible!')
                 self.dsrp.split = False
-            return [[], []]
+            return [[], coords]
 
     def add_chars(self, atom, alphabet):
         """
@@ -249,15 +249,17 @@ class CF3(object):
         AFIX 130: CF3 group
         AFIX 120: CF6 group
 
-        :param atom: central atom of the group
-        :type atom: string
         :param afix: afix number for the CF3 group
         :type afix: string
         """
         # the pivot atom of the CF3 group:
         atomline = self.prepare_cf3()
         afix = str(afix)
+        splitat1 = ''
+        splitat2 = ''
+        axes = []
         targetatom = self.dsrp.target[0]
+        # c_coords: coordinates of the pivot atom
         [uvals, c_coords] = self.make_pivot_isotropic(atomline)
         restr = ['']
         if afix == '130':
@@ -288,8 +290,9 @@ class CF3(object):
             axes = calc_ellipsoid_axes(c_coords, uvals, self.cell)
         else:
             splitatoms = False
+        joined_pivot = ' '.join([str(round(float(x), 3)) for x in c_coords])
         # The fluorine atoms are generated here:
-        fatoms = self.make_afix(afixnum=int(afix), linenumber=atomline)
+        fatoms = self.make_afix(afixnum=int(afix), linenumber=atomline, pivot_coord=joined_pivot)
         if not fatoms:
             return False
         self.do_refine_cycle(self.rl, self.reslist)
@@ -325,7 +328,7 @@ class CF3(object):
                 self.reslist[line] = ' '.join(self.reslist[line].split()[1:3]) + '\n'
                 self.reslist[line] = self.reslist[line] + splatom
                 # exchange the first three Fluorine atoms with coordinates from one
-                # disorder direction and the last three with the other direction:  
+                # disorder direction and the last three with the other direction:
                 for num, fline in enumerate(self.reslist[line + 1:line + 1 + 3]):
                     fline = fline.split()
                     if not splatom:
@@ -338,7 +341,7 @@ class CF3(object):
                         resline[2:5] = fsplit_b
                     if num == 2 and not splb:
                         # switch to fsplit_b. I can not decide on num, because that goes two times
-                        # from 0 to 2 
+                        # from 0 to 2
                         splb = True
                     self.reslist[line + 1 + num] = '{:<5s} {:<3} {:>9.6f}   {:>9.6f}   {:>9.6f}   {:>8.4f}     0.04\n' \
                         .format(*resline)
@@ -442,13 +445,14 @@ class CF3(object):
         self.rl.write_resfile(self.reslist, '.res')
         return fatoms
 
-    def make_afix(self, afixnum, linenumber, resioff=False):
+    def make_afix(self, afixnum, linenumber, resioff=False, pivot_coord=' 0 0 0 '):
         """
         create an afix to build a CF3 or CH3 group
         :param resioff: bool
-        :param linenumber:
+        :param linenumber:  line number in the reslist where fragment is placed
         :param afixnum: afix number
         :type afixnum: int
+        :param pivot_coord: coorinates of the pivot atom
         """
         resistr = ''
         resi0 = ''
@@ -482,9 +486,9 @@ class CF3(object):
             afix_130 = [resistr,
                         'AFIX {0}',  # AFIX 120 or 130
                         # 'REM AFIX made by DSR: {3}',
-                        numberscheme_130[0] + ' {1} 0 0 0 11.0  0.04',
-                        numberscheme_130[1] + ' {1} 0 0 0 11.0  0.04',
-                        numberscheme_130[2] + ' {1} 0 0 0 11.0  0.04',
+                        numberscheme_130[0] + ' {1}  ' + pivot_coord + '  11.0  0.04',
+                        numberscheme_130[1] + ' {1}  ' + pivot_coord + '  11.0  0.04',
+                        numberscheme_130[2] + ' {1}  ' + pivot_coord + '  11.0  0.04',
                         # 'REM end of AFIX by DSR {3}', # insert ID and later change it to the PART usw.
                         'AFIX 0',
                         resi0]
@@ -495,13 +499,13 @@ class CF3(object):
             afix_120 = [resistr,
                         'AFIX {0}',
                         '\nREM PART 1 !{3}',
-                        numberscheme_120[0] + ' {1} 0 0 0   {2}  0.04',
-                        numberscheme_120[1] + ' {1} 0 0 0   {2}  0.04',
-                        numberscheme_120[2] + ' {1} 0 0 0   {2}  0.04',
+                        numberscheme_120[0] + ' {1} ' + pivot_coord + '   {2}  0.04',
+                        numberscheme_120[1] + ' {1} ' + pivot_coord + '   {2}  0.04',
+                        numberscheme_120[2] + ' {1} ' + pivot_coord + '   {2}  0.04',
                         'REM PART 2 !{3}',
-                        numberscheme_120[3] + ' {1} 0 0 0  -{2}  0.04',
-                        numberscheme_120[4] + ' {1} 0 0 0  -{2}  0.04',
-                        numberscheme_120[5] + ' {1} 0 0 0  -{2}  0.04',
+                        numberscheme_120[3] + ' {1} ' + pivot_coord + '  -{2}  0.04',
+                        numberscheme_120[4] + ' {1} ' + pivot_coord + '  -{2}  0.04',
+                        numberscheme_120[5] + ' {1} ' + pivot_coord + '  -{2}  0.04',
                         'REM PART 0 !{3}',
                         'AFIX 0',
                         resi0,
@@ -658,7 +662,7 @@ class CF3(object):
         diffden = shift(diffden, n)
         print(len(diffden))
         print('\n')
-        print
+        print('')
         print('AFIX 6')
         # make restraints:
         sad12 = []
