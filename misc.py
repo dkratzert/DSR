@@ -17,6 +17,7 @@ import re
 import shutil
 import string
 from math import cos, sqrt, radians, sin
+import mpmath as mpm
 
 from constants import isoatomstr
 
@@ -1226,34 +1227,18 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
 
     """
     from misc import A
-    import mpmath as mpm
     probability += 1
     # Uij is symmetric:
     if len(uvals) != 6:
         raise Exception('6 Uij values have to be supplied!')
     if len(cell) != 6:
         raise Exception('cell needs six parameters!')
-    U11, U22, U33, U23, U13, U12 = uvals 
-    U21 = U12
-    U32 = U23
-    U31 = U13
-    Uij = mpm.matrix([[U11, U12, U13], [U21, U22, U23], [U31, U32, U33]])
-    a, b, c, alpha, beta, gamma = cell
-    V = vol_unitcell(*cell)
-    # calculate reciprocal lattice vectors:
-    astar = (b * c * sin(radians(alpha))) / V
-    bstar = (c * a * sin(radians(beta))) / V
-    cstar = (a * b * sin(radians(gamma))) / V
     # orthogonalization matrix that transforms the fractional coordinates
     # with respect to a crystallographic basis system to coordinates
     # with respect to a Cartesian basis:
     A = A(cell).orthogonal_matrix
-    # matrix with the reciprocal lattice vectors:        
-    N = mpm.matrix([[astar, 0, 0],
-                    [0 , bstar, 0],
-                    [0, 0, cstar]])
-    # Finally transform Uij values from fractional to cartesian axis system: 
-    Ucart = A * N * Uij * N.T * A.T
+    Ucart = ufrac_to_ucart(A, cell, uvals)
+    #print(Ucart)
     # E => eigenvalues, Q => eigenvectors:
     E, Q = mpm.eig(Ucart)
     # calculate vectors of ellipsoid axes  
@@ -1304,6 +1289,27 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     else:
         # all vectors:
         return allvec
+
+
+def ufrac_to_ucart(A, cell, uvals):
+    U11, U22, U33, U23, U13, U12 = uvals
+    U21 = U12
+    U32 = U23
+    U31 = U13
+    Uij = mpm.matrix([[U11, U12, U13], [U21, U22, U23], [U31, U32, U33]])
+    a, b, c, alpha, beta, gamma = cell
+    V = vol_unitcell(*cell)
+    # calculate reciprocal lattice vectors:
+    astar = (b * c * sin(radians(alpha))) / V
+    bstar = (c * a * sin(radians(beta))) / V
+    cstar = (a * b * sin(radians(gamma))) / V
+    # matrix with the reciprocal lattice vectors:
+    N = mpm.matrix([[astar, 0, 0],
+                    [0, bstar, 0],
+                    [0, 0, cstar]])
+    # Finally transform Uij values from fractional to cartesian axis system:
+    Ucart = A * N * Uij * N.T * A.T
+    return Ucart
 
 
 def almost_equal(a, b, places=3):

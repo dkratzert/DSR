@@ -1,4 +1,7 @@
 Recent changes
+-219    Adding "SIMU 0.04 0.08 1" to all restraints. This is necessary, because "SIMU_XYZ atoms"
+        only affects each residue in itself and not to atoms of residues near each other. 
+-218    Fixed Exception occouring when source atoms had lower-case names.
 -217    Fixed linux packages.
 -216    New fit procedure should be stable now. In windows, you need to install the installer 
         executable once! DSR needs numpy for the faster fit now. Without numpy, the old 

@@ -238,7 +238,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         -r -t
         """
         # Line 74 has one digit difference in Windows and Mac:
-        self.dsr_runtest(10, '-t -r', limit_end=300, remlines=[75])
+        self.dsr_runtest(10, '-t -r', limit_end=300, remlines=[74, 75])
 
     # @unittest.skip(" skipping 11")
     def testrun_run11(self):
@@ -246,7 +246,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         regular dsr run with
         replace resi PART 0
         """
-        self.dsr_runtest(11, '-r', remlines=[110, 310])
+        self.dsr_runtest(11, '-r', remlines=[109, 110, 310, 316])
 
     # @unittest.skip(" skipping 12")
     def testrun_run12(self):
@@ -254,7 +254,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         regular dsr run without fit with
         resi cf3 PART 2 occ -31
         """
-        self.dsr_runtest(12, ending='ins', parameter='-n -r', remlines=[100, 116])
+        self.dsr_runtest(12, ending='ins', parameter='-n -r', remlines=[99, 115])
 
     # @unittest.skip(" skipping 13")
     def testrun_run13(self):
@@ -287,7 +287,7 @@ class dsr_complete_runs_Test(unittest.TestCase):
         dsr -r
         REM  dsr put oc(CF3)3 with o1 c1 c2 C3 on O1_4 C1_4 Q6 Q7 RESI
         """
-        self.dsr_runtest(16, '-r', remlines=[309, 310])
+        self.dsr_runtest(16, '-r', remlines=[308, 309, 310])
 
     # @unittest.skip(" skipping 17")
     def testrun_run17(self):
