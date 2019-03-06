@@ -61,7 +61,7 @@ class OptionsParser():
                                  help="import a fragment from GRADE (needs .tgz file)", default=False)
         self.parser.add_argument("-l", dest="list_db", action="store_true",
                                  help="list names of all database entries", default=False)
-        self.parser.add_argument("-s", dest="search_string", metavar='"string"',
+        self.parser.add_argument("-s", dest="search_string", metavar='"string"', nargs='+',
                                  help="search the database for a name", default=False)
         self.parser.add_argument("-g", dest="rigid_group", help="keep group rigid (no restraints)",
                                  action="store_true", default=False)
@@ -71,7 +71,7 @@ class OptionsParser():
                                  help=SUPPRESS, default=False)
         self.parser.add_argument("-lc", dest="list_db_csv", action='store_true',
                                  help=SUPPRESS, default=False)
-        self.parser.add_argument("-x", dest="search_extern",
+        self.parser.add_argument("-x", dest="search_extern", nargs='+',
                                  help=SUPPRESS, default=False)
         self.parser.add_argument("-ah", dest="head_for_gui",
                                  help=SUPPRESS, default=False)
@@ -197,12 +197,12 @@ class OptionsParser():
             return None
         # search characters allowed: a-z A-Z 0-9 _ - , () {} [] ' " + * | = .
         chars = re.match(r'^[\w\-,\(\)\[\]\{\}\'\"\+\*\|\=\.]+$', 
-                         self._options.search_string)
+                         ''.join(self._options.search_string))
         if not chars:
-            print('Characters not allowed for searching.')
+            print('*** Characters not allowed for searching. ***')
             sys.exit()
         else:
-            return self._options.search_string
+            return ''.join(self._options.search_string)
 
     @property
     def search_extern(self):
@@ -210,12 +210,12 @@ class OptionsParser():
             return None
         # search characters allowed: a-z A-Z 0-9 _ - , () {} [] ' " + * | = .
         chars = re.match(r'^[\w\-,\(\)\[\]\{\}\'\"\+\*\|\=\.]+$', 
-                         self._options.search_extern)
+                         ''.join(self._options.search_extern))
         if not chars:
             print('*** Characters not allowed for searching. ***')
             sys.exit()
         else:
-            return self._options.search_extern
+            return ''.join(self._options.search_extern)
 
     @property
     def all_options(self):

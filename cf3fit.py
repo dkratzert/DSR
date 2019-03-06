@@ -1,4 +1,4 @@
-#-*- encoding: utf-8 -*-
+# -*- encoding: utf-8 -*-
 """
 Created on 13.05.2015
 
@@ -13,34 +13,35 @@ Created on 13.05.2015
 #
 """
 
-from atomhandling import Elem_2_Sfac, NumberScheme
-from refine import ShelxlRefine
-from restraints import ListFile
-from elements import ELEMENTS
-from misc import atomic_distance, frac_to_cart, cart_to_frac,\
-    id_generator, shift, remove_partsymbol, find_multi_lines, wrap_headlines,\
-    calc_ellipsoid_axes
-from math import radians, sqrt
-import sys
-from resfile import ResList
-import mpmath as mpm
 import string
+import sys
+from math import radians, sqrt
+
+import mpmath as mpm
+from atomhandling import Elem_2_Sfac, NumberScheme
+from elements import ELEMENTS
+from misc import atomic_distance, frac_to_cart, cart_to_frac, \
+    id_generator, shift, remove_partsymbol, find_multi_lines, wrap_headlines, \
+    calc_ellipsoid_axes
+from refine import ShelxlRefine
+from resfile import ResList
+from restraints import ListFile
 
 # Y-Z-F1/F2/F3
 
-dfixr_130 = ['DFIX 1.328 Z F1 Z F2 Z F3 ', 
+dfixr_130 = ['DFIX 1.328 Z F1 Z F2 Z F3 ',
              'DFIX 2.125 F1 F2 F2 F3 F3 F1 ',
              'SADI 0.1   Y F1 Y F2 Y F3 ',
              'RIGU Y Z F1 F2 F3 ',
              'SIMU Y Z F1 F2 F3 ']
 
-dfixr_120 = ['DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 ', 
+dfixr_120 = ['DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6 ',
              'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 ',
              'SADI 0.1   Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
              'RIGU Y Z F1 > F6',
              'SIMU Y Z F1 > F6']
 
-dfixr_120_split = ['DFIX 1.328 ZA F1 ZA F2 ZA F3  ZB F4 ZB F5 ZB F6 ', 
+dfixr_120_split = ['DFIX 1.328 ZA F1 ZA F2 ZA F3  ZB F4 ZB F5 ZB F6 ',
                    'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4 ',
                    'SADI 0.1   Y F1 Y F2 Y F3  Y F4 Y F5 Y F6 ',
                    'SADI Y ZA Y ZB',
@@ -48,13 +49,12 @@ dfixr_120_split = ['DFIX 1.328 ZA F1 ZA F2 ZA F3  ZB F4 ZB F5 ZB F6 ',
                    'RIGU Y ZA ZB F1 > F6',
                    'SIMU Y ZA ZB F1 > F6']
 
-dfixr_cf9 = ['SUMP 1 0.0001 1 {0} 1 {1} 1 {2}', 
-             'DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 ', 
+dfixr_cf9 = ['SUMP 1 0.0001 1 {0} 1 {1} 1 {2}',
+             'DFIX 1.328 Z F1 Z F2 Z F3  Z F4 Z F5 Z F6  Z F7 Z F8 Z F9 ',
              'DFIX 2.125 F1 F2 F2 F3 F3 F1  F4 F5 F5 F6 F6 F4  F7 F8 F8 F9 F9 F7 ',
              'SADI 0.1 Y F1 Y F2 Y F3  Y F4 Y F5 Y F6  Y F7 Y F8 Y F9 ',
              'RIGU Y Z F1 > F9',
              'SIMU Y Z F1 > F9']
-
 
 sadir_130 = ['SADI 0.02 Z F1 Z F2 Z F3 ',
              'SADI 0.04 F1 F2 F2 F3 F3 F1 ',
@@ -113,12 +113,12 @@ class CF3(object):
             for y in atoms[i]:
                 if y[0][0] == 'Q':
                     continue
-                atomlist.append(y+[i])
+                atomlist.append(y + [i])
         self.atomlist = atomlist
         self.cell = rle.get_cell()
         self.startm = '\nREM CF3 group made by DSR:\n'
         self.endm = 'REM End of CF3 group made by DSR\n'
-    
+
     def find_bonded_fluorine(self, atom, extra_param=0.16, element='F'):
         """
         find fluorine atoms that are boneded to atom
@@ -132,10 +132,10 @@ class CF3(object):
             if not i[5] == element:
                 continue
             d = atomic_distance(i[1], atcoord[atom], self.cell)
-            if d <= (fr+cr)+extra_param and d > (cr or fr):
+            if d <= (fr + cr) + extra_param and d > (cr or fr):
                 found_atoms.append(i)
         return found_atoms
-    
+
     def delete_bound_fluorine(self, bound_atoms):
         """
         deletes fluorine atoms bound to atom
@@ -145,7 +145,7 @@ class CF3(object):
         for i in bound_atoms:
             i = int(i[2])
             self.rle.remove_line(i, rem=False, remove=True, frontspace=False)
-    
+
     def format_cf3_restraints(self, afix, restr, atom, fatoms, splitatoms=False):
         """
         replaces the dummy atom names in the restraint lists with the real names
@@ -164,11 +164,11 @@ class CF3(object):
         if afix == '120' and splitatoms:
             F1, F2, F3, F4, F5, F6 = fatoms
             ZA, ZB = splitatoms
-            replacelist = (('ZA', ZA), ('ZB', ZB), ('Y', Y), ('F1', F1), ('F2', F2), 
-                            ('F3', F3), ('F4', F4), ('F5', F5), ('F6', F6))        
+            replacelist = (('ZA', ZA), ('ZB', ZB), ('Y', Y), ('F1', F1), ('F2', F2),
+                           ('F3', F3), ('F4', F4), ('F5', F5), ('F6', F6))
         if afix == '120' and not splitatoms:
             F1, F2, F3, F4, F5, F6 = fatoms
-            replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3), 
+            replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3),
                            ('F4', F4), ('F5', F5), ('F6', F6))
         # replace dummy atoms in restraint list with real atom names:
         for old, new in replacelist:
@@ -185,7 +185,7 @@ class CF3(object):
         """
         atomline = self.reslist[linenumber].split()
         if atomline[-1] == '=':
-            nextline = self.reslist[linenumber+1].split()
+            nextline = self.reslist[linenumber + 1].split()
             try:
                 coords = [atomline[2], atomline[3], atomline[4]]
                 U11, U22 = atomline[6], atomline[7]
@@ -195,8 +195,8 @@ class CF3(object):
                 print('Incomplete Uij values. Atom split not possible!')
                 self.dsrp.split = False
                 return [[], []]
-            self.reslist[linenumber] = '{:5.4s}{:4.2s}{:>10.8s} {:>10.8s} {:>10.8s}  {:8.6s}  0.04'.format(*atomline) 
-            self.reslist[linenumber+1] = '' 
+            self.reslist[linenumber] = '{:5.4s}{:4.2s}{:>10.8s} {:>10.8s} {:>10.8s}  {:8.6s}  0.04'.format(*atomline)
+            self.reslist[linenumber + 1] = ''
             return [[U11, U22, U33, U23, U13, U12], coords]
         else:
             # atom is already isotropic, nothing to do...
@@ -211,9 +211,9 @@ class CF3(object):
         :param atom:
         """
         for char in alphabet:
-            if not atom+char in [i[0] for i in self.atomlist]:
+            if not atom + char in [i[0] for i in self.atomlist]:
                 del alphabet[0]
-                return atom+char
+                return atom + char
 
     def prepare_cf3(self):
         """
@@ -303,35 +303,35 @@ class CF3(object):
         # add restraints to reslist:
         restr = ''.join(restr)
         if not self.dsrp.split:
-            self.reslist[atomline] = self.reslist[atomline]+self.startm+restr
+            self.reslist[atomline] = self.reslist[atomline] + self.startm + restr
         else:
             self.reslist[atomline] = ''
-            self.reslist[atomline+1] = self.reslist[atomline]+self.startm+restr
+            self.reslist[atomline + 1] = self.reslist[atomline] + self.startm + restr
         regex = r'.*{}'.format(self.rand_id)
         id_lines = find_multi_lines(self.reslist, regex)
         # replace dummy PART with real part definition and C-atom coords with split coords
         if self.dsrp.split and afix == '120':
-            at1 = '{:<5s} {:<3} {:>9.6f}   {:>9.6f}   {:>9.6f}   {:>8.4f}     0.04\n'\
-                    .format(splitat1, self.e2s.elem_2_sfac('C'), axes[0][0], 
-                            axes[0][1], axes[0][2], float(self.dsrp.occupancy))
-            at2 = '{:<5s} {:<3} {:>9.6f}   {:>9.6f}   {:>9.6f}   {:>8.4f}     0.04\n'\
-                    .format(splitat2, self.e2s.elem_2_sfac('C'), axes[1][0], 
-                            axes[1][1], axes[1][2], -float(self.dsrp.occupancy))
+            at1 = '{:<5s} {:<3} {:>9.6f}   {:>9.6f}   {:>9.6f}   {:>8.4f}     0.04\n' \
+                .format(splitat1, self.e2s.elem_2_sfac('C'), axes[0][0],
+                        axes[0][1], axes[0][2], float(self.dsrp.occupancy))
+            at2 = '{:<5s} {:<3} {:>9.6f}   {:>9.6f}   {:>9.6f}   {:>8.4f}     0.04\n' \
+                .format(splitat2, self.e2s.elem_2_sfac('C'), axes[1][0],
+                        axes[1][1], axes[1][2], -float(self.dsrp.occupancy))
             dummy = ''
             splb = False
             # put all together to build up the atoms:
             for line, splatom in zip(id_lines, [at1, at2, dummy]):
                 # restraints should never be placed in this reslist[line]:
-                self.reslist[line] = ' '.join(self.reslist[line].split()[1:3])+'\n'
-                self.reslist[line] = self.reslist[line]+splatom
+                self.reslist[line] = ' '.join(self.reslist[line].split()[1:3]) + '\n'
+                self.reslist[line] = self.reslist[line] + splatom
                 # exchange the first three Fluorine atoms with coordinates from one
                 # disorder direction and the last three with the other direction:  
-                for num, fline in enumerate(self.reslist[line+1:line+1+3]):
+                for num, fline in enumerate(self.reslist[line + 1:line + 1 + 3]):
                     fline = fline.split()
                     if not splatom:
                         continue
                     [fsplit_a, fsplit_b] = calc_ellipsoid_axes(fline[2:5], uvals, self.cell)
-                    resline = self.reslist[line+1+num].split()
+                    resline = self.reslist[line + 1 + num].split()
                     resline[5] = float(resline[5])
                     resline[2:5] = fsplit_a
                     if splb:
@@ -340,12 +340,12 @@ class CF3(object):
                         # switch to fsplit_b. I can not decide on num, because that goes two times
                         # from 0 to 2 
                         splb = True
-                    self.reslist[line+1+num] = '{:<5s} {:<3} {:>9.6f}   {:>9.6f}   {:>9.6f}   {:>8.4f}     0.04\n'\
-                                                    .format(*resline)
+                    self.reslist[line + 1 + num] = '{:<5s} {:<3} {:>9.6f}   {:>9.6f}   {:>9.6f}   {:>8.4f}     0.04\n' \
+                        .format(*resline)
         else:
             for line in id_lines:
                 # restraints should never be placed in this reslist[line]:
-                self.reslist[line] = ' '.join(self.reslist[line].split()[1:3])+'\n'
+                self.reslist[line] = ' '.join(self.reslist[line].split()[1:3]) + '\n'
         # set refinement cycles back to 8
         shx = ShelxlRefine(self.reslist, self.basefilename, self.fa, self.options)
         shx.set_refinement_cycles('8')
@@ -376,14 +376,14 @@ class CF3(object):
         Z = remove_partsymbol(Z)
         numberedatoms = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9']
         if self.dsrp.resiflag:
-            F1, F2, F3, F4, F5, F6, F7, F8, F9  = numberedatoms
+            F1, F2, F3, F4, F5, F6, F7, F8, F9 = numberedatoms
             resiclass = self.resi.get_residue_class
             resinum = self.resi.get_resinumber
-            resistr = 'RESI '+resiclass+' '+resinum
+            resistr = 'RESI ' + resiclass + ' ' + resinum
             resi0 = 'RESI 0\n'
         else:
             nums = NumberScheme(self.reslist, numberedatoms, self.dsrp)
-            F1, F2, F3, F4, F5, F6, F7, F8, F9  = nums.get_fragment_number_scheme()            
+            F1, F2, F3, F4, F5, F6, F7, F8, F9 = nums.get_fragment_number_scheme()
         start_f_coord = self.lf.get_single_coordinate(fatoms[0])
         replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3),
                        ('F4', F4), ('F5', F5), ('F6', F6), ('F7', F7),
@@ -396,44 +396,44 @@ class CF3(object):
         self.reslist = reslist_copy
         self.rle._reslist = self.reslist
         # Turned out to be problematic with ShelXle:
-        #if self.dsrp.occupancy:
+        # if self.dsrp.occupancy:
         #    occ = self.dsrp.occupancy
-        #else:
-        occ = str((self.rle.get_fvar_count()+1)*10+1+20)
+        # else:
+        occ = str((self.rle.get_fvar_count() + 1) * 10 + 1 + 20)
         fcount = self.rle.get_fvar_count()
         self.rle.set_free_variables(occ, '0.3')
         atomline = self.fa.get_atom_line_numbers([target_atom])[0]
         self.make_pivot_isotropic(atomline)
-        atoms_cf9 = ['PART 1 {1}1', 
-                    F1+'   {0}   {4}    11.00000    0.04',
-                    F2+'   {0}   {5}    11.00000    0.04',
-                    F3+'   {0}   {6}    11.00000    0.04',
-                    'PART 2 {2}1',
-                    F4+'   {0}   {7}    11.00000    0.04',
-                    F5+'   {0}   {8}    11.00000    0.04',
-                    F6+'   {0}   {9}    11.00000    0.04',
-                    'PART 3 {3}1',
-                    F7+'   {0}   {10}    11.00000    0.04',
-                    F8+'   {0}   {11}    11.00000    0.04',
-                    F9+'   {0}   {12}    11.00000    0.04',                    
-                    'PART 0 ',
-                    self.endm]
+        atoms_cf9 = ['PART 1 {1}1',
+                     F1 + '   {0}   {4}    11.00000    0.04',
+                     F2 + '   {0}   {5}    11.00000    0.04',
+                     F3 + '   {0}   {6}    11.00000    0.04',
+                     'PART 2 {2}1',
+                     F4 + '   {0}   {7}    11.00000    0.04',
+                     F5 + '   {0}   {8}    11.00000    0.04',
+                     F6 + '   {0}   {9}    11.00000    0.04',
+                     'PART 3 {3}1',
+                     F7 + '   {0}   {10}    11.00000    0.04',
+                     F8 + '   {0}   {11}    11.00000    0.04',
+                     F9 + '   {0}   {12}    11.00000    0.04',
+                     'PART 0 ',
+                     self.endm]
         restr = wrap_headlines(restr, 77)
-        restr = ''.join(restr).format(fcount+1, fcount+2, fcount+3)
+        restr = ''.join(restr).format(fcount + 1, fcount + 2, fcount + 3)
         # place the restraints:
-        self.reslist[atomline] = (self.reslist[atomline]+self.startm+restr)
+        self.reslist[atomline] = (self.reslist[atomline] + self.startm + restr)
         at1 = self.lf.get_single_coordinate(Y)
         at2 = self.lf.get_single_coordinate(Z)
         coords = []
         # rotate the fluorine coordinate around at1, at2 to get three triples:
-        for delta in [0, 120, 240,   40, 160, 280,   80, 200, 320]:
+        for delta in [0, 120, 240, 40, 160, 280, 80, 200, 320]:
             coord = self.rotate_atom_around_bond(start_f_coord, at1, at2, delta)
             coords.append('{:>10.6f} {:>10.6f} {:>10.6f}'.format(*coord))
         if self.dsrp.resiflag:
-            atoms_cf9 = [resistr]+atoms_cf9+[resi0]
+            atoms_cf9 = [resistr] + atoms_cf9 + [resi0]
         # join all together:
         atoms_cf9 = '\n'.join(atoms_cf9).format(self.e2s.elem_2_sfac('F'),
-                                        fcount+1, fcount+2, fcount+3, *coords)
+                                                fcount + 1, fcount + 2, fcount + 3, *coords)
         self.reslist[atomline] += atoms_cf9
         # have to do this here, because set_free_variables() works on different reslist:
         # self.reslist[self.rle.find_fvarlines()[0]] = ' \n'.join(fvar)+'\n'
@@ -441,7 +441,7 @@ class CF3(object):
         shx.set_refinement_cycles('8')
         self.rl.write_resfile(self.reslist, '.res')
         return fatoms
- 
+
     def make_afix(self, afixnum, linenumber, resioff=False):
         """
         create an afix to build a CF3 or CH3 group
@@ -453,16 +453,18 @@ class CF3(object):
         resistr = ''
         resi0 = ''
         # Turned out to be problematic with ShelXle:
-        #if self.dsrp.occupancy:
+        # if self.dsrp.occupancy:
         #    occ = self.dsrp.occupancy
-        #else:
-        occ = str((self.rle.get_fvar_count()+1)*10+1)
+        # else:
+        numberscheme_130 = []
+        numberscheme_120 = []
+        occ = str((self.rle.get_fvar_count() + 1) * 10 + 1)
         if int(afixnum) == 120:
             self.dsrp.occupancy = occ
             self.rle.set_free_variables(occ, '0.5')
             num_120 = NumberScheme(self.reslist, ['F1', 'F2', 'F3', 'F4', 'F5', 'F6'], self.dsrp)
             # returns also the atom names if residue is active
-            numberscheme_120 = num_120.get_fragment_number_scheme()  
+            numberscheme_120 = num_120.get_fragment_number_scheme()
         if int(afixnum) == 130:
             num_130 = NumberScheme(self.reslist, ['F1', 'F2', 'F3'], self.dsrp)
             # returns also the atom names if residue is active
@@ -470,7 +472,7 @@ class CF3(object):
         if self.dsrp.resiflag and not resioff:
             resiclass = self.resi.get_residue_class
             resinum = self.resi.get_resinumber
-            resistr = '\nRESI '+resiclass+' '+resinum
+            resistr = '\nRESI ' + resiclass + ' ' + resinum
             resi0 = 'RESI 0\n'
             numberscheme_130 = ['F1', 'F2', 'F3']
             numberscheme_120 = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6']
@@ -478,28 +480,28 @@ class CF3(object):
         if int(afixnum) == 130:
             # CF3:
             afix_130 = [resistr,
-                        'AFIX {0}', # AFIX 120 or 130
-                        #'REM AFIX made by DSR: {3}',    
-                        numberscheme_130[0]+' {1} 0 0 0 11.0  0.04',
-                        numberscheme_130[1]+' {1} 0 0 0 11.0  0.04',
-                        numberscheme_130[2]+' {1} 0 0 0 11.0  0.04',
-                        #'REM end of AFIX by DSR {3}', # insert ID and later change it to the PART usw.
+                        'AFIX {0}',  # AFIX 120 or 130
+                        # 'REM AFIX made by DSR: {3}',
+                        numberscheme_130[0] + ' {1} 0 0 0 11.0  0.04',
+                        numberscheme_130[1] + ' {1} 0 0 0 11.0  0.04',
+                        numberscheme_130[2] + ' {1} 0 0 0 11.0  0.04',
+                        # 'REM end of AFIX by DSR {3}', # insert ID and later change it to the PART usw.
                         'AFIX 0',
                         resi0]
             afix_130 = '\n'.join(afix_130)
             afix = afix_130
-        elif int(afixnum) == 120:    
+        elif int(afixnum) == 120:
             # CF6:
             afix_120 = [resistr,
                         'AFIX {0}',
-                        '\nREM PART 1 !{3}', 
-                        numberscheme_120[0]+' {1} 0 0 0   {2}  0.04',
-                        numberscheme_120[1]+' {1} 0 0 0   {2}  0.04',
-                        numberscheme_120[2]+' {1} 0 0 0   {2}  0.04',
+                        '\nREM PART 1 !{3}',
+                        numberscheme_120[0] + ' {1} 0 0 0   {2}  0.04',
+                        numberscheme_120[1] + ' {1} 0 0 0   {2}  0.04',
+                        numberscheme_120[2] + ' {1} 0 0 0   {2}  0.04',
                         'REM PART 2 !{3}',
-                        numberscheme_120[3]+' {1} 0 0 0  -{2}  0.04',
-                        numberscheme_120[4]+' {1} 0 0 0  -{2}  0.04',
-                        numberscheme_120[5]+' {1} 0 0 0  -{2}  0.04',
+                        numberscheme_120[3] + ' {1} 0 0 0  -{2}  0.04',
+                        numberscheme_120[4] + ' {1} 0 0 0  -{2}  0.04',
+                        numberscheme_120[5] + ' {1} 0 0 0  -{2}  0.04',
                         'REM PART 0 !{3}',
                         'AFIX 0',
                         resi0,
@@ -554,30 +556,30 @@ class CF3(object):
         ratom = frac_to_cart(ratom, self.cell)
         at1 = frac_to_cart(at1, self.cell)
         at2 = frac_to_cart(at2, self.cell)
-                
-        ratom = mpm.matrix(list(ratom)+[1.0])
+
+        ratom = mpm.matrix(list(ratom) + [1.0])
         delta = radians(delta)
         x0, y0, z0 = at1
         T = mpm.matrix(((1, 0, 0, -x0),
                         (0, 1, 0, -y0),
                         (0, 0, 1, -z0),
-                        (0, 0, 0,   1)))
+                        (0, 0, 0, 1)))
         T1 = mpm.inverse(T)
 
-        vx = at2[0]-at1[0] 
-        vy = at2[1]-at1[1]  # P2 - P1
-        vz = at2[2]-at1[2]
-        vnorm = sqrt(vx**2+vy**2+vz**2)
-        a, b, c = vx/vnorm, vy/vnorm, vz/vnorm
-        d = mpm.sqrt(b**2+c**2)
-        
-        sina = b/d # For rotation around alpha
-        cosa = c/d #
+        vx = at2[0] - at1[0]
+        vy = at2[1] - at1[1]  # P2 - P1
+        vz = at2[2] - at1[2]
+        vnorm = sqrt(vx ** 2 + vy ** 2 + vz ** 2)
+        a, b, c = vx / vnorm, vy / vnorm, vz / vnorm
+        d = mpm.sqrt(b ** 2 + c ** 2)
 
-        Rxa = mpm.matrix(((        1,          0,          0,  0),
-                         (         0,       cosa,       sina,  0),
-                         (         0,      -sina,       cosa,  0),
-                         (         0,          0,          0,  1)))
+        sina = b / d  # For rotation around alpha
+        cosa = c / d  #
+
+        Rxa = mpm.matrix(((1, 0, 0, 0),
+                          (0, cosa, sina, 0),
+                          (0, -sina, cosa, 0),
+                          (0, 0, 0, 1)))
         '''
         Rya = mpm.matrix(((      cosa,          0,      -sina,  0),
                          (         0,          1,          0,  0),
@@ -590,30 +592,30 @@ class CF3(object):
                          (         0,          0,          0,  1)))
         '''
         Rxa1 = mpm.inverse((Rxa))
-        
-        cosb = d  #
-        sinb = -a # rotation around beta
 
-        Ryb = mpm.matrix(((      cosb,          0,      -sinb,  0),
-                          (         0,          1,          0,  0),
-                          (      sinb,          0,       cosb,  0),
-                          (         0,          0,          0,  1)))
+        cosb = d  #
+        sinb = -a  # rotation around beta
+
+        Ryb = mpm.matrix(((cosb, 0, -sinb, 0),
+                          (0, 1, 0, 0),
+                          (sinb, 0, cosb, 0),
+                          (0, 0, 0, 1)))
 
         Ryb1 = mpm.inverse((Ryb))
-                
+
         sind = mpm.sin(delta)
         cosd = mpm.cos(delta)
 
-        Rzd = mpm.matrix(((      cosd,       sind,          0,  0),
-                          (     -sind,       cosd,          0,  0),
-                          (         0,          0,          1,  0),
-                          (         0,          0,          0,  1)))
-        
-        R = T1*Rxa*Ryb*Rzd*Ryb1*Rxa1*T
-        v = R*ratom
+        Rzd = mpm.matrix(((cosd, sind, 0, 0),
+                          (-sind, cosd, 0, 0),
+                          (0, 0, 1, 0),
+                          (0, 0, 0, 1)))
+
+        R = T1 * Rxa * Ryb * Rzd * Ryb1 * Rxa1 * T
+        v = R * ratom
         v = cart_to_frac(v[:3], self.cell)
         v = [round(i, 6) for i in v]
-        return v 
+        return v
 
     def make_cf3_thorus(self, atom=None):
         """
@@ -630,12 +632,12 @@ class CF3(object):
         if not atom:
             atom = self.dsrp.target[0]
         # returns the atom names of the fluorine atoms:
-        fluorine_names = self.cf3() 
-        #self.do_refine_cycle(self.rl, self.reslist)
+        fluorine_names = self.cf3()
+        # self.do_refine_cycle(self.rl, self.reslist)
         print(fluorine_names[0], '##################')
         ratom = self.lf.get_single_coordinate(fluorine_names[0])
         print('ratom:', ratom)
-        #ratom = self.get_coordinates_of_first_atom(fluorine_names)
+        # ratom = self.get_coordinates_of_first_atom(fluorine_names)
         self.lf.read_lst_file()
         bondvec = self.lf.get_bondvector()
         print('bondvec:', bondvec)
@@ -647,12 +649,12 @@ class CF3(object):
         for delta in range(0, 360, 15):
             coord = self.rotate_atom_around_bond(ratom, at1, at2, delta)
             coords.append(coord)
-        #print('PART 0')
+        # print('PART 0')
         diffden = self.lf.get_difference_density(averaged=False)
         print(diffden)
         rotation = self.lf.get_degree_of_highest_peak()
         print(rotation)
-        n = (rotation/15)+4 #+1
+        n = (rotation / 15) + 4  # +1
         diffden = shift(diffden, n)
         print(len(diffden))
         print('\n')
@@ -664,7 +666,7 @@ class CF3(object):
         ff = []
         flast = False
         for i, num, co, dif in zip(names, [i for i in range(1, 25)], coords, diffden):
-            #print('PART {}'.format(num))
+            # print('PART {}'.format(num))
             if not flast:
                 flast = 'F24'
             ff.append((flast, i))
@@ -672,22 +674,23 @@ class CF3(object):
             sad12.append(('C22', i))
             sad13.append(('C19', i))
             print('{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  {:<8.6}  -1.2\
-            '.format(i, co[0], co[1], co[2], 10.0+(dif/2760.0)))
+            '.format(i, co[0], co[1], co[2], 10.0 + (dif / 2760.0)))
             # with free variables:
-            #print('{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  {:<8.6}  261\
-            #'.format(i, co[0], co[1], co[2], 10.0*num+1+10))
+            # print('{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  {:<8.6}  261\
+            # '.format(i, co[0], co[1], co[2], 10.0*num+1+10))
         from misc import flatten
-        print('SADI '+' '.join(flatten(sad12)))
-        print('SADI '+' '.join(flatten(sad13)))
-        print('SADI '+' '.join(flatten(ff)))
+        print('SADI ' + ' '.join(flatten(sad12)))
+        print('SADI ' + ' '.join(flatten(sad13)))
+        print('SADI ' + ' '.join(flatten(ff)))
         d = 0
         for dif in diffden:
-            d += dif/2760.0
-        #print('PART 0')
+            d += dif / 2760.0
+        # print('PART 0')
         print('AFIX 0')
         print
         print(d)
-    
+
+
 if __name__ == '__main__':
     pass
     """
