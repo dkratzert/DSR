@@ -49,6 +49,30 @@
 ########################################################################################
 
 
+<tfpy>
+rem Name: Tetrafluoropyridyl
+rem Src: Marcel Schorpp
+RESI PYRF
+SADI C1 C2 C1 C5
+SADI C2 C3 C5 C4
+SADI C3 N1 C4 N1
+SADI C2 F1 C3 F2 C3 F2 C4 F3 C4 F3 C5 F4 C5 F4 C2 F1
+SADI C3 F1 C2 F2 C2 F2 C4 F4 C4 F4 C5 F3 C5 F3 C3 F1
+FLAT C1 C2 C3 C4 C5 N1 F1 F2 F3 F4
+FRAG 17 1 1 1 90 90 90
+N1    7     14.50117    4.28317    6.08486
+C1    6     13.28635    3.45921    8.46565
+C2    6     12.90976    4.64238    7.83935
+C3    6     13.60031    4.98803    6.66990
+C4    6     14.86986    3.14063    6.74343
+C5    6     14.25749    2.71414    7.83387
+F1    9     12.02479    5.44454    8.36554
+F2    9     13.20399    6.10670    6.06683
+F3    9     15.82597    2.44544    6.14957
+F4    9     14.61957    1.51933    8.37032
+</tfpy>
+
+
 <pentb>
 rem Name: n-Pentane, (bent), C5H12
 rem Src: CCDC EJIYIG
