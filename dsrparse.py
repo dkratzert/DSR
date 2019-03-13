@@ -38,6 +38,9 @@ class DSRParser(object):
         self.dsr_dict = self.parse_dsr_line()
         self.remove_dsr_command()
 
+    def __str__(self):
+        return ' '.join(self.dsr_command_list)
+
     def find_dsr_command(self):
         """
         find the lines with a DSR command entry and return its line number as
