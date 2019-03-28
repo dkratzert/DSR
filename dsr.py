@@ -395,13 +395,6 @@ class DSR(object):
             if self.options.rigid_group:
                 restraints = 'AFIX 9\n'
             dfx_file_name = ''
-            if dsrp.dfix:
-                if dsrp.resiflag:
-                    restraints = add_residue_to_dfix(dfix_head, resi.get_resinumber) + ['\n'] + same_resi
-                else:
-                    restraints = rename_restraints_atoms(new_atomnames,
-                                                         [x[0] for x in self.gdb.get_atomnames(self.fragment)],
-                                                         dfix_head)
             if dsrp.part:
                 afix_entry = "PART {}  {}\n".format(dsrp.part, dsrp.occupancy) + afix_entry + "\nPART 0"
             if dsrp.resiflag:
@@ -427,6 +420,9 @@ class DSR(object):
             afix = Afix(self.reslist, dbatoms, db_atom_types, restraints, dsrp,
                         sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
             afix_entry = afix.build_afix_entry(self.external, basefilename + '.dfix', resi)
+            if dsrp.resiflag:
+                afix_entry = 'RESI {} {}'.format(resi.get_residue_class, resi.get_resinumber) + \
+                             afix_entry + "\nRESI 0"
         # Adds the origin of restraints and fragment to res file:
         import textwrap
         source = textwrap.wrap("REM Restraints for Fragment {}, {} from: {}. "
@@ -445,8 +441,8 @@ class DSR(object):
                 continue
         # + 'AFIX 0\n' seems to be not needed after shelx-2013
         self.reslist[dsrp.hklf_line - 1] = self.reslist[dsrp.hklf_line - 1] + afix_entry + '\n'
-        self.reslist[dsrp.unit_line] = self.reslist[dsrp.unit_line] + '\n'.join(source) + '\n' + ''.join(
-            restraints)
+        self.reslist[dsrp.unit_line] = self.reslist[dsrp.unit_line] + '\n'.join(source) + '\n' \
+                                       + '\n'.join(restraints)
         # write to file:
         if self.numpy_installed:
             self.rl.write_resfile(self.reslist, '.res')

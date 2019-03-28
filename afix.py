@@ -1,5 +1,5 @@
-#-*- encoding: utf-8 -*-
-#mÃ¶p
+# -*- encoding: utf-8 -*-
+# mÃ¶p
 #
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
@@ -10,15 +10,16 @@
 # ----------------------------------------------------------------------------
 #
 from __future__ import print_function
-from atomhandling import Elem_2_Sfac, rename_restraints_atoms
-import misc
+
+import fnmatch
 import os
 import sys
+
 import constants
-import fnmatch
+import misc
+from atomhandling import Elem_2_Sfac, rename_restraints_atoms
 from constants import RESTRAINT_CARDS
 from misc import id_generator
-
 
 __metaclass__ = type  # use new-style classes
 
@@ -44,7 +45,7 @@ def add_residue_to_dfix(dfix_head, resinum):
             except:
                 line[num] = line[num] + '_' + str(resinum)
                 continue
-        line = first+'  '+'  '.join(line[1:]) + '\n'
+        line = first + '  ' + '  '.join(line[1:]) + '\n'
         newhead.append(line)
     return newhead
 
@@ -86,7 +87,7 @@ class Afix(object):
         self._reslist = reslist
         self._find_atoms = find_atoms
         self._dbatoms = dbatoms
-        self.restraints = restraints
+        self.restraints = []
         self.dfix_restraints = dfix_restraints
         self._fragment_atom_types = fragment_atom_types
         self._sfac_table = sfac_table
@@ -107,10 +108,10 @@ class Afix(object):
         collects all restraints in the resfile and returns a list with them
         [['RIGU_CF3', 'O1', '>', 'F9'], '...']
         """
-        all_restraints =[]
+        all_restraints = []
         for n, resline in enumerate(self._reslist):
             resline = resline.strip(' \n\r')
-            #resline = resline.split()
+            # resline = resline.split()
             try:
                 resline[:4]
             except:
@@ -119,7 +120,7 @@ class Afix(object):
                 # see for the next  lines if the lines continues with "=":
                 line = 0
                 while resline[-1] == '=':
-                    resline = resline[:-1]+self._reslist[n+line+1]
+                    resline = resline[:-1] + self._reslist[n + line + 1]
                     line += 1
                     if not resline[-1] == '=':
                         break
@@ -217,9 +218,9 @@ class Afix(object):
             except IndexError:
                 continue
             if headline[0][:4] in constants.DIST_RESTRAINT_CARDS:
-                distance.append(' '.join(headline)+'\n')
+                distance.append(' '.join(headline) + '\n')
             else:
-                others.append(' '.join(headline)+'\n')
+                others.append(' '.join(headline) + '\n')
         return [distance, others]
 
     def combine_names_and_coordinates(self):
@@ -254,27 +255,20 @@ class Afix(object):
         :param resi:                Residue() object
         """
         old_atoms = []
-        afix_list = []   # the final list with atoms, sfac and coordinates
+        afix_list = []  # the final list with atoms, sfac and coordinates
         e2s = Elem_2_Sfac(self._sfac_table)
-        new_atomnames = list(reversed(self.numberscheme)) # i reverse it to pop() later
+        new_atomnames = list(reversed(self.numberscheme))  # i reverse it to pop() later
         # Residue is active:
         if self.dsrp.resiflag:
-            self.restraints = resi.format_restraints(self.restraints)
+            # self.restraints = resi.format_restraints(self.restraints)
             # Adds a "SAME_resiclass firstatom > lastatom" to the afix:
             if not self.dsrp.dfix and not self.options.rigid_group:
                 self.restraints += ["SAME_{} {} > {}".format(resi.get_residue_class,
                                                              new_atomnames[-1], new_atomnames[0])]
-            self.restraints = self.remove_duplicate_restraints(self.restraints, self.collect_all_restraints(),
-                                                               resi.get_residue_class)
-            if not external_restraints:
-                self.restraints += ['RESI {} {}'.format(
-                    resi.get_resinumber, resi.get_residue_class)]
         # No residue:
         else:
             # applies new naming scheme to head:
             old_atoms = [i[0] for i in self._dbatoms]
-            self.restraints = rename_restraints_atoms(new_atomnames, old_atoms, self.restraints)
-            self.restraints = self.remove_duplicate_restraints(self.restraints, self.collect_all_restraints())
         # decide if restraints to external file or internal:
         distance, other_head = self.distance_and_other_restraints(self.restraints)
         # External restraints:
@@ -285,7 +279,7 @@ class Afix(object):
             if self.dfix_restraints:
                 # DFIX enabled:
                 pname = os.path.splitext(dfx_file_name)
-                dfx_file_name = pname[0]+"_dfx"+pname[1]
+                dfx_file_name = pname[0] + "_dfx" + pname[1]
                 if self.dsrp.resiflag:
                     # External, no dfix but with residue:
                     self.dfix_restraints = add_residue_to_dfix(self.dfix_restraints, resi.get_resinumber)
@@ -301,8 +295,6 @@ class Afix(object):
                 self.restraints = self.restraints = other_head
             if self.dfix_restraints:
                 self.restraints = other_head
-            if self.dsrp.resiflag:
-                self.restraints += ['RESI {} {}'.format(resi.get_resinumber, resi.get_residue_class)]
         # No external restraints:
         else:
             if self.dfix_restraints:
@@ -330,7 +322,7 @@ class Afix(object):
             line = []
             sfac_num = str(e2s.elem_2_sfac(reversed_fragm_atom_types.pop()))
             line.insert(0, str(i[0]))  # Atom name
-            line.insert(1, sfac_num)   # SFAC number
+            line.insert(1, sfac_num)  # SFAC number
             line.insert(2, '0       ')
             line.insert(3, '0       ')
             line.insert(4, '0       ')
@@ -357,9 +349,9 @@ class Afix(object):
             i[4] = '{:>10.6f}'.format(float(i[4]))
             new_atom_list.append('   '.join(i).rstrip())
         atoms = '\n'.join(new_atom_list)
-        afixnumber = '179'   # makes afix 179 default
+        afixnumber = '179'  # makes afix 179 default
         if self.part:
-            part = 'PART '+str(self.part)+' '+str(occ_part)
+            part = 'PART ' + str(self.part) + ' ' + str(occ_part)
             part2 = 'PART 0'
         else:
             part = ''
@@ -368,13 +360,6 @@ class Afix(object):
             resi_end = 'RESI 0'
         else:
             resi_end = ''
-        if external_restraints and not self.options.rigid_group:
-            if self.dsrp.resiflag:
-                self.restraints += '\nREM The restraints for residue {} are in this file:\nrem +{}\nREM {}\n'\
-                                            .format(resi.get_residue_class, dfx_file_name, self.rand_id_dfx)
-            else:
-                self.restraints += '\nREM The restraints for this moiety are in this file:\nrem +{}\nREM {}\n'\
-                                            .format(dfx_file_name, self.rand_id_dfx)
         if self.options.rigid_group:
             afixtag = ''
             if self.dsrp.resiflag:
@@ -382,16 +367,17 @@ class Afix(object):
             else:
                 self.restraints = ''
         else:
-            afixtag = 'REM '+self.rand_id_afix
-            self.restraints = '\n'.join(self.restraints)
-        afix = '{0}{1}\n' \
+            afixtag = 'REM ' + self.rand_id_afix
+            #self.restraints = ''.join(self.restraints)
+        afix = '{0}\n' \
+               '{1}\n' \
                'AFIX {2}\n' \
                '{3}\n' \
                '{4}\n' \
                'AFIX 0\n' \
                '{5}\n' \
                '{6}\n' \
-               '{7}\n\n'.format('', #self._restraints,  # 0
+               '{7}\n\n'.format('',  # self.restraints,  # 0
                                 part,  # 1
                                 str(afixnumber),  # 2
                                 afixtag,  # 3
@@ -399,7 +385,7 @@ class Afix(object):
                                 afixtag,  # 5
                                 part2,  # 6
                                 resi_end,  # 7
-                                )        # 8
+                                )  # 8
         return afix
 
     def write_dbhead_to_file(self, filename, dbhead, resi_class, resi_number):
@@ -444,15 +430,10 @@ class Afix(object):
         dfix_file.close()
         return filename
 
+
 if __name__ == '__main__':
     import doctest
-    failed, attempted = doctest.testmod()#verbose=True)
+
+    failed, attempted = doctest.testmod()  # verbose=True)
     if failed == 0:
         print('passed all {} tests!'.format(attempted))
-
-
-
-
-
-
-
