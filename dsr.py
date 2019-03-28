@@ -16,7 +16,7 @@ import os
 import sys
 from datetime import datetime
 
-from afix import Afix
+from afix import write_dbhead_to_file, remove_duplicate_restraints
 from atomhandling import Elem_2_Sfac, rename_restraints_atoms
 from constants import width, sep_line, isoatomstr
 from dbfile import ImportGRADE, print_search_results
@@ -319,8 +319,6 @@ class DSR(object):
         # ##########Not using SHELXL for fragment fit: ###########
 
         print("--- Using fast fragment fit ---")
-        afix = Afix(self.reslist, dbatoms, db_atom_types, dsrp,
-                    sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
         if self.options.target_coords:
             target_coords = chunks(self.options.target_coords, 3)
         else:
@@ -384,15 +382,13 @@ class DSR(object):
             # if dsrp.resiflag:  # <- Or should I do this?
             restraints += ["SIMU 0.04 0.08 1"]
         if not options.external_restr:
-            restraints = afix.remove_duplicate_restraints(restraints, afix.collect_all_restraints(),
-                                                          resi.get_residue_class)
+            restraints = remove_duplicate_restraints(self.reslist, restraints, resi.get_residue_class)
         restraints = wrap_headlines(restraints)
         dfx_file_name = ''
         if dsrp.part:
             afix_entry = "PART {}  {}\n".format(dsrp.part, dsrp.occupancy) + afix_entry + "\nPART 0"
         if dsrp.resiflag:
-            afix_entry = 'RESI {} {}\n'.format(resi.get_residue_class, resi.get_resinumber) + \
-                         afix_entry + "\nRESI 0"
+            afix_entry = 'RESI {} {}\n{}\nRESI 0'.format(resi.get_residue_class, resi.get_resinumber, afix_entry)
         if self.options.rigid_group:
             afix_entry = 'AFIX 9\n' + afix_entry
         if options.external_restr:
@@ -401,8 +397,8 @@ class DSR(object):
                 dfx_file_name = pname + "_dfx" + ext
             else:
                 dfx_file_name = pname + ext
-            dfx_file_name = afix.write_dbhead_to_file(dfx_file_name, restraints, resi.get_residue_class,
-                                                      resi.get_resinumber)
+            dfx_file_name = write_dbhead_to_file(dsrp, dfx_file_name, restraints, resi.get_residue_class,
+                                                 resi.get_resinumber)
             if dsrp.resiflag:
                 restraints = 'REM Restraints for residue {}:\n+{}\n' \
                     .format(resi.get_residue_class, dfx_file_name)

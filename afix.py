@@ -15,11 +15,8 @@ import fnmatch
 import os
 import sys
 
-import constants
 import misc
-from atomhandling import Elem_2_Sfac, rename_restraints_atoms
 from constants import RESTRAINT_CARDS
-from misc import id_generator
 
 __metaclass__ = type  # use new-style classes
 
@@ -50,239 +47,146 @@ def add_residue_to_dfix(dfix_head, resinum):
     return newhead
 
 
-def insert_dsr_warning():
+def collect_all_restraints(reslist):
     """
-    information to insert into .res-file
-    TODO: insert this text only once in the file and also the
-          comments from GRADE
+    :return all_restraints: list
+    collects all restraints in the resfile and returns a list with them
+    [['RIGU_CF3', 'O1', '>', 'F9'], '...']
     """
-    txt = "rem the following was inserted by DSR:\n" \
-          "http://dx.doi.org/10.1107/S1600576715005580\n"
-    return txt
-
-
-class Afix(object):
-    """
-    methods for the AFIX entry
-    - dbhead is modified by Resi() if residues are used!
-      RESI num class ist inserted there
-    """
-
-    def __init__(self, reslist, dbatoms, fragment_atom_types, dsrp, sfac_table,
-                 find_atoms, numberscheme, options, dfix_restraints=False):
-        """
-        :param reslist:      list of the .res file
-        :type reslist: list
-        :param dbatoms:      list of the atoms in the database entry
-                             [['O1', 3, '-0.01453', '1.66590', '0.10966'], ... ]
-        :type dbatoms: list
-        :param restraints:       restraints from the database
-        :param dsrp: dsr parser object
-        :param sfac_table:   SHELXL SFAC table as list like: ['C', 'H', 'O', 'F', 'Al', 'Ga']
-        :param find_atoms:   FindAtoms() object
-        :param numberscheme: atoms numbering scheme like: ['O1A', 'C1A', 'C2A', 'F1A', 'F2A', 'F3A', 'C3A']
-
-        """
-        self._reslist = reslist
-        self._find_atoms = find_atoms
-        self._dbatoms = dbatoms
-        self.dfix_restraints = dfix_restraints
-        self._fragment_atom_types = fragment_atom_types
-        self._sfac_table = sfac_table
-        self.numberscheme = numberscheme
-        self.dsrp = dsrp
-        self.part = dsrp.part
-        self.occ = dsrp.occupancy
-        self.source_atoms = dsrp.source
-        self.target_atoms = dsrp.target
-        self._dfix = dsrp.dfix
-        self.options = options
-        self.rand_id_dfx = id_generator(size=7)
-        self.rand_id_afix = id_generator(size=7)
-
-    def collect_all_restraints(self):
-        """
-        :return all_restraints: list
-        collects all restraints in the resfile and returns a list with them
-        [['RIGU_CF3', 'O1', '>', 'F9'], '...']
-        """
-        all_restraints = []
-        for n, resline in enumerate(self._reslist):
-            resline = resline.strip(' \n\r')
-            # resline = resline.split()
-            try:
-                resline[:4]
-            except:
-                continue
-            if resline[:4] in RESTRAINT_CARDS:
-                # see for the next  lines if the lines continues with "=":
-                line = 0
-                while resline[-1] == '=':
-                    resline = resline[:-1] + self._reslist[n + line + 1]
-                    line += 1
-                    if not resline[-1] == '=':
-                        break
-                    if line > 500:
-                        break
-                all_restraints.append(resline)
-        return all_restraints
-
-    @staticmethod
-    def remove_duplicate_restraints(restraints, all_restraints, residue_class=''):
-        """
-        removes restraints from the header which are already
-        in the res-file.
-
-        :param restraints:         database header (list of strings)
-        :param residue_class:  SHELXL residue class
-        :type residue_class:   string
-        :param all_restraints: all restraints in the res file
-        :type all_restraints:  list
-        :return new_restr: list
-        >>> dbhead = ["SADI 0.02 C1 C2 C2 C3 C3 C4", "SADI 0.04 C1 C3 C3 C5", "DFIX 1.45 C1 C2"]
-        >>> all_restraints = ["SADI C1 C2 C2 C3 C3 C4", "SADI C1 C3 C3 C5", "DFIX C1 C2", "SADI C4 C5 C5 C6"]
-        >>> Afix.remove_duplicate_restraints(dbhead, all_restraints)
-        <BLANKLINE>
-        Already existing restraints were not applied again.
-        []
-
-        >>> all_restraints = ["SADI 0.02 C1 C2 C2 C3 C3 C4", "SADI 0.04 C1 C3 C3 C5", "DFIX 1.45 C1 C2"]
-        >>> dbhead = ["SADI C1 C2 C2 C3 C3 C4", "SADI C1 C3 C3 C5", "DFIX C1 C2", "SADI C4 C5 C5 C6"]
-        >>> Afix.remove_duplicate_restraints(dbhead, all_restraints)        
-        <BLANKLINE>
-        Already existing restraints were not applied again.
-        ['SADI C4 C5 C5 C6']
-        """
-        modified = False
-        new_restr = restraints[:]
-        for num, line in enumerate(restraints):
-            line = Afix.remove_stddev_from_restraint(line.split())
-            for restr in all_restraints:
-                restr = restr.split()
-                restr = Afix.remove_stddev_from_restraint(restr)
-                if line == restr:
-                    new_restr[num] = ''
-                    modified = True
+    all_restraints = []
+    for n, resline in enumerate(reslist):
+        resline = resline.strip(' \n\r')
+        # resline = resline.split()
+        try:
+            resline[:4]
+        except:
+            continue
+        if resline[:4] in RESTRAINT_CARDS:
+            # see for the next  lines if the lines continues with "=":
+            line = 0
+            while resline[-1] == '=':
+                resline = resline[:-1] + reslist[n + line + 1]
+                line += 1
+                if not resline[-1] == '=':
                     break
-        if modified:
-            if residue_class:
-                print('\nAlready existing restraints for residue "{}" were not '
-                      'applied again.'.format(residue_class))
-            else:
-                print('\nAlready existing restraints were not applied again.')
-        new_restr = [x for x in new_restr if x]
-        return new_restr
+                if line > 500:
+                    break
+            all_restraints.append(resline)
+    return all_restraints
 
-    @staticmethod
-    def remove_stddev_from_restraint(restr):
-        # type: (list) -> list
-        """
-        Parameters
-        ----------
-        restr: list of restraints
 
-        Returns list of restraints without standars deviation
-        -------
-        
-        >>> r = ['SADI', '0.02', 'C1', 'C2', 'C3', 'C4']
-        >>> r2 = ['SADI', 'C1', 'C2', 'C3', 'C4']
-        >>> Afix.remove_stddev_from_restraint(r)
-        ['SADI', 'C1', 'C2', 'C3', 'C4']
-        >>> Afix.remove_stddev_from_restraint(r2)
-        ['SADI', 'C1', 'C2', 'C3', 'C4']
-        """
-        new = []
-        # find out where the atoms begin (leave out numbers):
-        for num, i in enumerate(restr):
-            if i[0].isalpha():
-                new.append(i)
-        return new
+def remove_duplicate_restraints(reslist, restraints, residue_class=''):
+    """
+    removes restraints from the header which are already
+    in the res-file.
 
-    @staticmethod
-    def distance_and_other_restraints(restraints):
-        """
-        Devides restraints in distance restraints (distance)
-        and all other lines (others)
-        Restraints are instead inserted after fragment fit
+    :param restraints:         database header (list of strings)
+    :param residue_class:  SHELXL residue class
+    :type residue_class:   string
+    :param all_restraints: all restraints in the res file
+    :type all_restraints:  list
+    :return new_restr: list
+    >>> dbhead = ["SADI 0.02 C1 C2 C2 C3 C3 C4", "SADI 0.04 C1 C3 C3 C5", "DFIX 1.45 C1 C2"]
+    >>> all_restraints = ["SADI C1 C2 C2 C3 C3 C4", "SADI C1 C3 C3 C5", "DFIX C1 C2", "SADI C4 C5 C5 C6"]
+    >>> remove_duplicate_restraints(dbhead)
+    <BLANKLINE>
+    Already existing restraints were not applied again.
+    []
 
-        :param restraints:  database header
-        """
-        distance = []
-        others = []
-        for num, headline in enumerate(restraints):  # @UnusedVariable
-            headline = headline.strip().split()
-            try:
-                headline[0]
-            except IndexError:
-                continue
-            if headline[0][:4] in constants.DIST_RESTRAINT_CARDS:
-                distance.append(' '.join(headline) + '\n')
-            else:
-                others.append(' '.join(headline) + '\n')
-        return [distance, others]
+    >>> all_restraints = ["SADI 0.02 C1 C2 C2 C3 C3 C4", "SADI 0.04 C1 C3 C3 C5", "DFIX 1.45 C1 C2"]
+    >>> dbhead = ["SADI C1 C2 C2 C3 C3 C4", "SADI C1 C3 C3 C5", "DFIX C1 C2", "SADI C4 C5 C5 C6"]
+    >>> remove_duplicate_restraints(dbhead)
+    <BLANKLINE>
+    Already existing restraints were not applied again.
+    ['SADI C4 C5 C5 C6']
+    """
+    modified = False
+    new_restr = restraints[:]
+    for num, line in enumerate(restraints):
+        line = remove_stddev_from_restraint(line.split())
+        for restr in collect_all_restraints(reslist):
+            restr = restr.split()
+            restr = remove_stddev_from_restraint(restr)
+            if line == restr:
+                new_restr[num] = ''
+                modified = True
+                break
+    if modified:
+        if residue_class:
+            print('\nAlready existing restraints for residue "{}" were not '
+                  'applied again.'.format(residue_class))
+        else:
+            print('\nAlready existing restraints were not applied again.')
+    new_restr = [x for x in new_restr if x]
+    return new_restr
 
-    def combine_names_and_coordinates(self):
-        """
-        Combines the target atom names with the coordinates from the -target option.
-        Douplicate q-peak names are explicitely allowed here for special positions.
-        Therefore, the target atoms are named DUM0, DUM1, DUM2, ...
-        :rtype: dict
-        """
-        atoms = {}
-        chunk = misc.chunks(self.options.target_coords, 3)
-        if len(chunk) != len(self.target_atoms):
-            print("*** Different number of target atoms and target coordinates! Can not proceed. ***")
-            sys.exit()
-        tmp = self.target_atoms
-        self.target_atoms = []
-        for num, at in enumerate(tmp):
-            # Handles douplicate q-peak names:
-            at = "DUM{}".format(num)
-            atoms[at] = chunk[num]
-            self.target_atoms.append(at)
-        return atoms
 
-    def write_dbhead_to_file(self, filename, dbhead, resi_class, resi_number):
-        """
-        write the restraints to an external file
-        :param filename:     filename of database file
-        :param dbhead:       database header
-        :param resi_class:   SHELXL residue class
-        :param resi_number:  SHELXL residue number
-        :return filename:    full file name where restraints will be written
-        """
-        number = '1'
-        files = []
-        # find a unique number for the restraint file:
-        for filen in misc.sortedlistdir('.'):
-            if fnmatch.fnmatch(filen, 'dsr_*_' + filename):
-                filenum = filen.split('_')
-                if str.isdigit(filenum[1]):
-                    files.append(filenum[1])
-        filepath, filename = os.path.split(os.path.abspath(filename))
-        try:
-            number = str(int(files[-1]) + 1)
-        except IndexError:
-            pass
-        if not self.dsrp.resiflag:  # no residues
-            filename = 'dsr_' + number + '_' + filename
-        if self.dsrp.resiflag and resi_number:  # only residue number known
-            filename = 'dsr_' + resi_class + '_' + resi_number + '_' + filename
-        if self.dsrp.resiflag and not resi_number and resi_class:  # only residue class known
-            filename = 'dsr_' + resi_class + '_' + filename
-        if os.path.isfile(os.path.abspath(filename)):
-            print('Previous restraint file found. Using restraints from "{}"'.format(filename))
-            return filename
-        try:
-            dfix_file = open(os.path.join(filepath, filename), 'w')  # open the ins file
-        except IOError:
-            print('*** Unable to write restraints file! Check directory write permissions. ***')
-            sys.exit(False)
-        print('Restraints were written to "{}"'.format(os.path.join(filepath, filename)))
-        for i in dbhead:  # modified reslist
-            dfix_file.write("%s" % i)  # write the new file
-        dfix_file.close()
+def remove_stddev_from_restraint(restr):
+    # type: (list) -> list
+    """
+    Parameters
+    ----------
+    restr: list of restraints
+
+    Returns list of restraints without standars deviation
+    -------
+
+    >>> r = ['SADI', '0.02', 'C1', 'C2', 'C3', 'C4']
+    >>> r2 = ['SADI', 'C1', 'C2', 'C3', 'C4']
+    >>> remove_stddev_from_restraint(r)
+    ['SADI', 'C1', 'C2', 'C3', 'C4']
+    >>> remove_stddev_from_restraint(r2)
+    ['SADI', 'C1', 'C2', 'C3', 'C4']
+    """
+    new = []
+    # find out where the atoms begin (leave out numbers):
+    for num, i in enumerate(restr):
+        if i[0].isalpha():
+            new.append(i)
+    return new
+
+
+def write_dbhead_to_file(dsrp, filename, dbhead, resi_class, resi_number):
+    """
+    write the restraints to an external file
+    :param filename:     filename of database file
+    :param dbhead:       database header
+    :param resi_class:   SHELXL residue class
+    :param resi_number:  SHELXL residue number
+    :return filename:    full file name where restraints will be written
+    """
+    number = '1'
+    files = []
+    # find a unique number for the restraint file:
+    for filen in misc.sortedlistdir('.'):
+        if fnmatch.fnmatch(filen, 'dsr_*_' + filename):
+            filenum = filen.split('_')
+            if str.isdigit(filenum[1]):
+                files.append(filenum[1])
+    filepath, filename = os.path.split(os.path.abspath(filename))
+    try:
+        number = str(int(files[-1]) + 1)
+    except IndexError:
+        pass
+    if not dsrp.resiflag:  # no residues
+        filename = 'dsr_' + number + '_' + filename
+    if dsrp.resiflag and resi_number:  # only residue number known
+        filename = 'dsr_' + resi_class + '_' + resi_number + '_' + filename
+    if dsrp.resiflag and not resi_number and resi_class:  # only residue class known
+        filename = 'dsr_' + resi_class + '_' + filename
+    if os.path.isfile(os.path.abspath(filename)):
+        print('Previous restraint file found. Using restraints from "{}"'.format(filename))
         return filename
+    try:
+        dfix_file = open(os.path.join(filepath, filename), 'w')  # open the ins file
+    except IOError:
+        print('*** Unable to write restraints file! Check directory write permissions. ***')
+        sys.exit(False)
+    print('Restraints were written to "{}"'.format(os.path.join(filepath, filename)))
+    for i in dbhead:  # modified reslist
+        dfix_file.write("%s" % i)  # write the new file
+    dfix_file.close()
+    return filename
 
 
 if __name__ == '__main__':
