@@ -323,6 +323,15 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         self.dsr_runtest(25, '-target 0.12127 0.47704 0.70694 0.38298 0.29146 0.52138 0.2512 0.3015 0.6978 -r')
 
 
+    # @unittest.skip(" skipping26 ")
+    def testrun_run26(self):
+        """
+        regular -r dsr run with
+        dfix PART 2 occ -31
+        """
+        self.dsr_runtest(26, '-r', remlines=[])
+
+
 def remove_whitespace(mystringlist):
     newlist = []
     for line in mystringlist:
