@@ -192,12 +192,15 @@ class ResListEdit():
         else:
             return fvarlines
 
-    def insert_frag_fend_entry(self, dbatoms, cell, fvarlines):
+    def insert_frag_fend_entry(self, dbatoms, cell, fvarline):
         """
         Inserts the FRAG ... FEND entry in the res file.
         :param dbatoms:   list of atoms in the database entry
-        :param cell:  string with "FRAG 17 cell" from the database entry
-        :param fvarlines: line where FVAR or the first atom is located
+        :type dbatoms: list
+        :param cell:  list with cell from the database entry
+        :type cell: list
+        :param fvarline: line where FVAR or the first atom is located
+        :type fvarline: str
         """
         dblines = []
         db = [list(map(str, i)) for i in dbatoms]
@@ -210,7 +213,7 @@ class ResListEdit():
         dblines = 'FRAG 17 {} {} {} {} {} {}'.format(*cell) + '\n' + dblines
         dblines = '\n The following is from DSR:\n'+dblines
         dblines = dblines+'\nFEND\n\n'
-        self._reslist.insert(fvarlines[-1], dblines)   # insert the db entry right after FVAR
+        self._reslist.insert(fvarline, dblines)   # insert the db entry right after FVAR
 
     def get_fvarlist(self):
         fvar_list = []

@@ -87,7 +87,7 @@ class DSRParser(object):
         >>> #dsr_line = dsrp.get_dsr_dict
         >>> dsrp = DSRParser(reslist)
         >>> dsrp.unit_line
-        6
+        7
         """
         unitline = misc.find_line(self.reslist, r'^UNIT\s+\d')
         return unitline
@@ -100,14 +100,14 @@ class DSRParser(object):
 
         >>> from resfile import ResList, ResListEdit
         >>> from dsrparse import DSRParser
-        >>> res_file = 'p21c.res'
+        >>> res_file = 'p21c.res'  # located in unit-tests
         >>> rl = ResList(res_file)
         >>> reslist = rl.get_res_list()
         >>> rle = ResListEdit(reslist, res_file)
         >>> #dsr_line = dsrp.get_dsr_dict
         >>> dsrp = DSRParser(reslist)
         >>> dsrp.hklf_line
-        254
+        269
         """
         hklfline = misc.find_line(self.reslist, r'^HKLF\s+\d')
         return hklfline
