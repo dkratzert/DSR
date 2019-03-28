@@ -262,7 +262,6 @@ class DSR(object):
         find_atoms = atomhandling.FindAtoms(self.reslist)
         rle = ResListEdit(self.reslist, find_atoms)
         dsrp = DSRParser(self.reslist)
-        fvarlines = rle.find_fvarlines()
         self.fragment = dsrp.fragment
         restraints = self.gdb.get_restraints(self.fragment)  # this is only executed once
         db_residue_string = self.gdb.get_resi(self.fragment)
@@ -421,6 +420,7 @@ class DSR(object):
             self.gdb.get_fragment_name(self.fragment),
             self.gdb.get_src(self.fragment)),
             width=74, subsequent_indent='REM ')
+        source = '\n'.join(source) + '\n'
         # check if restraints already inserted:
         for line in self.reslist:
             try:
@@ -431,8 +431,7 @@ class DSR(object):
                 continue
         # + 'AFIX 0\n' seems to be not needed after shelx-2013
         self.reslist[dsrp.hklf_line - 1] = self.reslist[dsrp.hklf_line - 1] + afix_entry + '\n'
-        self.reslist[dsrp.unit_line] = self.reslist[dsrp.unit_line] + '\n'.join(source) + '\n' \
-                                       + ''.join(restraints)
+        self.reslist[dsrp.unit_line] = self.reslist[dsrp.unit_line] + source + ''.join(restraints)
         # write to file:
 
         self.rl.write_resfile(self.reslist, '.res')

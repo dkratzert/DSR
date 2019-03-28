@@ -119,13 +119,13 @@ class DSRParser(object):
         txt = ' '.join(self.dsr_command_list)
         # wrap the line after 75 chars:
         # The ! prevents weired code highlighting in ShelXle:
-        dsrlines = textwrap.wrap(txt, 75, initial_indent='REM ', subsequent_indent='REM !')
-        dsrlines = '\n'.join(dsrlines)
-        dsrlines += '\n'
+        # dsrlines = textwrap.wrap(txt, 75, initial_indent='REM ', subsequent_indent='REM !')
+        # dsrlines = '\n'.join(dsrlines)
+        # dsrlines += '\n'
         self.reslist[self.dsr_line_number] = ''  # delete old line
         if self.multiline:
             self.reslist[self.dsr_line_number + 1] = ''  # delete second old line
-        self.reslist[self.dsr_line_number] = dsrlines
+        # self.reslist[self.dsr_line_number] = dsrlines
 
     def find_commands(self, command):
         """
