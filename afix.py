@@ -68,7 +68,7 @@ class Afix(object):
       RESI num class ist inserted there
     """
 
-    def __init__(self, reslist, dbatoms, fragment_atom_types, restraints, dsrp, sfac_table,
+    def __init__(self, reslist, dbatoms, fragment_atom_types, dsrp, sfac_table,
                  find_atoms, numberscheme, options, dfix_restraints=False):
         """
         :param reslist:      list of the .res file
@@ -76,7 +76,6 @@ class Afix(object):
         :param dbatoms:      list of the atoms in the database entry
                              [['O1', 3, '-0.01453', '1.66590', '0.10966'], ... ]
         :type dbatoms: list
-        :param fragment_atom_types:      ['N', 'C', 'C', 'C']
         :param restraints:       restraints from the database
         :param dsrp: dsr parser object
         :param sfac_table:   SHELXL SFAC table as list like: ['C', 'H', 'O', 'F', 'Al', 'Ga']
@@ -87,7 +86,6 @@ class Afix(object):
         self._reslist = reslist
         self._find_atoms = find_atoms
         self._dbatoms = dbatoms
-        self.restraints = []
         self.dfix_restraints = dfix_restraints
         self._fragment_atom_types = fragment_atom_types
         self._sfac_table = sfac_table
@@ -243,150 +241,6 @@ class Afix(object):
             atoms[at] = chunk[num]
             self.target_atoms.append(at)
         return atoms
-
-    def build_afix_entry(self, external_restraints, dfx_file_name, resi):
-        """
-        build an afix entry with atom coordinates from the target atoms
-
-        :type resi: Resi
-        :param external_restraints:  True/False decision if restraints should be
-                                     written to external file
-        :param dfx_file_name:        name of file for external restraints
-        :param resi:                Residue() object
-        """
-        old_atoms = []
-        afix_list = []  # the final list with atoms, sfac and coordinates
-        e2s = Elem_2_Sfac(self._sfac_table)
-        new_atomnames = list(reversed(self.numberscheme))  # i reverse it to pop() later
-        # Residue is active:
-        if self.dsrp.resiflag:
-            # self.restraints = resi.format_restraints(self.restraints)
-            # Adds a "SAME_resiclass firstatom > lastatom" to the afix:
-            if not self.dsrp.dfix and not self.options.rigid_group:
-                self.restraints += ["SAME_{} {} > {}".format(resi.get_residue_class,
-                                                             new_atomnames[-1], new_atomnames[0])]
-        # No residue:
-        else:
-            # applies new naming scheme to head:
-            old_atoms = [i[0] for i in self._dbatoms]
-        # decide if restraints to external file or internal:
-        distance, other_head = self.distance_and_other_restraints(self.restraints)
-        # External restraints:
-        if external_restraints and not self.options.rigid_group:
-            # in case of dfix, write restraints to file after fragment fit
-            self.restraints = misc.wrap_headlines(distance)
-            # returns the real name of the restraints file:
-            if self.dfix_restraints:
-                # DFIX enabled:
-                pname = os.path.splitext(dfx_file_name)
-                dfx_file_name = pname[0] + "_dfx" + pname[1]
-                if self.dsrp.resiflag:
-                    # External, no dfix but with residue:
-                    self.dfix_restraints = add_residue_to_dfix(self.dfix_restraints, resi.get_resinumber)
-                else:
-                    # No residue but dfix and external:
-                    self.dfix_restraints = rename_restraints_atoms(new_atomnames, old_atoms, self.dfix_restraints)
-                dfx_file_name = self.write_dbhead_to_file(dfx_file_name, self.dfix_restraints, resi.get_residue_class,
-                                                          resi.get_resinumber)
-            else:
-                # DFIX disabled:
-                dfx_file_name = self.write_dbhead_to_file(dfx_file_name, self.restraints, resi.get_residue_class,
-                                                          resi.get_resinumber)
-                self.restraints = self.restraints = other_head
-            if self.dfix_restraints:
-                self.restraints = other_head
-        # No external restraints:
-        else:
-            if self.dfix_restraints:
-                if self.dsrp.resiflag:
-                    self.dfix_restraints = add_residue_to_dfix(self.dfix_restraints, resi.get_resinumber)
-                self.restraints = other_head + self.dfix_restraints
-                if not self.dsrp.resiflag:
-                    self.restraints = rename_restraints_atoms(new_atomnames, old_atoms, self.restraints)
-            self.restraints = misc.wrap_headlines(self.restraints)
-        # list of atom types in reverse order
-        reversed_fragm_atom_types = list(reversed(self._fragment_atom_types))
-        if self.options.target_coords:
-            # {'C1': ['1.123', '0.7456', '3.245']}
-            coordinates = self.combine_names_and_coordinates()
-        else:
-            coordinates = self._find_atoms.get_atomcoordinates(self.target_atoms)
-        occ_part = self.occ
-        if not self.occ:
-            occ_part = ''
-            occ = "11.00"
-        else:
-            occ = self.occ
-        # a list of zeroed atom coordinates (afix_list) is built:
-        for i in self._dbatoms:
-            line = []
-            sfac_num = str(e2s.elem_2_sfac(reversed_fragm_atom_types.pop()))
-            line.insert(0, str(i[0]))  # Atom name
-            line.insert(1, sfac_num)  # SFAC number
-            line.insert(2, '0       ')
-            line.insert(3, '0       ')
-            line.insert(4, '0       ')
-            line.insert(5, occ)
-            line.insert(6, '0.04')
-            afix_list.append(line)
-        # for every atoms both in afix list and source_atoms, change the
-        # coordinates to the respective value of the target atom:
-        ind = 0
-        for n, i in enumerate(afix_list):
-            if i[0].upper() in self.source_atoms:
-                ind = self.source_atoms.index(i[0].upper())
-                try:
-                    afix_list[n][2:5] = coordinates[self.target_atoms[ind]]
-                except IndexError:
-                    print('*** More source than target atoms present! Exiting... ***')
-                    sys.exit(False)
-        new_atom_list = []
-        new_atomnames.reverse()
-        for n, i in enumerate(afix_list):
-            i[0] = new_atomnames[n]
-            i[2] = '{:>10.6f}'.format(float(i[2]))
-            i[3] = '{:>10.6f}'.format(float(i[3]))
-            i[4] = '{:>10.6f}'.format(float(i[4]))
-            new_atom_list.append('   '.join(i).rstrip())
-        atoms = '\n'.join(new_atom_list)
-        afixnumber = '179'  # makes afix 179 default
-        if self.part:
-            part = 'PART ' + str(self.part) + ' ' + str(occ_part)
-            part2 = 'PART 0'
-        else:
-            part = ''
-            part2 = ''
-        if self.dsrp.resiflag:
-            resi_end = 'RESI 0'
-        else:
-            resi_end = ''
-        if self.options.rigid_group:
-            afixtag = ''
-            if self.dsrp.resiflag:
-                self.restraints = 'RESI {} {}\n'.format(resi.get_residue_class, resi.get_resinumber)
-            else:
-                self.restraints = ''
-        else:
-            afixtag = 'REM ' + self.rand_id_afix
-            #self.restraints = ''.join(self.restraints)
-        afix = '{0}\n' \
-               '{1}\n' \
-               'AFIX {2}\n' \
-               '{3}\n' \
-               '{4}\n' \
-               'AFIX 0\n' \
-               '{5}\n' \
-               '{6}\n' \
-               '{7}\n\n'.format('',  # self.restraints,  # 0
-                                part,  # 1
-                                str(afixnumber),  # 2
-                                afixtag,  # 3
-                                atoms,  # 4
-                                afixtag,  # 5
-                                part2,  # 6
-                                resi_end,  # 7
-                                )  # 8
-        return afix
 
     def write_dbhead_to_file(self, filename, dbhead, resi_class, resi_number):
         """

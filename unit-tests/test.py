@@ -51,7 +51,7 @@ class doctestsTest(unittest.TestCase):
                 self.assertFalse(failed, msg)
 
 
-# @unittest.skip("skipping dsr_complete_runs_Test ")
+@unittest.skip("skipping dsr_complete_runs_Test ")
 class dsr_complete_runs_Test(unittest.TestCase):
     def setUp(self):
         self.maxDiff = 20
@@ -711,7 +711,6 @@ class removeDublicatesAfixTest(unittest.TestCase):
         fragment = 'OC(cf3)3'
         self.gdb = dbfile.ParseDB('../dsr_db.txt')
         self.dbatoms = self.gdb.get_atoms(fragment)  # only the atoms of the dbentry as list
-        self.dbhead = self.gdb.get_restraints(fragment)  # this is only executed once
         self.dbtypes = get_atomtypes(self.dbatoms)
         # self.sf = SfacTable(self.reslist, self.dbtypes)
         # self.sfac_table = self.sf.set_sfac_table()
@@ -719,7 +718,7 @@ class removeDublicatesAfixTest(unittest.TestCase):
         self.resi = 'CCF3'  # gdb.get_resi_from_fragment(fragment)
         self.num = NumberScheme(self.reslist, self.dbatoms, self.dsrp)
         self.numberscheme = self.num.get_fragment_number_scheme()
-        self.afix = Afix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead,
+        self.afix = Afix(self.reslist, self.dbatoms, self.dbtypes,
                          self.dsrp, self.sfac_table, self.find_atoms, self.numberscheme, {'rigid_group': False})
         self.db_testhead = ['SADI_CCF3 C1 C2 C1 C3 C1 C4',
                             'SADI_CCF3 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ',
