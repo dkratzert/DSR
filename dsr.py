@@ -298,6 +298,8 @@ class DSR(object):
         dbatoms = atomhandling.set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table)
 
         if not self.numpy_installed:
+            if not dsrp.unit_line:
+                print('*** No UNIT instruction in res file found! Can not proceed! ***')
             # Insert FRAG ... FEND entry:
             rle.insert_frag_fend_entry(dbatoms, self.gdb.get_cell(self.fragment), dsrp.unit_line)
         print('Inserting {} into res File.'.format(self.fragment))

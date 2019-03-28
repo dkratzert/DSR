@@ -383,7 +383,7 @@ class Afix(object):
                 self.restraints = ''
         else:
             afixtag = 'REM '+self.rand_id_afix
-            self.restraints = ''.join(self.restraints)
+            self.restraints = '\n'.join(self.restraints)
         afix = '{0}{1}\n' \
                'AFIX {2}\n' \
                '{3}\n' \
