@@ -1,6 +1,7 @@
+import os
 import sys
 import unittest
-import os
+
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 from misc import remove_file, copy_file, which
 
@@ -41,6 +42,10 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         # 22 put CF9 on C1
         # 23 -r -target x y z  PART -1 OCC 10.5 RESI TOL
         # 24 correctly restore res file after SHELXL failure
+        # 25 REM DSR PUT CH2CL2 WITH CL1 C1 CL2 ON C01P Q1 C01M PART 1 OCC 71 RESI CCL2
+        #    Test for problems with upper/lower case source atom names
+        # 26 regular -r dsr run with
+        #         dfix PART 2 occ -31     dfix and part without resi
 
     def dsr_runtest(self, nummer=99, parameter='-r', external_file='', hkl=1,
                     limit_start=6, limit_end=-1, ending='res', remlines=None):
@@ -58,7 +63,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         d = []
         c = []
         prefix = '.'
-        #parameter = '-noffit ' + parameter
+        # parameter = '-noffit ' + parameter
         print('{} '.format(nummer) * 10, 'start:')
         copy_file('{}.hkl'.format(hkl), '{}a.hkl'.format(nummer))
         copy_file(prefix + '/{}.res'.format(nummer), prefix + '/{}a.res'.format(nummer))
@@ -84,8 +89,8 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         remove_file('{}.fcf'.format(nummer))
         remove_file('{}.2fcf'.format(nummer))
         remove_file('{}a.lst'.format(nummer))
-        #a = remove_whitespace(a)
-        #b = remove_whitespace(b)
+        # a = remove_whitespace(a)
+        # b = remove_whitespace(b)
         self.assertEqual(b, a)
         if external_file:
             self.assertEqual(d, c)
@@ -322,7 +327,6 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         """
         self.dsr_runtest(25, '-target 0.12127 0.47704 0.70694 0.38298 0.29146 0.52138 0.2512 0.3015 0.6978 -r')
 
-
     # @unittest.skip(" skipping26 ")
     def testrun_run26(self):
         """
@@ -340,6 +344,7 @@ def remove_whitespace(mystringlist):
             continue
         newlist.append(line)
     return newlist
+
 
 if __name__ == "__main__":
     unittest.main()

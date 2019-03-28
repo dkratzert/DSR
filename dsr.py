@@ -164,8 +164,8 @@ class DSR(object):
             if self.options.noffit:
                 self.numpy_installed = False
         except ImportError:
-            print(
-                '*** Numpy was not found. Please reinstall DSR and install the numpy package in order to use DSR. ***')
+            print('*** Numpy was not found. Please reinstall DSR or install the numpy package in order to use DSR. ***')
+            sys.exit()
         self.main()
         time2 = time.clock()
         runtime = (time2 - time1)

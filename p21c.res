@@ -15,6 +15,7 @@ fmap 2
 SIMU 0.03 0.06 1
 WGHT    0.049400    0.393100
 FVAR       0.08479   0.48343   0.55591
+REM DSR REPLACE OC(CF3)3 WITH O1 C1 C4 ON O2 C5 C7 OCC 11 RESI CCF3
 GA1   6    0.639418   0.561703   0.237772  11.00000   0.02258   0.02440 =
       0.02432   0.00008  -0.00145   0.00127
 AL1   5    0.064158   0.260145   0.478645  11.00000   0.01537   0.01791 =
@@ -248,7 +249,7 @@ F9    4    0.058836   0.122805   0.319484  11.00000   0.06663
 RESI 0
 PART 0
 
-rem dsr put oc(cf3)3 with o1 c1 c2 c3 c4 on O1_3 c1_3 q6 Q4 q7 resi ccf3 =
+REM rem dsr put oc(cf3)3 with o1 c1 c2 c3 c4 on O1_3 c1_3 q6 Q4 q7 resi ccf3 =
   PART 2 occ -31
 
 
