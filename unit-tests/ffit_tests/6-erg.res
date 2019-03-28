@@ -7,7 +7,6 @@ LATT 1
 SYMM -X,0.5+Y,0.5-Z
 SFAC  C  H  O  F  AL  GA
 UNIT  1  2  3  4  5  6
-
 REM Restraints for DSR fragment:
 +dsr_1_6a.dfix
 LIST 4 ! automatically inserted. Change 6 to 4 for CHECKCIF!!
@@ -72,7 +71,6 @@ F9    4    0.078594    0.131920    0.643553   -21.00000    0.05687    0.04924 =
 PART 0
 RESI 0
 
-REM REM DSR PUT OC(CF3)3 WITH O1 C1 C2 ON O1_4 C1_4 Q6 PART 2 OCC -31
 
 RESI 1 CCF3
 O1    3   -0.097373    0.260919    0.489317    11.00000    0.01712    0.02599 =
