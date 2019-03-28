@@ -3,13 +3,12 @@
 
 
 import doctest
+import os
 import sys
 import unittest
 from os import system
-import os
 
 import dbfile
-import selfupdate
 import sql_export
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
@@ -127,8 +126,8 @@ class dsr_complete_runs_Test(unittest.TestCase):
         misc.remove_file('./test-data/beispiel/{}.fcf'.format(nummer))
         misc.remove_file('./test-data/beispiel/{}.2fcf'.format(nummer))
         misc.remove_file('./test-data/beispiel/{}a.lst'.format(nummer))
-        #a = remove_whitespace(a)
-        #b = remove_whitespace(b)
+        # a = remove_whitespace(a)
+        # b = remove_whitespace(b)
         self.assertEqual(b, a)
         if external_file:
             self.assertEqual(d, c)
@@ -665,7 +664,6 @@ class NumberSchemeTest(unittest.TestCase):
 @unittest.skip("skipping insertAfixTest")
 class insertAfixTest(unittest.TestCase):
     def setUp(self):
-        from options import OptionsParser
         import db
         self.maxDiff = None
         self.res_file = 'p21c.res'
