@@ -414,10 +414,10 @@ class DSR(object):
                 dfx_file_name = afix.write_dbhead_to_file(dfx_file_name, restraints, resi.get_residue_class,
                                                           resi.get_resinumber)
                 if dsrp.resiflag:
-                    restraints = '\nREM The restraints for residue {} are in this file:\n+{}\n' \
+                    restraints = 'REM Restraints for residue {}:\n+{}\n' \
                         .format(resi.get_residue_class, dfx_file_name)
                 else:
-                    restraints = '\nREM The restraints for this moiety are in this file:\n+{}\n' \
+                    restraints = 'REM Restraints for DSR fragment:\n+{}\n' \
                         .format(dfx_file_name)
                 # afix_entry = ''.join(restraints) + afix_entry
             # else:
@@ -449,8 +449,8 @@ class DSR(object):
                     break
             except IndexError:
                 continue
-        # TODO: make sure AFIX, RESI and PART are closed
-        self.reslist[dsrp.hklf_line - 1] = self.reslist[dsrp.hklf_line - 1] + '\n' + '\n' + afix_entry + '\n'
+        # + 'AFIX 0\n' seems to be not needed after shelx-2013
+        self.reslist[dsrp.hklf_line - 1] = self.reslist[dsrp.hklf_line - 1] + afix_entry + '\n'
         self.reslist[dsrp.unit_line] = self.reslist[dsrp.unit_line] + '\n'.join(source) + '\n' + ''.join(
             restraints)
         # write to file:
