@@ -273,7 +273,6 @@ class DSR(object):
         sfac_table = sf.set_sfac_table()  # from now on this sfac table is set
         resi = Resi(dsrp, db_residue_string, find_atoms)
         # line where the dsr command is found in the resfile:
-        dsr_line_number = dsrp.dsr_line_number
         if dsrp.cf3_active:
             self.numpy_installed = False  # Runs SHELXL part for cf3 group addition
             from cf3fit import CF3
@@ -300,7 +299,7 @@ class DSR(object):
 
         if not self.numpy_installed:
             # Insert FRAG ... FEND entry:
-            rle.insert_frag_fend_entry(dbatoms, self.gdb.get_cell(self.fragment), fvarlines)
+            rle.insert_frag_fend_entry(dbatoms, self.gdb.get_cell(self.fragment), dsrp.unit_line)
         print('Inserting {} into res File.'.format(self.fragment))
         if self.invert:
             print('Fragment inverted.')
@@ -385,7 +384,7 @@ class DSR(object):
             # Adds a "SAME_resiclass firstatom > lastatom" to the afix:
             if not dsrp.dfix and not self.options.rigid_group:
                 restraints += same_resi
-                #if dsrp.resiflag:  # <- Or should I do this?
+                # if dsrp.resiflag:  # <- Or should I do this?
                 restraints += ["SIMU 0.04 0.08 1"]
             if not options.external_restr:
                 restraints = afix.remove_duplicate_restraints(restraints, afix.collect_all_restraints(),
@@ -405,7 +404,7 @@ class DSR(object):
                 afix_entry = "PART {}  {}\n".format(dsrp.part, dsrp.occupancy) + afix_entry + "\nPART 0"
             if dsrp.resiflag:
                 afix_entry = 'RESI {} {}\n'.format(resi.get_residue_class, resi.get_resinumber) + \
-                             afix_entry + "\nRESI 0\n"
+                             afix_entry + "\nRESI 0"
             if options.external_restr:
                 pname, ext = os.path.splitext(basefilename + '.dfix')
                 if dsrp.dfix:
@@ -420,28 +419,28 @@ class DSR(object):
                 else:
                     restraints = '\nREM The restraints for this moiety are in this file:\n+{}\n' \
                         .format(dfx_file_name)
-                afix_entry = ''.join(restraints) + afix_entry
-            else:
-                afix_entry = ''.join(restraints) + afix_entry
+                # afix_entry = ''.join(restraints) + afix_entry
+            # else:
+            # afix_entry = ''.join(restraints) + afix_entry
             if self.options.rigid_group:
                 afix_entry += 'AFIX 0\n'
         else:  # SHELXL fit
             afix = Afix(self.reslist, dbatoms, db_atom_types, restraints, dsrp,
                         sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
             afix_entry = afix.build_afix_entry(self.external, basefilename + '.dfix', resi)
-        if dsr_line_number < fvarlines[-1]:
-            print('\n*** Warning! The DSR command line MUST NOT appear before FVAR '
-                  'or the first atom in the .res file! ***')
-            print('*** Can not proceed... ***\n')
-            sys.exit()
+        # if dsr_line_number < fvarlines[-1]:
+        #    print('\n*** Warning! The DSR command line MUST NOT appear before FVAR '
+        #          'or the first atom in the .res file! ***')
+        #    print('*** Can not proceed... ***\n')
+        #    sys.exit()
         # Adds the origin of restraints and fragment to res file:
         import textwrap
         source = textwrap.wrap("REM Restraints for Fragment {}, {} from: {}. "
                                "Please cite https://doi.org/10.1107/S1600576718004508".format(
-                self.fragment,
-                self.gdb.get_fragment_name(self.fragment),
-                self.gdb.get_src(self.fragment)),
-                width=74, subsequent_indent='REM ')
+            self.fragment,
+            self.gdb.get_fragment_name(self.fragment),
+            self.gdb.get_src(self.fragment)),
+            width=74, subsequent_indent='REM ')
         # check if restraints already inserted:
         for line in self.reslist:
             try:
@@ -450,8 +449,10 @@ class DSR(object):
                     break
             except IndexError:
                 continue
-        self.reslist[dsr_line_number - 1] = self.reslist[dsr_line_number - 1] + '\n' + '\n'.join(source) \
-                                            + '\n' + afix_entry + '\n'
+        # TODO: make sure AFIX, RESI and PART are closed
+        self.reslist[dsrp.hklf_line - 1] = self.reslist[dsrp.hklf_line - 1] + '\n' + '\n' + afix_entry + '\n'
+        self.reslist[dsrp.unit_line] = self.reslist[dsrp.unit_line] + '\n'.join(source) + '\n' + ''.join(
+            restraints)
         # write to file:
         if self.numpy_installed:
             self.rl.write_resfile(self.reslist, '.res')
