@@ -72,6 +72,46 @@ class DSRParser(object):
         self.dsr_line_number = line_number
         return dsr_str.upper().split()
 
+    @property
+    def unit_line(self):
+        """
+        Returns the line number of the UNIT instruction in the SHELX file.
+        :return: line number of UNIT
+
+        >>> from resfile import ResList, ResListEdit
+        >>> from dsrparse import DSRParser
+        >>> res_file = 'p21c.res'
+        >>> rl = ResList(res_file)
+        >>> reslist = rl.get_res_list()
+        >>> rle = ResListEdit(reslist, res_file)
+        >>> #dsr_line = dsrp.get_dsr_dict
+        >>> dsrp = DSRParser(reslist)
+        >>> dsrp.unit_line
+        6
+        """
+        unitline = misc.find_line(self.reslist, r'^UNIT\s+\d')
+        return unitline
+
+    @property
+    def hklf_line(self):
+        """
+        Returns the line number of the HKLF instruction in the res file.
+        :return lin number of HKLF
+
+        >>> from resfile import ResList, ResListEdit
+        >>> from dsrparse import DSRParser
+        >>> res_file = 'p21c.res'
+        >>> rl = ResList(res_file)
+        >>> reslist = rl.get_res_list()
+        >>> rle = ResListEdit(reslist, res_file)
+        >>> #dsr_line = dsrp.get_dsr_dict
+        >>> dsrp = DSRParser(reslist)
+        >>> dsrp.hklf_line
+        254
+        """
+        hklfline = misc.find_line(self.reslist, r'^HKLF\s+\d')
+        return hklfline
+
     def remove_dsr_command(self):
         """
         Removes the dsr command by adding REM in front of the command.

@@ -86,7 +86,7 @@ class Afix(object):
         self._reslist = reslist
         self._find_atoms = find_atoms
         self._dbatoms = dbatoms
-        self._restraints = restraints
+        self.restraints = restraints
         self.dfix_restraints = dfix_restraints
         self._fragment_atom_types = fragment_atom_types
         self._sfac_table = sfac_table
@@ -259,28 +259,28 @@ class Afix(object):
         new_atomnames = list(reversed(self.numberscheme)) # i reverse it to pop() later
         # Residue is active:
         if self.dsrp.resiflag:
-            self._restraints = resi.format_restraints(self._restraints)
+            self.restraints = resi.format_restraints(self.restraints)
             # Adds a "SAME_resiclass firstatom > lastatom" to the afix:
             if not self.dsrp.dfix and not self.options.rigid_group:
-                self._restraints += ["SAME_{} {} > {}".format(resi.get_residue_class,
-                                                                 new_atomnames[-1], new_atomnames[0])]
-            self._restraints = self.remove_duplicate_restraints(self._restraints, self.collect_all_restraints(),
-                                                                resi.get_residue_class)
+                self.restraints += ["SAME_{} {} > {}".format(resi.get_residue_class,
+                                                             new_atomnames[-1], new_atomnames[0])]
+            self.restraints = self.remove_duplicate_restraints(self.restraints, self.collect_all_restraints(),
+                                                               resi.get_residue_class)
             if not external_restraints:
-                self._restraints += ['RESI {} {}'.format(
+                self.restraints += ['RESI {} {}'.format(
                     resi.get_resinumber, resi.get_residue_class)]
         # No residue:
         else:
             # applies new naming scheme to head:
             old_atoms = [i[0] for i in self._dbatoms]
-            self._restraints = rename_restraints_atoms(new_atomnames, old_atoms, self._restraints)
-            self._restraints = self.remove_duplicate_restraints(self._restraints, self.collect_all_restraints())
+            self.restraints = rename_restraints_atoms(new_atomnames, old_atoms, self.restraints)
+            self.restraints = self.remove_duplicate_restraints(self.restraints, self.collect_all_restraints())
         # decide if restraints to external file or internal:
-        distance, other_head = self.distance_and_other_restraints(self._restraints)
+        distance, other_head = self.distance_and_other_restraints(self.restraints)
         # External restraints:
         if external_restraints and not self.options.rigid_group:
             # in case of dfix, write restraints to file after fragment fit
-            self._restraints = misc.wrap_headlines(distance)
+            self.restraints = misc.wrap_headlines(distance)
             # returns the real name of the restraints file:
             if self.dfix_restraints:
                 # DFIX enabled:
@@ -296,22 +296,22 @@ class Afix(object):
                                                           resi.get_resinumber)
             else:
                 # DFIX disabled:
-                dfx_file_name = self.write_dbhead_to_file(dfx_file_name, self._restraints, resi.get_residue_class,
+                dfx_file_name = self.write_dbhead_to_file(dfx_file_name, self.restraints, resi.get_residue_class,
                                                           resi.get_resinumber)
-                self._restraints = self._restraints = other_head
+                self.restraints = self.restraints = other_head
             if self.dfix_restraints:
-                self._restraints = other_head
+                self.restraints = other_head
             if self.dsrp.resiflag:
-                self._restraints += ['RESI {} {}'.format(resi.get_resinumber, resi.get_residue_class)]
+                self.restraints += ['RESI {} {}'.format(resi.get_resinumber, resi.get_residue_class)]
         # No external restraints:
         else:
             if self.dfix_restraints:
                 if self.dsrp.resiflag:
                     self.dfix_restraints = add_residue_to_dfix(self.dfix_restraints, resi.get_resinumber)
-                self._restraints = other_head + self.dfix_restraints
+                self.restraints = other_head + self.dfix_restraints
                 if not self.dsrp.resiflag:
-                    self._restraints = rename_restraints_atoms(new_atomnames, old_atoms, self._restraints)
-            self._restraints = misc.wrap_headlines(self._restraints)
+                    self.restraints = rename_restraints_atoms(new_atomnames, old_atoms, self.restraints)
+            self.restraints = misc.wrap_headlines(self.restraints)
         # list of atom types in reverse order
         reversed_fragm_atom_types = list(reversed(self._fragment_atom_types))
         if self.options.target_coords:
@@ -370,20 +370,20 @@ class Afix(object):
             resi_end = ''
         if external_restraints and not self.options.rigid_group:
             if self.dsrp.resiflag:
-                self._restraints += '\nREM The restraints for residue {} are in this file:\nrem +{}\nREM {}\n'\
+                self.restraints += '\nREM The restraints for residue {} are in this file:\nrem +{}\nREM {}\n'\
                                             .format(resi.get_residue_class, dfx_file_name, self.rand_id_dfx)
             else:
-                self._restraints += '\nREM The restraints for this moiety are in this file:\nrem +{}\nREM {}\n'\
+                self.restraints += '\nREM The restraints for this moiety are in this file:\nrem +{}\nREM {}\n'\
                                             .format(dfx_file_name, self.rand_id_dfx)
         if self.options.rigid_group:
             afixtag = ''
             if self.dsrp.resiflag:
-                self._restraints = 'RESI {} {}\n'.format(resi.get_residue_class, resi.get_resinumber)
+                self.restraints = 'RESI {} {}\n'.format(resi.get_residue_class, resi.get_resinumber)
             else:
-                self._restraints = ''
+                self.restraints = ''
         else:
             afixtag = 'REM '+self.rand_id_afix
-            self._restraints = ''.join(self._restraints)
+            self.restraints = ''.join(self.restraints)
         afix = '{0}{1}\n' \
                'AFIX {2}\n' \
                '{3}\n' \
@@ -391,7 +391,7 @@ class Afix(object):
                'AFIX 0\n' \
                '{5}\n' \
                '{6}\n' \
-               '{7}\n\n'.format(self._restraints,  # 0
+               '{7}\n\n'.format('', #self._restraints,  # 0
                                 part,  # 1
                                 str(afixnumber),  # 2
                                 afixtag,  # 3
