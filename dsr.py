@@ -419,20 +419,12 @@ class DSR(object):
                 else:
                     restraints = 'REM Restraints for DSR fragment:\n+{}\n' \
                         .format(dfx_file_name)
-                # afix_entry = ''.join(restraints) + afix_entry
-            # else:
-            # afix_entry = ''.join(restraints) + afix_entry
             if self.options.rigid_group:
                 afix_entry += 'AFIX 0\n'
         else:  # SHELXL fit
             afix = Afix(self.reslist, dbatoms, db_atom_types, restraints, dsrp,
                         sfac_table, find_atoms, fragment_numberscheme, self.options, dfix_head)
             afix_entry = afix.build_afix_entry(self.external, basefilename + '.dfix', resi)
-        # if dsr_line_number < fvarlines[-1]:
-        #    print('\n*** Warning! The DSR command line MUST NOT appear before FVAR '
-        #          'or the first atom in the .res file! ***')
-        #    print('*** Can not proceed... ***\n')
-        #    sys.exit()
         # Adds the origin of restraints and fragment to res file:
         import textwrap
         source = textwrap.wrap("REM Restraints for Fragment {}, {} from: {}. "
