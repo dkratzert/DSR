@@ -327,8 +327,7 @@ class DSR(object):
             target_coords = [target_coordinates[key] for key in dsrp.target]
         # Uppercase is important here to avoid KeyErrors in source_atoms generation
         atnames = self.gdb.get_atomnames(self.fragment, uppercase=True)
-        source_atoms = dict(zip(atnames, self.gdb.get_coordinates(self.fragment, cartesian=True,
-                                                                  invert=self.invert)))
+        source_atoms = dict(zip(atnames, self.gdb.get_coordinates(self.fragment, cartesian=True, invert=self.invert)))
         # Coordinates only from the source, not the entire fragment:
         source_coords = [source_atoms[x] for x in dsrp.source]
         target_coords = [frac_to_cart(x, rle.get_cell()) for x in target_coords]
