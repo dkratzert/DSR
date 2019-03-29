@@ -48,6 +48,31 @@
 #   in the SHELXL file automatically.
 ########################################################################################
 
+
+<norborn>
+rem Name: Norbornene, norbornylene, C7H10
+rem Src: Turbomole, BP86 def2-SVP
+RESI NORB
+SADI 0.02 C2 C3
+SADI 0.02 C1 C2 C3 C4
+SADI 0.02 C1 C6 C1 C7 C4 C7 C4 C5 C5 C6
+SADI 0.04 C1 C4
+SADI 0.04 C1 C3 C2 C4 C2 C7 C3 C7
+SADI 0.04 C5 C7 C6 C7
+SADI 0.04 C1 C5 C2 C6 C3 C5 C4 C6
+RIGU C1 > C7
+SIMU C1 > C7
+FRAG 17 1 1 1 90 90 90
+C1    6     -3.66016    1.84719   -1.61069
+C2    6     -2.54584    1.65868   -0.58752
+C3    6     -1.53997    2.49724   -0.92815
+C4    6     -1.97931    3.24828   -2.17993
+C5    6     -3.11424    4.23390   -1.71709
+C6    6     -4.27512    3.26590   -1.32276
+C7    6     -2.82562    2.15480   -2.87983
+</norborn>
+
+
 <pentb>
 rem Name: n-Pentane, (bent), C5H12
 rem Src: CCDC EJIYIG
@@ -1273,7 +1298,7 @@ C7      1  0.489380  0.615360  0.412970  1.000000 0.05000
 </TOLUENE>
 
 <Benzene>
-REM Name: Benzene, Benzol, C6H6
+REM Name: Benzene, Benzol, Phenyl, C6H6
 REM SRC: UGEDEQ
 RESI BENZ
 SADI 0.02 C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1
