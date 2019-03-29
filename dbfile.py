@@ -16,7 +16,6 @@ import re
 import sys
 import tarfile
 from copy import deepcopy
-from pprint import pprint
 
 from atomhandling import get_atomtypes
 from atoms import Element
@@ -145,7 +144,7 @@ __metaclass__ = type  # use new-style classes
 # dsr_user_db.txt if this file exists, all its content is also read in.
 
 def read_file_data(filepath):
-    # type: (str, bool) -> list
+    # type: (str) -> list
     """
     reads the database files and returns them as list.
     """
@@ -216,8 +215,8 @@ class ParseDB(object):
             if end_regex and end_regex.match(line):
                 starttag = False
                 db[frag_tag].update(
-                        {'endline'  : num + 1,
-                         'startline': startnum + 1})
+                        {'endline'  : str(num + 1),
+                         'startline': str(startnum + 1)})
                 db = self.parse_fraglines(frag_tag, fraglines, db)
                 fraglines = []
             # start tag was found, appending lines to fragment list
@@ -270,7 +269,8 @@ class ParseDB(object):
                         atline[1] = int(atline[1])
                     except ValueError:
                         print("*** Invalid atomic coordinates in line {} of {}.txt (Fragment: {}) ***"
-                              .format(db[fragname_tag]['startline'] + num + 1, db[fragname_tag]['dbname'], fragname_tag))
+                              .format(db[fragname_tag]['startline'] + num + 1, db[fragname_tag]['dbname'],
+                                      fragname_tag))
                         sys.exit()
                     atline[2:] = coords
                     atoms.append(atline)
@@ -332,7 +332,7 @@ class ParseDB(object):
             sys.exit()
         if not atoms:
             # Can not print this out, because shelXle GUI will fail if text is printed.
-            #print('*** No atoms found in database entry {} line {} of {}.txt***'.format(fragname_tag,
+            # print('*** No atoms found in database entry {} line {} of {}.txt***'.format(fragname_tag,
             #                                    db[fragname_tag]['startline'] + 1, db[fragname_tag]['dbname']))
             del db[fragname_tag]
             return db
@@ -482,7 +482,8 @@ class ParseDB(object):
                   .format(fragment, dbentry['name']))
         if not dbentry['atoms']:
             print('*** No atoms found in database entry {} line {} of {}.txt***'.format(fragment,
-                                                                dbentry['startline'] + 1, dbentry['dbname']))
+                                                                                        dbentry['startline'] + 1,
+                                                                                        dbentry['dbname']))
             print('*** Have you really followed the syntax? ***')
             sys.exit()
         if not dbentry['endline']:
@@ -545,7 +546,7 @@ class ParseDB(object):
                 try:
                     # Test if first parameter is a distance or a standard deviation:
                     if i in ['DFIX', 'DANG']:
-                        #print('####')
+                        # print('####')
                         if len(line.split()) > 1:  # there is more than just DFIX
                             # Test if this is correct: DFIX d s[0.02] atom pairs (d should be greater s)
                             if float(line.split()[1]) < float(line.split()[2]):
@@ -555,7 +556,7 @@ class ParseDB(object):
                         else:
                             print('\n*** Incomplete DFIX/DANG in restraints of "{}: {}" in database {}. ***'
                                   .format(fragment, self.get_fragment_name(fragment), self.get_db_name(fragment)))
-                    #if i in SHX_CARDS:
+                    # if i in SHX_CARDS:
                     #    continue
                     else:
                         # just test if there is not a number:
@@ -579,10 +580,7 @@ class ParseDB(object):
         check if same distance restraints make sense. Each length of an atom
         pair is tested agains the standard deviation of all distances.
         For a large standard deviation, the list is tested for outliers.
-        :param atoms: atoms list of thr fragment
-        :param restraints: restraints list
         :param fragment: frag name
-        :param factor: factor for confidence interval
         """
         atoms = self.get_atoms(fragment)
         restr = self.get_restraints(fragment)
@@ -822,11 +820,9 @@ class ImportGRADE():
         :param invert:
         :type invert:
         :type maindb:   string
-        :param userdb:  directory where the user database is located. 
+        :param userdb:  directory where the user database is located.
                         Default is the users home directory.
         :type userdb:   string
-        :param dbnames: file names of the databases
-        :type dbnames:  string
         """
         self.user_db_path = userdb
         self.main_db_path = maindb
@@ -894,8 +890,6 @@ class ImportGRADE():
         # type: () -> str
         """
         get the fragment name from the pdbfile.txt file
-        :param pdbfile: file with some information about the molecule
-        :type pdbfile: list of strings
 
         >>> db = ParseDB('../dsr_db.txt')
         >>> mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz', db)
@@ -925,8 +919,6 @@ class ImportGRADE():
     def get_resi_from_pdbfile(self):
         """
         get the fragment name from the pdbfile.txt file
-        :param pdbfile: file with some information about the molecule
-        :type pdbfile: list of strings
 
         >>> db = ParseDB('../dsr_db.txt')
         >>> mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz', db)
