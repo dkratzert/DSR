@@ -1,4 +1,13 @@
 Recent changes
+-221    Separated restraints and fragment during transfer. The restraints are now always inserted after 
+        UNIT. The new fragment is always located before HKLF. This has the advantage that it does not depend on 
+        the position of the DSR command and the SAME instruction has always the better fragments
+        as reference. Also the often demanded sorting of the residue numbers should be in an inreasing order now.
+        I also discarded the fragment fit with SHELXL FRAG/FEND. This implies
+        that DSR relies on the numpy package. If you have just auto-updated DSR for a long time, 
+        you might have to reinstall it one time in order to get it running with version 221.
+        Non-Windows users have to make sure that numpy is installed in addition! The windows installer
+        includes the numpy package and should run just fine.
 -220    Allowing space characters in fragment search. Fixed bug where cf3 group generation could fail.
 -219    Adding "SIMU 0.04 0.08 1" to all restraints. This is necessary, because "SIMU_XYZ atoms"
         only affects each residue in itself and not to atoms of residues near each other. 
