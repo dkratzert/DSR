@@ -19,7 +19,7 @@ from collections import OrderedDict
 
 from atomhandling import get_atomtypes
 from elements import ELEMENTS
-from misc import distance, vol_tetrahedron, flatten2, get_overlapped_chunks, remove_partsymbol, shift, find_line
+from misc import distance, vol_tetrahedron, flatten, get_overlapped_chunks, remove_partsymbol, shift, find_line
 
 # all upper case for case insensitivity:
 alphabet = [i for i in string.ascii_uppercase]
@@ -274,7 +274,7 @@ class Restraints():
                 # lets see if there is a neighboring atom:
                 nb = self._G.neighbors(atom)  # [1:]
                 for i in nb:
-                    if not i in flatten2(list_of_rings):
+                    if not i in flatten(list_of_rings):
                         neighbors.append(i)
             if len(ring) < 4:
                 continue  # only proceed if ring is bigger than 3 atoms

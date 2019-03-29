@@ -163,12 +163,6 @@ class ResListEdit():
                 break
         return lines
 
-    def getAll(self):
-        """
-        returns the whole resfile as list
-        """
-        return self._reslist
-
     def find_fvarlines(self):
         """
         Finds the FVAR line or the first line with an atom.
