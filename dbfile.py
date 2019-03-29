@@ -422,7 +422,7 @@ class ParseDB(object):
          benzene
         </tag>
         <comment>
-         Benzene, Benzol, C6H6
+         Benzene, Benzol, Phenyl, C6H6
         </comment>
         <source>
          UGEDEQ
