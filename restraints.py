@@ -16,6 +16,7 @@ import re
 import string
 import sys
 from collections import OrderedDict
+
 from atomhandling import get_atomtypes
 from elements import ELEMENTS
 from misc import distance, vol_tetrahedron, flatten2, get_overlapped_chunks, remove_partsymbol, shift, find_line
@@ -89,16 +90,15 @@ class Restraints():
     needs atoms with numpart like C1_2b
     """
 
-    def __init__(self, export, frag, gdb):
+    def __init__(self, frag, gdb):
         self.fragment = frag.lower()
         self.gdb = gdb
-        self.export = export
         self._atoms = [i[0] for i in self.gdb[self.fragment]['atoms']]
         self._cell = self.gdb.get_cell(self.fragment)
         self.atom_types = get_atomtypes(self.gdb[self.fragment]['atoms'])
         self.cart_coords = self.gdb.get_coordinates(self.fragment, cartesian=True)
         self._connectivity_table = self.get_conntable_from_atoms(
-            self.cart_coords, self.atom_types, self._atoms)
+                self.cart_coords, self.atom_types, self._atoms)
         self.coords_dict = self.get_coords_dict()
         self._G = self.get_adjmatrix()
 
@@ -165,9 +165,9 @@ class Restraints():
         return self.adjmatrix()
 
     def get_12_dfixes(self):
-        '''
+        """
         returns the requested dfixes als list of strings
-        '''
+        """
         dfix = []
         for n, i in self._G.adjacency_iter():
             # print(n, i)
@@ -256,7 +256,11 @@ class Restraints():
 
         returns list of flat chunks.
 
-        TODO: Make a doctest!!
+        >>> from dbfile import ParseDB
+        >>> gdb = ParseDB('dsr_db.txt')
+        >>> res = Restraints('benzene', gdb)
+        >>> sorted(res.make_flat_restraints())
+        [['C1', 'C2', 'C3', 'C4'], ['C3', 'C4', 'C5', 'C6']]
         """
         import networkx as nx
         list_of_rings = nx.cycle_basis(self._G)

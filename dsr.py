@@ -311,7 +311,7 @@ class DSR(object):
         print('Fragment atom names: {}'.format(', '.join(fragment_numberscheme)))
         dfix_head = ''
         if dsrp.dfix:
-            restr = Restraints(self.export, self.fragment, self.gdb)
+            restr = Restraints(self.fragment, self.gdb)
             dfix_12 = restr.get_formated_12_dfixes()
             dfix_13 = restr.get_formated_13_dfixes()
             flats = restr.get_formated_flats()
