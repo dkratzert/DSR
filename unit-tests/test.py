@@ -8,6 +8,7 @@ import sys
 import unittest
 
 import dbfile
+import restraints
 import sql_export
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
@@ -37,7 +38,7 @@ class doctestsTest(unittest.TestCase):
     def testrun_doctest(self):
         for name in [dsr, afix, dsrparse, export, misc, elements, networkx,
                      atomhandling, networkx.classes.graph, dsrparse, dbfile,
-                     sql_export]:
+                     sql_export, restraints]:
             failed, attempted = doctest.testmod(name)  # , verbose=True)
             if failed == 0:
                 print('passed all {} tests in {}!'.format(attempted, name.__name__))

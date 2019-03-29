@@ -215,8 +215,8 @@ class ParseDB(object):
             if end_regex and end_regex.match(line):
                 starttag = False
                 db[frag_tag].update(
-                        {'endline'  : str(num + 1),
-                         'startline': str(startnum + 1)})
+                        {'endline'  : num + 1,
+                         'startline': startnum + 1})
                 db = self.parse_fraglines(frag_tag, fraglines, db)
                 fraglines = []
             # start tag was found, appending lines to fragment list
