@@ -257,10 +257,10 @@ class Restraints():
         returns list of flat chunks.
 
         >>> from dbfile import ParseDB
-        >>> gdb = ParseDB('dsr_db.txt')
+        >>> gdb = ParseDB('../dsr_db.txt')
         >>> res = Restraints('benzene', gdb)
         >>> sorted(res.make_flat_restraints())
-        [['C1', 'C2', 'C3', 'C4'], ['C3', 'C4', 'C5', 'C6']]
+        [['C1', 'C2', 'C5', 'C6'], ['C3', 'C4', 'C5', 'C6']]
         """
         import networkx as nx
         list_of_rings = nx.cycle_basis(self._G)
