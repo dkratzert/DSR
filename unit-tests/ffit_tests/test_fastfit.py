@@ -62,10 +62,10 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
             remlines = []
         d = []
         c = []
-        prefix = '.'
+        prefix = './ffit_tests/'
         # parameter = '-noffit ' + parameter
         print('{} '.format(nummer) * 10, 'start:')
-        copy_file('{}.hkl'.format(hkl), '{}a.hkl'.format(nummer))
+        copy_file(prefix + '{}.hkl'.format(hkl), prefix + '{}a.hkl'.format(nummer))
         copy_file(prefix + '/{}.res'.format(nummer), prefix + '/{}a.res'.format(nummer))
         os.system('{0} {1} {3}/{2}a.res'.format(self.dsr, parameter, nummer, prefix))
         with open(prefix + '/{}a.{}'.format(nummer, ending)) as txt:
@@ -84,11 +84,11 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
             b[line] = ''
         print('{} test:'.format(nummer))
         print("parameter:", parameter)
-        remove_file('{}a.hkl'.format(nummer))
-        remove_file('{}a.fcf'.format(nummer))
-        remove_file('{}.fcf'.format(nummer))
-        remove_file('{}.2fcf'.format(nummer))
-        remove_file('{}a.lst'.format(nummer))
+        remove_file(prefix + '{}a.hkl'.format(nummer))
+        remove_file(prefix + '{}a.fcf'.format(nummer))
+        remove_file(prefix + '{}.fcf'.format(nummer))
+        remove_file(prefix + '{}.2fcf'.format(nummer))
+        remove_file(prefix + '{}a.lst'.format(nummer))
         # a = remove_whitespace(a)
         # b = remove_whitespace(b)
         self.assertEqual(b, a)

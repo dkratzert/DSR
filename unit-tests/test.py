@@ -30,7 +30,6 @@ from export import Export
 from resfile import ResList, ResListEdit
 from resi import Resi
 from restraints import format_atom_names
-
 print(sys.version)
 
 
