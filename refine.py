@@ -50,11 +50,11 @@ class ShelxlRefine():
     The resfilename should be without ending.
     """
     def __init__(self, reslist, resfile_name, find_atoms, options):
-        '''
+        """
         :param reslist: SHELXL .res file as list
         :param resfile_name: SHELXL res file name
         :param find_atoms: FindAtoms() object
-        '''
+        """
         self.options = options
         self._find_atoms = find_atoms
         self._atoms_in_reslist = self._find_atoms.collect_residues()
