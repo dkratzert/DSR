@@ -300,7 +300,7 @@ class DSR(object):
             print('Fragment inverted.')
         print('Source atoms: {}'.format(', '.join(dsrp.source)))
         print('Target atoms: {}'.format(', '.join(dsrp.target)))
-        shx = ShelxlRefine(self.reslist, self.res_file, find_atoms, self.options)
+        shx = ShelxlRefine(self.reslist, basefilename, find_atoms, self.options)
         shx.backup_shx_file()
         # several checks if the atoms in the dsr command line are consistent
         atomhandling.check_source_target(dsrp.source, dsrp.target, dbatoms)
