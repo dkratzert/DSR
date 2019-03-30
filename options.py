@@ -10,13 +10,13 @@
 # ----------------------------------------------------------------------------
 #
 from __future__ import print_function
-import sys
-import re
+
 import os
+import re
+import sys
 
 import misc
 from constants import sep_line
-
 
 try:
     from argparse import RawTextHelpFormatter

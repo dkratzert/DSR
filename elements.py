@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # elements.py
-#möp
+# möp
 # Copyright (c) 2005-2014, Christoph Gohlke
 # All rights reserved.
 #
@@ -155,6 +155,7 @@ class Element(object):
         values: Isotope(relative atomic mass, abundance)
 
     """
+
     def __init__(self, number, symbol, name, **kwargs):
         self.number = number
         self.symbol = symbol
@@ -298,6 +299,7 @@ class Isotope(object):
 
 class ElementsDict(object):
     """Ordered dict of Elements with lookup by number, symbol, and name."""
+
     def __init__(self, *elements):
         self._list = []
         self._dict = {}
@@ -344,7 +346,7 @@ ELEMENTS = ElementsDict(
         tboil=20.28, tmelt=13.81, density=0.084,
         eleconfig='1s',
         oxistates='1*, -1',
-        ionenergy=(13.5984, ),
+        ionenergy=(13.5984,),
         isotopes={1: Isotope(1.0078250321, 0.999885, 1),
                   2: Isotope(2.014101778, 0.000115, 2)}),
     Element(
@@ -355,7 +357,7 @@ ELEMENTS = ElementsDict(
         tboil=4.216, tmelt=0.95, density=0.1785,
         eleconfig='1s2',
         oxistates='*',
-        ionenergy=(24.5874, 54.416, ),
+        ionenergy=(24.5874, 54.416,),
         isotopes={3: Isotope(3.0160293097, 1.37e-06, 3),
                   4: Isotope(4.0026032497, 0.99999863, 4)}),
     Element(
@@ -366,7 +368,7 @@ ELEMENTS = ElementsDict(
         tboil=1615.0, tmelt=453.7, density=0.53,
         eleconfig='[He] 2s',
         oxistates='1*',
-        ionenergy=(5.3917, 75.638, 122.451, ),
+        ionenergy=(5.3917, 75.638, 122.451,),
         isotopes={6: Isotope(6.0151223, 0.0759, 6),
                   7: Isotope(7.016004, 0.9241, 7)}),
     Element(
@@ -377,7 +379,7 @@ ELEMENTS = ElementsDict(
         tboil=3243.0, tmelt=1560.0, density=1.85,
         eleconfig='[He] 2s2',
         oxistates='2*',
-        ionenergy=(9.3227, 18.211, 153.893, 217.713, ),
+        ionenergy=(9.3227, 18.211, 153.893, 217.713,),
         isotopes={9: Isotope(9.0121821, 1.0, 9)}),
     Element(
         5, 'B', 'Boron',
@@ -387,7 +389,7 @@ ELEMENTS = ElementsDict(
         tboil=4275.0, tmelt=2365.0, density=2.46,
         eleconfig='[He] 2s2 2p',
         oxistates='3*',
-        ionenergy=(8.298, 25.154, 37.93, 59.368, 340.217, ),
+        ionenergy=(8.298, 25.154, 37.93, 59.368, 340.217,),
         isotopes={10: Isotope(10.012937, 0.199, 10),
                   11: Isotope(11.0093055, 0.801, 11)}),
     Element(
@@ -399,7 +401,7 @@ ELEMENTS = ElementsDict(
         eleconfig='[He] 2s2 2p2',
         oxistates='4*, 2, -4*',
         ionenergy=(11.2603, 24.383, 47.877, 64.492, 392.077,
-                   489.981, ),
+                   489.981,),
         isotopes={12: Isotope(12.0, 0.9893, 12),
                   13: Isotope(13.0033548378, 0.0107, 13)}),
     Element(
@@ -411,7 +413,7 @@ ELEMENTS = ElementsDict(
         eleconfig='[He] 2s2 2p3',
         oxistates='5, 4, 3, 2, -3*',
         ionenergy=(14.5341, 39.601, 47.488, 77.472, 97.888,
-                   522.057, 667.029, ),
+                   522.057, 667.029,),
         isotopes={14: Isotope(14.0030740052, 0.99632, 14),
                   15: Isotope(15.0001088984, 0.00368, 15)}),
     Element(
@@ -423,7 +425,7 @@ ELEMENTS = ElementsDict(
         eleconfig='[He] 2s2 2p4',
         oxistates='-2*, -1',
         ionenergy=(13.6181, 35.116, 54.934, 54.934, 77.412,
-                   113.896, 138.116, 739.315, 871.387, ),
+                   113.896, 138.116, 739.315, 871.387,),
         isotopes={16: Isotope(15.9949146221, 0.99757, 16),
                   17: Isotope(16.9991315, 0.00038, 17),
                   18: Isotope(17.9991604, 0.00205, 18)}),
@@ -436,7 +438,7 @@ ELEMENTS = ElementsDict(
         eleconfig='[He] 2s2 2p5',
         oxistates='-1*',
         ionenergy=(17.4228, 34.97, 62.707, 87.138, 114.24,
-                   157.161, 185.182, 953.886, 1103.089, ),
+                   157.161, 185.182, 953.886, 1103.089,),
         isotopes={19: Isotope(18.9984032, 1.0, 19)}),
     Element(
         10, 'Ne', 'Neon',
@@ -447,7 +449,7 @@ ELEMENTS = ElementsDict(
         eleconfig='[He] 2s2 2p6',
         oxistates='*',
         ionenergy=(21.5645, 40.962, 63.45, 97.11, 126.21,
-                   157.93, 207.27, 239.09, 1195.797, 1362.164, ),
+                   157.93, 207.27, 239.09, 1195.797, 1362.164,),
         isotopes={20: Isotope(19.9924401759, 0.9048, 20),
                   21: Isotope(20.99384674, 0.0027, 21),
                   22: Isotope(21.99138551, 0.0925, 22)}),
@@ -461,7 +463,7 @@ ELEMENTS = ElementsDict(
         oxistates='1*',
         ionenergy=(5.1391, 47.286, 71.64, 98.91, 138.39,
                    172.15, 208.47, 264.18, 299.87, 1465.091,
-                   1648.659, ),
+                   1648.659,),
         isotopes={23: Isotope(22.98976967, 1.0, 23)}),
     Element(
         12, 'Mg', 'Magnesium',
@@ -473,7 +475,7 @@ ELEMENTS = ElementsDict(
         oxistates='2*',
         ionenergy=(7.6462, 15.035, 80.143, 109.24, 141.26,
                    186.5, 224.94, 265.9, 327.95, 367.53,
-                   1761.802, 1962.613, ),
+                   1761.802, 1962.613,),
         isotopes={24: Isotope(23.9850419, 0.7899, 24),
                   25: Isotope(24.98583702, 0.1, 25),
                   26: Isotope(25.98259304, 0.1101, 26)}),
@@ -487,7 +489,7 @@ ELEMENTS = ElementsDict(
         oxistates='3*',
         ionenergy=(5.9858, 18.828, 28.447, 119.99, 153.71,
                    190.47, 241.43, 284.59, 330.21, 398.57,
-                   442.07, 2085.983, 2304.08, ),
+                   442.07, 2085.983, 2304.08,),
         isotopes={27: Isotope(26.98153844, 1.0, 27)}),
     Element(
         14, 'Si', 'Silicon',
@@ -499,7 +501,7 @@ ELEMENTS = ElementsDict(
         oxistates='4*, -4',
         ionenergy=(8.1517, 16.345, 33.492, 45.141, 166.77,
                    205.05, 246.52, 303.17, 351.1, 401.43,
-                   476.06, 523.5, 2437.676, 2673.108, ),
+                   476.06, 523.5, 2437.676, 2673.108,),
         isotopes={28: Isotope(27.9769265327, 0.922297, 28),
                   29: Isotope(28.97649472, 0.046832, 29),
                   30: Isotope(29.97377022, 0.030871, 30)}),
@@ -513,7 +515,7 @@ ELEMENTS = ElementsDict(
         oxistates='5*, 3, -3',
         ionenergy=(10.4867, 19.725, 30.18, 51.37, 65.023,
                    220.43, 263.22, 309.41, 371.73, 424.5,
-                   479.57, 560.41, 611.85, 2816.943, 3069.762, ),
+                   479.57, 560.41, 611.85, 2816.943, 3069.762,),
         isotopes={31: Isotope(30.97376151, 1.0, 31)}),
     Element(
         16, 'S', 'Sulfur',
@@ -526,7 +528,7 @@ ELEMENTS = ElementsDict(
         ionenergy=(10.36, 23.33, 34.83, 47.3, 72.68,
                    88.049, 280.93, 328.23, 379.1, 447.09,
                    504.78, 564.65, 651.63, 707.14, 3223.836,
-                   3494.099, ),
+                   3494.099,),
         isotopes={32: Isotope(31.97207069, 0.9493, 32),
                   33: Isotope(32.9714585, 0.0076, 33),
                   34: Isotope(33.96786683, 0.0429, 34),
@@ -542,7 +544,7 @@ ELEMENTS = ElementsDict(
         ionenergy=(12.9676, 23.81, 39.61, 53.46, 67.8,
                    98.03, 114.193, 348.28, 400.05, 455.62,
                    529.97, 591.97, 656.69, 749.75, 809.39,
-                   3658.425, 3946.193, ),
+                   3658.425, 3946.193,),
         isotopes={35: Isotope(34.96885271, 0.7578, 35),
                   37: Isotope(36.9659026, 0.2422, 37)}),
     Element(
@@ -556,7 +558,7 @@ ELEMENTS = ElementsDict(
         ionenergy=(15.7596, 27.629, 40.74, 59.81, 75.02,
                    91.007, 124.319, 143.456, 422.44, 478.68,
                    538.95, 618.24, 686.09, 755.73, 854.75,
-                   918.0, 4120.778, 4426.114, ),
+                   918.0, 4120.778, 4426.114,),
         isotopes={36: Isotope(35.96754628, 0.003365, 36),
                   38: Isotope(37.9627322, 0.000632, 38),
                   40: Isotope(39.962383123, 0.996003, 40)}),
@@ -571,7 +573,7 @@ ELEMENTS = ElementsDict(
         ionenergy=(4.3407, 31.625, 45.72, 60.91, 82.66,
                    100.0, 117.56, 154.86, 175.814, 503.44,
                    564.13, 629.09, 714.02, 787.13, 861.77,
-                   968.0, 1034.0, 4610.955, 4933.931, ),
+                   968.0, 1034.0, 4610.955, 4933.931,),
         isotopes={39: Isotope(38.9637069, 0.932581, 39),
                   40: Isotope(39.96399867, 0.000117, 40),
                   41: Isotope(40.96182597, 0.067302, 41)}),
@@ -586,7 +588,7 @@ ELEMENTS = ElementsDict(
         ionenergy=(6.1132, 11.71, 50.908, 67.1, 84.41,
                    108.78, 127.7, 147.24, 188.54, 211.27,
                    591.25, 656.39, 726.03, 816.61, 895.12,
-                   974.0, 1087.0, 1157.0, 5129.045, 5469.738, ),
+                   974.0, 1087.0, 1157.0, 5129.045, 5469.738,),
         isotopes={40: Isotope(39.9625912, 0.96941, 40),
                   42: Isotope(41.9586183, 0.00647, 42),
                   43: Isotope(42.9587668, 0.00135, 43),
@@ -603,7 +605,7 @@ ELEMENTS = ElementsDict(
         oxistates='3*',
         ionenergy=(6.5615, 12.8, 24.76, 73.47, 91.66,
                    11.1, 138.0, 158.7, 180.02, 225.32,
-                   225.32, 685.89, 755.47, 829.79, 926.0, ),
+                   225.32, 685.89, 755.47, 829.79, 926.0,),
         isotopes={45: Isotope(44.9559102, 1.0, 45)}),
     Element(
         22, 'Ti', 'Titanium',
@@ -615,7 +617,7 @@ ELEMENTS = ElementsDict(
         oxistates='4*, 3',
         ionenergy=(6.8281, 13.58, 27.491, 43.266, 99.22,
                    119.36, 140.8, 168.5, 193.5, 193.2,
-                   215.91, 265.23, 291.497, 787.33, 861.33, ),
+                   215.91, 265.23, 291.497, 787.33, 861.33,),
         isotopes={46: Isotope(45.9526295, 0.0825, 46),
                   47: Isotope(46.9517638, 0.0744, 47),
                   48: Isotope(47.9479471, 0.7372, 48),
@@ -631,7 +633,7 @@ ELEMENTS = ElementsDict(
         oxistates='5*, 4, 3, 2, 0',
         ionenergy=(6.7462, 14.65, 29.31, 46.707, 65.23,
                    128.12, 150.17, 173.7, 205.8, 230.5,
-                   255.04, 308.25, 336.267, 895.58, 974.02, ),
+                   255.04, 308.25, 336.267, 895.58, 974.02,),
         isotopes={50: Isotope(49.9471628, 0.0025, 50),
                   51: Isotope(50.9439637, 0.9975, 51)}),
     Element(
@@ -644,7 +646,7 @@ ELEMENTS = ElementsDict(
         oxistates='6, 3*, 2, 0',
         ionenergy=(6.7665, 16.5, 30.96, 49.1, 69.3,
                    90.56, 161.1, 184.7, 209.3, 244.4,
-                   270.8, 298.0, 355.0, 384.3, 1010.64, ),
+                   270.8, 298.0, 355.0, 384.3, 1010.64,),
         isotopes={50: Isotope(49.9460496, 0.04345, 50),
                   52: Isotope(51.9405119, 0.83789, 52),
                   53: Isotope(52.9406538, 0.09501, 53),
@@ -660,7 +662,7 @@ ELEMENTS = ElementsDict(
         ionenergy=(7.434, 15.64, 33.667, 51.2, 72.4,
                    95.0, 119.27, 196.46, 221.8, 248.3,
                    286.0, 314.4, 343.6, 404.0, 435.3,
-                   1136.2, ),
+                   1136.2,),
         isotopes={55: Isotope(54.9380496, 1.0, 55)}),
     Element(
         26, 'Fe', 'Iron',
@@ -673,7 +675,7 @@ ELEMENTS = ElementsDict(
         ionenergy=(7.9024, 16.18, 30.651, 54.8, 75.0,
                    99.0, 125.0, 151.06, 235.04, 262.1,
                    290.4, 330.8, 361.0, 392.2, 457.0,
-                   485.5, 1266.1, ),
+                   485.5, 1266.1,),
         isotopes={54: Isotope(53.9396148, 0.05845, 54),
                   56: Isotope(55.9349421, 0.91754, 56),
                   57: Isotope(56.9353987, 0.02119, 57),
@@ -689,7 +691,7 @@ ELEMENTS = ElementsDict(
         ionenergy=(7.881, 17.06, 33.5, 51.3, 79.5,
                    102.0, 129.0, 157.0, 186.13, 276.0,
                    305.0, 336.0, 376.0, 411.0, 444.0,
-                   512.0, 546.8, 1403.0, ),
+                   512.0, 546.8, 1403.0,),
         isotopes={59: Isotope(58.9332002, 1.0, 59)}),
     Element(
         28, 'Ni', 'Nickel',
@@ -702,7 +704,7 @@ ELEMENTS = ElementsDict(
         ionenergy=(7.6398, 18.168, 35.17, 54.9, 75.5,
                    108.0, 133.0, 162.0, 193.0, 224.5,
                    321.2, 352.0, 384.0, 430.0, 464.0,
-                   499.0, 571.0, 607.2, 1547.0, ),
+                   499.0, 571.0, 607.2, 1547.0,),
         isotopes={58: Isotope(57.9353479, 0.680769, 58),
                   60: Isotope(59.9307906, 0.262231, 60),
                   61: Isotope(60.9310604, 0.011399, 61),
@@ -719,7 +721,7 @@ ELEMENTS = ElementsDict(
         ionenergy=(7.7264, 20.292, 26.83, 55.2, 79.9,
                    103.0, 139.0, 166.0, 199.0, 232.0,
                    266.0, 368.8, 401.0, 435.0, 484.0,
-                   520.0, 557.0, 633.0, 671.0, 1698.0, ),
+                   520.0, 557.0, 633.0, 671.0, 1698.0,),
         isotopes={63: Isotope(62.9296011, 0.6917, 63),
                   65: Isotope(64.9277937, 0.3083, 65)}),
     Element(
@@ -734,7 +736,7 @@ ELEMENTS = ElementsDict(
                    108.0, 134.0, 174.0, 203.0, 238.0,
                    274.0, 310.8, 419.7, 454.0, 490.0,
                    542.0, 579.0, 619.0, 698.8, 738.0,
-                   1856.0, ),
+                   1856.0,),
         isotopes={64: Isotope(63.9291466, 0.4863, 64),
                   66: Isotope(65.9260368, 0.279, 66),
                   67: Isotope(66.9271309, 0.041, 67),
@@ -748,7 +750,7 @@ ELEMENTS = ElementsDict(
         tboil=2478.0, tmelt=302.92, density=5.91,
         eleconfig='[Ar] 3d10 4s2 4p',
         oxistates='3*',
-        ionenergy=(5.9993, 20.51, 30.71, 64.0, ),
+        ionenergy=(5.9993, 20.51, 30.71, 64.0,),
         isotopes={69: Isotope(68.925581, 0.60108, 69),
                   71: Isotope(70.924705, 0.39892, 71)}),
     Element(
@@ -759,7 +761,7 @@ ELEMENTS = ElementsDict(
         tboil=3107.0, tmelt=1211.5, density=5.32,
         eleconfig='[Ar] 3d10 4s2 4p2',
         oxistates='4*',
-        ionenergy=(7.8994, 15.934, 34.22, 45.71, 93.5, ),
+        ionenergy=(7.8994, 15.934, 34.22, 45.71, 93.5,),
         isotopes={70: Isotope(69.9242504, 0.2084, 70),
                   72: Isotope(71.9220762, 0.2754, 72),
                   73: Isotope(72.9234594, 0.0773, 73),
@@ -774,7 +776,7 @@ ELEMENTS = ElementsDict(
         eleconfig='[Ar] 3d10 4s2 4p3',
         oxistates='5, 3*, -3',
         ionenergy=(9.7886, 18.633, 28.351, 50.13, 62.63,
-                   127.6, ),
+                   127.6,),
         isotopes={75: Isotope(74.9215964, 1.0, 75)}),
     Element(
         34, 'Se', 'Selenium',
@@ -785,7 +787,7 @@ ELEMENTS = ElementsDict(
         eleconfig='[Ar] 3d10 4s2 4p4',
         oxistates='6, 4*, -2',
         ionenergy=(9.7524, 21.9, 30.82, 42.944, 68.3,
-                   81.7, 155.4, ),
+                   81.7, 155.4,),
         isotopes={74: Isotope(73.9224766, 0.0089, 74),
                   76: Isotope(75.9192141, 0.0937, 76),
                   77: Isotope(76.9199146, 0.0763, 77),
@@ -801,7 +803,7 @@ ELEMENTS = ElementsDict(
         eleconfig='[Ar] 3d10 4s2 4p5',
         oxistates='7, 5, 3, 1, -1*',
         ionenergy=(11.8138, 21.8, 36.0, 47.3, 59.7,
-                   88.6, 103.0, 192.8, ),
+                   88.6, 103.0, 192.8,),
         isotopes={79: Isotope(78.9183376, 0.5069, 79),
                   81: Isotope(80.916291, 0.4931, 81)}),
     Element(
@@ -813,7 +815,7 @@ ELEMENTS = ElementsDict(
         eleconfig='[Ar] 3d10 4s2 4p6',
         oxistates='2*',
         ionenergy=(13.9996, 24.359, 36.95, 52.5, 64.7,
-                   78.5, 110.0, 126.0, 230.39, ),
+                   78.5, 110.0, 126.0, 230.39,),
         isotopes={78: Isotope(77.920386, 0.0035, 78),
                   80: Isotope(79.916378, 0.0228, 80),
                   82: Isotope(81.9134846, 0.1158, 82),
@@ -829,7 +831,7 @@ ELEMENTS = ElementsDict(
         eleconfig='[Kr] 5s',
         oxistates='1*',
         ionenergy=(4.1771, 27.28, 40.0, 52.6, 71.0,
-                   84.4, 99.2, 136.0, 150.0, 277.1, ),
+                   84.4, 99.2, 136.0, 150.0, 277.1,),
         isotopes={85: Isotope(84.9117893, 0.7217, 85),
                   87: Isotope(86.9091835, 0.2783, 87)}),
     Element(
@@ -842,7 +844,7 @@ ELEMENTS = ElementsDict(
         oxistates='2*',
         ionenergy=(5.6949, 11.03, 43.6, 57.0, 71.6,
                    90.8, 106.0, 122.3, 162.0, 177.0,
-                   324.1, ),
+                   324.1,),
         isotopes={84: Isotope(83.913425, 0.0056, 84),
                   86: Isotope(85.9092624, 0.0986, 86),
                   87: Isotope(86.9088793, 0.07, 87),
@@ -857,7 +859,7 @@ ELEMENTS = ElementsDict(
         oxistates='3*',
         ionenergy=(6.2173, 12.24, 20.52, 61.8, 77.0,
                    93.0, 116.0, 129.0, 146.52, 191.0,
-                   206.0, 374.0, ),
+                   206.0, 374.0,),
         isotopes={89: Isotope(88.9058479, 1.0, 89)}),
     Element(
         40, 'Zr', 'Zirconium',
@@ -867,7 +869,7 @@ ELEMENTS = ElementsDict(
         tboil=4682.0, tmelt=2128.0, density=6.51,
         eleconfig='[Kr] 4d2 5s2',
         oxistates='4*',
-        ionenergy=(6.6339, 13.13, 22.99, 34.34, 81.5, ),
+        ionenergy=(6.6339, 13.13, 22.99, 34.34, 81.5,),
         isotopes={90: Isotope(89.9047037, 0.5145, 90),
                   91: Isotope(90.905645, 0.1122, 91),
                   92: Isotope(91.9050401, 0.1715, 92),
@@ -882,7 +884,7 @@ ELEMENTS = ElementsDict(
         eleconfig='[Kr] 4d4 5s',
         oxistates='5*, 3',
         ionenergy=(6.7589, 14.32, 25.04, 38.3, 50.55,
-                   102.6, 125.0, ),
+                   102.6, 125.0,),
         isotopes={93: Isotope(92.9063775, 1.0, 93)}),
     Element(
         42, 'Mo', 'Molybdenum',
@@ -893,7 +895,7 @@ ELEMENTS = ElementsDict(
         eleconfig='[Kr] 4d5 5s',
         oxistates='6*, 5, 4, 3, 2, 0',
         ionenergy=(7.0924, 16.15, 27.16, 46.4, 61.2,
-                   68.0, 126.8, 153.0, ),
+                   68.0, 126.8, 153.0,),
         isotopes={92: Isotope(91.90681, 0.1484, 92),
                   94: Isotope(93.9050876, 0.0925, 94),
                   95: Isotope(94.9058415, 0.1592, 95),
@@ -909,7 +911,7 @@ ELEMENTS = ElementsDict(
         tboil=4538.0, tmelt=2477.0, density=11.49,
         eleconfig='[Kr] 4d5 5s2',
         oxistates='7*',
-        ionenergy=(7.28, 15.26, 29.54, ),
+        ionenergy=(7.28, 15.26, 29.54,),
         isotopes={98: Isotope(97.907216, 1.0, 98)}),
     Element(
         44, 'Ru', 'Ruthenium',
@@ -919,7 +921,7 @@ ELEMENTS = ElementsDict(
         tboil=4425.0, tmelt=2610.0, density=12.45,
         eleconfig='[Kr] 4d7 5s',
         oxistates='8, 6, 4*, 3*, 2, 0, -2',
-        ionenergy=(7.3605, 16.76, 28.47, ),
+        ionenergy=(7.3605, 16.76, 28.47,),
         isotopes={96: Isotope(95.907598, 0.0554, 96),
                   98: Isotope(97.905287, 0.0187, 98),
                   99: Isotope(98.9059393, 0.1276, 99),
@@ -935,7 +937,7 @@ ELEMENTS = ElementsDict(
         tboil=3970.0, tmelt=2236.0, density=12.41,
         eleconfig='[Kr] 4d8 5s',
         oxistates='5, 4, 3*, 1*, 2, 0',
-        ionenergy=(7.4589, 18.08, 31.06, ),
+        ionenergy=(7.4589, 18.08, 31.06,),
         isotopes={103: Isotope(102.905504, 1.0, 103)}),
     Element(
         46, 'Pd', 'Palladium',
@@ -945,7 +947,7 @@ ELEMENTS = ElementsDict(
         tboil=3240.0, tmelt=1825.0, density=12.02,
         eleconfig='[Kr] 4d10',
         oxistates='4, 2*, 0',
-        ionenergy=(8.3369, 19.43, 32.93, ),
+        ionenergy=(8.3369, 19.43, 32.93,),
         isotopes={102: Isotope(101.905608, 0.0102, 102),
                   104: Isotope(103.904035, 0.1114, 104),
                   105: Isotope(104.905084, 0.2233, 105),
@@ -960,7 +962,7 @@ ELEMENTS = ElementsDict(
         tboil=2436.0, tmelt=1235.1, density=10.49,
         eleconfig='[Kr] 4d10 5s',
         oxistates='2, 1*',
-        ionenergy=(7.5762, 21.49, 34.83, ),
+        ionenergy=(7.5762, 21.49, 34.83,),
         isotopes={107: Isotope(106.905093, 0.51839, 107),
                   109: Isotope(108.904756, 0.48161, 109)}),
     Element(
@@ -971,7 +973,7 @@ ELEMENTS = ElementsDict(
         tboil=1040.0, tmelt=594.26, density=8.64,
         eleconfig='[Kr] 4d10 5s2',
         oxistates='2*',
-        ionenergy=(8.9938, 16.908, 37.48, ),
+        ionenergy=(8.9938, 16.908, 37.48,),
         isotopes={106: Isotope(105.906458, 0.0125, 106),
                   108: Isotope(107.904183, 0.0089, 108),
                   110: Isotope(109.903006, 0.1249, 110),
@@ -988,7 +990,7 @@ ELEMENTS = ElementsDict(
         tboil=2350.0, tmelt=429.78, density=7.31,
         eleconfig='[Kr] 4d10 5s2 5p',
         oxistates='3*',
-        ionenergy=(5.7864, 18.869, 28.03, 28.03, ),
+        ionenergy=(5.7864, 18.869, 28.03, 28.03,),
         isotopes={113: Isotope(112.904061, 0.0429, 113),
                   115: Isotope(114.903878, 0.9571, 115)}),
     Element(
@@ -999,7 +1001,7 @@ ELEMENTS = ElementsDict(
         tboil=2876.0, tmelt=505.12, density=7.29,
         eleconfig='[Kr] 4d10 5s2 5p2',
         oxistates='4*, 2*',
-        ionenergy=(7.3439, 14.632, 30.502, 40.734, 72.28, ),
+        ionenergy=(7.3439, 14.632, 30.502, 40.734, 72.28,),
         isotopes={112: Isotope(111.904821, 0.0097, 112),
                   114: Isotope(113.902782, 0.0066, 114),
                   115: Isotope(114.903346, 0.0034, 115),
@@ -1019,7 +1021,7 @@ ELEMENTS = ElementsDict(
         eleconfig='[Kr] 4d10 5s2 5p3',
         oxistates='5, 3*, -3',
         ionenergy=(8.6084, 16.53, 25.3, 44.2, 56.0,
-                   108.0, ),
+                   108.0,),
         isotopes={121: Isotope(120.903818, 0.5721, 121),
                   123: Isotope(122.9042157, 0.4279, 123)}),
     Element(
@@ -1031,7 +1033,7 @@ ELEMENTS = ElementsDict(
         eleconfig='[Kr] 4d10 5s2 5p4',
         oxistates='6, 4*, -2',
         ionenergy=(9.0096, 18.6, 27.96, 37.41, 58.75,
-                   70.7, 137.0, ),
+                   70.7, 137.0,),
         isotopes={120: Isotope(119.90402, 0.0009, 120),
                   122: Isotope(121.9030471, 0.0255, 122),
                   123: Isotope(122.904273, 0.0089, 123),
@@ -1048,7 +1050,7 @@ ELEMENTS = ElementsDict(
         tboil=457.5, tmelt=386.7, density=4.94,
         eleconfig='[Kr] 4d10 5s2 5p5',
         oxistates='7, 5, 1, -1*',
-        ionenergy=(10.4513, 19.131, 33.0, ),
+        ionenergy=(10.4513, 19.131, 33.0,),
         isotopes={127: Isotope(126.904468, 1.0, 127)}),
     Element(
         54, 'Xe', 'Xenon',
@@ -1058,7 +1060,7 @@ ELEMENTS = ElementsDict(
         tboil=165.1, tmelt=161.39, density=4.49,
         eleconfig='[Kr] 4d10 5s2 5p6',
         oxistates='2, 4, 6',
-        ionenergy=(12.1298, 21.21, 32.1, ),
+        ionenergy=(12.1298, 21.21, 32.1,),
         isotopes={124: Isotope(123.9058958, 0.0009, 124),
                   126: Isotope(125.904269, 0.0009, 126),
                   128: Isotope(127.9035304, 0.0192, 128),
@@ -1076,7 +1078,7 @@ ELEMENTS = ElementsDict(
         tboil=944.0, tmelt=301.54, density=1.9,
         eleconfig='[Xe] 6s',
         oxistates='1*',
-        ionenergy=(3.8939, 25.1, ),
+        ionenergy=(3.8939, 25.1,),
         isotopes={133: Isotope(132.905447, 1.0, 133)}),
     Element(
         56, 'Ba', 'Barium',
@@ -1086,7 +1088,7 @@ ELEMENTS = ElementsDict(
         tboil=2078.0, tmelt=1002.0, density=3.65,
         eleconfig='[Xe] 6s2',
         oxistates='2*',
-        ionenergy=(5.2117, 100.004, ),
+        ionenergy=(5.2117, 100.004,),
         isotopes={130: Isotope(129.90631, 0.00106, 130),
                   132: Isotope(131.905056, 0.00101, 132),
                   134: Isotope(133.904503, 0.02417, 134),
@@ -1102,7 +1104,7 @@ ELEMENTS = ElementsDict(
         tboil=3737.0, tmelt=1191.0, density=6.16,
         eleconfig='[Xe] 5d 6s2',
         oxistates='3*',
-        ionenergy=(5.5769, 11.06, 19.175, ),
+        ionenergy=(5.5769, 11.06, 19.175,),
         isotopes={138: Isotope(137.907107, 0.0009, 138),
                   139: Isotope(138.906348, 0.9991, 139)}),
     Element(
@@ -1113,7 +1115,7 @@ ELEMENTS = ElementsDict(
         tboil=3715.0, tmelt=1071.0, density=6.77,
         eleconfig='[Xe] 4f 5d 6s2',
         oxistates='4, 3*',
-        ionenergy=(5.5387, 10.85, 20.2, 36.72, ),
+        ionenergy=(5.5387, 10.85, 20.2, 36.72,),
         isotopes={136: Isotope(135.90714, 0.00185, 136),
                   138: Isotope(137.905986, 0.00251, 138),
                   140: Isotope(139.905434, 0.8845, 140),
@@ -1126,7 +1128,7 @@ ELEMENTS = ElementsDict(
         tboil=3785.0, tmelt=1204.0, density=6.48,
         eleconfig='[Xe] 4f3 6s2',
         oxistates='4, 3*',
-        ionenergy=(5.473, 10.55, 21.62, 38.95, 57.45, ),
+        ionenergy=(5.473, 10.55, 21.62, 38.95, 57.45,),
         isotopes={141: Isotope(140.907648, 1.0, 141)}),
     Element(
         60, 'Nd', 'Neodymium',
@@ -1136,7 +1138,7 @@ ELEMENTS = ElementsDict(
         tboil=3347.0, tmelt=1294.0, density=7.0,
         eleconfig='[Xe] 4f4 6s2',
         oxistates='3*',
-        ionenergy=(5.525, 10.72, ),
+        ionenergy=(5.525, 10.72,),
         isotopes={142: Isotope(141.907719, 0.272, 142),
                   143: Isotope(142.90981, 0.122, 143),
                   144: Isotope(143.910083, 0.238, 144),
@@ -1152,7 +1154,7 @@ ELEMENTS = ElementsDict(
         tboil=3273.0, tmelt=1315.0, density=7.22,
         eleconfig='[Xe] 4f5 6s2',
         oxistates='3*',
-        ionenergy=(5.582, 10.9, ),
+        ionenergy=(5.582, 10.9,),
         isotopes={145: Isotope(144.912744, 1.0, 145)}),
     Element(
         62, 'Sm', 'Samarium',
@@ -1162,7 +1164,7 @@ ELEMENTS = ElementsDict(
         tboil=2067.0, tmelt=1347.0, density=7.54,
         eleconfig='[Xe] 4f6 6s2',
         oxistates='3*, 2',
-        ionenergy=(5.6437, 11.07, ),
+        ionenergy=(5.6437, 11.07,),
         isotopes={144: Isotope(143.911995, 0.0307, 144),
                   147: Isotope(146.914893, 0.1499, 147),
                   148: Isotope(147.914818, 0.1124, 148),
@@ -1178,7 +1180,7 @@ ELEMENTS = ElementsDict(
         tboil=1800.0, tmelt=1095.0, density=5.25,
         eleconfig='[Xe] 4f7 6s2',
         oxistates='3*, 2',
-        ionenergy=(5.6704, 11.25, ),
+        ionenergy=(5.6704, 11.25,),
         isotopes={151: Isotope(150.919846, 0.4781, 151),
                   153: Isotope(152.921226, 0.5219, 153)}),
     Element(
@@ -1189,7 +1191,7 @@ ELEMENTS = ElementsDict(
         tboil=3545.0, tmelt=1585.0, density=7.89,
         eleconfig='[Xe] 4f7 5d 6s2',
         oxistates='3*',
-        ionenergy=(6.1498, 12.1, ),
+        ionenergy=(6.1498, 12.1,),
         isotopes={152: Isotope(151.919788, 0.002, 152),
                   154: Isotope(153.920862, 0.0218, 154),
                   155: Isotope(154.922619, 0.148, 155),
@@ -1205,7 +1207,7 @@ ELEMENTS = ElementsDict(
         tboil=3500.0, tmelt=1629.0, density=8.25,
         eleconfig='[Xe] 4f9 6s2',
         oxistates='4, 3*',
-        ionenergy=(5.8638, 11.52, ),
+        ionenergy=(5.8638, 11.52,),
         isotopes={159: Isotope(158.925343, 1.0, 159)}),
     Element(
         66, 'Dy', 'Dysprosium',
@@ -1215,7 +1217,7 @@ ELEMENTS = ElementsDict(
         tboil=2840.0, tmelt=1685.0, density=8.56,
         eleconfig='[Xe] 4f10 6s2',
         oxistates='3*',
-        ionenergy=(5.9389, 11.67, ),
+        ionenergy=(5.9389, 11.67,),
         isotopes={156: Isotope(155.924278, 0.0006, 156),
                   158: Isotope(157.924405, 0.001, 158),
                   160: Isotope(159.925194, 0.0234, 160),
@@ -1231,7 +1233,7 @@ ELEMENTS = ElementsDict(
         tboil=2968.0, tmelt=1747.0, density=8.78,
         eleconfig='[Xe] 4f11 6s2',
         oxistates='3*',
-        ionenergy=(6.0215, 11.8, ),
+        ionenergy=(6.0215, 11.8,),
         isotopes={165: Isotope(164.930319, 1.0, 165)}),
     Element(
         68, 'Er', 'Erbium',
@@ -1241,7 +1243,7 @@ ELEMENTS = ElementsDict(
         tboil=3140.0, tmelt=1802.0, density=9.05,
         eleconfig='[Xe] 4f12 6s2',
         oxistates='3*',
-        ionenergy=(6.1077, 11.93, ),
+        ionenergy=(6.1077, 11.93,),
         isotopes={162: Isotope(161.928775, 0.0014, 162),
                   164: Isotope(163.929197, 0.0161, 164),
                   166: Isotope(165.93029, 0.3361, 166),
@@ -1256,7 +1258,7 @@ ELEMENTS = ElementsDict(
         tboil=2223.0, tmelt=1818.0, density=9.32,
         eleconfig='[Xe] 4f13 6s2',
         oxistates='3*, 2',
-        ionenergy=(6.1843, 12.05, 23.71, ),
+        ionenergy=(6.1843, 12.05, 23.71,),
         isotopes={169: Isotope(168.934211, 1.0, 169)}),
     Element(
         70, 'Yb', 'Ytterbium',
@@ -1266,7 +1268,7 @@ ELEMENTS = ElementsDict(
         tboil=1469.0, tmelt=1092.0, density=9.32,
         eleconfig='[Xe] 4f14 6s2',
         oxistates='3*, 2',
-        ionenergy=(6.2542, 12.17, 25.2, ),
+        ionenergy=(6.2542, 12.17, 25.2,),
         isotopes={168: Isotope(167.933894, 0.0013, 168),
                   170: Isotope(169.934759, 0.0304, 170),
                   171: Isotope(170.936322, 0.1428, 171),
@@ -1282,7 +1284,7 @@ ELEMENTS = ElementsDict(
         tboil=3668.0, tmelt=1936.0, density=9.84,
         eleconfig='[Xe] 4f14 5d 6s2',
         oxistates='3*',
-        ionenergy=(5.4259, 13.9, ),
+        ionenergy=(5.4259, 13.9,),
         isotopes={175: Isotope(174.9407679, 0.9741, 175),
                   176: Isotope(175.9426824, 0.0259, 176)}),
     Element(
@@ -1293,7 +1295,7 @@ ELEMENTS = ElementsDict(
         tboil=4875.0, tmelt=2504.0, density=13.31,
         eleconfig='[Xe] 4f14 5d2 6s2',
         oxistates='4*',
-        ionenergy=(6.8251, 14.9, 23.3, 33.3, ),
+        ionenergy=(6.8251, 14.9, 23.3, 33.3,),
         isotopes={174: Isotope(173.94004, 0.0016, 174),
                   176: Isotope(175.9414018, 0.0526, 176),
                   177: Isotope(176.94322, 0.186, 177),
@@ -1308,7 +1310,7 @@ ELEMENTS = ElementsDict(
         tboil=5730.0, tmelt=3293.0, density=16.68,
         eleconfig='[Xe] 4f14 5d3 6s2',
         oxistates='5*',
-        ionenergy=(7.5496, ),
+        ionenergy=(7.5496,),
         isotopes={180: Isotope(179.947466, 0.00012, 180),
                   181: Isotope(180.947996, 0.99988, 181)}),
     Element(
@@ -1319,7 +1321,7 @@ ELEMENTS = ElementsDict(
         tboil=5825.0, tmelt=3695.0, density=19.26,
         eleconfig='[Xe] 4f14 5d4 6s2',
         oxistates='6*, 5, 4, 3, 2, 0',
-        ionenergy=(7.864, ),
+        ionenergy=(7.864,),
         isotopes={180: Isotope(179.946706, 0.0012, 180),
                   182: Isotope(181.948206, 0.265, 182),
                   183: Isotope(182.9502245, 0.1431, 183),
@@ -1333,7 +1335,7 @@ ELEMENTS = ElementsDict(
         tboil=5870.0, tmelt=3455.0, density=21.03,
         eleconfig='[Xe] 4f14 5d5 6s2',
         oxistates='7, 6, 4, 2, -1',
-        ionenergy=(7.8335, ),
+        ionenergy=(7.8335,),
         isotopes={185: Isotope(184.9529557, 0.374, 185),
                   187: Isotope(186.9557508, 0.626, 187)}),
     Element(
@@ -1344,7 +1346,7 @@ ELEMENTS = ElementsDict(
         tboil=5300.0, tmelt=3300.0, density=22.61,
         eleconfig='[Xe] 4f14 5d6 6s2',
         oxistates='8, 6, 4*, 3, 2, 0, -2',
-        ionenergy=(8.4382, ),
+        ionenergy=(8.4382,),
         isotopes={184: Isotope(183.952491, 0.0002, 184),
                   186: Isotope(185.953838, 0.0159, 186),
                   187: Isotope(186.9557479, 0.0196, 187),
@@ -1360,7 +1362,7 @@ ELEMENTS = ElementsDict(
         tboil=4700.0, tmelt=2720.0, density=22.65,
         eleconfig='[Xe] 4f14 5d7 6s2',
         oxistates='6, 4*, 3, 2, 1*, 0, -1',
-        ionenergy=(8.967, ),
+        ionenergy=(8.967,),
         isotopes={191: Isotope(190.960591, 0.373, 191),
                   193: Isotope(192.962924, 0.627, 193)}),
     Element(
@@ -1371,7 +1373,7 @@ ELEMENTS = ElementsDict(
         tboil=4100.0, tmelt=2042.1, density=21.45,
         eleconfig='[Xe] 4f14 5d9 6s',
         oxistates='4*, 2*, 0',
-        ionenergy=(8.9588, 18.563, ),
+        ionenergy=(8.9588, 18.563,),
         isotopes={190: Isotope(189.95993, 0.00014, 190),
                   192: Isotope(191.961035, 0.00782, 192),
                   194: Isotope(193.962664, 0.32967, 194),
@@ -1386,7 +1388,7 @@ ELEMENTS = ElementsDict(
         tboil=3130.0, tmelt=1337.58, density=19.32,
         eleconfig='[Xe] 4f14 5d10 6s',
         oxistates='3*, 1',
-        ionenergy=(9.2255, 20.5, ),
+        ionenergy=(9.2255, 20.5,),
         isotopes={197: Isotope(196.966552, 1.0, 197)}),
     Element(
         80, 'Hg', 'Mercury',
@@ -1396,7 +1398,7 @@ ELEMENTS = ElementsDict(
         tboil=629.88, tmelt=234.31, density=13.55,
         eleconfig='[Xe] 4f14 5d10 6s2',
         oxistates='2*, 1',
-        ionenergy=(10.4375, 18.756, 34.2, ),
+        ionenergy=(10.4375, 18.756, 34.2,),
         isotopes={196: Isotope(195.965815, 0.0015, 196),
                   198: Isotope(197.966752, 0.0997, 198),
                   199: Isotope(198.968262, 0.1687, 199),
@@ -1412,7 +1414,7 @@ ELEMENTS = ElementsDict(
         tboil=1746.0, tmelt=577.0, density=11.85,
         eleconfig='[Xe] 4f14 5d10 6s2 6p',
         oxistates='3, 1*',
-        ionenergy=(6.1082, 20.428, 29.83, ),
+        ionenergy=(6.1082, 20.428, 29.83,),
         isotopes={203: Isotope(202.972329, 0.29524, 203),
                   205: Isotope(204.974412, 0.70476, 205)}),
     Element(
@@ -1423,7 +1425,7 @@ ELEMENTS = ElementsDict(
         tboil=2023.0, tmelt=600.65, density=11.34,
         eleconfig='[Xe] 4f14 5d10 6s2 6p2',
         oxistates='4, 2*',
-        ionenergy=(7.4167, 15.032, 31.937, 42.32, 68.8, ),
+        ionenergy=(7.4167, 15.032, 31.937, 42.32, 68.8,),
         isotopes={204: Isotope(203.973029, 0.014, 204),
                   206: Isotope(205.974449, 0.241, 206),
                   207: Isotope(206.975881, 0.221, 207),
@@ -1437,7 +1439,7 @@ ELEMENTS = ElementsDict(
         eleconfig='[Xe] 4f14 5d10 6s2 6p3',
         oxistates='5, 3*',
         ionenergy=(7.2855, 16.69, 25.56, 45.3, 56.0,
-                   88.3, ),
+                   88.3,),
         isotopes={209: Isotope(208.980383, 1.0, 209)}),
     Element(
         84, 'Po', 'Polonium',
@@ -1447,7 +1449,7 @@ ELEMENTS = ElementsDict(
         tboil=0.0, tmelt=527.0, density=9.2,
         eleconfig='[Xe] 4f14 5d10 6s2 6p4',
         oxistates='6, 4*, 2',
-        ionenergy=(8.414, ),
+        ionenergy=(8.414,),
         isotopes={209: Isotope(208.982416, 1.0, 209)}),
     Element(
         85, 'At', 'Astatine',
@@ -1467,7 +1469,7 @@ ELEMENTS = ElementsDict(
         tboil=211.4, tmelt=202.0, density=9.23,
         eleconfig='[Xe] 4f14 5d10 6s2 6p6',
         oxistates='2*',
-        ionenergy=(10.7485, ),
+        ionenergy=(10.7485,),
         isotopes={222: Isotope(222.0175705, 1.0, 222)}),
     Element(
         87, 'Fr', 'Francium',
@@ -1477,7 +1479,7 @@ ELEMENTS = ElementsDict(
         tboil=950.0, tmelt=300.0, density=0.0,
         eleconfig='[Rn] 7s',
         oxistates='1*',
-        ionenergy=(4.0727, ),
+        ionenergy=(4.0727,),
         isotopes={223: Isotope(223.0197307, 1.0, 223)}),
     Element(
         88, 'Ra', 'Radium',
@@ -1487,7 +1489,7 @@ ELEMENTS = ElementsDict(
         tboil=1413.0, tmelt=973.0, density=5.5,
         eleconfig='[Rn] 7s2',
         oxistates='2*',
-        ionenergy=(5.2784, 10.147, ),
+        ionenergy=(5.2784, 10.147,),
         isotopes={226: Isotope(226.0254026, 1.0, 226)}),
     Element(
         89, 'Ac', 'Actinium',
@@ -1497,7 +1499,7 @@ ELEMENTS = ElementsDict(
         tboil=3470.0, tmelt=1324.0, density=10.07,
         eleconfig='[Rn] 6d 7s2',
         oxistates='3*',
-        ionenergy=(5.17, 12.1, ),
+        ionenergy=(5.17, 12.1,),
         isotopes={227: Isotope(227.027747, 1.0, 227)}),
     Element(
         90, 'Th', 'Thorium',
@@ -1507,7 +1509,7 @@ ELEMENTS = ElementsDict(
         tboil=5060.0, tmelt=2028.0, density=11.72,
         eleconfig='[Rn] 6d2 7s2',
         oxistates='4*',
-        ionenergy=(6.3067, 11.5, 20.0, 28.8, ),
+        ionenergy=(6.3067, 11.5, 20.0, 28.8,),
         isotopes={232: Isotope(232.0380504, 1.0, 232)}),
     Element(
         91, 'Pa', 'Protactinium',
@@ -1517,7 +1519,7 @@ ELEMENTS = ElementsDict(
         tboil=4300.0, tmelt=1845.0, density=15.37,
         eleconfig='[Rn] 5f2 6d 7s2',
         oxistates='5*, 4',
-        ionenergy=(5.89, ),
+        ionenergy=(5.89,),
         isotopes={231: Isotope(231.0358789, 1.0, 231)}),
     Element(
         92, 'U', 'Uranium',
@@ -1527,7 +1529,7 @@ ELEMENTS = ElementsDict(
         tboil=4407.0, tmelt=1408.0, density=18.97,
         eleconfig='[Rn] 5f3 6d 7s2',
         oxistates='6*, 5, 4, 3',
-        ionenergy=(6.1941, ),
+        ionenergy=(6.1941,),
         isotopes={234: Isotope(234.0409456, 5.5e-05, 234),
                   235: Isotope(235.0439231, 0.0072, 235),
                   238: Isotope(238.0507826, 0.992745, 238)}),
@@ -1539,7 +1541,7 @@ ELEMENTS = ElementsDict(
         tboil=4175.0, tmelt=912.0, density=20.48,
         eleconfig='[Rn] 5f4 6d 7s2',
         oxistates='6, 5*, 4, 3',
-        ionenergy=(6.2657, ),
+        ionenergy=(6.2657,),
         isotopes={237: Isotope(237.0481673, 1.0, 237)}),
     Element(
         94, 'Pu', 'Plutonium',
@@ -1549,7 +1551,7 @@ ELEMENTS = ElementsDict(
         tboil=3505.0, tmelt=913.0, density=19.74,
         eleconfig='[Rn] 5f6 7s2',
         oxistates='6, 5, 4*, 3',
-        ionenergy=(6.026, ),
+        ionenergy=(6.026,),
         isotopes={244: Isotope(244.064198, 1.0, 244)}),
     Element(
         95, 'Am', 'Americium',
@@ -1559,7 +1561,7 @@ ELEMENTS = ElementsDict(
         tboil=2880.0, tmelt=1449.0, density=13.67,
         eleconfig='[Rn] 5f7 7s2',
         oxistates='6, 5, 4, 3*',
-        ionenergy=(5.9738, ),
+        ionenergy=(5.9738,),
         isotopes={243: Isotope(243.0613727, 1.0, 243)}),
     Element(
         96, 'Cm', 'Curium',
@@ -1569,7 +1571,7 @@ ELEMENTS = ElementsDict(
         tboil=0.0, tmelt=1620.0, density=13.51,
         eleconfig='[Rn] 5f7 6d 7s2',
         oxistates='4, 3*',
-        ionenergy=(5.9914, ),
+        ionenergy=(5.9914,),
         isotopes={247: Isotope(247.070347, 1.0, 247)}),
     Element(
         97, 'Bk', 'Berkelium',
@@ -1579,7 +1581,7 @@ ELEMENTS = ElementsDict(
         tboil=0.0, tmelt=1258.0, density=13.25,
         eleconfig='[Rn] 5f9 7s2',
         oxistates='4, 3*',
-        ionenergy=(6.1979, ),
+        ionenergy=(6.1979,),
         isotopes={247: Isotope(247.070299, 1.0, 247)}),
     Element(
         98, 'Cf', 'Californium',
@@ -1589,7 +1591,7 @@ ELEMENTS = ElementsDict(
         tboil=0.0, tmelt=1172.0, density=15.1,
         eleconfig='[Rn] 5f10 7s2',
         oxistates='4, 3*',
-        ionenergy=(6.2817, ),
+        ionenergy=(6.2817,),
         isotopes={251: Isotope(251.07958, 1.0, 251)}),
     Element(
         99, 'Es', 'Einsteinium',
@@ -1599,7 +1601,7 @@ ELEMENTS = ElementsDict(
         tboil=0.0, tmelt=1130.0, density=0.0,
         eleconfig='[Rn] 5f11 7s2',
         oxistates='3*',
-        ionenergy=(6.42, ),
+        ionenergy=(6.42,),
         isotopes={252: Isotope(252.08297, 1.0, 252)}),
     Element(
         100, 'Fm', 'Fermium',
@@ -1609,7 +1611,7 @@ ELEMENTS = ElementsDict(
         tboil=0.0, tmelt=1800.0, density=0.0,
         eleconfig='[Rn] 5f12 7s2',
         oxistates='3*',
-        ionenergy=(6.5, ),
+        ionenergy=(6.5,),
         isotopes={257: Isotope(257.095099, 1.0, 257)}),
     Element(
         101, 'Md', 'Mendelevium',
@@ -1619,7 +1621,7 @@ ELEMENTS = ElementsDict(
         tboil=0.0, tmelt=1100.0, density=0.0,
         eleconfig='[Rn] 5f13 7s2',
         oxistates='3*',
-        ionenergy=(6.58, ),
+        ionenergy=(6.58,),
         isotopes={258: Isotope(258.098425, 1.0, 258)}),
     Element(
         102, 'No', 'Nobelium',
@@ -1629,7 +1631,7 @@ ELEMENTS = ElementsDict(
         tboil=0.0, tmelt=1100.0, density=0.0,
         eleconfig='[Rn] 5f14 7s2',
         oxistates='3, 2*',
-        ionenergy=(6.65, ),
+        ionenergy=(6.65,),
         isotopes={259: Isotope(259.10102, 1.0, 259)}),
     Element(
         103, 'Lr', 'Lawrencium',
@@ -1639,7 +1641,7 @@ ELEMENTS = ElementsDict(
         tboil=0.0, tmelt=1900.0, density=0.0,
         eleconfig='[Rn] 5f14 6d 7s2',
         oxistates='3*',
-        ionenergy=(4.9, ),
+        ionenergy=(4.9,),
         isotopes={262: Isotope(262.10969, 1.0, 262)}),
     Element(
         104, 'Rf', 'Rutherfordium',
@@ -1649,7 +1651,7 @@ ELEMENTS = ElementsDict(
         tboil=0.0, tmelt=0.0, density=0.0,
         eleconfig='[Rn] 5f14 6d2 7s2',
         oxistates='*',
-        ionenergy=(6.0, ),
+        ionenergy=(6.0,),
         isotopes={261: Isotope(261.10875, 1.0, 261)}),
     Element(
         105, 'Db', 'Dubnium',
@@ -1701,7 +1703,6 @@ ELEMENTS = ElementsDict(
         oxistates='*',
         ionenergy=(),
         isotopes={268: Isotope(268.13882, 1.0, 268)}))
-
 
 PERIODS = {1: 'K', 2: 'L', 3: 'M', 4: 'N', 5: 'O', 6: 'P', 7: 'Q'}
 
@@ -2499,7 +2500,7 @@ def word_wrap(text, linelen=80, indent=0, joinstr="\n"):
 
 
 if __name__ == "__main__":
-    #for ele in ELEMENTS:
+    # for ele in ELEMENTS:
     #    print(repr(ele), '\n')
     import doctest
 

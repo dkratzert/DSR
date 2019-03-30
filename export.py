@@ -74,7 +74,7 @@ class Export():
             # now the new 50,50,50 cell:
             for n in range(0, 3):
                 cell[n] = 50
-        #cell = [str(x) for x in cell]
+        # cell = [str(x) for x in cell]
         return [cell, atoms]
 
     def make_dfix(self, fragname):
@@ -354,7 +354,6 @@ if __name__ == '__main__':
 
     ##############################################################################
 
-
     #    reference.close()
     #    http://en.wikipedia.org/wiki/Molecular_graphics
     #    // assume:
@@ -380,4 +379,3 @@ if __name__ == '__main__':
     #        #color1 = ColorTable.getColor(atom1.getSymbol())
     #        #drawLine (color1, x1, y1, xMid, yMid)
     #    }
-
