@@ -1310,7 +1310,7 @@ C7      1  0.489380  0.615360  0.412970  1.000000 0.05000
 </TOLUENE>
 
 <Benzene>
-REM Name: Benzene, Benzol, Phenyl, C6H6
+REM Name: Benzene, Phenyl, C6H6
 REM SRC: UGEDEQ
 RESI BENZ
 SADI 0.02 C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1
