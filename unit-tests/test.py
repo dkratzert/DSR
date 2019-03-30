@@ -10,6 +10,7 @@ import unittest
 import dbfile
 import restraints
 import sql_export
+from rmsd import calculate_rmsd
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import afix
@@ -30,6 +31,7 @@ from export import Export
 from resfile import ResList, ResListEdit
 from resi import Resi
 from restraints import format_atom_names
+
 print(sys.version)
 
 
@@ -37,7 +39,7 @@ class doctestsTest(unittest.TestCase):
     def testrun_doctest(self):
         for name in [dsr, afix, dsrparse, export, misc, elements, networkx,
                      atomhandling, networkx.classes.graph, dsrparse, dbfile,
-                     sql_export, restraints]:
+                     sql_export, restraints, calculate_rmsd]:
             failed, attempted = doctest.testmod(name)  # , verbose=True)
             if failed == 0:
                 print('passed all {} tests in {}!'.format(attempted, name.__name__))

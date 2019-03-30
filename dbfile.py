@@ -215,8 +215,8 @@ class ParseDB(object):
             if end_regex and end_regex.match(line):
                 starttag = False
                 db[frag_tag].update(
-                        {'endline'  : num + 1,
-                         'startline': startnum + 1})
+                    {'endline': num + 1,
+                     'startline': startnum + 1})
                 db = self.parse_fraglines(frag_tag, fraglines, db)
                 fraglines = []
             # start tag was found, appending lines to fragment list
@@ -338,12 +338,12 @@ class ParseDB(object):
             return db
         db[fragname_tag].update({
             'restraints': headlist,  # header with just the restraints
-            'resi'      : residue,  # the residue class
-            'cell'      : cell,  # FRAG ...
-            'atoms'     : atoms,  # the atoms as lists of list
-            'comments'  : comments,  # the comment line
-            'source'    : source,
-            'name'      : name})
+            'resi': residue,  # the residue class
+            'cell': cell,  # FRAG ...
+            'atoms': atoms,  # the atoms as lists of list
+            'comments': comments,  # the comment line
+            'source': source,
+            'name': name})
         return db
 
     def __getitem__(self, fragment):
@@ -422,7 +422,7 @@ class ParseDB(object):
          benzene
         </tag>
         <comment>
-         Benzene, Benzol, Phenyl, C6H6
+         Benzene, Phenyl, C6H6
         </comment>
         <source>
          UGEDEQ
@@ -439,6 +439,7 @@ class ParseDB(object):
         <restr>
          SADI 0.02 C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1;;SADI 0.04 C1 C5 C1 C5 C4 C2 C4 C6 C6 C2 C5 C3;;FLAT C1 > C6;;SIMU C1 > C6;;RIGU C1 > C6
         </restr>
+
         """
         fragment = fragment.lower()
         print("<tag>\n", fragment, "\n</tag>")
@@ -640,8 +641,8 @@ class ParseDB(object):
                 if (stdev > (2.5 * float(dev))) and good:
                     print("\nFragment {}:".format(fragment))
                     print(
-                            '*** Suspicious restraints in SADI line {} with high standard deviation {:4.3f} '
-                            '(median length: {:4.3f} A) ***'.format(num + 1, stdev, median(distances)))
+                        '*** Suspicious restraints in SADI line {} with high standard deviation {:4.3f} '
+                        '(median length: {:4.3f} A) ***'.format(num + 1, stdev, median(distances)))
                     print('*** ' + ' '.join(prefixes + line) + ' ***')
                     good = False
         if good:
@@ -761,7 +762,11 @@ class ParseDB(object):
         can be either class or class + number.
         convention is only class.
         """
-        return self.databases[fragment.lower()]['resi']
+        try:
+            return self.databases[fragment.lower()]['resi']
+        except KeyError:
+            print(not_existing_error.format(fragment))
+            return ''
 
     def get_fragment_name(self, fragment):
         """
@@ -784,7 +789,11 @@ class ParseDB(object):
         :param fragment: actual fragment name
         :type fragment: string
         """
-        src = self.databases[fragment.lower()]['source']
+        try:
+            src = self.databases[fragment.lower()]['source']
+        except KeyError:
+            print(not_existing_error.format(fragment))
+            return ''
         return src
 
     def get_db_name(self, fragment):
@@ -1035,13 +1044,13 @@ class ImportGRADE():
         fragline = 'FRAG 17 1  1  1  90  90  90'
         db_import_dict[resi_name] = {
             'restraints': self._restraints,
-            'resi'      : resi_name,
-            'cell'      : fragline.split(),
-            'atoms'     : self._atoms,
-            'line'      : None,
-            'db'        : 'dsr_user_db',
-            'comments'  : self.get_comments(),
-            'name'      : resi_name
+            'resi': resi_name,
+            'cell': fragline.split(),
+            'atoms': self._atoms,
+            'line': None,
+            'db': 'dsr_user_db',
+            'comments': self.get_comments(),
+            'name': resi_name
         }
         return db_import_dict
 
@@ -1161,7 +1170,7 @@ if __name__ == '__main__':
                     distances.append(dist)
                 stdev = std_dev(distances)
                 print("esd < 0.065 ?: {:<4.4f}, esd < 2.5*sigma?: {:<4.4f} < {:<4.4f} -> {}".format(
-                        stdev, stdev, 2.5 * float(dev), ("yes" if stdev < 2.5 * float(dev) else "no")))
+                    stdev, stdev, 2.5 * float(dev), ("yes" if stdev < 2.5 * float(dev) else "no")))
 
 
     frag = 'WBVNT'

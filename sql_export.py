@@ -1,10 +1,9 @@
-
 """
 This file is used to export the DSR database to sqlite for Olex2.
 Every fragemnt needs a picture with the same name as the fragment tag in ./pictures
 """
-import sqlite3 as lite
 import os
+import sqlite3 as lite
 import sys
 
 import misc
@@ -14,7 +13,6 @@ from dbfile import ParseDB
 misc.remove_file('./fragment-database.sqlite')
 gl = ParseDB()
 db = gl.parse(dbpath="./olex_dsr_db.txt", dbname='olex_db')
-
 
 dbfilename = 'fragment-database.sqlite'
 con = lite.connect(dbfilename)
@@ -188,7 +186,6 @@ def export_database():
     for row in rows:
         print("{}  {}  {:>8.4f} {:>8.4f} {:>8.4f}".format(*row))
         # print("{}".format(row))
-
 
 
 # enable to re-export the db to sql:

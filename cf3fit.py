@@ -393,7 +393,7 @@ class CF3(object):
         else:
             nums = NumberScheme(self.reslist, numberedatoms, self.dsrp)
             F1, F2, F3, F4, F5, F6, F7, F8, F9 = nums.get_fragment_number_scheme()
-        start_f_coord = self.lf.get_single_coordinate(fatoms[0]+'^A')
+        start_f_coord = self.lf.get_single_coordinate(fatoms[0] + '^A')
         replacelist = (('Z', Z), ('Y', Y), ('F1', F1), ('F2', F2), ('F3', F3),
                        ('F4', F4), ('F5', F5), ('F6', F6), ('F7', F7),
                        ('F8', F8), ('F9', F9))
