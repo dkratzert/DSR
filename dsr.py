@@ -24,6 +24,7 @@ from dbfile import search_fragment_name, ParseDB
 from dsrparse import DSRParser
 from misc import touch, cart_to_frac, frac_to_cart, wrap_headlines, chunks
 from options import OptionsParser
+from refine import ShelxlRefine
 from resfile import ResList, filename_wo_ending, ResListEdit
 from resi import Resi, remove_resi
 from restraints import Restraints
@@ -36,8 +37,6 @@ program_name = '\n{} D S R - v{} {}'.format(minuse, VERSION, minuse)
 
 # TODO and ideas:
 """
-- Add backup of res file for fast fit.
-
 - Split mode
   - calc principal axis for each ellipsoid
   - generate atoms
@@ -294,7 +293,6 @@ class DSR(object):
         restraints = remove_resi(restraints)
         # corrects the atom type according to the previous defined global sfac table:
         dbatoms = atomhandling.set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table)
-
         if not dsrp.unit_line:
             print('*** No UNIT instruction in res file found! Can not proceed! ***')
         print('Inserting {} into res File.'.format(self.fragment))
@@ -302,7 +300,8 @@ class DSR(object):
             print('Fragment inverted.')
         print('Source atoms: {}'.format(', '.join(dsrp.source)))
         print('Target atoms: {}'.format(', '.join(dsrp.target)))
-
+        shx = ShelxlRefine(self.reslist, self.res_file, find_atoms, self.options)
+        shx.backup_shx_file()
         # several checks if the atoms in the dsr command line are consistent
         atomhandling.check_source_target(dsrp.source, dsrp.target, dbatoms)
         num = atomhandling.NumberScheme(self.reslist, dbatoms, dsrp)
@@ -437,6 +436,7 @@ class DSR(object):
             self.reslist, find_atoms = atomhandling.replace_after_fit(self.rl, reslist, resi,
                                                                       fragment_numberscheme, rle.get_cell())
             self.rl.write_resfile(self.reslist, '.res')
+        os.remove(shx.backup_file)
 
 
 class Multilog(object):
