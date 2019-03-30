@@ -13,7 +13,6 @@ from __future__ import print_function
 
 import re
 import sys
-import textwrap
 
 import misc
 
@@ -190,12 +189,7 @@ class DSRParser(object):
         returns the different parameters from the dsr command as dict
         It needs find_commands() and find_atoms() to parse the line.
 
-        >>> from resfile import ResList, ResListEdit
-        >>> res_file = 'p21c.res'
-        >>> rl = ResList(res_file)
-        >>> reslist = rl.get_res_list()
-        >>> rle = ResListEdit(reslist, res_file)
-        >>> #dsr_line = dsrp.get_dsr_dict
+        >>> reslist = [r'rem dsr put oc(cf3)3 with o1 c1 c2 c3 c4 on O1_3 c1_3 q6 Q4 q7 resi cf3 =', r'  PART 2 occ -31']
         >>> dsrp = DSRParser(reslist)
         >>> dic = dsrp.all
         >>> l = sorted(dic)
@@ -210,6 +204,36 @@ class DSRParser(object):
         source:  ['O1', 'C1', 'C2', 'C3', 'C4']
         split:  False
         target:  ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7']
+
+        >>> dsrp = DSRParser(['rem dsr put ch2Cl2 with C1 cL2 cl1 on C1 C2 Cl3 ParT 1 reSi ocC 21'])
+        >>> dic = dsrp.all
+        >>> l = sorted(dic)
+        >>> for i in l:
+        ...     print('{}: '.format(i), dic[i])
+        command:  PUT
+        dfix:  False
+        fragment:  CH2CL2
+        occupancy:  21
+        part:  1
+        resi:  []
+        source:  ['C1', 'CL2', 'CL1']
+        split:  False
+        target:  ['C1', 'C2', 'CL3']
+
+        >>> dsrp = DSRParser(['rem dsr put ch2Cl2 with C1 cL2 cl1 on C1 C2 Cl3 ParT 1  ocC 21'])
+        >>> dic = dsrp.all
+        >>> l = sorted(dic)
+        >>> for i in l:
+        ...     print('{}: '.format(i), dic[i])
+        command:  PUT
+        dfix:  False
+        fragment:  CH2CL2
+        occupancy:  21
+        part:  1
+        resi:  False
+        source:  ['C1', 'CL2', 'CL1']
+        split:  False
+        target:  ['C1', 'C2', 'CL3']
         """
         source = None
         if self.cf3_active:
