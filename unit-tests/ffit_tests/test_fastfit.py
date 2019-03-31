@@ -46,8 +46,9 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         #    Test for problems with upper/lower case source atom names
         # 26 regular -r dsr run with
         #         dfix PART 2 occ -31     dfix and part without resi
+        # 27 -g (rigid) -re part 2 occ -31
 
-    def dsr_runtest(self, nummer=99, parameter='-r', external_file='', hkl=1,
+    def dsr_runtest(self, nummer=99, parameter='-r', external_file='', hkl=1, prefix = './ffit_tests/',
                     limit_start=6, limit_end=-1, ending='res', remlines=None):
         """
         runs a test where the whole dsr is started with different input files
@@ -62,7 +63,6 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
             remlines = []
         d = []
         c = []
-        prefix = './ffit_tests/'
         # parameter = '-noffit ' + parameter
         print('{} '.format(nummer) * 10, 'start:')
         copy_file(prefix + '{}.hkl'.format(hkl), prefix + '{}a.hkl'.format(nummer))
@@ -334,6 +334,13 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         dfix PART 2 occ -31
         """
         self.dsr_runtest(26, '-r', remlines=[])
+
+    # @unittest.skip(" skipping27 ")
+    def testrun_run27(self):
+        """
+        -re   PART 2 occ -31
+        """
+        self.dsr_runtest(27, ' -g -re', remlines=[])
 
 
 def remove_whitespace(mystringlist):
