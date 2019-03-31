@@ -389,7 +389,7 @@ class DSR(object):
             afix_entry = 'RESI {} {}\n{}\nRESI 0'.format(resi.get_residue_class, resi.get_resinumber, afix_entry)
         if self.options.rigid_group:
             afix_entry = 'AFIX 9\n' + afix_entry
-        if options.external_restr:
+        if options.external_restr and not self.rigid:
             pname, ext = os.path.splitext(basefilename + '.dfix')
             if dsrp.dfix:
                 dfx_file_name = pname + "_dfx" + ext
@@ -423,11 +423,12 @@ class DSR(object):
                     break
             except IndexError:
                 continue
-        # + 'AFIX 0\n' seems to be not needed after shelx-2013
+        # + 'AFIX 0\n' before hklf seems to be not needed after shelx-2013:
         self.reslist[dsrp.hklf_line - 1] = self.reslist[dsrp.hklf_line - 1] + afix_entry + '\n'
-        self.reslist[dsrp.unit_line] = self.reslist[dsrp.unit_line] + source + ''.join(restraints)
-        # write to file:
+        if not self.rigid:
+            self.reslist[dsrp.unit_line] = self.reslist[dsrp.unit_line] + source + ''.join(restraints)
 
+        # write to file:
         self.rl.write_resfile(self.reslist, '.res')
         if dsrp.command == 'REPLACE':
             print("Replace mode active\n")
