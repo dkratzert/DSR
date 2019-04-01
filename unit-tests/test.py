@@ -554,7 +554,7 @@ class globalDB(unittest.TestCase):
         with self.assertRaises(SystemExit):
             gdb = dbfile.ParseDB(main_dbpath, user_dbpath)
             fragment = 'dmel'
-            gdb.check_db_header_consistency(fragment)
+            gdb.check_db_restraints_consistency(fragment)
 
     def testrun_header_consistency2(self):
         self.maxDiff = None
@@ -565,7 +565,7 @@ class globalDB(unittest.TestCase):
             fragment = 'dmem'
             head = gdb[fragment]['restraints']
             atoms = gdb.get_atoms(fragment, invert=True)
-            gdb.check_db_header_consistency(fragment)
+            gdb.check_db_restraints_consistency(fragment)
 
     def testrun_get_resi_from_fragment(self):
         self.maxDiff = None

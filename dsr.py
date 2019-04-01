@@ -37,6 +37,7 @@ program_name = '\n{} D S R - v{} {}'.format(minuse, VERSION, minuse)
 
 # TODO and ideas:
 """
+- Check for duplicate atom pairs in restraints
 - Split mode
   - calc principal axis for each ellipsoid
   - generate atoms
@@ -237,7 +238,7 @@ class DSR(object):
         for fragment in fragnames:
             self.gdb.check_consistency(fragment)
             self.gdb.check_db_atom_consistency(fragment)
-            self.gdb.check_db_header_consistency(fragment)
+            self.gdb.check_db_restraints_consistency(fragment)
             self.gdb.check_sadi_consistence(fragment)
         from selfupdate import is_update_needed
         if is_update_needed(silent=True):
@@ -286,7 +287,7 @@ class DSR(object):
         # checks have to be after CF3, CF6 etc.
         self.gdb.check_consistency(self.fragment)
         self.gdb.check_db_atom_consistency(self.fragment)
-        self.gdb.check_db_header_consistency(self.fragment)
+        self.gdb.check_db_restraints_consistency(self.fragment)
         self.gdb.check_sadi_consistence(self.fragment)
         if dsrp.occupancy:
             rle.set_free_variables(dsrp.occupancy)
