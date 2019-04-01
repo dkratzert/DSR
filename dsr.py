@@ -161,8 +161,6 @@ class DSR(object):
         try:
             import numpy as np
             self.numpy_installed = True
-            if self.options.noffit:
-                self.numpy_installed = False
         except ImportError:
             print('*** Numpy was not found. Please reinstall DSR or install the numpy package in order to use DSR. ***')
             sys.exit()
