@@ -1,4 +1,5 @@
 Recent changes
+-222    Fixed faulty 1,3 restraints in benzene.
 -221    Separated restraints and fragment during transfer. The restraints are now always inserted after 
         UNIT. The new fragment is always located before HKLF. This has the advantage that it does not depend on 
         the position of the DSR command and the SAME instruction has always the better fragments
