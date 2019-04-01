@@ -451,7 +451,7 @@ class ParseDB(object):
         print("<dbtype>\n", self.get_db_name(fragment), "\n</dbtype>")
         print("<restr>\n", ';;'.join(self.get_restraints(fragment)), '\n</restr>')
         self.check_consistency(fragment)
-        self.check_db_header_consistency(fragment)
+        self.check_db_restraints_consistency(fragment)
         if not self.check_sadi_consistence(fragment):
             sys.exit()
         self.check_db_atom_consistency(fragment)
@@ -528,7 +528,7 @@ class ParseDB(object):
                 sys.exit()
         return True
 
-    def check_db_header_consistency(self, fragment):
+    def check_db_restraints_consistency(self, fragment):
         """
         - Checks if the Atomnames in the restraints of the dbhead are also in
           the list of the atoms of the respective dbentry.
@@ -1181,7 +1181,7 @@ if __name__ == '__main__':
     # pprint(db.databases['toluene'])
     db.check_consistency(frag)
     db.check_db_atom_consistency(frag)
-    db.check_db_header_consistency(frag)
+    db.check_db_restraints_consistency(frag)
     db.check_sadi_consistence(frag)
     atnames = db.get_atomnames(frag)
     restr = db.get_restraints(frag)
