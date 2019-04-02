@@ -21,6 +21,7 @@ files = [
     "constants.py",
     "dbfile.py",
     "dsr.py",
+    "dsr.bat",
     "dsrparse.py",
     "export.py",
     "misc.py",
