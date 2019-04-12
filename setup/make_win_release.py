@@ -39,5 +39,7 @@ make_distribs()
 # Make a zip file for web interface distribution:
 make_zip(files)
 
+
 # This is to test if the distribution numpy works:
-subprocess.call(['C:\Python27-dsr\python.exe', '-c', 'import numpy as np; np.sin(3)'])
+subprocess.call([r'C:\Python27-dsr\python.exe', '-c', 'import numpy as np; np.sin(3)'])
+
