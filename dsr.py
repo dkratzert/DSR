@@ -47,7 +47,6 @@ program_name = '\n{} D S R - v{} {}'.format(minuse, VERSION, minuse)
 
 """
 
-
 class DSR(object):
     """
     main class
