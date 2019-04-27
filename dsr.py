@@ -37,7 +37,6 @@ program_name = '\n{} D S R - v{} {}'.format(minuse, VERSION, minuse)
 
 # TODO and ideas:
 """
-- Check for duplicate atom pairs in restraints
 - Split mode
   - calc principal axis for each ellipsoid
   - generate atoms
@@ -352,7 +351,7 @@ class DSR(object):
         if rmsd < 0.1:
             print('Fragment fit successful with RMSD of: {:8.3}'.format(rmsd))
         else:
-            print('Fragment fit might have failed with RMSD of: {:8.3}'.format(rmsd))
+            print('*** Fragment fit might have failed with RMSD of: {:8.3} ***'.format(rmsd))
         fitted_fragment = [cart_to_frac(x, rle.get_cell()) for x in fitted_fragment]
         afix_entry = []
         e2s = Elem_2_Sfac(sfac_table)
@@ -362,8 +361,7 @@ class DSR(object):
                 occ = float(dsrp.occupancy)
             else:
                 occ = 11.0
-            afix_entry.append(isoatomstr.format(at, sfac_num, coord[0], coord[1], coord[2],
-                                                occ, 0.03))
+            afix_entry.append(isoatomstr.format(at, sfac_num, coord[0], coord[1], coord[2], occ, 0.03))
         afix_entry = "\n".join(afix_entry)
         new_atomnames = list(reversed(fragment_numberscheme))
         same_resi = ''
@@ -371,6 +369,7 @@ class DSR(object):
             restraints = rename_restraints_atoms(new_atomnames, self.gdb.get_atomnames(self.fragment), restraints)
         else:
             restraints = resi.format_restraints(restraints)
+            # SADI\n
             same_resi = ["SAME_{} {} > {}\n".format(resi.get_residue_class, new_atomnames[-1], new_atomnames[0])]
         # Adds a "SAME_resiclass firstatom > lastatom" to the afix:
         if not self.options.rigid_group:
