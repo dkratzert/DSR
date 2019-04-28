@@ -614,7 +614,9 @@ class ParseDB(object):
                     return True
                 for i in pairs:
                     if i in pairlist or tuple(reversed(i)) in pairlist:
-                        print('*** Duplicate atom pair "{}" in SADI restraint line {} of "{}". ***'.format(" ".join(i), num, fragment))
+                        print('*** Duplicate atom pair "{}" in SADI restraint line {} of "{}". ***'.format(" ".join(i),
+                                                                                                           num,
+                                                                                                           fragment))
                     pairlist.append(i)
                     try:
                         a = atoms[atnames.index(i[0])][2:5]
