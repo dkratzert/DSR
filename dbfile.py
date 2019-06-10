@@ -610,7 +610,7 @@ class ParseDB(object):
                 pairs = pairwise(line)
                 distances = []
                 pairlist = []
-                if len(pairs) <= 2:
+                if len(pairs) <= 1:
                     return True
                 for i in pairs:
                     if i in pairlist or tuple(reversed(i)) in pairlist:
@@ -619,14 +619,19 @@ class ParseDB(object):
                                                                                                            fragment))
                     pairlist.append(i)
                     try:
-                        a = atoms[atnames.index(i[0])][2:5]
-                        b = atoms[atnames.index(i[1])][2:5]
+                        atom1 = [float(x) for x in atoms[atnames.index(i[0])][2:5]]
+                        atom2 = [float(x) for x in atoms[atnames.index(i[1])][2:5]]
                     except ValueError:
                         return False
-                    a = [float(x) for x in a]
-                    b = [float(y) for y in b]
-                    dist = atomic_distance(a, b, self.get_cell(fragment))
+                    dist = atomic_distance(atom1, atom2, self.get_cell(fragment))
                     distances.append(dist)
+                if len(pairlist) == 2:
+                    # Find restraints with one pair, where 1,2 and 1,3 distances are mixed:
+                    pairdev = 1.0 - (min(distances) / max(distances))
+                    if pairdev > (3.0 * float(dev)):
+                        print('*** Suspicious deviation of {:.3f} A for "{}" in {} ***'.format(pairdev, restraints[num], fragment))
+                        return False
+                    return True
                 stdev = std_dev(distances)  # Error distribution of
                 # only do outlier test if standard deviation is suspiciously large:
                 if stdev > 0.065:
@@ -647,7 +652,7 @@ class ParseDB(object):
                     print(
                         '*** Suspicious restraints in SADI line {} with high standard deviation {:4.3f} '
                         '(median length: {:4.3f} A) ***'.format(num + 1, stdev, median(distances)))
-                    print('*** ' + ' '.join(prefixes + line) + ' ***')
+                    print('*** ' + restraints[num] + ' ***\n')
                     good = False
         if good:
             return True
@@ -1164,14 +1169,16 @@ if __name__ == '__main__':
                 for i in pairs:
                     pairlist.append(i)
                     try:
-                        a = atoms[atnames.index(i[0])][2:5]
-                        b = atoms[atnames.index(i[1])][2:5]
+                        atom1 = [float(x) for x in atoms[atnames.index(i[0])][2:5]]
+                        atom2 = [float(x) for x in atoms[atnames.index(i[1])][2:5]]
                     except ValueError:
                         return False
-                    a = [float(x) for x in a]
-                    b = [float(y) for y in b]
-                    dist = atomic_distance(a, b, cell)
+                    dist = atomic_distance(atom1, atom2, cell)
                     distances.append(dist)
+                if len(pairlist) == 2:
+                    pairdev = 1 - (min(distances) / max(distances))
+                    if pairdev > 2 * dev:
+                        print('foooooooo', pairdev)
                 stdev = std_dev(distances)
                 print("esd < 0.065 ?: {:<4.4f}, esd < 2.5*sigma?: {:<4.4f} < {:<4.4f} -> {}".format(
                     stdev, stdev, 2.5 * float(dev), ("yes" if stdev < 2.5 * float(dev) else "no")))

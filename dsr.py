@@ -231,7 +231,7 @@ class DSR(object):
             line = ' {:<17}| {:<5}| {:<11}| {}'.format(*line)
             print(line[:width - 1])
         print('\n {} Fragments in the database(s).'.format(num),
-              '\n Feel free to add more fragments to "{}dsr_user_db.txt"'.format(dbdir + os.path.sep))
+              '\n Feel free to add more fragments to "{}dsr_user_db.txt"\n'.format(dbdir + os.path.sep))
         for fragment in fragnames:
             self.gdb.check_consistency(fragment)
             self.gdb.check_db_atom_consistency(fragment)
