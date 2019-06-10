@@ -628,10 +628,10 @@ class ParseDB(object):
                 if len(pairlist) == 2:
                     # Find restraints with one pair, where 1,2 and 1,3 distances are mixed:
                     pairdev = 1.0 - (min(distances) / max(distances))
-                    if pairdev > (3.0 * float(dev)):
+                    if pairdev > (2.0 * float(dev)):
                         print('*** Suspicious deviation of {:.3f} A for "{}" in {} ***'.format(pairdev, restraints[num], fragment))
                         return False
-                    return True
+                    return True  # because esd is too sensitive for two distances.
                 stdev = std_dev(distances)  # Error distribution of
                 # only do outlier test if standard deviation is suspiciously large:
                 if stdev > 0.065:
