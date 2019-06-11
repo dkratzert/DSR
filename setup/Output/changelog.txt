@@ -1,4 +1,5 @@
 Recent changes
+-224    Fixed bug where certain fragments got really large with DFIX command.
 -223    Fixed acetone restraints. Added test for inconsistent restraints with two atom pairs.
 -222-1  Fixed damaged numpy in Windows installer.
 -222    Fixed faulty 1,3 restraints in benzene.
