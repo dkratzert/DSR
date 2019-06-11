@@ -1,4 +1,5 @@
 Recent changes
+-223    Fixed acetone restraints. Added test for inconsistent restraints with two atom pairs.
 -222-1  Fixed damaged numpy in Windows installer.
 -222    Fixed faulty 1,3 restraints in benzene.
 -221    Separated restraints and fragment during transfer. The restraints are now always inserted after
