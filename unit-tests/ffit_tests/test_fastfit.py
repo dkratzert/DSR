@@ -48,7 +48,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         #         dfix PART 2 occ -31     dfix and part without resi
         # 27 -g (rigid) -re part 2 occ -31
 
-    def dsr_runtest(self, nummer=99, parameter='-r', external_file='', hkl=1, prefix = './ffit_tests/',
+    def dsr_runtest(self, nummer=99, parameter='-r', external_file='', hkl=None, prefix = './ffit_tests/',
                     limit_start=6, limit_end=-1, ending='res', remlines=None):
         """
         runs a test where the whole dsr is started with different input files
@@ -65,7 +65,8 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         c = []
         # parameter = '-noffit ' + parameter
         print('{} '.format(nummer) * 10, 'start:')
-        copy_file(prefix + '{}.hkl'.format(hkl), prefix + '{}a.hkl'.format(nummer))
+        if hkl:
+            copy_file(prefix + '{}.hkl'.format(hkl), prefix + '{}a.hkl'.format(nummer))
         copy_file(prefix + '/{}.res'.format(nummer), prefix + '/{}a.res'.format(nummer))
         os.system('{0} {1} {3}/{2}a.res'.format(self.dsr, parameter, nummer, prefix))
         with open(prefix + '/{}a.{}'.format(nummer, ending)) as txt:
@@ -84,7 +85,8 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
             b[line] = ''
         print('{} test:'.format(nummer))
         print("parameter:", parameter)
-        remove_file(prefix + '{}a.hkl'.format(nummer))
+        if hkl:
+            remove_file(prefix + '{}a.hkl'.format(nummer))
         remove_file(prefix + '{}a.fcf'.format(nummer))
         remove_file(prefix + '{}.fcf'.format(nummer))
         remove_file(prefix + '{}.2fcf'.format(nummer))
@@ -317,7 +319,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         rem dsr put toluene on C1 C2 C3
 
         """
-        self.dsr_runtest(24, '-r', hkl=1)
+        self.dsr_runtest(24, '-r')
 
     # @unittest.skip(" skipping 25")
     def testrun_run25(self):
@@ -341,6 +343,14 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         -re   PART 2 occ -31
         """
         self.dsr_runtest(27, ' -g -re', remlines=[])
+
+    # @unittest.skip(" skipping 28")
+    def testrun_run28(self):
+        """
+        REM DSR PUT TOLUENE WITH C2 C3 C5 ON Q1 Q2 Q1 PART -1 OCC 10.5 DFIX
+        1.0005, 0.5447, 0.5342, 0.9314, 0.5395, 0.5126, 0.9995, 0.4553, 0.4658
+        """
+        self.dsr_runtest(28, '-target 1.0005 0.5447 0.5342 0.9314 0.5395 0.5126 0.9995 0.4553 0.4658 -r', remlines=[])
 
 
 def remove_whitespace(mystringlist):
