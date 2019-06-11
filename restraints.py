@@ -93,12 +93,10 @@ class Restraints():
     def __init__(self, frag, gdb):
         self.fragment = frag.lower()
         self.gdb = gdb
-        self._atoms = [i[0] for i in self.gdb[self.fragment]['atoms']]
-        self._cell = self.gdb.get_cell(self.fragment)
-        self.atom_types = get_atomtypes(self.gdb[self.fragment]['atoms'])
+        self._atoms = [i[0] for i in self.gdb.get_atoms(fragment=self.fragment, cartesian=True)]
+        self.atom_types = get_atomtypes([x for x in self._atoms])
         self.cart_coords = self.gdb.get_coordinates(self.fragment, cartesian=True)
-        self._connectivity_table = self.get_conntable_from_atoms(
-            self.cart_coords, self.atom_types, self._atoms)
+        self._connectivity_table = self.get_conntable_from_atoms(self.cart_coords, self.atom_types, self._atoms)
         self.coords_dict = self.get_coords_dict()
         self._G = self.get_adjmatrix()
 

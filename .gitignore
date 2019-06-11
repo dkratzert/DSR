@@ -2,6 +2,7 @@ SAVEHIST
 shelXlesaves
 dsrsaves
 venv
+venv_27
 venv_py3
 dsrsaves/*
 *.ps

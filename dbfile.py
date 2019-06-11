@@ -689,7 +689,7 @@ class ParseDB(object):
         """
         fragment = fragment.lower()
         try:
-            atoms = self.databases[fragment]['atoms']
+            atoms = deepcopy(self.databases[fragment]['atoms'])
         except KeyError:
             print('*** Could not find {} in database ***'.format(fragment))
             sys.exit()
