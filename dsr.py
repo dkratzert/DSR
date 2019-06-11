@@ -47,6 +47,7 @@ program_name = '\n{} D S R - v{} {}'.format(minuse, VERSION, minuse)
 
 """
 
+
 class DSR(object):
     """
     main class
@@ -324,10 +325,10 @@ class DSR(object):
             target_coords = [target_coordinates[key] for key in dsrp.target]
         # Uppercase is important here to avoid KeyErrors in source_atoms generation
         atnames = self.gdb.get_atomnames(self.fragment, uppercase=True)
-        source_atoms = dict(zip(atnames, self.gdb.get_coordinates(self.fragment, cartesian=True, invert=self.invert)))
+        source_atoms = dict(zip(atnames, self.gdb.get_coordinates(self.fragment, cartesian=False, invert=self.invert)))
         # Coordinates only from the source, not the entire fragment:
         source_coords = [source_atoms[x] for x in dsrp.source]
-        target_coords = [frac_to_cart(x, rle.get_cell()) for x in target_coords]
+        target_coords = [frac_to_cart(x, rle.cell) for x in target_coords]
         from rmsd import fit_fragment
         # The source and target atom coordinates are fitted first. Then The complete fragment
         # is rotated and translated to the target position as calculated before.
@@ -353,7 +354,7 @@ class DSR(object):
             print('Fragment fit successful with RMSD of: {:8.3}'.format(rmsd))
         else:
             print('*** Fragment fit might have failed with RMSD of: {:8.3} ***'.format(rmsd))
-        fitted_fragment = [cart_to_frac(x, rle.get_cell()) for x in fitted_fragment]
+        fitted_fragment = [cart_to_frac(x, rle.cell) for x in fitted_fragment]
         afix_entry = []
         e2s = Elem_2_Sfac(sfac_table)
         for at, coord, atype in zip(fragment_numberscheme, fitted_fragment, db_atom_types):
@@ -396,11 +397,9 @@ class DSR(object):
             dfx_file_name = write_dbhead_to_file(dsrp, dfx_file_name, restraints, resi.get_residue_class,
                                                  resi.get_resinumber)
             if dsrp.resiflag:
-                restraints = 'REM Restraints for residue {}:\n+{}\n' \
-                    .format(resi.get_residue_class, dfx_file_name)
+                restraints = 'REM Restraints for residue {}:\n+{}\n'.format(resi.get_residue_class, dfx_file_name)
             else:
-                restraints = 'REM Restraints for DSR fragment:\n+{}\n' \
-                    .format(dfx_file_name)
+                restraints = 'REM Restraints for DSR fragment:\n+{}\n'.format(dfx_file_name)
         if self.options.rigid_group:
             afix_entry += '\nAFIX 0\n'
 
@@ -408,10 +407,10 @@ class DSR(object):
         import textwrap
         source = textwrap.wrap("REM Restraints for Fragment {}, {} from: {}. "
                                "Please cite https://doi.org/10.1107/S1600576718004508".format(
-            self.fragment,
-            self.gdb.get_fragment_name(self.fragment),
-            self.gdb.get_src(self.fragment)),
-            width=74, subsequent_indent='REM ')
+                self.fragment,
+                self.gdb.get_fragment_name(self.fragment),
+                self.gdb.get_src(self.fragment)),
+                width=74, subsequent_indent='REM ')
         source = '\n'.join(source) + '\n'
         # check if restraints already inserted:
         for line in self.reslist:
