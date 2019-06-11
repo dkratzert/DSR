@@ -325,7 +325,7 @@ class DSR(object):
             target_coords = [target_coordinates[key] for key in dsrp.target]
         # Uppercase is important here to avoid KeyErrors in source_atoms generation
         atnames = self.gdb.get_atomnames(self.fragment, uppercase=True)
-        source_atoms = dict(zip(atnames, self.gdb.get_coordinates(self.fragment, cartesian=True, invert=self.invert)))
+        source_atoms = dict(zip(atnames, self.gdb.get_coordinates(self.fragment, cartesian=False, invert=self.invert)))
         # Coordinates only from the source, not the entire fragment:
         source_coords = [source_atoms[x] for x in dsrp.source]
         target_coords = [frac_to_cart(x, rle.cell) for x in target_coords]
@@ -333,7 +333,7 @@ class DSR(object):
         # The source and target atom coordinates are fitted first. Then The complete fragment
         # is rotated and translated to the target position as calculated before.
         # parameter cartiesian has to be false here:
-        fragment_coords = self.gdb.get_coordinates(self.fragment, cartesian=False, invert=self.invert)
+        fragment_coords = self.gdb.get_coordinates(self.fragment, cartesian=True, invert=self.invert)
         fitted_fragment, rmsd = fit_fragment(fragment_coords,
                                              source_atoms=source_coords,
                                              target_atoms=target_coords)
