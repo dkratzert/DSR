@@ -288,7 +288,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         (AFIX 120)
 
         """
-        self.dsr_runtest(20, '-r', hkl=20)
+        self.dsr_runtest(20, '-r', hkl=20, remlines=[149, 150])
 
     # @unittest.skip(" skipping 21")
     def testrun_run21(self):
@@ -296,7 +296,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         rem dsr put CF3 on C22
         (AFIX 130)
         """
-        self.dsr_runtest(21, '-r', hkl=20, remlines=[27])
+        self.dsr_runtest(21, '-r', hkl=20, remlines=[27, 137, 138])
 
     # @unittest.skip(" skipping 22")
     def testrun_run22(self):
@@ -353,6 +353,14 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         1.0005, 0.5447, 0.5342, 0.9314, 0.5395, 0.5126, 0.9995, 0.4553, 0.4658
         """
         self.dsr_runtest(28, '-target 1.0005 0.5447 0.5342 0.9314 0.5395 0.5126 0.9995 0.4553 0.4658 -r', remlines=[])
+
+    # @unittest.skip(" skipping 29")
+    def testrun_run29(self):
+        """
+        REM DSR PUT PENTAFL WITH C1 C5 C3 ON C02Y C04L C03W PART 1 OCC 11 RESI PEFL
+        0.99892, 0.65486, 0.64458, 1.03021, 0.55299, 0.63399, 0.89952, 0.57358, 0.69892
+        """
+        self.dsr_runtest(29, '-target 0.99892 0.65486 0.64458 1.03021 0.55299 0.63399 0.89952 0.57358 0.69892 -r', remlines=[])
 
 
 def remove_whitespace(mystringlist):
