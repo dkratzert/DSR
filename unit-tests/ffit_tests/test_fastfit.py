@@ -40,6 +40,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         # 20 put CF6 on C22 split (AFIX 120)
         # 21 put CF3 on C22 (AFIX 130)
         # 22 put CF9 on C1
+        #  This test will fail with fractional source coordinates:
         # 23 -r -target x y z  PART -1 OCC 10.5 RESI TOL
         # 24 correctly restore res file after SHELXL failure
         # 25 REM DSR PUT CH2CL2 WITH CL1 C1 CL2 ON C01P Q1 C01M PART 1 OCC 71 RESI CCL2
@@ -47,6 +48,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         # 26 regular -r dsr run with
         #         dfix PART 2 occ -31     dfix and part without resi
         # 27 -g (rigid) -re part 2 occ -31
+        # 28 PART -1 OCC 10.5 DFIX -> negative part and dfix
 
     def dsr_runtest(self, nummer=99, parameter='-r', external_file='', hkl=None, prefix = './ffit_tests/',
                     limit_start=6, limit_end=-1, ending='res', remlines=None):
