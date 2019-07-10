@@ -48,6 +48,33 @@
 #   in the SHELXL file automatically.
 ########################################################################################
 
+<tertButyl>
+rem Name: tBu, tert-Butyl, 2,2-dimethylpropyl, C4H9
+rem Src: Turbomole, BP86/def2-SVP , C5H12
+RESI TBU
+SADI C1 C2 C1 C3 C1 C4
+SADI 0.04 C2 C3 C3 C4 C4 C2
+RIGU C1 > C4
+FRAG 17   1 1 1 90 90 90
+C1    1  -0.273304    0.401211    0.182780
+C2    1  -0.727925    1.394075   -0.909673
+C3    1   0.632424    1.131965    1.198486
+C4    1  -1.512220   -0.164009    0.911747
+</tertButyl>
+
+<PME3>
+rem Name: PMe3, trimethylphosphane, C3H9P
+rem Src: Turbomole, BP86 def2-SVP , HPMe3[+]
+RESI PME3
+SADI P1 C2 P1 C3 P1 C4
+SADI 0.04 C2 C3 C3 C4 C4 C2
+RIGU P1 > C4
+FRAG 17   1 1 1 90 90 90
+P1    6   -0.100985   -0.236183    0.127775
+C2    1    1.014955   -1.245643    1.145619
+C3    1    0.819186    0.945703   -0.899731
+C4    1   -1.207266   -1.271292   -0.874547
+</PME3>
 
 <norborn>
 rem Name: Norbornene, norbornylene, C7H10

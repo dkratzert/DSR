@@ -1,4 +1,5 @@
 Recent changes
+-226    New fragments PMe3 and tBu, thanks to Krzysztof Radacki.
 -225    Fixed bug where fragments got wrong orientation.
 -224    Fixed bug where certain fragments got really large with DFIX command.
 -223    Fixed acetone restraints. Added test for inconsistent restraints with two atom pairs.
