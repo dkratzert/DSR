@@ -358,7 +358,7 @@ class ParseDB(object):
         """
         >>> db = ParseDB('../dsr_db.txt')
         >>> [x for x in db][:3]
-        ['napht', 'plusminus', 'fluorbenz']
+        ['napht', 'pme3', 'plusminus']
         """
         # return iter(self.databases.keys()) #python2
         return iter(list(self.databases.keys()))
