@@ -13,7 +13,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
     def setUp(self):
         self.maxDiff = 20
         # remove this to view the results:
-        # self.dsr = '/Applications/DSR/dsr'
+        #self.dsr = '/Applications/DSR/dsr'
         # self.dsr = 'D:\Programme\DSR\dsr'
         self.dsr = r'"{}"'.format(which('dsr')[-1])
         print(self.dsr)
