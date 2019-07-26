@@ -58,7 +58,6 @@ class DSR(object):
         """
         import time
         time1 = time.clock()
-        self.numpy_installed = False
         # options from the commandline options parser:
         self.options = options
         self.external = False
@@ -160,7 +159,6 @@ class DSR(object):
         self.reslist = self.rl.get_res_list()
         try:
             import numpy as np
-            self.numpy_installed = True
         except ImportError:
             print('*** Numpy was not found. Please reinstall DSR or install the numpy package in order to use DSR. ***')
             sys.exit()
