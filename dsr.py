@@ -160,7 +160,8 @@ class DSR(object):
         try:
             import numpy as np
         except ImportError:
-            print('*** Numpy was not found. Please reinstall DSR or install the numpy package in order to use DSR. ***')
+            print('*** Numpy was not found. Please reinstall DSR from https://www.xs3.uni-freiburg.de/research/dsr '
+                  'or install the numpy package in order to use DSR. ***')
             sys.exit()
         self.main()
         time2 = time.clock()
