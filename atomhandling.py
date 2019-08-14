@@ -218,9 +218,9 @@ class FindAtoms():
             resi = resi.split()
             resi.remove('RESI')
         resi.sort()
-        if str.isalpha(resi[-1][0]):
-            resi_dict['class'] = resi.pop()
         if len(resi) > 0:
+            if str.isalpha(resi[-1][0]):
+                resi_dict['class'] = resi.pop()
             if str.isdigit(resi[0]):
                 resi_dict['number'] = resi[0]
                 del resi[0]
