@@ -208,6 +208,8 @@ class FindAtoms():
         ['1', 'TOL']
         >>> FindAtoms.get_resi_definition_dict('RESI 1 TOL')
         {'class': 'TOL', 'number': '1'}
+        >>> FindAtoms.get_resi_definition_dict('RESI')
+        {'class': None, 'number': None}
         """
         resi_dict = {
             'class': None,
@@ -221,7 +223,7 @@ class FindAtoms():
         if len(resi) > 0:
             if str.isalpha(resi[-1][0]):
                 resi_dict['class'] = resi.pop()
-            if str.isdigit(resi[0]):
+            if len(resi) > 0 and str.isdigit(resi[0]):
                 resi_dict['number'] = resi[0]
                 del resi[0]
         return resi_dict
@@ -323,6 +325,8 @@ class FindAtoms():
             if i.startswith('RESI') and not re.match(r'^RESI\s+0', i):
                 resi = True
                 resinum = self.get_resi_definition_dict(i.split())['number']
+                if not resinum:
+                    continue
                 resiclass = self.get_resi_definition_dict(i.split())['class']
                 residues.update({resinum: []})
                 continue
