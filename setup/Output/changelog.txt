@@ -1,4 +1,5 @@
 Recent changes
+-228    Fixed crash when solely "resi" occours in the res file. 
 -227    Fixd bug in restraints generation.
 -226    New fragments PMe3 and tBu, thanks to Krzysztof Radacki.
 -225    Fixed bug where fragments got wrong orientation.
