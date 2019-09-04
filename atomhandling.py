@@ -568,7 +568,7 @@ def rename_restraints_atoms(new_atoms, old_atoms, dbhead):
         line = line.split()
         for x, a in enumerate(old_atoms):
             for n, i in enumerate(line):
-                if i == a:
+                if i.upper() == a.upper():
                     line[n] = new[x]
         headneu.append(' '.join(line) + '\n')
     return headneu
@@ -798,7 +798,7 @@ class NumberScheme():
         :param extranames: list of excluding atoms e.g. ['O1A']
         :type extranames: list
         """
-        if extranames is None:
+        if not extranames:
             extranames = []
         self.__rlist.extend(extranames)
         if self.dsrp.resiflag:
