@@ -1,4 +1,5 @@
 Recent changes
+-229    Fixed wrong atom name in some restraints.
 -228    Fixed crash when solely "resi" occours in the res file. 
 -227    Fixd bug in restraints generation.
 -226    New fragments PMe3 and tBu, thanks to Krzysztof Radacki.
