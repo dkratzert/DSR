@@ -148,10 +148,6 @@ class Export():
         unit = []
         for i in sfac:
             unit.append('1 ')  # no matter what number
-        # Now put all infos together:
-        for i in atoms:
-            i[0] += ' '  # more space for long atom names
-            i.append('11.00   0.04')  # make it a full qualified atom line with occupancy and U value
         final_atomlist = [('{:4.4s} {:4.2s} {:>8.5f}  {:>8.5f}  {:>8.5f}   11.0   0.04\n'.format(
             str(i[0]), str(i[1]), float(i[2]), float(i[3]), float(i[4]))) for i in atoms]
         res_export.append('TITL ' + fragname + '\n')  # title card with fragment name
