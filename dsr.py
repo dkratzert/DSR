@@ -37,6 +37,7 @@ program_name = '\n{} D S R - v{} {}'.format(minuse, VERSION, minuse)
 
 # TODO and ideas:
 """
+- Add "REM HFIX mn X" for all H containing fragments
 - make DSR Python3-only
 - Split mode
   - calc principal axis for each ellipsoid
