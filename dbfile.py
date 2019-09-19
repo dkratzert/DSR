@@ -197,7 +197,9 @@ class ParseDB(object):
         'restraints': ['DFIX 0.9584 0.001 O1 H1 O1 H2',
                        'DFIX 1.5150 0.001 H1 H2'],
         'endline': ...,
-        'dbname': 'dsr_db'}
+        'dbname': 'dsr_db',
+        'hfix': ...
+        }
         """
         frag_tag = ''
         db = {}
@@ -250,6 +252,7 @@ class ParseDB(object):
         fragname_tag = fragname_tag.lower()
         headlist = []
         comments = []
+        hfix = []
         residue = ''
         atoms = []
         cell = []
@@ -290,6 +293,8 @@ class ParseDB(object):
                     name = ' '.join(line.split()[2:])
                     fraglines[num] = ''
                     continue
+                if line.upper().startswith('REM HFIX'):
+                    hfix.append(line)
                 comments.append(line)
                 continue
             command = line[:4].upper().strip()
@@ -343,7 +348,9 @@ class ParseDB(object):
             'atoms': atoms,  # the atoms as lists of list
             'comments': comments,  # the comment line
             'source': source,
-            'name': name})
+            'name': name,
+            'hfix': hfix,
+        })
         return db
 
     def __getitem__(self, fragment):
