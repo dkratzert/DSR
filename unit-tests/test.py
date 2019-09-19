@@ -64,14 +64,14 @@ db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
                'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
                'SADI 0.04 C2 C3 C3 C4 C2 C4', 'SADI 0.04 O1 C2 O1 C3 O1 C4',
                'SADI 0.04 F1 F2 F2 F3 F3 F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7',
-               'SADI 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1',
+               'SADI 0.04 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1',
                'SIMU O1 > F9', 'RIGU O1 > F9']
 
 wraphead = ['SADI C1 C2 C1 C3 C1 C4\n',
             'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 =\n   C3 F7 C4 F8 C4 F9 C4\n',
             'SADI 0.04 C2 C3 C3 C4 C2 C4\n', 'SADI 0.04 O1 C2 O1 C3 O1 C4\n',
             'SADI 0.04 F1 F2 F2 F3 F3 F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7\n',
-            'SADI 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1\n',
+            'SADI 0.04 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1\n',
             'SIMU O1 > F9\n', 'RIGU O1 > F9\n']
 
 atomnames = ['O1', 'C1', 'C2', 'F1', 'F2', 'F3', 'C3', 'F4', 'F5', 'F6', 'C4', 'F7', 'F8', 'F9']
@@ -475,6 +475,7 @@ class globalDB(unittest.TestCase):
                                'resi': 'TST1',
                                'restraints': ['SIMU C1'],
                                'endline': 8,
+                               'hfix': [],
                                'dbname': 'dsr_user_db'},
                        'dme': {'startline': 1,
                                'name': 'dme',
@@ -485,6 +486,7 @@ class globalDB(unittest.TestCase):
                                'resi': '',
                                'restraints': [],
                                'endline': 5,
+                               'hfix': [],
                                'dbname': 'dsr_db'}
                        }
 
@@ -998,7 +1000,7 @@ class MiscTest(unittest.TestCase):
                     'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
                     'SADI 0.04 C2 C3 C3 C4 C2 C4', 'SADI 0.04 O1 C2 O1 C3 O1 C4',
                     'SADI 0.04 F1 F2 F2 F3 F3 F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7',
-                    'SADI 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1',
+                    'SADI 0.04 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1',
                     'SIMU O1 > F9', 'RIGU O1 > F9']
         head = misc.wrap_headlines(db_testhead)
         self.assertListEqual(head, wraphead)

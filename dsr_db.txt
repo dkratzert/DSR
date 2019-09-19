@@ -51,6 +51,7 @@
 <tertButyl>
 rem Name: tBu, tert-Butyl, 2,2-dimethylpropyl, C4H9
 rem Src: Turbomole, BP86/def2-SVP , C5H12
+REM HFIX 137 C2 C3 C4
 RESI TBU
 SADI C1 C2 C1 C3 C1 C4
 SADI 0.04 C2 C3 C3 C4 C4 C2
