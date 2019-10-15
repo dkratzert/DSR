@@ -544,6 +544,28 @@ def wrap_stringlist(strlist, width=75):
         wrapped.append('\n'.join(textwrap.wrap(line, width, subsequent_indent='REM ')) + '\n')
     return wrapped
 
+def wrap_text(inText: str, maxlen=70, subsequent_indent='=\n'):
+    """
+    Text wrapper without need for textwrap package.
+    """
+    line_list = []
+    wrapped = []
+    inText_list = inText.strip().split()
+    for n, word in enumerate(inText_list):
+        testline = ' '.join(line_list)
+        if len(word + testline + subsequent_indent) >= maxlen:
+            if n < len(inText_list)-1:
+                line_list.append(word + ' ' + subsequent_indent)
+            else:
+                line_list.append(word + ' ')
+            wrapped.append(' '.join(line_list).strip(' '))
+            line_list.clear()
+        else:
+            line_list.append(word + ' ')
+    if line_list:
+        wrapped.append(' '.join(line_list).strip(' '))
+    return ' '.join(wrapped)
+
 
 def unwrap_head_lines(headlines):
     """
