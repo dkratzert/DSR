@@ -547,6 +547,7 @@ def wrap_stringlist(strlist, width=75):
 def wrap_text(inText: str, maxlen=70, subsequent_indent='=\n'):
     """
     Text wrapper without need for textwrap package.
+    >>> wrap_text('SADI 0.02 C1A C2A C2A C3A C3A C4A C4A C5A C5A C6A', maxlen=30)
     """
     line_list = []
     wrapped = []
@@ -557,11 +558,11 @@ def wrap_text(inText: str, maxlen=70, subsequent_indent='=\n'):
             if n < len(inText_list)-1:
                 line_list.append(word + ' ' + subsequent_indent)
             else:
-                line_list.append(word + ' ')
+                line_list.append(word)
             wrapped.append(' '.join(line_list).strip(' '))
             line_list.clear()
         else:
-            line_list.append(word + ' ')
+            line_list.append(word)
     if line_list:
         wrapped.append(' '.join(line_list).strip(' '))
     return ' '.join(wrapped)
