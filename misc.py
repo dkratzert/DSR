@@ -196,10 +196,6 @@ def std_dev(data):
     returns standard deviation of values rounded to pl decimal places
     S = sqrt( (sum(x-xm)^2) / n-1 )
     xm = sum(x)/n
-    :param values: list with integer or float values
-    :type values: list
-    :param pl: round to n places
-    :type pl: integer
     >>> l1 = [1.334, 1.322, 1.345, 1.451, 1.000, 1.434, 1.321, 1.322]
     >>> l2 = [1.234, 1.222, 1.345, 1.451, 2.500, 1.234, 1.321, 1.222]
     >>> round(std_dev(l1), 8)
@@ -281,8 +277,6 @@ def sortedlistdir(directory):
     returns a sorted list of files in directory directory.
     :param directory: directory
     :type directory: string
-    :param cmpfunc: compare funtion to sort
-    :type cmpfunc: string
     >>> sortedlistdir("../old")
     ['dsr.py']
     >>> sortedlistdir("foobar/")
@@ -544,7 +538,7 @@ def wrap_stringlist(strlist, width=75):
         wrapped.append('\n'.join(textwrap.wrap(line, width, subsequent_indent='REM ')) + '\n')
     return wrapped
 
-def wrap_text(inText: str, maxlen=70, subsequent_indent='=\n'):
+def wrap_text(inText, maxlen=70, subsequent_indent='=\n'):
     """
     Text wrapper without need for textwrap package.
     >>> wrap_text('SADI 0.02 C1A C2A C2A C3A C3A C4A C4A C5A C5A C6A', maxlen=30)
@@ -560,7 +554,7 @@ def wrap_text(inText: str, maxlen=70, subsequent_indent='=\n'):
             else:
                 line_list.append(word)
             wrapped.append(' '.join(line_list).strip(' '))
-            line_list.clear()
+            line_list = []
         else:
             line_list.append(word)
     if line_list:
@@ -752,11 +746,6 @@ def frac_to_cart(frac_coord, cell):
     >>> coord1 = (-0.186843,   0.282708,   0.526803)
     >>> print(frac_to_cart(coord1, cell))
     [-2.741505423999065, 5.909586678000002, 10.775200700893734]
-    >>> A = A(cell).orthogonal_matrix
-    >>> print(mpm.nstr(A*mpm.matrix(coord1)))
-    [-2.74151]
-    [ 5.90959]
-    [ 10.7752]
     """
     a, b, c, alpha, beta, gamma = cell
     x, y, z = frac_coord
@@ -1092,29 +1081,6 @@ def longest_common_substring(s1, s2):
             else:
                 m[x][y] = 0
     return s1[x_longest - longest: x_longest]
-
-
-def fft(x):
-    '''
-    fft implementation from rosettacode.
-    The purpose of this task is to calculate the FFT (Fast Fourier Transform) of an input sequence. 
-    The most general case allows for complex numbers at the input and results in a sequence of 
-    equal length, again of complex numbers. If you need to restrict yourself to real numbers, 
-    the output should be the magnitude (i.e. sqrt(re²+im²)) of the complex result.
-    :param x:
-    :type x:
-    
-    >>> print( ' '.join("%5.3f" % abs(f) for f in fft([1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0])) )
-    4.000 2.613 0.000 1.082 0.000 1.082 0.000 2.613
-    '''
-    from cmath import exp, pi
-    N = len(x)
-    if N <= 1: return x
-    even = fft(x[0::2])
-    odd = fft(x[1::2])
-    T = [exp(-2j * pi * k / N) * odd[k] for k in range(int(N / 2))]
-    return [even[k] + T[k] for k in range(int(N / 2))] + \
-           [even[k] - T[k] for k in range(int(N / 2))]
 
 
 def levenshtein(s1, s2):
