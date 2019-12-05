@@ -542,6 +542,7 @@ def wrap_text(inText, maxlen=70, subsequent_indent='=\n'):
     """
     Text wrapper without need for textwrap package.
     >>> wrap_text('SADI 0.02 C1A C2A C2A C3A C3A C4A C4A C5A C5A C6A', maxlen=30)
+    'SADI 0.02 C1A C2A C2A C3A C3A =\\n C4A C4A C5A C5A C6A'
     """
     line_list = []
     wrapped = []
@@ -572,6 +573,8 @@ def unwrap_head_lines(headlines):
     ['SADI C1 C2 C3 C4']
     >>> unwrap_head_lines(['foo bar this is =\\n   text to wrap. =\\n   blah bub\\n'])
     ['foo bar this is text to wrap. blah bub']
+    >>> unwrap_head_lines(wrap_headlines(["REM name: ser\\nREM HFIX 23 C2 C3 C4  C6 C8 C10\\nSADI bar"]))
+    ['REM name: ser\\nREM HFIX 23 C2 C3 C4  C6 C8 C10\\nSADI bar\\n']
     """
     import constants
     tmp = ''
@@ -586,11 +589,15 @@ def unwrap_head_lines(headlines):
     for line in headlines:
         line = line.strip(' \r\n=').replace('=', ' ')
         tmp = tmp + ' ' + line
-    line = tmp.split()
-    for n, i in enumerate(line):
-        if i[:4].upper() in constants.SHX_CARDS:
-            line[n] = '\n' + line[n]
-    new_head = ' '.join(line).strip().split('\n')
+    spline = tmp.split()
+    last = ''
+    for n, i in enumerate(spline):
+        command = i[:4].upper()
+        # leave out 'REM COMMAND':
+        if command in constants.SHX_CARDS and last != 'REM':
+            spline[n] = '\n' + spline[n]
+        last = command
+    new_head = ' '.join(spline).strip().split('\n')
     new_head = [i.rstrip(' ') for i in new_head]
     return new_head
 

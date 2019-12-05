@@ -21,7 +21,7 @@ from atomhandling import get_atomtypes
 from atoms import Element
 from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
 from misc import atomic_distance, nalimov_test, std_dev, median, pairwise, \
-    unwrap_head_lines, dice_coefficient2, frac_to_cart
+    unwrap_head_lines, dice_coefficient2, frac_to_cart, wrap_headlines
 
 not_existing_error = '*** Fragment "{}" not found in database ***'
 
@@ -184,22 +184,26 @@ class ParseDB(object):
 
         >>> dbpath = os.path.abspath('../dsr_db.txt')
         >>> db = ParseDB(dbpath)
-        >>> db.parse(dbpath, 'dsr_db')['water'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
-        {'startline': ...,
-        'name': 'Water, H2O',
-        'comments': [],
-        'atoms': [['O1', 4, 0.0, 0.0, 0.0],
-                  ['H1', 2, 0.9584, 0.0, 0.0],
-                  ['H2', 2, -0.2392, 0.9281, 0.0]],
-        'cell': [1.0, 1.0, 1.0, 90.0, 90.0, 90.0],
-        'source': 'pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei',
-        'resi': 'H2O',
-        'restraints': ['DFIX 0.9584 0.001 O1 H1 O1 H2',
-                       'DFIX 1.5150 0.001 H1 H2'],
-        'endline': ...,
-        'dbname': 'dsr_db',
-        'hfix': ...
-        }
+        >>> db.parse(dbpath, 'dsr_db')['water']['name'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+        'Water, H2O'
+        >>> db.parse(dbpath, 'dsr_db')['water']['comments']
+        []
+        >>> db.parse(dbpath, 'dsr_db')['water']['atoms'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+        [['O1', 4, 0.0, 0.0, 0.0],
+        ['H1', 2, 0.9584, 0.0, 0.0],
+        ['H2', 2, -0.2392, 0.9281, 0.0]]
+        >>> db.parse(dbpath, 'dsr_db')['water']['cell'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+        [1.0, 1.0, 1.0, 90.0, 90.0, 90.0]
+        >>> db.parse(dbpath, 'dsr_db')['water']['source'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+        'pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei'
+        >>> db.parse(dbpath, 'dsr_db')['water']['resi'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+        'H2O'
+        >>> db.parse(dbpath, 'dsr_db')['water']['restraints'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+        ['DFIX 0.9584 0.001 O1 H1 O1 H2', 'DFIX 1.5150 0.001 H1 H2']
+        >>> db.parse(dbpath, 'dsr_db')['water']['dbname'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+        'dsr_db'
+        >>> db.parse(dbpath, 'dsr_db')['water']['hfix'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+        []
         """
         frag_tag = ''
         db = {}
@@ -217,8 +221,8 @@ class ParseDB(object):
             if end_regex and end_regex.match(line):
                 starttag = False
                 db[frag_tag].update(
-                    {'endline': num + 1,
-                     'startline': startnum + 1})
+                        {'endline'  : num + 1,
+                         'startline': startnum + 1})
                 db = self.parse_fraglines(frag_tag, fraglines, db)
                 fraglines = []
             # start tag was found, appending lines to fragment list
@@ -259,7 +263,6 @@ class ParseDB(object):
         source = ''
         name = ''
         nameregex = re.compile(r'REM\s+NAME:', re.IGNORECASE)
-        rem = re.compile(r"REM.*", re.IGNORECASE)
         srcregex = re.compile(r'REM\s+(SRC:|SOURCE:)', re.IGNORECASE)
         # devide atoms and the rest:
         for num, aline in enumerate(fraglines):
@@ -282,7 +285,10 @@ class ParseDB(object):
         fraglines = unwrap_head_lines(fraglines)
         for num, line in enumerate(fraglines):
             # collect the comments:
-            if rem.match(line):
+            if line.upper().startswith('REM'):
+                if line.upper().startswith('REM HFIX'):
+                    hfix.append(line)
+                    continue
                 # Where do the fragment come from?
                 if srcregex.match(line):
                     source = ' '.join(line.split()[2:])
@@ -293,13 +299,11 @@ class ParseDB(object):
                     name = ' '.join(line.split()[2:])
                     fraglines[num] = ''
                     continue
-                if line.upper().startswith('REM HFIX'):
-                    hfix.append(line)
                 comments.append(line)
                 continue
             command = line[:4].upper().strip()
             if command and command in SHX_CARDS:
-                if line[:4].upper() == 'RESI':  # faster than startswith()?
+                if command == 'RESI':
                     resiline = line.split()
                     for n, i in enumerate(resiline):
                         if not i[0].isalpha():
@@ -311,7 +315,7 @@ class ParseDB(object):
                         print('*** Invalid residue definition in database entry {}. ***'.format(fragname_tag))
                         sys.exit()
                 # collect the unit cell of the fragment:
-                if line[:4].upper().startswith('FRAG'):
+                if command == 'FRAG':
                     try:
                         cell = [float(x) for x in line.split()[2:8]]
                     except (ValueError, IndexError):
@@ -343,13 +347,13 @@ class ParseDB(object):
             return db
         db[fragname_tag].update({
             'restraints': headlist,  # header with just the restraints
-            'resi': residue,  # the residue class
-            'cell': cell,  # FRAG ...
-            'atoms': atoms,  # the atoms as lists of list
-            'comments': comments,  # the comment line
-            'source': source,
-            'name': name,
-            'hfix': hfix,
+            'resi'      : residue,  # the residue class
+            'cell'      : cell,  # FRAG ...
+            'atoms'     : atoms,  # the atoms as lists of list
+            'comments'  : comments,  # the comment line
+            'source'    : source,
+            'name'      : name,
+            'hfix'      : hfix,
         })
         return db
 
@@ -535,18 +539,39 @@ class ParseDB(object):
                 sys.exit()
         return True
 
-    def get_hfixes(self, fragment):
+    def get_hfixes(self, fragment, resi_class):
         """
         Returns pre-defined hfix instructions.
-        :param fragment:
-        :return:
+        :param fragment: fragment name
+        :return: A string with the REM HFIX ... instruction
+        >>> from misc import wrap_headlines
+        >>> hf = ['REM HFIX 123 C1 C2 C3 C4 C5']
+        >>> wrap_headlines(hf, 18)
+        ['REM HFIX 123 C1 C2 =\\n   C3 C4 C5\\n']
+        >>> db = ParseDB('../dsr_db.txt')
+        >>> db.get_hfixes('Adamantane', 'ADAM')
+        ['REM HFIX_ADAM 23 C2 C3 C4 C6 C8 C10', 'REM HFIX_ADAM 13 C5 C7 C9']
+        >>> db.get_hfixes('Adamantane', '')
+        ['REM HFIX 23 C2 C3 C4 C6 C8 C10', 'REM HFIX 13 C5 C7 C9']
+        >>> db.get_restraints('Adamantane')
+        ['SADI C1 C2 C1 C3 C1 C4 C5 C6 C6 C7 C7 C8 C8 C9 C9 C10 C10 C5 C2 C9 C3 C7 C4 C5', 'SADI 0.04 C2 C3 C3 C4 C4 C2 C5 C9 C9 C7 C7 C5 C6 C10 C6 C8 C8 C10', 'SADI 0.05 C5 C8 C7 C10 C9 C6', 'SIMU C1 > C10', 'RIGU C1 > C10']
+        >>> db.get_hfixes('oc(cf3)3', '')
+        []
         """
         fragment = fragment.lower()
         try:
-            hfix = [x.upper() for x in self.databases[fragment]['hfix']]
+            hfix = [' '.join(x.upper().split()) for x in self.databases[fragment]['hfix']]
         except KeyError:
             print(not_existing_error.format(fragment))
             sys.exit()
+        if hfix and resi_class:
+            resihfix = []
+            for line in hfix:
+                # Adding _resiclass to HFIX instructions:
+                # REM HFIX C1 C2  ->  REM HFIX_class C1 C2 
+                line = '{}_{} {}'.format(line[:8], resi_class, line[9:])
+                resihfix.append(line)
+            return resihfix
         return hfix
 
     def check_db_restraints_consistency(self, fragment):
@@ -650,7 +675,8 @@ class ParseDB(object):
                     # Find restraints with one pair, where 1,2 and 1,3 distances are mixed:
                     pairdev = 1.0 - (min(distances) / max(distances))
                     if pairdev > (2.0 * float(dev)):
-                        print('*** Suspicious deviation of {:.3f} A for "{}" in {} ***'.format(pairdev, restraints[num], fragment))
+                        print('*** Suspicious deviation of {:.3f} A for "{}" in {} ***'.format(pairdev, restraints[num],
+                                                                                               fragment))
                         return False
                     return True  # because esd is too sensitive for two distances.
                 stdev = std_dev(distances)  # Error distribution of
@@ -671,8 +697,8 @@ class ParseDB(object):
                 if (stdev > (2.5 * float(dev))) and good:
                     print("\nFragment {}:".format(fragment))
                     print(
-                        '*** Suspicious restraints in SADI line {} with high standard deviation {:4.3f} '
-                        '(median length: {:4.3f} A) ***'.format(num + 1, stdev, median(distances)))
+                            '*** Suspicious restraints in SADI line {} with high standard deviation {:4.3f} '
+                            '(median length: {:4.3f} A) ***'.format(num + 1, stdev, median(distances)))
                     print('*** ' + restraints[num] + ' ***\n')
                     good = False
         if good:
@@ -1074,13 +1100,13 @@ class ImportGRADE():
         fragline = 'FRAG 17 1  1  1  90  90  90'
         db_import_dict[resi_name] = {
             'restraints': self._restraints,
-            'resi': resi_name,
-            'cell': fragline.split(),
-            'atoms': self._atoms,
-            'line': None,
-            'db': 'dsr_user_db',
-            'comments': self.get_comments(),
-            'name': resi_name
+            'resi'      : resi_name,
+            'cell'      : fragline.split(),
+            'atoms'     : self._atoms,
+            'line'      : None,
+            'db'        : 'dsr_user_db',
+            'comments'  : self.get_comments(),
+            'name'      : resi_name
         }
         return db_import_dict
 
@@ -1202,7 +1228,7 @@ if __name__ == '__main__':
                         print('foooooooo', pairdev)
                 stdev = std_dev(distances)
                 print("esd < 0.065 ?: {:<4.4f}, esd < 2.5*sigma?: {:<4.4f} < {:<4.4f} -> {}".format(
-                    stdev, stdev, 2.5 * float(dev), ("yes" if stdev < 2.5 * float(dev) else "no")))
+                        stdev, stdev, 2.5 * float(dev), ("yes" if stdev < 2.5 * float(dev) else "no")))
 
 
     frag = 'WBVNT'

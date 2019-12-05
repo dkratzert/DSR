@@ -42,5 +42,5 @@ rem xcopy /Y %GIT%\update-dsr.bat %DSRDIR%
 del "%DSR_DIR%\*.pyc"
 
 rem copy %GIT%\dsr.bat %DSRDIR%
-rem sleep 2s
-pause
+sleep 1s
+rem pause

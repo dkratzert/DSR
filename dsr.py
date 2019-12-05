@@ -412,7 +412,11 @@ class DSR(object):
             self.gdb.get_fragment_name(self.fragment),
             self.gdb.get_src(self.fragment)),
             width=74, subsequent_indent='REM ')
-        source = '\n'.join(source) + '\n' + '\n'.join(self.gdb.get_hfixes(self.fragment)) + '\n'
+        if dsrp.resi:
+            hfixes = '\n'.join(self.gdb.get_hfixes(self.fragment, resi.get_residue_class))
+        else:
+            hfixes = ''
+        source = '\n'.join(source) + '\n' + hfixes
         # check if restraints already inserted:
         for line in self.reslist:
             try:
