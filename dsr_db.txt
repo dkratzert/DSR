@@ -90,6 +90,7 @@ C4    1  -1.512220   -0.164009    0.911747
 rem Name: PMe3, trimethylphosphane, C3H9P
 rem Src: Turbomole, BP86 def2-SVP , HPMe3[+]
 RESI PME3
+REM HFIX 137 C2 C3 C4
 SADI P1 C2 P1 C3 P1 C4
 SADI 0.04 C2 C3 C3 C4 C4 C2
 RIGU P1 > C4
@@ -104,6 +105,9 @@ C4    1   -1.207266   -1.271292   -0.874547
 rem Name: Norbornene, norbornylene, C7H10
 rem Src: Turbomole, BP86 def2-SVP
 RESI NORB
+REM HFIX 23 C5 C6 C7
+REM HFIX 13 C1 C4
+REM HFIX 43 C2 C3
 SADI 0.02 C2 C3
 SADI 0.02 C1 C2 C3 C4
 SADI 0.02 C1 C6 C1 C7 C4 C7 C4 C5 C5 C6
@@ -151,6 +155,8 @@ F4    9     14.61957    1.51933    8.37032
 <pentb>
 rem Name: n-Pentane, (bent), C5H12
 rem Src: CCDC EJIYIG
+REM HFIX 137 C1 C5
+REM HFIX 23 C2 C3 C4
 RESI PENB
 SADI 0.03 C1 C2 C2 C3 C3 C4 C4 C5
 SADI 0.04 C1 C3 C3 C5 C2 C4
@@ -168,6 +174,8 @@ C5    6     13.61296   13.64093    0.30494
 <butane>
 rem Name: n-Butane, C4H10
 rem Src: CCDC DUCKOB04
+REM HFIX 137 C1 C4
+REM HFIX 23 C2 C3
 RESI BUTA
 SIMU C1 > C4
 RIGU C1 > C4
@@ -184,6 +192,7 @@ C4    6      2.42231   -1.30272    4.23334
 <furan>
 rem Name: Furan, Furfuran, Oxole, C4H4O
 rem Src: CCDC FURANE10
+REM HFIX 43 C1 > C4
 RESI FURA
 RIGU O1 > C4
 SIMU O1 > C4
@@ -227,6 +236,7 @@ F5    9      3.91920   13.25560    6.22154
 <trifluorbenz>
 rem Name: 1,2,3-Trifluorobenzene, C6H3F3
 rem Src: CCDC 754266
+REM HFIX 43 C3 C4 C5
 RESI TFBE
 RIGU F1 > C6
 SIMU F1 > C6
@@ -252,6 +262,8 @@ C6    6      7.87103    5.56668    1.92585
 <dma>
 rem Name: Dimethyl ammonium, C2H8N+
 rem Src: rem Src: CCDC QEHPOL
+REM HFIX 137 C1 C2
+REM HFIX 23 N1
 RESI DMA
 SADI N1 C1 N1 C2
 SADI 0.04 C1 C2
@@ -267,6 +279,7 @@ C2    6      9.61381    5.92324    2.21098
 rem Name: tert-Butyl isocyanide, t-BuNC, C5H9N
 rem Src: Daniel Kratzert, Freiburg
 RESI TBNC
+REM HFIX 137 C3 C4 C5
 SIMU C1 > C5
 RIGU C1 > C5
 SADI C1 N1
@@ -1343,6 +1356,8 @@ F15  3     1.04624   0.41295   0.50745   11.0   0.04
 REM Name: Toluene, C7H8
 REM Source: CCDC CESLUJ
 RESI TOL
+REM HFIX 137 C1
+REM HFIX 43 C3 > C7
 SADI C2 C3  C3 C4  C4 C5  C5 C6  C6 C7  C7 C2
 SADI 0.04 C2 C6  C2 C4  C7 C5  C3 C7  C4 C6  C3 C5
 SADI 0.02 C1 C2
@@ -1690,6 +1705,7 @@ C10C  1     0.000000     0.014324     0.000000   11.00   0.04
 REM Src: CCDC CIMYOO
 REM Name: Pentafluorophenyl, -C6F5
 RESI pefl
+REM HFIX 43 C1
 SADI C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1
 SADI C2 F1 C3 F2 C4 F3 C5 F4 C6 F5
 SADI 0.04 C1 C3 C1 C5 C4 C2 C4 C6 C5 C3 C2 C6
@@ -2773,6 +2789,8 @@ O3      4  0.256100  0.373080  0.219260  1.000000 0.05000
 rem Name: Tosylate anion,  CH3C6H4SO3-
 rem Src: Gaussian 03 B3LYP/6-31+G(d,p) Opt
 RESI TOS
+REM HFIX 43 C2 C3 C5 C6
+REM HFIX 137 C7
 SADI 0.02  C2 C3  C1 C2  C3 C4  C4 C5  C5 C6  C1 C6
 SADI 0.02  S1 O2  S1 O3  S1 O1
 SADI 0.02  C4 S1
@@ -2820,6 +2838,7 @@ Cl4    2    0.198841    1.733330   -0.406054
 rem Src: CCDC ASOMAX
 REM Name: Dichloromethane, CH2Cl2, DCM
 RESI CCL2
+REM HFIX 23 C1
 DFIX 1.771 0.01 Cl1 C1 Cl2 C1
 DFIX 2.916 0.03 Cl1 Cl2
 SIMU Cl1 > C1
@@ -2835,6 +2854,7 @@ C1      1  0.680900  0.885600  0.152200  1.000000 0.05000
 rem Src: CCDC OFIZAG
 REM Name: Dioxane, C4H8O2
 RESI DIOX
+REM HFIX 23 C1 > C4
 SADI C1 C2 C3 C4
 SADI O1 C1 O1 C4 O2 C2 O2 C3
 SADI 0.04 C1 C3 C2 C4
@@ -2854,6 +2874,7 @@ C4    1   0.172280  -0.057560   0.448790   1.00000   0.05000
 rem Name: Imidazole-1-ylidene, NHC, C3H2N2
 rem Src: CCDC NITFUT
 RESI NHC1
+REM HFIX 43 C2 C3
 SADI C1 N1 C1 N2
 SADI N1 C2 N2 C3
 SADI 0.02 C2 C3
@@ -2874,6 +2895,7 @@ C3      1  0.070160  0.192190  0.482340  1.000000 0.05000
 rem Src: Gaussian 03 MP2/LANL2DZ Opt
 rem Name: Dimethyl sulfoxide, DMSO, (CH3)2SO
 RESI DMSO
+REM HFIX 137 C1 C2
 SIMU O1 > C2
 RIGU O1 > C2
 SADI S1 C1 S1 C2
@@ -2956,6 +2978,9 @@ F9A   3     0.657572   1.613277   0.198360
 REM Name: 2,6-Diisopropylaniline, [(CH3)2CH]2C6H3NH2
 REM Source: Produced by Grade Web Server http://grade.globalphasing.org
 RESI DPA1
+REM HFIX 137 C8 C9 C11 C12
+REM HFIX 43 C3 C4 C5
+REM HFIX 13 C7 C10
 DFIX 1.310 0.030 C1 N1
 DFIX 1.407 0.028 C1 C2
 DFIX 1.407 0.028 C1 C6
@@ -3016,6 +3041,7 @@ C12    1       2.327    -0.384    -1.088
 <Cinnamald>
 REM Source: Produced by Grade Web Server http://grade.globalphasing.org
 REM Name: Cinnamaldehyde, C9H8O
+REM HFIX 43 C2 > C9
 RESI CNA1
 DFIX 1.215 0.014 C9 O1
 DFIX 1.393 0.011 C1 C2
@@ -3066,6 +3092,8 @@ C9     1       2.224    -1.798     2.293
 REM SOURCE: Produced by Grade Web Server http://grade.globalphasing.org (modified)
 REM Name: Vanillin, 4-Hydroxy-3-methoxybenzaldehyde, C8H8O3
 RESI VAN1
+REM HFIX 43 C3 C4 C6 C7
+REM HFIX 137 C8
 DFIX 1.425 0.015 C8 O3
 DFIX 1.367 0.009 C1 O3
 DFIX 1.399 0.012 C1 C2

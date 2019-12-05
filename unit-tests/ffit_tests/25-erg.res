@@ -12,6 +12,7 @@ SFAC  C  H  B  F  N  PT  CL
 UNIT  1  2  3  4  5  6  7
 REM Restraints for Fragment ch2cl2, Dichloromethane, CH2Cl2, DCM from:
 REM CCDC ASOMAX. Please cite https://doi.org/10.1107/S1600576718004508
+REM HFIX_CCL2 23 C1
 DFIX_CCL2 1.771 0.01 CL1 C1 CL2 C1
 DFIX_CCL2 2.916 0.03 CL1 CL2
 TEMP -33.150
