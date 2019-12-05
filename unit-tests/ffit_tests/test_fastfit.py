@@ -359,6 +359,8 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         """
         REM DSR PUT PENTAFL WITH C1 C5 C3 ON C02Y C04L C03W PART 1 OCC 11 RESI PEFL
         0.99892, 0.65486, 0.64458, 1.03021, 0.55299, 0.63399, 0.89952, 0.57358, 0.69892
+        notice: There will be no HAFIX, because the "REM Restraints for Fragment ..." is
+                already there. 
         """
         self.dsr_runtest(29, '-target 0.99892 0.65486 0.64458 1.03021 0.55299 0.63399 0.89952 0.57358 0.69892 -r', remlines=[])
 
