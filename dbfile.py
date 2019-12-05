@@ -535,6 +535,20 @@ class ParseDB(object):
                 sys.exit()
         return True
 
+    def get_hfixes(self, fragment):
+        """
+        Returns pre-defined hfix instructions.
+        :param fragment:
+        :return:
+        """
+        fragment = fragment.lower()
+        try:
+            hfix = [x.upper() for x in self.databases[fragment]['hfix']]
+        except KeyError:
+            print(not_existing_error.format(fragment))
+            sys.exit()
+        return hfix
+
     def check_db_restraints_consistency(self, fragment):
         """
         - Checks if the Atomnames in the restraints of the dbhead are also in

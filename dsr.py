@@ -12,20 +12,21 @@
 #
 from __future__ import print_function
 
-import os
 import sys
 from datetime import datetime
 
-from afix import write_dbhead_to_file, remove_duplicate_restraints
+import os
+
+from afix import remove_duplicate_restraints, write_dbhead_to_file
 from atomhandling import Elem_2_Sfac, rename_restraints_atoms
-from constants import width, sep_line, isoatomstr
+from constants import isoatomstr, sep_line, width
 from dbfile import ImportGRADE, print_search_results
-from dbfile import search_fragment_name, ParseDB
+from dbfile import ParseDB, search_fragment_name
 from dsrparse import DSRParser
-from misc import touch, cart_to_frac, frac_to_cart, wrap_headlines, chunks
+from misc import cart_to_frac, chunks, frac_to_cart, touch, wrap_headlines
 from options import OptionsParser
 from refine import ShelxlRefine
-from resfile import ResList, filename_wo_ending, ResListEdit
+from resfile import ResList, ResListEdit, filename_wo_ending
 from resi import Resi, remove_resi
 from restraints import Restraints
 from terminalsize import get_terminal_size
@@ -407,11 +408,11 @@ class DSR(object):
         import textwrap
         source = textwrap.wrap("REM Restraints for Fragment {}, {} from: {}. "
                                "Please cite https://doi.org/10.1107/S1600576718004508".format(
-                self.fragment,
-                self.gdb.get_fragment_name(self.fragment),
-                self.gdb.get_src(self.fragment)),
-                width=74, subsequent_indent='REM ')
-        source = '\n'.join(source) + '\n'
+            self.fragment,
+            self.gdb.get_fragment_name(self.fragment),
+            self.gdb.get_src(self.fragment)),
+            width=74, subsequent_indent='REM ')
+        source = '\n'.join(source) + '\n' + '\n'.join(self.gdb.get_hfixes(self.fragment)) + '\n'
         # check if restraints already inserted:
         for line in self.reslist:
             try:
