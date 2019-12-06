@@ -43,6 +43,7 @@ AppSupportPhone=+49 761 203 6156
 VersionInfoProductName=DSR - Disordered Structure Refinement
 AlwaysShowComponentsList=False
 ShowComponentSizes=False
+SignTool=signtool
 
 [Run]
 ;Filename: "msiexec.exe"; Parameters: "TARGETDIR=""{app}\python27"" ADDLOCAL=Extensions,SharedCRT /i ""{app}\python-2.7.5.msi"""; Description: "Install Python"
