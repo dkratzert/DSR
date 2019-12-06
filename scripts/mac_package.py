@@ -1,6 +1,7 @@
 import os
 import subprocess
 import tempfile
+
 import misc
 import selfupdate
 from dsr import VERSION
@@ -9,9 +10,11 @@ from scripts.make_zipfile import files, make_zip
 try:  # Python2:
     # noinspection PyCompatibility
     import urllib2
+
     http_error = urllib2.HTTPError
 except(ImportError, AttributeError):  # Python3:
     import urllib
+
     http_error = IOError
 
 version = VERSION
@@ -19,7 +22,7 @@ version = VERSION
 # First, create a .tar.gz file with the DSR program:
 make_zip(files)
 
-volname = "DSR-"+version
+volname = "DSR-" + version
 inputfile = "setup/Output/DSR-{}.tar.gz".format(version, version)
 dmgname = os.path.abspath("setup/Output/{}.dmg".format(volname))
 skeldmg = os.path.abspath("setup/Output/DSR-skel-rw.dmg")
@@ -62,6 +65,7 @@ selfupdate.move_dir(os.path.join(tmpdir, "DSR-{}".format(version)), '/Volumes/DS
 #########################################################
 #  Do modification stuff here:
 misc.copy_file("/Volumes/DSR-install/DSR/setup/dsr-mac", "/Volumes/DSR-install/DSR/dsr")
+misc.remove_file("/Volumes/DSR-install/DSR/dsr.bat")
 subprocess.call(["chmod", "755", "/Volumes/DSR-install/DSR/dsr"])
 
 # Rename the volume:
@@ -70,7 +74,7 @@ subprocess.call(renamecommand)
 #########################################################
 
 subprocess.call(unmountcommmand)
-#time.sleep(1)
+# time.sleep(1)
 
 # convert to compressed image:
 misc.remove_file(dmgname)
@@ -78,4 +82,3 @@ subprocess.call(convert_to_compressed)
 
 # Clean temporary image:
 misc.remove_file(finaltmpdmg)
-

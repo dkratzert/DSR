@@ -21,7 +21,7 @@ files = [
     "constants.py",
     "dbfile.py",
     "dsr.py",
-    "dsr.bat",
+    #"dsr.bat",  # makes problems in unix and does not work in windows
     "dsrparse.py",
     "export.py",
     "misc.py",
