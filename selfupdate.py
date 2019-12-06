@@ -109,7 +109,8 @@ def update_dsr(force=False, version=None):
         else:
             return False
     if int(VERSION) < int(version):
-        print('*** Current available version of DSR is {}. Performing upate ... ***'.format(version))
+        print('*** Current available version of DSR is {} you have installed version {}. '
+              'Performing upate ... ***'.format(version, VERSION))
         status = get_update_package(version)
         if status:
             print('*** Finished updating to version {} ***'.format(version))
@@ -118,7 +119,7 @@ def update_dsr(force=False, version=None):
             print('*** Could not update DSR. ***')
             return False
     if (int(VERSION) >= int(version)) and version > 0:
-        print('*** DSR is already up to date (version {}) ***'.format(version))
+        print('*** DSR is already up to date (version {}) ***'.format(VERSION))
         return False
 
 
