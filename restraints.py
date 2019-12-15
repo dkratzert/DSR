@@ -16,9 +16,10 @@ import re
 import string
 import sys
 from collections import OrderedDict
+
 from atomhandling import get_atomtypes
 from elements import ELEMENTS
-from misc import distance, vol_tetrahedron, flatten2, get_overlapped_chunks, remove_partsymbol, shift, find_line
+from misc import distance, find_line, flatten, get_overlapped_chunks, remove_partsymbol, shift, vol_tetrahedron
 
 # all upper case for case insensitivity:
 alphabet = [i for i in string.ascii_uppercase]
@@ -89,16 +90,14 @@ class Restraints():
     needs atoms with numpart like C1_2b
     """
 
-    def __init__(self, export, frag, gdb):
+    def __init__(self, frag, gdb):
         self.fragment = frag.lower()
         self.gdb = gdb
-        self.export = export
-        self._atoms = [i[0] for i in self.gdb[self.fragment]['atoms']]
-        self._cell = self.gdb.get_cell(self.fragment)
-        self.atom_types = get_atomtypes(self.gdb[self.fragment]['atoms'])
+        self._atoms = self.gdb.get_atoms(fragment=self.fragment, cartesian=False)
+        self._atom_names = [i[0] for i in self._atoms]
+        self.atom_types = get_atomtypes(self._atoms)
         self.cart_coords = self.gdb.get_coordinates(self.fragment, cartesian=True)
-        self._connectivity_table = self.get_conntable_from_atoms(
-            self.cart_coords, self.atom_types, self._atoms)
+        self._connectivity_table = self.get_conntable_from_atoms(self.cart_coords, self.atom_types, self._atom_names)
         self.coords_dict = self.get_coords_dict()
         self._G = self.get_adjmatrix()
 
@@ -107,7 +106,7 @@ class Restraints():
         Returns an ordered dictionary with coordinates of the fragment
         """
         coords = OrderedDict({})
-        for name, co in zip(self._atoms, self.cart_coords):
+        for name, co in zip(self._atom_names, self.cart_coords):
             coords[name] = co
         return coords
 
@@ -120,7 +119,7 @@ class Restraints():
         for i in self._connectivity_table:
             atom1 = i[0]
             atom2 = i[1]
-            if atom1 in self._atoms:
+            if atom1 in self._atom_names:
                 coord1 = self.coords_dict[atom1]
                 coord2 = self.coords_dict[atom2]
                 dist = distance(coord1[0], coord1[1], coord1[2],
@@ -152,7 +151,7 @@ class Restraints():
                 ele1 = ELEMENTS[typ.capitalize()]
                 ele2 = ELEMENTS[typ2.capitalize()]
                 d = distance(co1[0], co1[1], co1[2], co2[0], co2[1], co2[2], round_out=5)
-                # print(d, n1, n2, (ele1.covrad+ele2.covrad)+extra_param)
+                # print(d, n1, n2, (ele1.covrad+ele2.covrad)+extra_param, '#', ele1.covrad, ele2.covrad)
                 # a bond is defined with less than the sum of the covalence
                 # radii plus the extra_param:
                 if d <= (ele1.covrad + ele2.covrad) + extra_param and d > (ele1.covrad or ele2.covrad):
@@ -165,9 +164,9 @@ class Restraints():
         return self.adjmatrix()
 
     def get_12_dfixes(self):
-        '''
+        """
         returns the requested dfixes als list of strings
-        '''
+        """
         dfix = []
         for n, i in self._G.adjacency_iter():
             # print(n, i)
@@ -209,7 +208,7 @@ class Restraints():
         returns the next-neighbors of the fragments atoms
         """
         nn = []
-        nb12 = self.get_neighbors(self._atoms)
+        nb12 = self.get_neighbors(self._atom_names)
         for i in nb12:
             atom1 = i[0]
             bonded = i[1]
@@ -256,7 +255,11 @@ class Restraints():
 
         returns list of flat chunks.
 
-        TODO: Make a doctest!!
+        >>> from dbfile import ParseDB
+        >>> gdb = ParseDB('../dsr_db.txt')
+        >>> res = Restraints('benzene', gdb)
+        >>> sorted(res.make_flat_restraints())
+        [['C1', 'C2', 'C5', 'C6'], ['C3', 'C4', 'C5', 'C6']]
         """
         import networkx as nx
         list_of_rings = nx.cycle_basis(self._G)
@@ -270,7 +273,7 @@ class Restraints():
                 # lets see if there is a neighboring atom:
                 nb = self._G.neighbors(atom)  # [1:]
                 for i in nb:
-                    if not i in flatten2(list_of_rings):
+                    if not i in flatten(list_of_rings):
                         neighbors.append(i)
             if len(ring) < 4:
                 continue  # only proceed if ring is bigger than 3 atoms

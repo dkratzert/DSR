@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-#-*- encoding: utf-8 -*-
-#möp
+# -*- encoding: utf-8 -*-
+# möp
 import os
+import platform
 import shlex
 import struct
-import platform
 import subprocess
 
 
@@ -25,8 +25,8 @@ def get_terminal_size():
     if current_os in ['Linux', 'Darwin'] or current_os.startswith('CYGWIN'):
         tuple_xy = _get_terminal_size_linux()
     if tuple_xy is None:
-        #print("default")
-        tuple_xy = (80, 25)      # default value
+        # print("default")
+        tuple_xy = (80, 25)  # default value
     return tuple_xy
 
 
@@ -71,6 +71,7 @@ def _get_terminal_size_linux():
             return cr
         except:
             pass
+
     cr = ioctl_GWINSZ(0) or ioctl_GWINSZ(1) or ioctl_GWINSZ(2)
     if not cr:
         try:
@@ -85,6 +86,7 @@ def _get_terminal_size_linux():
         except:
             return None
     return int(cr[1]), int(cr[0])
+
 
 if __name__ == "__main__":
     sizex, sizey = get_terminal_size()

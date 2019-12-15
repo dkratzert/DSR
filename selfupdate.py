@@ -14,9 +14,9 @@ from __future__ import print_function
 import hashlib
 import os
 import shutil
+import sys
 import tarfile
 import tempfile
-import sys
 
 from dsr import VERSION
 
@@ -40,6 +40,7 @@ class MyOpener(FancyURLopener):
     Sets the user agent of the urllib http request.
     """
     version = 'DSR cmdline {}'.format(VERSION)
+
 
 myurlopen = MyOpener()
 
@@ -108,7 +109,8 @@ def update_dsr(force=False, version=None):
         else:
             return False
     if int(VERSION) < int(version):
-        print('*** Current available version of DSR is {}. Performing upate ... ***'.format(version))
+        print('*** Current available version of DSR is {} you have installed version {}. '
+              'Performing upate ... ***'.format(version, VERSION))
         status = get_update_package(version)
         if status:
             print('*** Finished updating to version {} ***'.format(version))
@@ -117,7 +119,7 @@ def update_dsr(force=False, version=None):
             print('*** Could not update DSR. ***')
             return False
     if (int(VERSION) >= int(version)) and version > 0:
-        print('*** DSR is already up to date (version {}) ***'.format(version))
+        print('*** DSR is already up to date (version {}) ***'.format(VERSION))
         return False
 
 
@@ -202,7 +204,7 @@ def get_update_package(version, destdir=None, post=True):
     try:
         dsrdir = os.environ["DSR_DIR"]
     except KeyError:
-        print("*** Could not determine the location of DSR. Can not update. ***" )
+        print("*** Could not determine the location of DSR. Can not update. ***")
         sys.exit()
     # DSR file:
     response = myurlopen.open('{}/DSR-{}.tar.gz'.format(urlprefix, version))
@@ -278,6 +280,7 @@ def sha512_checksum(filename, block_size=65536):
 
 if __name__ == '__main__':
     import doctest
+
     failed, attempted = doctest.testmod()  # verbose=True)
     if failed == 0:
         print('passed all {} tests!'.format(attempted))

@@ -13,7 +13,6 @@ from __future__ import print_function
 
 import re
 import sys
-import textwrap
 
 import misc
 
@@ -38,13 +37,13 @@ class DSRParser(object):
         self.dsr_dict = self.parse_dsr_line()
         self.remove_dsr_command()
 
+    def __str__(self):
+        return ' '.join(self.dsr_command_list)
+
     def find_dsr_command(self):
         """
-        line = False  -> Line number
-        line = True  -> Text string
         find the lines with a DSR command entry and return its line number as
         default or the text string when line is set to True
-        :param line: bool
         """
         hklf_endline = misc.find_line(self.reslist, r'^HKLF\s+[1-6]')
         indexnum = misc.find_multi_lines(self.reslist, self._dsr_regex)
@@ -72,6 +71,46 @@ class DSRParser(object):
         self.dsr_line_number = line_number
         return dsr_str.upper().split()
 
+    @property
+    def unit_line(self):
+        """
+        Returns the line number of the UNIT instruction in the SHELX file.
+        :return: line number of UNIT
+
+        >>> from resfile import ResList, ResListEdit
+        >>> from dsrparse import DSRParser
+        >>> res_file = 'p21c.res'
+        >>> rl = ResList(res_file)
+        >>> reslist = rl.get_res_list()
+        >>> rle = ResListEdit(reslist, res_file)
+        >>> #dsr_line = dsrp.get_dsr_dict
+        >>> dsrp = DSRParser(reslist)
+        >>> dsrp.unit_line
+        7
+        """
+        unitline = misc.find_line(self.reslist, r'^UNIT\s+\d')
+        return unitline
+
+    @property
+    def hklf_line(self):
+        """
+        Returns the line number of the HKLF instruction in the res file.
+        :return lin number of HKLF
+
+        >>> from resfile import ResList, ResListEdit
+        >>> from dsrparse import DSRParser
+        >>> res_file = 'p21c.res'  # located in unit-tests
+        >>> rl = ResList(res_file)
+        >>> reslist = rl.get_res_list()
+        >>> rle = ResListEdit(reslist, res_file)
+        >>> #dsr_line = dsrp.get_dsr_dict
+        >>> dsrp = DSRParser(reslist)
+        >>> dsrp.hklf_line
+        269
+        """
+        hklfline = misc.find_line(self.reslist, r'^HKLF\s+\d')
+        return hklfline
+
     def remove_dsr_command(self):
         """
         Removes the dsr command by adding REM in front of the command.
@@ -79,13 +118,13 @@ class DSRParser(object):
         txt = ' '.join(self.dsr_command_list)
         # wrap the line after 75 chars:
         # The ! prevents weired code highlighting in ShelXle:
-        dsrlines = textwrap.wrap(txt, 75, initial_indent='REM ', subsequent_indent='REM !')
-        dsrlines = '\n'.join(dsrlines)
-        dsrlines += '\n'
+        # dsrlines = textwrap.wrap(txt, 75, initial_indent='REM ', subsequent_indent='REM !')
+        # dsrlines = '\n'.join(dsrlines)
+        # dsrlines += '\n'
         self.reslist[self.dsr_line_number] = ''  # delete old line
         if self.multiline:
             self.reslist[self.dsr_line_number + 1] = ''  # delete second old line
-        self.reslist[self.dsr_line_number] = dsrlines
+        # self.reslist[self.dsr_line_number] = dsrlines
 
     def find_commands(self, command):
         """
@@ -109,7 +148,7 @@ class DSRParser(object):
         other Parameters
 
         ----------
-        :type start: str 
+        :type start: str
         :type stop: str
         :rtype: list
         """
@@ -150,12 +189,7 @@ class DSRParser(object):
         returns the different parameters from the dsr command as dict
         It needs find_commands() and find_atoms() to parse the line.
 
-        >>> from resfile import ResList, ResListEdit
-        >>> res_file = 'p21c.res'
-        >>> rl = ResList(res_file)
-        >>> reslist = rl.get_res_list()
-        >>> rle = ResListEdit(reslist, res_file)
-        >>> #dsr_line = dsrp.get_dsr_dict
+        >>> reslist = [r'rem dsr put oc(cf3)3 with o1 c1 c2 c3 c4 on O1_3 c1_3 q6 Q4 q7 resi cf3 =', r'  PART 2 occ -31']
         >>> dsrp = DSRParser(reslist)
         >>> dic = dsrp.all
         >>> l = sorted(dic)
@@ -170,6 +204,36 @@ class DSRParser(object):
         source:  ['O1', 'C1', 'C2', 'C3', 'C4']
         split:  False
         target:  ['O1_3', 'C1_3', 'Q6', 'Q4', 'Q7']
+
+        >>> dsrp = DSRParser(['rem dsr put ch2Cl2 with C1 cL2 cl1 on C1 C2 Cl3 ParT 1 reSi ocC 21'])
+        >>> dic = dsrp.all
+        >>> l = sorted(dic)
+        >>> for i in l:
+        ...     print('{}: '.format(i), dic[i])
+        command:  PUT
+        dfix:  False
+        fragment:  CH2CL2
+        occupancy:  21
+        part:  1
+        resi:  []
+        source:  ['C1', 'CL2', 'CL1']
+        split:  False
+        target:  ['C1', 'C2', 'CL3']
+
+        >>> dsrp = DSRParser(['rem dsr put ch2Cl2 with C1 cL2 cl1 on C1 C2 Cl3 ParT 1  ocC 21'])
+        >>> dic = dsrp.all
+        >>> l = sorted(dic)
+        >>> for i in l:
+        ...     print('{}: '.format(i), dic[i])
+        command:  PUT
+        dfix:  False
+        fragment:  CH2CL2
+        occupancy:  21
+        part:  1
+        resi:  False
+        source:  ['C1', 'CL2', 'CL1']
+        split:  False
+        target:  ['C1', 'C2', 'CL3']
         """
         source = None
         if self.cf3_active:
@@ -322,7 +386,7 @@ class DSRParser(object):
     @property
     def resi(self):
         """
-        resi: empty list, class, number or class and number
+        resi: empty list, resi class, number or resi class and number
         :rtype: list
         """
         return self.dsr_dict['resi']
@@ -337,7 +401,7 @@ class DSRParser(object):
 
     @resiflag.setter
     def resiflag(self, value):
-        """ 
+        """
         Setter for resiflag
         :type value: bool
         """
@@ -354,7 +418,7 @@ class DSRParser(object):
     def all(self):
         """
         Returns the complete dsr command dictionary
-        :return: dict 
+        :return: dict
         """
         return self.dsr_dict
 

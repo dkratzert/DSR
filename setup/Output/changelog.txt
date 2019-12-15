@@ -1,21 +1,44 @@
 Recent changes
+-230    Added "REM HFIX ..." to the list of restraints for fragments in residues. 
+-229    Fixed wrong atom name in some restraints.
+-228    Fixed crash when solely "resi" occours in the res file. 
+-227    Fixd bug in restraints generation.
+-226    New fragments PMe3 and tBu, thanks to Krzysztof Radacki.
+-225    Fixed bug where fragments got wrong orientation.
+-224    Fixed bug where certain fragments got really large with DFIX command.
+-223    Fixed acetone restraints. Added test for inconsistent restraints with two atom pairs.
+-222-1  Fixed damaged numpy in Windows installer.
+-222    Fixed faulty 1,3 restraints in benzene.
+-221    Separated restraints and fragment during transfer. The restraints are now always inserted after
+        UNIT. The new fragment is always located before HKLF. This has the advantage that it does not depend on
+        the position of the DSR command and the SAME instruction has always the better fragments
+        as reference. Also the often demanded sorting of the residue numbers should be in an inreasing order now.
+        I also discarded the fragment fit with SHELXL FRAG/FEND. This implies that DSR now relies
+        on the numpy package. If you have just auto-updated DSR for a long time,
+        you might have to reinstall DSR from the installer one time in order to get it running.
+        Non-Windows users have to make sure that numpy is installed in addition! The windows installer
+        includes the numpy package and should run just fine.
+-220    Allowing space characters in fragment search. Fixed bug where cf3 group generation could fail.
+-219    Adding "SIMU 0.04 0.08 1" to all restraints. This is necessary, because "SIMU_XYZ atoms"
+        only affects each residue in itself and not to atoms of residues near each other.
+-218    Fixed Exception occouring when source atoms had lower-case names.
 -217    Fixed linux packages.
--216    New fit procedure should be stable now. In windows, you need to install the installer 
-        executable once! DSR needs numpy for the faster fit now. Without numpy, the old 
+-216    New fit procedure should be stable now. In windows, you need to install the installer
+        executable once! DSR needs numpy for the faster fit now. Without numpy, the old
         fragment fit is used.
 -215    Kabsch fit resulted in wrong translation of the fragment in some cases. This is fixed now.
 -214    Fixed external restraints with Kabsch fit. All feature should work now.
--213    Added fragment fit with Kabsch algorithm instead of FRAG/FEND fit. This runs much faster 
-        for large structures. This version might be unstable and not all features are suported, 
+-213    Added fragment fit with Kabsch algorithm instead of FRAG/FEND fit. This runs much faster
+        for large structures. This version might be unstable and not all features are suported,
         but regular fragment fit with or without RESIdues and PARTs work.
--212    Fixed SFAC with exponential parameters. Teflat fragment added. Added Trifluorbenzene. 
+-212    Fixed SFAC with exponential parameters. Teflat fragment added. Added Trifluorbenzene.
 -211    More fragments: Dimethyl ammonium, tert-Butyl isocyanide, improved replace mode.
--210    Added check for DFIX/DANG if the d value is larger than the sigma (as it should be). 
-        DSR now ignores fragments that do not contain atoms. Less output during fragment fit 
-        (wR2 and Gof were useless). Fixed line endings in start script. This should fix 
+-210    Added check for DFIX/DANG if the d value is larger than the sigma (as it should be).
+        DSR now ignores fragments that do not contain atoms. Less output during fragment fit
+        (wR2 and Gof were useless). Fixed line endings in start script. This should fix
         updates on Unix systems.
--209    Added 4,4'-Di-tert-butyl-2,2'-bipyridine and TEMPO fragments, users manual updated esp. 
-        residues chapter, optimized restraints, fixed Acetonitrile restraints (why did nobody 
+-209    Added 4,4'-Di-tert-butyl-2,2'-bipyridine and TEMPO fragments, users manual updated esp.
+        residues chapter, optimized restraints, fixed Acetonitrile restraints (why did nobody
         noticed this?).
 -208    Changed self-update process to be secured by checksums and ssl.
 -207    When using residues, DSR will now introduce a SAME_name 'first atom' > 'last atom'
@@ -38,9 +61,9 @@ Recent changes
         very similar names in the search results.
 -201    Fixed bug in threefold disordered CF3 group. Fixed -target option. Q-peaks
         with -target can now have duplicate names. Removed FLAT in alkanes.
--200-1  Added missing python27.dll in Windows package. Fixes "unknown error" in 
+-200-1  Added missing python27.dll in Windows package. Fixes "unknown error" in
         ShelXle GUI (Thanks to Christoph Wölper).
--200    Startup speed improvements. Added possibility to define target position 
+-200    Startup speed improvements. Added possibility to define target position
         of atoms as coordinates (-target option“).
 -199    Added documentation how to control DSR with an external user interface.
         Hexamethyl benzene fragment added. DSR inserts a comment about the origin
@@ -50,17 +73,17 @@ Recent changes
 -197-1  2,6-Dichlorobenzene added.
 -197    Fixed bug that prevents using more than nine free variables. Added
         Dichloroethane and TMEDA fragments, RSS-Feed, unit tests, more search
-        results. 
+        results.
 -196    Improved C20, C60 and C70 fragments. Now they all have restraints and
         optimized geometry. Fixed case sensitivity bug. Improved FLAT restraints.
         Added CF3, CF6 and CF9 fragments as dummys to the database.
         Improved unit tests.
--195    Slight speed improvement. Cleaner code (needs more cleaning). Fixed too 
+-195    Slight speed improvement. Cleaner code (needs more cleaning). Fixed too
         optimistic replace mode in 194. External restraints shouuld work again.
 -194    Fixed ANSI escape codes appearing in ShelXle GUI. Improved updater.
 -193    Added auto updater to DSR. Run "dsr -u" to update to the most recent version.
 -192    Fixed strange characters in fragment list in Linux and other Small fixes.
--191    Prevent ** NEGATIVE OCCUPANCY FOR ATOM XX  ** warning in case of wrong 
+-191    Prevent ** NEGATIVE OCCUPANCY FOR ATOM XX  ** warning in case of wrong
         free variable values before fit. Added Isopropanole. Optimized examples.
         Updated user manual. Fixed minor problem in case no shelxl executable is
         found during fit in ShelXle.
@@ -69,8 +92,8 @@ Recent changes
 -188    Fixed bug that produces  "dsr: error: unrecognized arguments: [...]" if
         SHELXL was located in a directory containing space characters.
         Fixed bug where "FVAR 1" ended up as 1000000.
-        Added all natural amino acids. Improved FLAT restraints. 
--187    No CF3 groups inside of residues allowed any more. Fixed exception when 
+        Added all natural amino acids. Improved FLAT restraints.
+-187    No CF3 groups inside of residues allowed any more. Fixed exception when
         DSR tries to delete a file.
         MAC OS: Fixed broken startup script.
 -186    Fixed bug in sorting of names list. Made outlier test for SADI a bit weaker.
@@ -78,12 +101,12 @@ Recent changes
 -185    Added COD to database. Fixed bug where cf3fit could delete the first atom
         in the res file (Thanks to C. Maichle-Moessmer for reporting). Fixed
         damaging of L.S. command with more than one parameter.
--184    PMDETA and DMAP fragments added, Fixed bug where cf3fit could not handle 
+-184    PMDETA and DMAP fragments added, Fixed bug where cf3fit could not handle
         isotropic atoms (Thanks to C. Maichle-Moessmer for reporting).
 -183    New fragments, improved handling of relative paths for external restraints,
-        restore refinement cycles after DSR run. 
+        restore refinement cycles after DSR run.
 -182    IMPORTANT! The default path for the user database is now the users home
-        directory! For example /home/username/dsr_user_db.txt in Linux and 
+        directory! For example /home/username/dsr_user_db.txt in Linux and
         C:/users/Username in windows Vista and later. The DSR_DB_DIr environment
         variable is now deprecated.
         This version of DSR is not compatible with the DSR GUI in ShelXle-1.0.758
@@ -94,68 +117,68 @@ Recent changes
         An unreadable SHELXL executable will not create an exeption any more.
 -181    Fixed bug where external restraints produced "illegal instruction" error
         in SHELXL. AFIX 9 and +dfixfile is now recognized by a unique id.
-        External restraints with a rigid group produced an invalid RESI None None 
+        External restraints with a rigid group produced an invalid RESI None None
         instruction.
--180    Moving version format to integer. Final export format for the ShelXle GUI. 
+-180    Moving version format to integer. Final export format for the ShelXle GUI.
         Faster start in Windows. Many small fixes. Improved error messages.
-        In replace mode, really delete lines instead of producing blank lines. 
+        In replace mode, really delete lines instead of producing blank lines.
         User manual updates.
 -1.7.7  New output format for DSRGui. New command line option for rigid group.
--1.7.6  Huge improvement in SADI consistency checker. Some new fragments NBt4+ 
+-1.7.6  Huge improvement in SADI consistency checker. Some new fragments NBt4+
         NMe4+ C20. Small fixes.
--1.7.5  Also move fluorine atoms in direction of principal ellipsoid axis with 
+-1.7.5  Also move fluorine atoms in direction of principal ellipsoid axis with
         SPLIT option and CF6.
--1.7.4  Added check if SADI atom pair distances are consistent with each other. 
+-1.7.4  Added check if SADI atom pair distances are consistent with each other.
         Added Anthracene and 9,10-Dibromoanthracene.
         Better formating of DFIX/DANG list with dfix option turned on.
         Fixed bug with occ=0.25
         Addedd C60 (with restraints) and C70 (without restraints, use dfix option).
         Some more unit tests.
--1.7.3  Small fix regarding FVAR with CF6 fragment. 
--1.7.2  Added [2.2.2]-cryptand to database. Tanks to Dejan Premuzic! Added Ability 
-        to compute principal axes vectors of an ellipsoid. Added "split" option 
+-1.7.3  Small fix regarding FVAR with CF6 fragment.
+-1.7.2  Added [2.2.2]-cryptand to database. Tanks to Dejan Premuzic! Added Ability
+        to compute principal axes vectors of an ellipsoid. Added "split" option
         to split CF6 group. Several other fixes.
 -1.7.1-1 Fixed missing cf3fit.py in Windows installer.
 -1.7.1  Fixed typos in CF3 restraints. Improved residue handling with CF3 groups.
-        Known bugs: res files without FVAR (e.g. after shelxs or shelxt) cause a 
+        Known bugs: res files without FVAR (e.g. after shelxs or shelxt) cause a
         crash.
--1.7.0  New feature: Ability to model disordered CF3 groups (1, 2 and 3 positions). 
+-1.7.0  New feature: Ability to model disordered CF3 groups (1, 2 and 3 positions).
         Fixed CF6 restraints.
--1.6.4  removed dependency of DFIX and PART in DSR, better warning for unsuccessful 
+-1.6.4  removed dependency of DFIX and PART in DSR, better warning for unsuccessful
         shelxl runs.
--1.6.3  Improved FLAT restraints. Fixed Pyridine and Acetonitrile restraints. 
+-1.6.3  Improved FLAT restraints. Fixed Pyridine and Acetonitrile restraints.
         Perfluoro adamantole added.
 -1.6.2  Improved atom deleter in replace mode.
         Finally, a brand new dmg image for Mac OS X.
--1.6.1  New feature: replace mode will replace all atoms in PART 0 that are 1.2 A 
+-1.6.1  New feature: replace mode will replace all atoms in PART 0 that are 1.2 A
         near the fitting fragment. Please tell me if 1.2 A is too far.
-        New fragment 18-Crown-6 (thanks to Dejan Premu�ic), New fragment Mesitylene. 
+        New fragment 18-Crown-6 (thanks to Dejan Premu�ic), New fragment Mesitylene.
         Bug fixed that introduced
         restraints again, even if they were already there (thanks to Olaf Petersen).
-        Better warning for bad residues. Several small fixes. ACTA card is restored 
+        Better warning for bad residues. Several small fixes. ACTA card is restored
         as it was before now.
         Triphenylphosphane added to database. Fixed replacing of residues.
--1.6.0  Completely changed DFIX/DANG/FLAT routines. Connectivity list is now 
+-1.6.0  Completely changed DFIX/DANG/FLAT routines. Connectivity list is now
         calculated by DSR and not from .lst file (SHELXL).
-        FLAT also includes neighbouring ring atoms. Exported res files now include 
+        FLAT also includes neighbouring ring atoms. Exported res files now include
         DFIX/DANG/FLAT restraints. Please report bugs in this release.
--1.5.15 Database updates, Fixed missing U values in exported res files, during import 
+-1.5.15 Database updates, Fixed missing U values in exported res files, during import
         the name comes from the pdb file now.
--1.5.14 Bug fixes, nicer export, warning about missing database, database updates, 
+-1.5.14 Bug fixes, nicer export, warning about missing database, database updates,
         manual updates.
--1.5.13 Improved error logging. Implemented Support for negative atomic number for 
+-1.5.13 Improved error logging. Implemented Support for negative atomic number for
         atom type. Fixed some typos in the database.
 -1.5.12 Fixed bug in replace mode.
--1.5.11 Ignore lines starting with # in the DB. Python3 compatible again. Lower 
+-1.5.11 Ignore lines starting with # in the DB. Python3 compatible again. Lower
         case resi fixed. Exceptions get logged.
         Several improvements for external restraints.
 -1.5.10 External restraints without residues are now supported. Small fixes.
 -1.5.9  DSR now warns if data to paramter ratio is getting bad. small fixes.
--1.5.8  Support for both types of SFAC. Search result of -s also with line number. 
+-1.5.8  Support for both types of SFAC. Search result of -s also with line number.
         More tests.
 -1.5.7  DSR now creates a backup file before fragment fit in a separate directory.
         Exported fragment res files now include database restraints.
--1.5.6  Program renamed to "Disordered Structure Refinement (DSR)" Small fixes. 
+-1.5.6  Program renamed to "Disordered Structure Refinement (DSR)" Small fixes.
         Warning about inacurate restraints.
 -1.5.5  Unit tests. Small fixes.
 -1.5.4  Code cleanup and deletion from adjacent hydrogen atoms improved.
@@ -165,39 +188,39 @@ Recent changes
         command fixed.
 -1.5.0  New option "-s" to search for fragments in the database. Improved file formating.
 -1.4.6  Fixed negative part numbers.
--1.4.5  Introduced the ability to invert the fragment (-t option). Simplified 
-        startup script for windows. Splitted export to clipboard (-c option) and 
+-1.4.5  Introduced the ability to invert the fragment (-t option). Simplified
+        startup script for windows. Splitted export to clipboard (-c option) and
         to res/png file (-e option) in two options.
 -1.4.4  small db updates, small fix in error handling.
 -1.4.3  very long lines of restraints were not correctly wrapped.
 -1.4.2  serious bug with wrong naming scheme of fragment atoms fixed.
 -1.4.1  serious bug with wrapped lines in the database header fixed.
--1.4.0  Big database update (Many thanks to Ilia A. Guzei providing molecular 
+-1.4.0  Big database update (Many thanks to Ilia A. Guzei providing molecular
         fragments). The automatic generation
         of DFIX/DANG and FLAT restraints with the "DFIX" DSR-command is now implemented.
-        Success and fail reports about the restraint generation would be highly 
+        Success and fail reports about the restraint generation would be highly
         appreciated!
-        Separate files with restraints e.g. in a +FILENAME.dfx file are now implemented 
-        (system command line option -re). Full fragment names are now listed with 
+        Separate files with restraints e.g. in a +FILENAME.dfx file are now implemented
+        (system command line option -re). Full fragment names are now listed with
         "dsr -l". The output of -l
         now automatically fits to the command line width.
-        More meaningful comments about the import from a GRADE fragment are now 
+        More meaningful comments about the import from a GRADE fragment are now
         included during the import
         and export. Multiple lines of REM in the database are now supported.
-        The molecules of the paper about "X-ray analysis on the nanogram to microgram 
+        The molecules of the paper about "X-ray analysis on the nanogram to microgram
         scale using porous complexes"
         from Inokuma, Y. et al. Nature 495, 461�466 (2013) are included!
--1.3.2  FRAG in the database entrys was accidentally case sensitive. A missing 
+-1.3.2  FRAG in the database entrys was accidentally case sensitive. A missing
         residue in the database entry was not properly checked.
--1.3.1  A lot of improvements: DFIX command now possible without RESI command. 
+-1.3.1  A lot of improvements: DFIX command now possible without RESI command.
         line wrap of long command
-        lines and lines of restraints now fully working. Export to clipboard of 
+        lines and lines of restraints now fully working. Export to clipboard of
         experimental coordinates now
         working correctly. Networkx added to distribution.
 -1.3.0  First implementation of automatic generated DFIX restraints.
 -1.2.13 Restraints for same residue classes are now inserted only once. Port to Python-3.3
 -1.2.12 Small fixes and new Linux packages.
--1.2.11 Supports now multiple lines of FVAR. DSR command line in res file is now 
+-1.2.11 Supports now multiple lines of FVAR. DSR command line in res file is now
         correctly wrapped
         during processing with DSR bevor exceeding 80 characters.
 -1.2.10	Much improved error handling for shelxl. In case of shelx errors the original

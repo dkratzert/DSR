@@ -3,7 +3,7 @@ REM Solution 1  R1  0.226,  Alpha = 0.0301  in P2(1)/n
 REM C26 F6 S
 TITL p21n in P2(1)/n
     20a.res
-    created by SHELXL-2018/3 at 10:18:28 on 17-Aug-2018
+    created by SHELXL-2018/3 at 18:31:59 on 28-Mar-2019
 CELL  0.71073  17.2012   6.5879  17.8587   90.000   98.492   90.000
 ZERR    4.00   0.0063   0.0029   0.0062   0.000   0.020   0.000
 LATT  1
@@ -32,6 +32,7 @@ SADI C19 C22A C19 C22B
 EADP C22A C22B
 RIGU C19 C22A C22B F1A > F6A
 SIMU C19 C22A C22B F1A > F6A
+
 PART 1
 C22A  1    0.674374    1.506982    0.260031    21.0000     0.04
 F1A   3    0.697293    1.597664    0.325480    21.0000     0.04
@@ -53,7 +54,6 @@ F1Y   3    0.129932   -0.463873    0.548990    11.00000    0.07520
 F1Z   3    0.055789   -0.388160    0.454486    11.00000    0.10792
 O1    5    0.356809    0.381786    0.502687    11.00000    0.02846    0.03718 =
          0.02160    0.00338   -0.00356   -0.01119
-REM REM DSR PUT CF6 ON C22 SPLIT
 O2    5    0.317306    0.656595    0.254839    11.00000    0.02094    0.02155 =
          0.01743   -0.00034   -0.00119   -0.00144
 O3    5    0.448823    0.743993    0.255739    11.00000    0.02332    0.01350 =
@@ -157,9 +157,9 @@ REM wR2 = 0.4550, GooF = S = 3.384, Restrained GooF = 3.384 for all data
 REM R1 = 0.1882 for 3554 Fo > 4sig(Fo) and 0.2054 for all 4254 data
 REM 267 parameters refined using 0 restraints
 
-END  
-     
-WGHT      0.2000      0.0000 
+END
+
+WGHT      0.2000      0.0000
 
 REM Highest difference peak  4.398,  deepest hole -3.893,  1-sigma level  0.262
 Q1    1   0.7378  1.5387  0.3406  11.00000  0.05    4.40

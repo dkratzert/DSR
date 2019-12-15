@@ -21,6 +21,7 @@ files = [
     "constants.py",
     "dbfile.py",
     "dsr.py",
+    #"dsr.bat",  # makes problems in unix and does not work in windows
     "dsrparse.py",
     "export.py",
     "misc.py",
@@ -72,7 +73,7 @@ def make_zip(filelist):
     # Go through DSR path and add files from list:
     for f in filelist:
         # Also add recoursive dirs:
-        for filen in walkdir(f, exclude=['.pyc']):
+        for filen in walkdir(f, exclude=['.pyc', '.DS_Store']):
             print(filen)
             # need path without filename to create target directories:
             path, _ = os.path.split(filen)

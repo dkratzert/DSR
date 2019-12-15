@@ -1,5 +1,5 @@
-#-*- encoding: utf-8 -*-
-#möp
+# -*- encoding: utf-8 -*-
+# möp
 #
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
@@ -11,10 +11,10 @@
 #
 from __future__ import print_function
 
-import misc
-import sys
 import os
+import sys
 
+import misc
 
 __metaclass__ = type  # use new-style classes
 
@@ -38,6 +38,7 @@ class ResList():
     """
     Reads and writes the res-file as list
     """
+
     def __init__(self, res_file_name):
         """
         :param res_file_name: string like 'p21c.res'
@@ -49,7 +50,7 @@ class ResList():
         """
         read the res-file and return it as list
         """
-        filename = self.__basefile+'.res'
+        filename = self.__basefile + '.res'
         reslist = []
         try:
             with open(filename, 'r') as f:
@@ -68,14 +69,14 @@ class ResList():
         :param ending:  string, file ending like '.res'
         """
         try:
-            nfile = open(self.__basefile+ending, 'w')  # open the ins file
+            nfile = open(self.__basefile + ending, 'w')  # open the ins file
         except IOError:
             print('Unable to write .res file! Check directory write permissions.')
             sys.exit(-1)
         for line in reslist:  # modified reslist
             if line == ' ':
                 line += ' \n'  # prevent space character coming in front of an atom accidentally
-            nfile.write("%s" % line)    # write the new file
+            nfile.write("%s" % line)  # write the new file
         nfile.close()
 
 
@@ -83,6 +84,7 @@ class ResListEdit():
     """
     Class to add, remove and list lines of the resfile
     """
+
     def __init__(self, reslist, find_atoms):
         """
 
@@ -92,17 +94,21 @@ class ResListEdit():
         self._reslist = reslist
         self._find_atoms = find_atoms
         self.fvarlines = self.find_fvarlines()
+        self.cell = self._cell_from_res()
 
     def get_cell(self):
         """
         returns cell parameters of the res file
         """
+        return self.cell
+ 
+    def _cell_from_res(self):
         cell = []
         for line in self._reslist:
             if line.startswith('CELL'):
                 cell = line.split()[2:8]
                 cell = [float(i) for i in cell]
-                break
+                return cell
         return cell
 
     def add_line(self, linenum, new_line):
@@ -112,8 +118,8 @@ class ResListEdit():
         :param linenum:  integer, line number to add string
         :param new_line: new string to insert like 'foo bar'
         """
-        linenum = linenum-1
-        self._reslist.insert(linenum, new_line+'\n')
+        linenum = linenum - 1
+        self._reslist.insert(linenum, new_line + '\n')
         return self._reslist
 
     def remove_line(self, linenum, rem=False, remove=False, frontspace=False):
@@ -128,20 +134,20 @@ class ResListEdit():
         :param frontspace: True/False, activate removing with a front space
         """
         line = self._reslist[linenum]
-        if rem:   # comment out with 'rem ' in front
-            self._reslist[linenum] = 'rem '+line
+        if rem:  # comment out with 'rem ' in front
+            self._reslist[linenum] = 'rem ' + line
             if misc.multiline_test(line):
-                self._reslist[linenum+1] = 'rem '+self._reslist[linenum+1]
+                self._reslist[linenum + 1] = 'rem ' + self._reslist[linenum + 1]
         elif remove:  # really delete the line "linenum"
             if misc.multiline_test(line):
                 self._reslist[linenum] = ''
-                self._reslist[linenum+1] = ''
+                self._reslist[linenum + 1] = ''
             else:
                 self._reslist[linenum] = ''
         if frontspace:  # only put a space in front
-            self._reslist[linenum] = ' '+line
+            self._reslist[linenum] = ' ' + line
             if misc.multiline_test(line):
-                self._reslist[linenum+1] = ' '+self._reslist[linenum+1]
+                self._reslist[linenum + 1] = ' ' + self._reslist[linenum + 1]
         return self._reslist
 
     def list_lines(self, startline, endline):
@@ -163,12 +169,6 @@ class ResListEdit():
                 break
         return lines
 
-    def getAll(self):
-        """
-        returns the whole resfile as list
-        """
-        return self._reslist
-
     def find_fvarlines(self):
         """
         Finds the FVAR line or the first line with an atom.
@@ -177,7 +177,7 @@ class ResListEdit():
         """
         first_atom = 0
         fvarlines = misc.find_multi_lines(self._reslist, r'^FVAR')
-        if not fvarlines:   # There is no FVAR in the res file after SHELXS!
+        if not fvarlines:  # There is no FVAR in the res file after SHELXS!
             for num, i in enumerate(self._reslist):
                 if self._find_atoms.is_atom(i):
                     first_atom = num
@@ -192,12 +192,15 @@ class ResListEdit():
         else:
             return fvarlines
 
-    def insert_frag_fend_entry(self, dbatoms, cell, fvarlines):
+    def insert_frag_fend_entry(self, dbatoms, cell, position):
         """
         Inserts the FRAG ... FEND entry in the res file.
         :param dbatoms:   list of atoms in the database entry
-        :param cell:  string with "FRAG 17 cell" from the database entry
-        :param fvarlines: line where FVAR or the first atom is located
+        :type dbatoms: list
+        :param cell:  list with cell from the database entry
+        :type cell: list
+        :param position: line number where FVAR or the first atom is located
+        :type position: int
         """
         dblines = []
         db = [list(map(str, i)) for i in dbatoms]
@@ -208,9 +211,9 @@ class ResListEdit():
             dblines.append('    '.join(i).rstrip())
         dblines = '\n'.join(dblines)
         dblines = 'FRAG 17 {} {} {} {} {} {}'.format(*cell) + '\n' + dblines
-        dblines = '\n The following is from DSR:\n'+dblines
-        dblines = dblines+'\nFEND\n\n'
-        self._reslist.insert(fvarlines[-1]+1, dblines)   # insert the db entry right after FVAR
+        dblines = '\n  The following is from DSR:\n' + dblines
+        dblines = dblines + '\nFEND\n\n'
+        self._reslist.insert(position + 1, dblines)  # insert the db entry right after FVAR
 
     def get_fvarlist(self):
         fvar_list = []
@@ -237,27 +240,27 @@ class ResListEdit():
         # how many numbers do we have?:
         # the occupancynumber is split in the fvar part and the occupancy part:
         num = occupancynumber.split('.')
-        fvar = int(num[0])//10       # e.g. 20.5 is fvar 2 and occupancy 0.5
+        fvar = int(num[0]) // 10  # e.g. 20.5 is fvar 2 and occupancy 0.5
         if fvar == 0:
             fvar = 1
         difference = (fvar - varlen)
         if fvar > 1:
             if difference > 0:
                 for i in range(difference):
-                    fvar_list.append(fvalue)   # if an fvar is missing, add a new one
-            else: # make sure the occupancy of the disoerder parts get not < 0:
-                if len(fvar_list)-(fvar-1) >= 0: # make sure
-                    fvar_value = fvar_list[fvar-1]
-                    if (float(occupancynumber)-(10*int(fvar)+float(fvar_value))) < 0:
+                    fvar_list.append(fvalue)  # if an fvar is missing, add a new one
+            else:  # make sure the occupancy of the disoerder parts get not < 0:
+                if len(fvar_list) - (fvar - 1) >= 0:  # make sure
+                    fvar_value = fvar_list[fvar - 1]
+                    if (float(occupancynumber) - (10 * int(fvar) + float(fvar_value))) < 0:
                         fvar_list[fvar - 1] = '0.5'
         fvar_list = [str(x) for x in fvar_list]
         lines = misc.chunks(fvar_list, 7)
         if len(fvar_list) != 0:
             for line in self.fvarlines:
-                self.remove_line(line, remove=True) # removes the old FVAR
+                self.remove_line(line, remove=True)  # removes the old FVAR
         fvars = [' '.join(i) for i in lines]
-        fvars = ['FVAR '+i for i in fvars]
-        self._reslist[self.fvarlines[0]] = ' \n'.join(fvars)+'\n'
+        fvars = ['FVAR ' + i for i in fvars]
+        self._reslist[self.fvarlines[0]] = ' \n'.join(fvars) + '\n'
         return fvars
 
     def get_fvar_count(self):
@@ -269,8 +272,7 @@ class ResListEdit():
             fvars = 0
         return fvars
 
+
 # for testing
 if __name__ == '__main__':
     pass
-
-

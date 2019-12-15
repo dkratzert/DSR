@@ -1,5 +1,5 @@
-#-*- encoding: utf-8 -*-
-#möp
+# -*- encoding: utf-8 -*-
+# möp
 #
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
@@ -15,6 +15,7 @@
 # Wenn das dict leer ist werden überhaupt keine RESI betreffenden dinge in das insfile übernommen
 
 from __future__ import print_function
+
 import sys
 
 from atomhandling import FindAtoms
@@ -43,7 +44,7 @@ def remove_resi(head):
     for line in delhead:
         line = line.strip(' \n\r').upper()
         if line.startswith('RESI'):
-                continue
+            continue
         rhead.append(line)
     return rhead
 
@@ -116,7 +117,7 @@ class Resi(object):
             except:
                 continue
             if line[0] in RESTRAINT_CARDS:
-                line[0] = line[0]+'_'+self._combined_resi['class']
+                line[0] = line[0] + '_' + self._combined_resi['class']
                 line = ' '.join(line)
             else:
                 line = ' '.join(line)
@@ -135,13 +136,13 @@ class Resi(object):
         new_num = '1'
         if resinum == '0':
             while new_num in self._residues_in_res:
-                new_num = str(int(new_num)+1)
+                new_num = str(int(new_num) + 1)
             return new_num
         elif resinum in self._residues_in_res and not resinum == '0':
-            print('Warning: The residue number "{}" you have chosen is already '\
-                    'in use!'.format(resinum))
+            print('Warning: The residue number "{}" you have chosen is already ' \
+                  'in use!'.format(resinum))
             while new_num in self._residues_in_res:
-                new_num = str(int(new_num)+1)
+                new_num = str(int(new_num) + 1)
             return new_num
         else:
             return resinum
@@ -204,9 +205,9 @@ class Resi(object):
         """
         resi = inresi[:]
         resi_dict = {
-            'class' : '',
+            'class': '',
             'number': '',
-            'alias' : ''}
+            'alias': ''}
         if not resi:
             print('No valid RESI instruction found in the database entry!')
             sys.exit()
@@ -240,9 +241,6 @@ class Resi(object):
                 print('Only four digits allowed in residue number!')
                 sys.exit()
         return resi_dict
-
-
-
 
 
 if __name__ == '__main__':

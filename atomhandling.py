@@ -1,5 +1,5 @@
-#-*- encoding: utf-8 -*-
-#möp
+# -*- encoding: utf-8 -*-
+# möp
 #
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
@@ -10,11 +10,14 @@
 # ----------------------------------------------------------------------------
 #
 from __future__ import print_function
-import re, sys
+
+import re
 import string
+import sys
+
 from atoms import Element, atoms
-from misc import find_line, find_multi_lines, atomic_distance
 from constants import atomregex, SHX_CARDS
+from misc import find_line, find_multi_lines, atomic_distance
 
 __metaclass__ = type  # use new-style classes
 
@@ -67,7 +70,7 @@ def get_atomtypes(dbatoms):
     # find lines with atoms and see if they are in the atom list
     for i in dbatoms:
         sfacnum = i[1]
-        atom_name = i[0].upper()    # i is the full atom name with number suffix like C1
+        atom_name = i[0].upper()  # i is the full atom name with number suffix like C1
         try:
             if int(sfacnum) < 0:
                 found.append(el.get_element(abs(int(sfacnum))))
@@ -75,7 +78,7 @@ def get_atomtypes(dbatoms):
         except:
             pass
         found.append(el.get_atomlabel(atom_name))
-    if len(dbatoms) != len(found):    # do we really need this here??
+    if len(dbatoms) != len(found):  # do we really need this here??
         print("*** One of the Atoms in the database entry is not correct! ***")
         raise KeyError
     return found
@@ -180,9 +183,9 @@ class FindAtoms():
         >>> FindAtoms.is_atom(atomline = 'O1    0.120080   0.336659   0.494426  11.00000   0.01445 ...')
         []
         """
-        if atomregex.match(str(atomline)):        # search atoms
-            atom = atomline.split()[:5]              # convert to list and use only first 5 columns
-            if atom[0].upper() not in SHX_CARDS:      # exclude all non-atom cards
+        if atomregex.match(str(atomline)):  # search atoms
+            atom = atomline.split()[:5]  # convert to list and use only first 5 columns
+            if atom[0].upper() not in SHX_CARDS:  # exclude all non-atom cards
                 return atom
             else:
                 return []
@@ -205,9 +208,11 @@ class FindAtoms():
         ['1', 'TOL']
         >>> FindAtoms.get_resi_definition_dict('RESI 1 TOL')
         {'class': 'TOL', 'number': '1'}
+        >>> FindAtoms.get_resi_definition_dict('RESI')
+        {'class': None, 'number': None}
         """
         resi_dict = {
-            'class' : None,
+            'class': None,
             'number': None}
         try:
             resi.remove('RESI')
@@ -215,14 +220,14 @@ class FindAtoms():
             resi = resi.split()
             resi.remove('RESI')
         resi.sort()
-        if str.isalpha(resi[-1][0]):
-            resi_dict['class'] = resi.pop()
         if len(resi) > 0:
-            if str.isdigit(resi[0]):
+            if str.isalpha(resi[-1][0]):
+                resi_dict['class'] = resi.pop()
+            if len(resi) > 0 and str.isdigit(resi[0]):
                 resi_dict['number'] = resi[0]
                 del resi[0]
         return resi_dict
-    
+
     @staticmethod
     def get_partnumber(partstring):
         """
@@ -242,7 +247,7 @@ class FindAtoms():
             print('*** Wrong PART definition found! Check your PART instructions ***')
             partnum = 0
         return partnum
-    
+
     def find_atoms_to_replace(self, frag_atoms, cell, remdist=1.2, only_this=None):
         """
         this method looks around every atom of the fitted fragment and removes
@@ -274,20 +279,20 @@ class FindAtoms():
                 if int(atom[4]) == 0:
                     for name in frag_coords:
                         # name is the atom name
-                        if atom[0]+suffix in frag_coords:
+                        if atom[0] + suffix in frag_coords:
                             # do not delete the fitted fragment
                             break
                         at1 = [float(x) for x in frag_coords[name]]
                         at2 = [float(x) for x in atom[1]]
                         resinum1 = self.get_atoms_resinumber(name)
-                        resinum2 = self.get_atoms_resinumber(atom[0]+suffix)
+                        resinum2 = self.get_atoms_resinumber(atom[0] + suffix)
                         if at1 == at2 and resinum1 == resinum2:
                             # do not delete atoms on exactly the same position
                             # and same residue
                             break
                         d = atomic_distance(at1, at2, cell, shortest_dist=True)
                         if d < remdist:
-                            atoms_to_delete.append(atom[0]+suffix)
+                            atoms_to_delete.append(atom[0] + suffix)
         return sorted(atoms_to_delete)
 
     def collect_residues(self):
@@ -320,6 +325,8 @@ class FindAtoms():
             if i.startswith('RESI') and not re.match(r'^RESI\s+0', i):
                 resi = True
                 resinum = self.get_resi_definition_dict(i.split())['number']
+                if not resinum:
+                    continue
                 resiclass = self.get_resi_definition_dict(i.split())['class']
                 residues.update({resinum: []})
                 continue
@@ -345,7 +352,7 @@ class FindAtoms():
                                               resiclass, partnum, elem, sfac])
             else:
                 atom = self.is_atom(i)
-                resinum = '0'   # all other atoms are residue 0
+                resinum = '0'  # all other atoms are residue 0
                 if atom:
                     sfac = atom[1]
                     elem = self.e2s.sfac_2_elem(sfac)
@@ -357,7 +364,7 @@ class FindAtoms():
         """
         returns the residue class of a given atom. C1 would be 'None'
         C1_1 would be 'CF3' for example
-        
+
         :param atom: an atom name with or without residue number like C1 or C1_1
         :type atom: string
         """
@@ -378,7 +385,7 @@ class FindAtoms():
         """
         if '_' in atom:
             suffix = atom.split('_')
-            resinum = suffix[-1].strip(string.ascii_letters) # we don't need the part here
+            resinum = suffix[-1].strip(string.ascii_letters)  # we don't need the part here
             if not resinum:
                 resinum = '0'
             if len(resinum) > 4:
@@ -387,7 +394,6 @@ class FindAtoms():
             return str(resinum)
         else:
             return '0'
-
 
     def get_atomcoordinates(self, atoms):
         """
@@ -438,7 +444,7 @@ class FindAtoms():
         :type atoms: list
         :return lines: list of integers
         """
-        # this is to make sure the atomlines are correct: 
+        # this is to make sure the atomlines are correct:
         residues = self.collect_residues()
         lines = []
         for at in atoms:
@@ -447,7 +453,7 @@ class FindAtoms():
                 atom1 = x[0].upper()
                 atom2 = at.split('_')[0].upper()
                 if atom1 == atom2:
-                    single_atom = x[2] # x[2] is the line number
+                    single_atom = x[2]  # x[2] is the line number
                     lines.append(single_atom)
         return lines
 
@@ -469,7 +475,7 @@ class FindAtoms():
             name = "fluorine"
         lines = self.get_atom_line_numbers(atoms)
         try:
-            hydrogen_sfac = sfac_table.index(type)+1
+            hydrogen_sfac = sfac_table.index(type) + 1
         except ValueError:
             hydrogen_sfac = False
             return
@@ -481,18 +487,18 @@ class FindAtoms():
                 continue
             for n in range(1, 11):
                 try:
-                    line = self._reslist[i+n+1].upper()
+                    line = self._reslist[i + n + 1].upper()
                     atom = line.split()[0].upper()
                 except IndexError:
                     continue
                 if line.startswith('HKLF'):
-                    break # stop in this case because the file has ended anyway
+                    break  # stop in this case because the file has ended anyway
                 if atomregex.match(line) and not afix:
                     # stop if next line is an atom and we are not inside an "AFIX MN"
                     if str(line.split()[1]) == str(hydrogen_sfac):
                         print('Deleted {0} atom {1}'.format(name, atom))
                         delcount.append(atom)
-                        self._reslist[i+n] = ''
+                        self._reslist[i + n] = ''
                         continue
                     else:
                         break
@@ -501,19 +507,19 @@ class FindAtoms():
                     # stop also if next "AFIX mn" begins
                     break
                 if line.startswith('AFIX') and line.split()[1] != '0':
-                    self._reslist[i+n+1] = ''
-                    afix = True # turn on afix flag if first "AFIX mn" is found
+                    self._reslist[i + n + 1] = ''
+                    afix = True  # turn on afix flag if first "AFIX mn" is found
                     continue
                 if line.startswith('AFIX') and line.split()[1] == '0':
-                    afix = False # turn of afix flag if afix is closed with "AFIX 0"
-                    self._reslist[i+n+1] = ''
+                    afix = False  # turn of afix flag if afix is closed with "AFIX 0"
+                    self._reslist[i + n + 1] = ''
                     continue
                 if afix:
                     try:
                         if atom in SHX_CARDS:
                             continue
                         # delete the hydrogen atom
-                        self._reslist[i+n+1] = ''
+                        self._reslist[i + n + 1] = ''
                         print('Deleted {0} atom {1}'.format(name, atom))
                         delcount.append(atom)
                     except IndexError:
@@ -561,10 +567,10 @@ def rename_restraints_atoms(new_atoms, old_atoms, dbhead):
     for line in dbhead:
         line = line.split()
         for x, a in enumerate(old_atoms):
-            for n,i in enumerate(line):
-                if i == a:
+            for n, i in enumerate(line):
+                if i.upper() == a.upper():
                     line[n] = new[x]
-        headneu.append(' '.join(line)+'\n')
+        headneu.append(' '.join(line) + '\n')
     return headneu
 
 
@@ -582,7 +588,7 @@ def set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table):
     """
     e2s = Elem_2_Sfac(sfac_table)
     atype = list(reversed(db_atom_types))
-    for line in dbatoms:                    # go through db entry
+    for line in dbatoms:  # go through db entry
         # replace scattering factor (line[1]) with true one
         line[1] = e2s.elem_2_sfac(atype.pop())
     return dbatoms
@@ -597,9 +603,9 @@ class SfacTable():
     def __init__(self, reslist, dbatom_types):
         """
 
-        :param reslist: list  
+        :param reslist: list
                 SHELXL .res file as list
-        :param dbatom_types: list 
+        :param dbatom_types: list
                 ['N', 'C', 'C', 'C']
         """
         self._reslist = reslist
@@ -611,10 +617,10 @@ class SfacTable():
         sets the new global sfac table in the res file
         """
         sfacline = find_multi_lines(self._reslist, r'SFAC\s+[a-zA-Z]+')  # position of the SFAC card
-        unitline = find_line(self._reslist, r'UNIT\s+[0-9]+')     # position of the UNIT card
+        unitline = find_line(self._reslist, r'UNIT\s+[0-9]+')  # position of the UNIT card
         try:
             if sfacline[-1] > unitline:
-                print('*** SFAC in line {} must be defined before UNIT! ***'.format(sfacline[-1]+1))
+                print('*** SFAC in line {} must be defined before UNIT! ***'.format(sfacline[-1] + 1))
                 sys.exit()
         except():
             pass
@@ -624,15 +630,15 @@ class SfacTable():
         sfac = []
         if len(sfacline) == 1:
             # regular SFAC table
-            sfac = self._reslist[sfacline[0]].split()[1:]      # SFAC string in the reslist
+            sfac = self._reslist[sfacline[0]].split()[1:]  # SFAC string in the reslist
             sfacline = sfacline[0]
         elif len(sfacline) > 1:
             # first and second type of sfac:
             for i in sfacline:
-                if not ''.join(self._reslist[i].split()).isalpha(): # SFAC with scattering factor
+                if not ''.join(self._reslist[i].split()).isalpha():  # SFAC with scattering factor
                     # in this case the SFAC command defines also a scattering factor:
                     element = self._reslist[i].split()[1]
-                    explicit_scat.append(element) # first SFAC paramter is element
+                    explicit_scat.append(element)  # first SFAC paramter is element
                 else:
                     # regular SFAC list
                     sfac.extend(self._reslist[i].split()[1:])
@@ -646,19 +652,19 @@ class SfacTable():
         explicit_scat = [x.upper() for x in explicit_scat]
         for i in self._db_atom_types:  # this is to compare the occurence of element type from resfile and db
             i = i.upper()
-            if i not in sfac+explicit_scat:         # all atom types from db not already in sfac
-                sfac.append(i)        # get appended to sfac
+            if i not in sfac + explicit_scat:  # all atom types from db not already in sfac
+                sfac.append(i)  # get appended to sfac
             if i not in self.elements:
                 print('*** Error, atom {} not valid ***'.format(i))
                 sys.exit()
-        for i in range(1, len(sfac+explicit_scat)+1):
+        for i in range(1, len(sfac + explicit_scat) + 1):
             i = str(i).upper()
             unit.append(i)
         # now the sfac and unit tables are written to the resfile
         if not explicit_scat:
             self._reslist[sfacline] = 'SFAC  {}\n'.format('  '.join(sfac))
             self._reslist[unitline] = 'UNIT  {}\n'.format('  '.join(unit))  # builds the UNIT line
-        return sfac+explicit_scat
+        return sfac + explicit_scat
 
 
 #############################################################################
@@ -688,9 +694,8 @@ class Elem_2_Sfac():
         """
         for num, element in enumerate(self._sfac_table, 1):
             if atom_type.upper() == element.upper():
-                return num         # return sfac number
+                return num  # return sfac number
                 break
-
 
     def sfac_2_elem(self, sfacnum):
         """
@@ -716,7 +721,7 @@ class Elem_2_Sfac():
             return False
         for num, element in enumerate(self._sfac_table, 1):
             if sfacnum == num:
-                return element.upper()           # return Element name
+                return element.upper()  # return Element name
                 break
 
 
@@ -748,7 +753,7 @@ class NumberScheme():
         # Alphabet for the naming scheme:
         self.__alphabet = []
         self.__letters = string.ascii_uppercase
-        self.__alphabet = [ i for i in string.ascii_uppercase ]
+        self.__alphabet = [i for i in string.ascii_uppercase]
         # unsorted atomlist:
         self.__atyp = get_atomtypes(self.__dbatome)
         # sorted atomlist:
@@ -762,16 +767,16 @@ class NumberScheme():
         num = atomtype.count(check)
         return num
 
-    def _generate_numbers(self, atype, num, suffix = ''):
+    def _generate_numbers(self, atype, num, suffix=''):
         """
         generates numberscheme
         """
         atlist = []
-        if num == 1:   # in case of only one atom of this type
-            atlist.append("%s%s%s"%(atype, num, suffix))
+        if num == 1:  # in case of only one atom of this type
+            atlist.append("%s%s%s" % (atype, num, suffix))
             return atlist
-        for i in range(1, num+1):
-            atlist.append("%s%s%s"%(atype, str(i), suffix))
+        for i in range(1, num + 1):
+            atlist.append("%s%s%s" % (atype, str(i), suffix))
         return atlist
 
     @staticmethod
@@ -785,7 +790,7 @@ class NumberScheme():
         else:
             return True
 
-    def get_fragment_number_scheme(self, extranames=[]):
+    def get_fragment_number_scheme(self, extranames=None):
         """
         returns a list of atoms of length len(self.__dbatome) whith a
         naming scheme which fits into the resfile. extraname is a list of atoms
@@ -793,6 +798,8 @@ class NumberScheme():
         :param extranames: list of excluding atoms e.g. ['O1A']
         :type extranames: list
         """
+        if not extranames:
+            extranames = []
         self.__rlist.extend(extranames)
         if self.dsrp.resiflag:
             print('RESI instruction is enabled. Leaving atom numbers as they are.')
@@ -807,7 +814,7 @@ class NumberScheme():
                 continue
             atom = i
             # number of atoms with given atomtype:
-            num = self._get_number_of_at_in_type(self.__atomtype, atom) # unittest: atom instead of atomtype
+            num = self._get_number_of_at_in_type(self.__atomtype, atom)  # unittest: atom instead of atomtype
             # list of atoms with given atomtype
             atomlist = self._generate_numbers(atom, num)
             # important if we want to have all atoms with the same suffix:
@@ -824,20 +831,15 @@ class NumberScheme():
         aindex = sorted(list(range(len(self.__atyp))), key=lambda k: self.__atyp[k])
         orglist = [''] * len(newatom)
         for x, i in enumerate(aindex):
-            orglist[i] = newatom[x] # every ith aindex element is replaced by newatom[x] to retain original order
+            orglist[i] = newatom[x]  # every ith aindex element is replaced by newatom[x] to retain original order
         return orglist
 
 
 if __name__ == '__main__':
     import doctest
-    failed, attempted = doctest.testmod()#verbose=True)
+
+    failed, attempted = doctest.testmod()  # verbose=True)
     if failed == 0:
         print('passed all {} tests!'.format(attempted))
     else:
         print('{} of {} tests failed'.format(failed, attempted))
-
-
-
-
-
-

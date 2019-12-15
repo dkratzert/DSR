@@ -74,12 +74,12 @@ class Export():
             # now the new 50,50,50 cell:
             for n in range(0, 3):
                 cell[n] = 50
-        #cell = [str(x) for x in cell]
+        # cell = [str(x) for x in cell]
         return [cell, atoms]
 
     def make_dfix(self, fragname):
         fragname = fragname.lower()
-        restr = Restraints(self, fragname, self._gdb)
+        restr = Restraints(fragname, self._gdb)
         dfix_12 = restr.get_formated_12_dfixes()
         dfix_13 = restr.get_formated_13_dfixes()
         flats = restr.get_formated_flats()
@@ -148,10 +148,6 @@ class Export():
         unit = []
         for i in sfac:
             unit.append('1 ')  # no matter what number
-        # Now put all infos together:
-        for i in atoms:
-            i[0] += ' '  # more space for long atom names
-            i.append('11.00   0.04')  # make it a full qualified atom line with occupancy and U value
         final_atomlist = [('{:4.4s} {:4.2s} {:>8.5f}  {:>8.5f}  {:>8.5f}   11.0   0.04\n'.format(
             str(i[0]), str(i[1]), float(i[2]), float(i[3]), float(i[4]))) for i in atoms]
         res_export.append('TITL ' + fragname + '\n')  # title card with fragment name
@@ -354,7 +350,6 @@ if __name__ == '__main__':
 
     ##############################################################################
 
-
     #    reference.close()
     #    http://en.wikipedia.org/wiki/Molecular_graphics
     #    // assume:
@@ -380,4 +375,3 @@ if __name__ == '__main__':
     #        #color1 = ColorTable.getColor(atom1.getSymbol())
     #        #drawLine (color1, x1, y1, xMid, yMid)
     #    }
-

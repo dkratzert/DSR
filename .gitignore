@@ -1,6 +1,11 @@
 SAVEHIST
 shelXlesaves
+venv3
+setup/Output/*
 dsrsaves
+venv
+venv_27
+venv_py3
 dsrsaves/*
 *.ps
 venv
