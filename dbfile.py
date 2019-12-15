@@ -16,13 +16,12 @@ import re
 import sys
 import tarfile
 from copy import deepcopy
-from pprint import pprint
 
 from atomhandling import get_atomtypes
 from atoms import Element
 from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
 from misc import atomic_distance, nalimov_test, std_dev, median, pairwise, \
-    unwrap_head_lines, dice_coefficient2, frac_to_cart
+    unwrap_head_lines, dice_coefficient2, frac_to_cart, wrap_headlines
 
 not_existing_error = '*** Fragment "{}" not found in database ***'
 
@@ -145,7 +144,7 @@ __metaclass__ = type  # use new-style classes
 # dsr_user_db.txt if this file exists, all its content is also read in.
 
 def read_file_data(filepath):
-    # type: (str, bool) -> list
+    # type: (str) -> list
     """
     reads the database files and returns them as list.
     """
@@ -185,20 +184,26 @@ class ParseDB(object):
 
         >>> dbpath = os.path.abspath('../dsr_db.txt')
         >>> db = ParseDB(dbpath)
-        >>> db.parse(dbpath, 'dsr_db')['water'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
-        {'startline': ...,
-        'name': 'Water, H2O',
-        'comments': [],
-        'atoms': [['O1', 4, 0.0, 0.0, 0.0],
-                  ['H1', 2, 0.9584, 0.0, 0.0],
-                  ['H2', 2, -0.2392, 0.9281, 0.0]],
-        'cell': [1.0, 1.0, 1.0, 90.0, 90.0, 90.0],
-        'source': 'pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei',
-        'resi': 'H2O',
-        'restraints': ['DFIX 0.9584 0.001 O1 H1 O1 H2',
-                       'DFIX 1.5150 0.001 H1 H2'],
-        'endline': ...,
-        'dbname': 'dsr_db'}
+        >>> db.parse(dbpath, 'dsr_db')['water']['name'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+        'Water, H2O'
+        >>> db.parse(dbpath, 'dsr_db')['water']['comments']
+        []
+        >>> db.parse(dbpath, 'dsr_db')['water']['atoms'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+        [['O1', 4, 0.0, 0.0, 0.0],
+        ['H1', 2, 0.9584, 0.0, 0.0],
+        ['H2', 2, -0.2392, 0.9281, 0.0]]
+        >>> db.parse(dbpath, 'dsr_db')['water']['cell'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+        [1.0, 1.0, 1.0, 90.0, 90.0, 90.0]
+        >>> db.parse(dbpath, 'dsr_db')['water']['source'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+        'pbe1pbe/6-311++G(3df,3pd), Ilia A. Guzei'
+        >>> db.parse(dbpath, 'dsr_db')['water']['resi'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+        'H2O'
+        >>> db.parse(dbpath, 'dsr_db')['water']['restraints'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+        ['DFIX 0.9584 0.001 O1 H1 O1 H2', 'DFIX 1.5150 0.001 H1 H2']
+        >>> db.parse(dbpath, 'dsr_db')['water']['dbname'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+        'dsr_db'
+        >>> db.parse(dbpath, 'dsr_db')['water']['hfix'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+        []
         """
         frag_tag = ''
         db = {}
@@ -251,13 +256,13 @@ class ParseDB(object):
         fragname_tag = fragname_tag.lower()
         headlist = []
         comments = []
+        hfix = []
         residue = ''
         atoms = []
         cell = []
         source = ''
         name = ''
         nameregex = re.compile(r'REM\s+NAME:', re.IGNORECASE)
-        rem = re.compile(r"REM.*", re.IGNORECASE)
         srcregex = re.compile(r'REM\s+(SRC:|SOURCE:)', re.IGNORECASE)
         # devide atoms and the rest:
         for num, aline in enumerate(fraglines):
@@ -270,7 +275,8 @@ class ParseDB(object):
                         atline[1] = int(atline[1])
                     except ValueError:
                         print("*** Invalid atomic coordinates in line {} of {}.txt (Fragment: {}) ***"
-                              .format(db[fragname_tag]['startline'] + num + 1, db[fragname_tag]['dbname'], fragname_tag))
+                              .format(db[fragname_tag]['startline'] + num + 1, db[fragname_tag]['dbname'],
+                                      fragname_tag))
                         sys.exit()
                     atline[2:] = coords
                     atoms.append(atline)
@@ -279,7 +285,10 @@ class ParseDB(object):
         fraglines = unwrap_head_lines(fraglines)
         for num, line in enumerate(fraglines):
             # collect the comments:
-            if rem.match(line):
+            if line.upper().startswith('REM'):
+                if line.upper().startswith('REM HFIX'):
+                    hfix.append(line)
+                    continue
                 # Where do the fragment come from?
                 if srcregex.match(line):
                     source = ' '.join(line.split()[2:])
@@ -294,7 +303,7 @@ class ParseDB(object):
                 continue
             command = line[:4].upper().strip()
             if command and command in SHX_CARDS:
-                if line[:4].upper() == 'RESI':  # faster than startswith()?
+                if command == 'RESI':
                     resiline = line.split()
                     for n, i in enumerate(resiline):
                         if not i[0].isalpha():
@@ -306,7 +315,7 @@ class ParseDB(object):
                         print('*** Invalid residue definition in database entry {}. ***'.format(fragname_tag))
                         sys.exit()
                 # collect the unit cell of the fragment:
-                if line[:4].upper().startswith('FRAG'):
+                if command == 'FRAG':
                     try:
                         cell = [float(x) for x in line.split()[2:8]]
                     except (ValueError, IndexError):
@@ -332,7 +341,7 @@ class ParseDB(object):
             sys.exit()
         if not atoms:
             # Can not print this out, because shelXle GUI will fail if text is printed.
-            #print('*** No atoms found in database entry {} line {} of {}.txt***'.format(fragname_tag,
+            # print('*** No atoms found in database entry {} line {} of {}.txt***'.format(fragname_tag,
             #                                    db[fragname_tag]['startline'] + 1, db[fragname_tag]['dbname']))
             del db[fragname_tag]
             return db
@@ -343,7 +352,9 @@ class ParseDB(object):
             'atoms'     : atoms,  # the atoms as lists of list
             'comments'  : comments,  # the comment line
             'source'    : source,
-            'name'      : name})
+            'name'      : name,
+            'hfix'      : hfix,
+        })
         return db
 
     def __getitem__(self, fragment):
@@ -358,7 +369,7 @@ class ParseDB(object):
         """
         >>> db = ParseDB('../dsr_db.txt')
         >>> [x for x in db][:3]
-        ['napht', 'plusminus', 'fluorbenz']
+        ['napht', 'pme3', 'plusminus']
         """
         # return iter(self.databases.keys()) #python2
         return iter(list(self.databases.keys()))
@@ -422,7 +433,7 @@ class ParseDB(object):
          benzene
         </tag>
         <comment>
-         Benzene, Benzol, C6H6
+         Benzene, Phenyl, C6H6
         </comment>
         <source>
          UGEDEQ
@@ -437,8 +448,9 @@ class ParseDB(object):
          dsr_db
         </dbtype>
         <restr>
-         SADI 0.02 C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1;;SADI 0.04 C1 C5 C1 C5 C4 C2 C4 C6 C6 C2 C5 C3;;FLAT C1 > C6;;SIMU C1 > C6;;RIGU C1 > C6
+         SADI 0.02 C1 C2 C2 C3 C3 C4 C4 C5 C5 C6 C6 C1;;SADI 0.04 C1 C5 C1 C3 C5 C3 C4 C2 C4 C6 C6 C2;;FLAT C1 > C6;;SIMU C1 > C6;;RIGU C1 > C6
         </restr>
+
         """
         fragment = fragment.lower()
         print("<tag>\n", fragment, "\n</tag>")
@@ -450,7 +462,7 @@ class ParseDB(object):
         print("<dbtype>\n", self.get_db_name(fragment), "\n</dbtype>")
         print("<restr>\n", ';;'.join(self.get_restraints(fragment)), '\n</restr>')
         self.check_consistency(fragment)
-        self.check_db_header_consistency(fragment)
+        self.check_db_restraints_consistency(fragment)
         if not self.check_sadi_consistence(fragment):
             sys.exit()
         self.check_db_atom_consistency(fragment)
@@ -482,7 +494,8 @@ class ParseDB(object):
                   .format(fragment, dbentry['name']))
         if not dbentry['atoms']:
             print('*** No atoms found in database entry {} line {} of {}.txt***'.format(fragment,
-                                                                dbentry['startline'] + 1, dbentry['dbname']))
+                                                                                        dbentry['startline'] + 1,
+                                                                                        dbentry['dbname']))
             print('*** Have you really followed the syntax? ***')
             sys.exit()
         if not dbentry['endline']:
@@ -526,7 +539,42 @@ class ParseDB(object):
                 sys.exit()
         return True
 
-    def check_db_header_consistency(self, fragment):
+    def get_hfixes(self, fragment, resi_class):
+        """
+        Returns pre-defined hfix instructions.
+        :param fragment: fragment name
+        :return: A string with the REM HFIX ... instruction
+        >>> from misc import wrap_headlines
+        >>> hf = ['REM HFIX 123 C1 C2 C3 C4 C5']
+        >>> wrap_headlines(hf, 18)
+        ['REM HFIX 123 C1 C2 =\\n   C3 C4 C5\\n']
+        >>> db = ParseDB('../dsr_db.txt')
+        >>> db.get_hfixes('Adamantane', 'ADAM')
+        ['REM HFIX_ADAM 23 C2 C3 C4 C6 C8 C10', 'REM HFIX_ADAM 13 C5 C7 C9']
+        >>> db.get_hfixes('Adamantane', '')
+        ['REM HFIX 23 C2 C3 C4 C6 C8 C10', 'REM HFIX 13 C5 C7 C9']
+        >>> db.get_restraints('Adamantane')
+        ['SADI C1 C2 C1 C3 C1 C4 C5 C6 C6 C7 C7 C8 C8 C9 C9 C10 C10 C5 C2 C9 C3 C7 C4 C5', 'SADI 0.04 C2 C3 C3 C4 C4 C2 C5 C9 C9 C7 C7 C5 C6 C10 C6 C8 C8 C10', 'SADI 0.05 C5 C8 C7 C10 C9 C6', 'SIMU C1 > C10', 'RIGU C1 > C10']
+        >>> db.get_hfixes('oc(cf3)3', '')
+        []
+        """
+        fragment = fragment.lower()
+        try:
+            hfix = [' '.join(x.upper().split()) for x in self.databases[fragment]['hfix']]
+        except KeyError:
+            print(not_existing_error.format(fragment))
+            sys.exit()
+        if hfix and resi_class:
+            resihfix = []
+            for line in hfix:
+                # Adding _resiclass to HFIX instructions:
+                # REM HFIX C1 C2  ->  REM HFIX_class C1 C2 
+                line = '{}_{} {}'.format(line[:8], resi_class, line[9:])
+                resihfix.append(line)
+            return resihfix
+        return hfix
+
+    def check_db_restraints_consistency(self, fragment):
         """
         - Checks if the Atomnames in the restraints of the dbhead are also in
           the list of the atoms of the respective dbentry.
@@ -545,7 +593,7 @@ class ParseDB(object):
                 try:
                     # Test if first parameter is a distance or a standard deviation:
                     if i in ['DFIX', 'DANG']:
-                        #print('####')
+                        # print('####')
                         if len(line.split()) > 1:  # there is more than just DFIX
                             # Test if this is correct: DFIX d s[0.02] atom pairs (d should be greater s)
                             if float(line.split()[1]) < float(line.split()[2]):
@@ -555,7 +603,7 @@ class ParseDB(object):
                         else:
                             print('\n*** Incomplete DFIX/DANG in restraints of "{}: {}" in database {}. ***'
                                   .format(fragment, self.get_fragment_name(fragment), self.get_db_name(fragment)))
-                    #if i in SHX_CARDS:
+                    # if i in SHX_CARDS:
                     #    continue
                     else:
                         # just test if there is not a number:
@@ -579,10 +627,7 @@ class ParseDB(object):
         check if same distance restraints make sense. Each length of an atom
         pair is tested agains the standard deviation of all distances.
         For a large standard deviation, the list is tested for outliers.
-        :param atoms: atoms list of thr fragment
-        :param restraints: restraints list
         :param fragment: frag name
-        :param factor: factor for confidence interval
         """
         atoms = self.get_atoms(fragment)
         restr = self.get_restraints(fragment)
@@ -611,19 +656,29 @@ class ParseDB(object):
                 pairs = pairwise(line)
                 distances = []
                 pairlist = []
-                if len(pairs) <= 2:
+                if len(pairs) <= 1:
                     return True
                 for i in pairs:
+                    if i in pairlist or tuple(reversed(i)) in pairlist:
+                        print('*** Duplicate atom pair "{}" in SADI restraint line {} of "{}". ***'.format(" ".join(i),
+                                                                                                           num,
+                                                                                                           fragment))
                     pairlist.append(i)
                     try:
-                        a = atoms[atnames.index(i[0])][2:5]
-                        b = atoms[atnames.index(i[1])][2:5]
+                        atom1 = [float(x) for x in atoms[atnames.index(i[0])][2:5]]
+                        atom2 = [float(x) for x in atoms[atnames.index(i[1])][2:5]]
                     except ValueError:
                         return False
-                    a = [float(x) for x in a]
-                    b = [float(y) for y in b]
-                    dist = atomic_distance(a, b, self.get_cell(fragment))
+                    dist = atomic_distance(atom1, atom2, self.get_cell(fragment))
                     distances.append(dist)
+                if len(pairlist) == 2:
+                    # Find restraints with one pair, where 1,2 and 1,3 distances are mixed:
+                    pairdev = 1.0 - (min(distances) / max(distances))
+                    if pairdev > (2.0 * float(dev)):
+                        print('*** Suspicious deviation of {:.3f} A for "{}" in {} ***'.format(pairdev, restraints[num],
+                                                                                               fragment))
+                        return False
+                    return True  # because esd is too sensitive for two distances.
                 stdev = std_dev(distances)  # Error distribution of
                 # only do outlier test if standard deviation is suspiciously large:
                 if stdev > 0.065:
@@ -644,7 +699,7 @@ class ParseDB(object):
                     print(
                             '*** Suspicious restraints in SADI line {} with high standard deviation {:4.3f} '
                             '(median length: {:4.3f} A) ***'.format(num + 1, stdev, median(distances)))
-                    print('*** ' + ' '.join(prefixes + line) + ' ***')
+                    print('*** ' + restraints[num] + ' ***\n')
                     good = False
         if good:
             return True
@@ -681,7 +736,7 @@ class ParseDB(object):
         """
         fragment = fragment.lower()
         try:
-            atoms = self.databases[fragment]['atoms']
+            atoms = deepcopy(self.databases[fragment]['atoms'])
         except KeyError:
             print('*** Could not find {} in database ***'.format(fragment))
             sys.exit()
@@ -763,7 +818,11 @@ class ParseDB(object):
         can be either class or class + number.
         convention is only class.
         """
-        return self.databases[fragment.lower()]['resi']
+        try:
+            return self.databases[fragment.lower()]['resi']
+        except KeyError:
+            print(not_existing_error.format(fragment))
+            return ''
 
     def get_fragment_name(self, fragment):
         """
@@ -786,7 +845,11 @@ class ParseDB(object):
         :param fragment: actual fragment name
         :type fragment: string
         """
-        src = self.databases[fragment.lower()]['source']
+        try:
+            src = self.databases[fragment.lower()]['source']
+        except KeyError:
+            print(not_existing_error.format(fragment))
+            return ''
         return src
 
     def get_db_name(self, fragment):
@@ -822,11 +885,9 @@ class ImportGRADE():
         :param invert:
         :type invert:
         :type maindb:   string
-        :param userdb:  directory where the user database is located. 
+        :param userdb:  directory where the user database is located.
                         Default is the users home directory.
         :type userdb:   string
-        :param dbnames: file names of the databases
-        :type dbnames:  string
         """
         self.user_db_path = userdb
         self.main_db_path = maindb
@@ -894,8 +955,6 @@ class ImportGRADE():
         # type: () -> str
         """
         get the fragment name from the pdbfile.txt file
-        :param pdbfile: file with some information about the molecule
-        :type pdbfile: list of strings
 
         >>> db = ParseDB('../dsr_db.txt')
         >>> mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz', db)
@@ -925,8 +984,6 @@ class ImportGRADE():
     def get_resi_from_pdbfile(self):
         """
         get the fragment name from the pdbfile.txt file
-        :param pdbfile: file with some information about the molecule
-        :type pdbfile: list of strings
 
         >>> db = ParseDB('../dsr_db.txt')
         >>> mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz', db)
@@ -1159,14 +1216,16 @@ if __name__ == '__main__':
                 for i in pairs:
                     pairlist.append(i)
                     try:
-                        a = atoms[atnames.index(i[0])][2:5]
-                        b = atoms[atnames.index(i[1])][2:5]
+                        atom1 = [float(x) for x in atoms[atnames.index(i[0])][2:5]]
+                        atom2 = [float(x) for x in atoms[atnames.index(i[1])][2:5]]
                     except ValueError:
                         return False
-                    a = [float(x) for x in a]
-                    b = [float(y) for y in b]
-                    dist = atomic_distance(a, b, cell)
+                    dist = atomic_distance(atom1, atom2, cell)
                     distances.append(dist)
+                if len(pairlist) == 2:
+                    pairdev = 1 - (min(distances) / max(distances))
+                    if pairdev > 2 * dev:
+                        print('foooooooo', pairdev)
                 stdev = std_dev(distances)
                 print("esd < 0.065 ?: {:<4.4f}, esd < 2.5*sigma?: {:<4.4f} < {:<4.4f} -> {}".format(
                         stdev, stdev, 2.5 * float(dev), ("yes" if stdev < 2.5 * float(dev) else "no")))
@@ -1180,7 +1239,7 @@ if __name__ == '__main__':
     # pprint(db.databases['toluene'])
     db.check_consistency(frag)
     db.check_db_atom_consistency(frag)
-    db.check_db_header_consistency(frag)
+    db.check_db_restraints_consistency(frag)
     db.check_sadi_consistence(frag)
     atnames = db.get_atomnames(frag)
     restr = db.get_restraints(frag)

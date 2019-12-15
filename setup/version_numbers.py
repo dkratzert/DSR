@@ -1,5 +1,5 @@
-#/usr/bin/env python
-#-*- encoding: utf-8 -*-
+# /usr/bin/env python
+# -*- encoding: utf-8 -*-
 
 from __future__ import print_function
 
@@ -12,9 +12,9 @@ import os
 This file is for updating the various version number definitions for each DSR release
 """
 
-debianpath = os.path.abspath("./debian-package/DEBIAN/control")  # for the .deb file
-isspath = os.path.abspath("./dsr-install.iss")  # for the windows executable
-specpath = os.path.abspath("./dsr-linux.spec")  # for the .rpm file
+debianpath = os.path.abspath("./setup/debian-package/DEBIAN/control")  # for the .deb file
+isspath = os.path.abspath("./setup/dsr-install.iss")  # for the windows executable
+specpath = os.path.abspath("./setup/dsr-linux.spec")  # for the .rpm file
 
 
 def process_debian_and_spec(filepath):
@@ -29,7 +29,7 @@ def process_debian_and_spec(filepath):
             l[1] = VERSION
             deb_file[num] = " ".join(l)
             break
-    deb_file = [x+'\n' for x in deb_file]
+    deb_file = [x + '\n' for x in deb_file]
     misc.write_file(deb_file, filepath)
 
 
@@ -49,7 +49,6 @@ def process_iss(filepath):
 
 
 if __name__ == "__main__":
-
     print("Updating version numbers to version {} ...".format(VERSION))
 
     print("Linux... {}".format(VERSION))
@@ -62,4 +61,3 @@ if __name__ == "__main__":
     process_iss(isspath)
 
     print("Version numbers updated.")
-

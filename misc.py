@@ -18,6 +18,7 @@ import shutil
 import string
 from math import cos, sqrt, radians, sin
 
+import mpmath as mpm
 from constants import isoatomstr
 
 alphabet = string.ascii_uppercase
@@ -34,7 +35,6 @@ def write_file(list, name):
     with open(name, 'w') as ofile:
         for line in list:  # modified reslist
             ofile.write("%s" % line)  # write the new file
-
 
 
 def extract_tarfile(file, targetdir):
@@ -55,13 +55,13 @@ def extract_tarfile(file, targetdir):
     return True
 
 
-def join_floats(float_list, places=3,):
+def join_floats(float_list, places=3, ):
     """
     >>> l = [1.23456789123456, 1, 2, 3, 3.45, 5.6543, 1,3456]
     >>> join_floats(l)
     '1.235 1.000 2.000 3.000 3.450 5.654 1.000 3456.000'
     """
-    str_floats = " ".join(format(i, "{}.{}f".format(places+2, places)) for i in float_list)
+    str_floats = " ".join(format(i, "{}.{}f".format(places + 2, places)) for i in float_list)
     return str_floats
 
 
@@ -139,6 +139,7 @@ def walkdir(rootdir, include="", exclude=""):
                 results.append(os.path.normpath(fullfilepath).replace('\\', '/'))
     return results
 
+
 def pairwise(iterable):
     """
      s -> (s0,s1), (s2,s3), (s4, s5), ...
@@ -160,7 +161,7 @@ def mean(values):
     >>> round(mean([1, 2, 3, 4, 1, 2, 3, 4.1, 1000000]), 4)
     111113.3444
     '''
-    mean = sum(values) / float(len(values)) 
+    mean = sum(values) / float(len(values))
     return mean
 
 
@@ -195,10 +196,6 @@ def std_dev(data):
     returns standard deviation of values rounded to pl decimal places
     S = sqrt( (sum(x-xm)^2) / n-1 )
     xm = sum(x)/n
-    :param values: list with integer or float values
-    :type values: list
-    :param pl: round to n places
-    :type pl: integer
     >>> l1 = [1.334, 1.322, 1.345, 1.451, 1.000, 1.434, 1.321, 1.322]
     >>> l2 = [1.234, 1.222, 1.345, 1.451, 2.500, 1.234, 1.321, 1.222]
     >>> round(std_dev(l1), 8)
@@ -241,8 +238,8 @@ def nalimov_test(data):
     f = {1: 1.409, 2: 1.645, 3: 1.757, 4: 1.814, 5: 1.848, 6: 1.870, 7: 1.885, 8: 1.895,
          9: 1.903, 10: 1.910, 11: 1.916, 12: 1.920, 13: 1.923, 14: 1.926, 15: 1.928,
          16: 1.931, 17: 1.933, 18: 1.935, 19: 1.936, 20: 1.937, 30: 1.945}
-    fact = sqrt(float(len(data))/(len(data)-1))
-    fval = len(data)-2
+    fact = sqrt(float(len(data)) / (len(data) - 1))
+    fval = len(data) - 2
     if fval < 2:
         return []
     outliers = []
@@ -252,53 +249,34 @@ def nalimov_test(data):
     else:
         q_crit = 1.95
     for num, i in enumerate(data):
-        q = abs(((i-median(data))/std_dev(data))*fact)
+        q = abs(((i - median(data)) / std_dev(data)) * fact)
         if q > q_crit:
             outliers.append(num)
     return outliers
 
 
-def flatten(nested):
+def flatten(lis):
     """
-    flattens a nested list
+    Given a list, possibly nested to any level, return it flattened.
+    From: http://code.activestate.com/recipes/578948-flattening-an-arbitrarily-nested-list-in-python/
 
     >>> flatten([['wer', 234, 'brdt5'], ['dfg'], [[21, 34,5], ['fhg', 4]]])
     ['wer', 234, 'brdt5', 'dfg', 21, 34, 5, 'fhg', 4]
     """
-    result = []
-    try:
-        # dont iterate over string-like objects:
-        try: nested + ''
-        except TypeError: pass
-        else: raise TypeError
-        for sublist in nested:
-            for element in flatten(sublist):
-                result.append(element)
-    except TypeError:
-        result.append(nested)
-    return result
-
-
-def flatten2(lis):
-    """
-    Given a list, possibly nested to any level, return it flattened.
-    From: http://code.activestate.com/recipes/578948-flattening-an-arbitrarily-nested-list-in-python/
-    """
     new_lis = []
     for item in lis:
         if type(item) == type([]):
-            new_lis.extend(flatten2(item))
+            new_lis.extend(flatten(item))
         else:
             new_lis.append(item)
     return new_lis
+
 
 def sortedlistdir(directory):
     """
     returns a sorted list of files in directory directory.
     :param directory: directory
     :type directory: string
-    :param cmpfunc: compare funtion to sort
-    :type cmpfunc: string
     >>> sortedlistdir("../old")
     ['dsr.py']
     >>> sortedlistdir("foobar/")
@@ -417,20 +395,20 @@ def remove_line(reslist, linenum, rem=False, remove=False, frontspace=False):
     :param frontspace: True/False, activate removing with a front space
     """
     line = reslist[linenum]
-    if rem:   # comment out with 'rem ' in front
-        reslist[linenum] = 'rem '+line
+    if rem:  # comment out with 'rem ' in front
+        reslist[linenum] = 'rem ' + line
         if multiline_test(line):
-            reslist[linenum+1] = 'rem '+reslist[linenum+1]
+            reslist[linenum + 1] = 'rem ' + reslist[linenum + 1]
     elif remove:  # really delete the line "linenum"
         if multiline_test(line):
             reslist[linenum] = ''
-            reslist[linenum+1] = ''
+            reslist[linenum + 1] = ''
         else:
             reslist[linenum] = ''
     if frontspace:  # only put a space in front
-        reslist[linenum] = ' '+line
+        reslist[linenum] = ' ' + line
         if multiline_test(line):
-            reslist[linenum+1] = ' '+reslist[linenum+1]
+            reslist[linenum + 1] = ' ' + reslist[linenum + 1]
     return reslist
 
 
@@ -560,6 +538,30 @@ def wrap_stringlist(strlist, width=75):
         wrapped.append('\n'.join(textwrap.wrap(line, width, subsequent_indent='REM ')) + '\n')
     return wrapped
 
+def wrap_text(inText, maxlen=70, subsequent_indent='=\n'):
+    """
+    Text wrapper without need for textwrap package.
+    >>> wrap_text('SADI 0.02 C1A C2A C2A C3A C3A C4A C4A C5A C5A C6A', maxlen=30)
+    'SADI 0.02 C1A C2A C2A C3A C3A =\\n C4A C4A C5A C5A C6A'
+    """
+    line_list = []
+    wrapped = []
+    inText_list = inText.strip().split()
+    for n, word in enumerate(inText_list):
+        testline = ' '.join(line_list)
+        if len(word + testline + subsequent_indent) >= maxlen:
+            if n < len(inText_list)-1:
+                line_list.append(word + ' ' + subsequent_indent)
+            else:
+                line_list.append(word)
+            wrapped.append(' '.join(line_list).strip(' '))
+            line_list = []
+        else:
+            line_list.append(word)
+    if line_list:
+        wrapped.append(' '.join(line_list).strip(' '))
+    return ' '.join(wrapped)
+
 
 def unwrap_head_lines(headlines):
     """
@@ -571,6 +573,8 @@ def unwrap_head_lines(headlines):
     ['SADI C1 C2 C3 C4']
     >>> unwrap_head_lines(['foo bar this is =\\n   text to wrap. =\\n   blah bub\\n'])
     ['foo bar this is text to wrap. blah bub']
+    >>> unwrap_head_lines(wrap_headlines(["REM name: ser\\nREM HFIX 23 C2 C3 C4  C6 C8 C10\\nSADI bar"]))
+    ['REM name: ser\\nREM HFIX 23 C2 C3 C4  C6 C8 C10\\nSADI bar\\n']
     """
     import constants
     tmp = ''
@@ -585,11 +589,15 @@ def unwrap_head_lines(headlines):
     for line in headlines:
         line = line.strip(' \r\n=').replace('=', ' ')
         tmp = tmp + ' ' + line
-    line = tmp.split()
-    for n, i in enumerate(line):
-        if i[:4].upper() in constants.SHX_CARDS:
-            line[n] = '\n' + line[n]
-    new_head = ' '.join(line).strip().split('\n')
+    spline = tmp.split()
+    last = ''
+    for n, i in enumerate(spline):
+        command = i[:4].upper()
+        # leave out 'REM COMMAND':
+        if command in constants.SHX_CARDS and last != 'REM':
+            spline[n] = '\n' + spline[n]
+        last = command
+    new_head = ' '.join(spline).strip().split('\n')
     new_head = [i.rstrip(' ') for i in new_head]
     return new_head
 
@@ -745,11 +753,6 @@ def frac_to_cart(frac_coord, cell):
     >>> coord1 = (-0.186843,   0.282708,   0.526803)
     >>> print(frac_to_cart(coord1, cell))
     [-2.741505423999065, 5.909586678000002, 10.775200700893734]
-    >>> A = A(cell).orthogonal_matrix
-    >>> print(mpm.nstr(A*mpm.matrix(coord1)))
-    [-2.74151]
-    [ 5.90959]
-    [ 10.7752]
     """
     a, b, c, alpha, beta, gamma = cell
     x, y, z = frac_coord
@@ -786,13 +789,14 @@ class A(object):
     [ 0.282708]
     [ 0.526803]
     """
+
     def __init__(self, cell):
         self.a, self.b, self.c, alpha, beta, gamma = cell
         self.V = vol_unitcell(self.a, self.b, self.c, alpha, beta, gamma)
         self.alpha = radians(alpha)
         self.beta = radians(beta)
         self.gamma = radians(gamma)
-    
+
     @property
     def orthogonal_matrix(self):
         """
@@ -800,10 +804,10 @@ class A(object):
         Invert the matrix to do the opposite.
         """
         import mpmath as mpm
-        Am = mpm.matrix([ [self.a, self.b * cos(self.gamma), self.c * cos(self.beta) ],
-                     [0, self.b * sin(self.gamma),
-                        (self.c * (cos(self.alpha) - cos(self.beta) * cos(self.gamma)) / sin(self.gamma))],
-                     [0, 0, self.V / (self.a * self.b * sin(self.gamma))]])
+        Am = mpm.matrix([[self.a, self.b * cos(self.gamma), self.c * cos(self.beta)],
+                         [0, self.b * sin(self.gamma),
+                          (self.c * (cos(self.alpha) - cos(self.beta) * cos(self.gamma)) / sin(self.gamma))],
+                         [0, 0, self.V / (self.a * self.b * sin(self.gamma))]])
         return Am
 
 
@@ -828,7 +832,7 @@ def cart_to_frac(cart_coord, cell):
     gamma = radians(gamma)
     cosastar = (cos(beta) * cos(gamma) - cos(alpha)) / (sin(beta) * sin(gamma))
     sinastar = sqrt(1 - cosastar ** 2)
-    z = Z / (c * sin(beta) * sinastar) 
+    z = Z / (c * sin(beta) * sinastar)
     y = (Y - (-c * sin(beta) * cosastar) * z) / (b * sin(gamma))
     x = (X - (b * cos(gamma)) * y - (c * cos(beta)) * z) / a
     return [round(x, 8), round(y, 8), round(z, 8)]
@@ -857,8 +861,8 @@ def determinante(a):
     8
     """
     return (a[0][0] * (a[1][1] * a[2][2] - a[2][1] * a[1][2])
-           - a[1][0] * (a[0][1] * a[2][2] - a[2][1] * a[0][2])
-           + a[2][0] * (a[0][1] * a[1][2] - a[1][1] * a[0][2]))
+            - a[1][0] * (a[0][1] * a[2][2] - a[2][1] * a[0][2])
+            + a[2][0] * (a[0][1] * a[1][2] - a[1][1] * a[0][2]))
 
 
 def subtract_vect(a, b):
@@ -894,9 +898,9 @@ def norm_vec(a):
     >>> norm_vec([1, 2, 1])
     (0.4082482904638631, 0.8164965809277261, 0.4082482904638631)
     """
-    l = sqrt(a[0]**2 + a[1]**2 + a[2]**2)
+    l = sqrt(a[0] ** 2 + a[1] ** 2 + a[2] ** 2)
     return a[0] / l, a[1] / l, a[2] / l
-    
+
 
 def vol_tetrahedron(a, b, c, d, cell=None):
     """
@@ -1057,7 +1061,7 @@ def dice_coefficient2(a, b, case_insens=True):
         else:
             j += 1
     score = float(matches) / float(lena + lenb)
-    score = 1-score
+    score = 1 - score
     return round(score, 6)
 
 
@@ -1084,29 +1088,6 @@ def longest_common_substring(s1, s2):
             else:
                 m[x][y] = 0
     return s1[x_longest - longest: x_longest]
-
-
-def fft(x):
-    '''
-    fft implementation from rosettacode.
-    The purpose of this task is to calculate the FFT (Fast Fourier Transform) of an input sequence. 
-    The most general case allows for complex numbers at the input and results in a sequence of 
-    equal length, again of complex numbers. If you need to restrict yourself to real numbers, 
-    the output should be the magnitude (i.e. sqrt(re²+im²)) of the complex result.
-    :param x:
-    :type x:
-    
-    >>> print( ' '.join("%5.3f" % abs(f) for f in fft([1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0])) )
-    4.000 2.613 0.000 1.082 0.000 1.082 0.000 2.613
-    '''
-    from cmath import exp, pi
-    N = len(x)
-    if N <= 1: return x
-    even = fft(x[0::2])
-    odd = fft(x[1::2])
-    T = [exp(-2j * pi * k / N) * odd[k] for k in range(int(N / 2))]
-    return [even[k] + T[k] for k in range(int(N / 2))] + \
-           [even[k] - T[k] for k in range(int(N / 2))]
 
 
 def levenshtein(s1, s2):
@@ -1158,7 +1139,7 @@ def coord_to_shx_atom(coordinates):
     strlist = []
     sfac_num = 1
     for num, coord in enumerate(coordinates):
-        at = "AX"+str(num)
+        at = "AX" + str(num)
         s = isoatomstr.format(at, sfac_num, coord[0], coord[1], coord[2], 11.0000, 0.03)
         strlist.append(s)
     return strlist
@@ -1226,34 +1207,18 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
 
     """
     from misc import A
-    import mpmath as mpm
     probability += 1
     # Uij is symmetric:
     if len(uvals) != 6:
         raise Exception('6 Uij values have to be supplied!')
     if len(cell) != 6:
         raise Exception('cell needs six parameters!')
-    U11, U22, U33, U23, U13, U12 = uvals 
-    U21 = U12
-    U32 = U23
-    U31 = U13
-    Uij = mpm.matrix([[U11, U12, U13], [U21, U22, U23], [U31, U32, U33]])
-    a, b, c, alpha, beta, gamma = cell
-    V = vol_unitcell(*cell)
-    # calculate reciprocal lattice vectors:
-    astar = (b * c * sin(radians(alpha))) / V
-    bstar = (c * a * sin(radians(beta))) / V
-    cstar = (a * b * sin(radians(gamma))) / V
     # orthogonalization matrix that transforms the fractional coordinates
     # with respect to a crystallographic basis system to coordinates
     # with respect to a Cartesian basis:
     A = A(cell).orthogonal_matrix
-    # matrix with the reciprocal lattice vectors:        
-    N = mpm.matrix([[astar, 0, 0],
-                    [0 , bstar, 0],
-                    [0, 0, cstar]])
-    # Finally transform Uij values from fractional to cartesian axis system: 
-    Ucart = A * N * Uij * N.T * A.T
+    Ucart = ufrac_to_ucart(A, cell, uvals)
+    # print(Ucart)
     # E => eigenvalues, Q => eigenvectors:
     E, Q = mpm.eig(Ucart)
     # calculate vectors of ellipsoid axes  
@@ -1275,7 +1240,7 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     e2 = sqrt(E[1]) * probability
     e3 = sqrt(E[2]) * probability
     # scale axis vectors to eigenvalues 
-    v1, v2, v3, v1i, v2i, v3i = v1 * e1, v2 * e2, v3 * e3, v1i * e1, v2i * e2, v3i * e3  
+    v1, v2, v3, v1i, v2i, v3i = v1 * e1, v2 * e2, v3 * e3, v1i * e1, v2i * e2, v3i * e3
     # find out which vector is the longest:
     length = mpm.norm(v1)
     v = 0
@@ -1304,6 +1269,27 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     else:
         # all vectors:
         return allvec
+
+
+def ufrac_to_ucart(A, cell, uvals):
+    U11, U22, U33, U23, U13, U12 = uvals
+    U21 = U12
+    U32 = U23
+    U31 = U13
+    Uij = mpm.matrix([[U11, U12, U13], [U21, U22, U23], [U31, U32, U33]])
+    a, b, c, alpha, beta, gamma = cell
+    V = vol_unitcell(*cell)
+    # calculate reciprocal lattice vectors:
+    astar = (b * c * sin(radians(alpha))) / V
+    bstar = (c * a * sin(radians(beta))) / V
+    cstar = (a * b * sin(radians(gamma))) / V
+    # matrix with the reciprocal lattice vectors:
+    N = mpm.matrix([[astar, 0, 0],
+                    [0, bstar, 0],
+                    [0, 0, cstar]])
+    # Finally transform Uij values from fractional to cartesian axis system:
+    Ucart = A * N * Uij * N.T * A.T
+    return Ucart
 
 
 def almost_equal(a, b, places=3):
@@ -1384,7 +1370,7 @@ def chunks(l, n):
 if __name__ == '__main__':
     import sys
     import doctest
+
     failed, attempted = doctest.testmod()  # verbose=True)
     if failed == 0:
         print('passed all {} tests!'.format(attempted))
-

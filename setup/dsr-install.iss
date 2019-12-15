@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "DSR - Disordered Structure Refinement"
-#define MyAppVersion "217"
+#define MyAppVersion "230"
 #define MyAppPublisher "Daniel Kratzert"
 
 [Setup]
@@ -43,6 +43,7 @@ AppSupportPhone=+49 761 203 6156
 VersionInfoProductName=DSR - Disordered Structure Refinement
 AlwaysShowComponentsList=False
 ShowComponentSizes=False
+SignTool=signtool
 
 [Run]
 ;Filename: "msiexec.exe"; Parameters: "TARGETDIR=""{app}\python27"" ADDLOCAL=Extensions,SharedCRT /i ""{app}\python-2.7.5.msi"""; Description: "Install Python"
@@ -117,6 +118,7 @@ Type: filesandordirs; Name: "{app}\python27"
 Type: filesandordirs; Name: "{app}\networkx"
 Type: filesandordirs; Name: "{app}\mpmath"
 Type: filesandordirs; Name: "{app}\example"
+Type: filesandordirs; Name: "{app}\rmsd"
 Type: filesandordirs; Name: "{app}\manuals"
 Type: filesandordirs; Name: "{app}\setup"
 Type: filesandordirs; Name: "{app}"

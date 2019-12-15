@@ -10,13 +10,13 @@
 # ----------------------------------------------------------------------------
 #
 from __future__ import print_function
-import sys
-import re
+
 import os
+import re
+import sys
 
 import misc
 from constants import sep_line
-
 
 try:
     from argparse import RawTextHelpFormatter
@@ -36,6 +36,8 @@ class OptionsParser():
     """
     def __init__(self, progname):
         self.progname = progname
+        # search characters allowed: a-z A-Z 0-9 _ - , () {} [] ' " + * | = .
+        self.allowed_chars = re.compile(r'^[\w\-,\(\)\[\]\{\}\'\"\+\*\|\=\.]+$')
         self.parser = ArgumentParser(prog='dsr', formatter_class=RawTextHelpFormatter,
                                      description='{}\nDisordered Structure Refinement (DSR)\n'.format(progname)
                                      + '\nExample DSR .res file command line:'
@@ -61,7 +63,7 @@ class OptionsParser():
                                  help="import a fragment from GRADE (needs .tgz file)", default=False)
         self.parser.add_argument("-l", dest="list_db", action="store_true",
                                  help="list names of all database entries", default=False)
-        self.parser.add_argument("-s", dest="search_string", metavar='"string"',
+        self.parser.add_argument("-s", dest="search_string", metavar='"string"', nargs='+',
                                  help="search the database for a name", default=False)
         self.parser.add_argument("-g", dest="rigid_group", help="keep group rigid (no restraints)",
                                  action="store_true", default=False)
@@ -71,7 +73,7 @@ class OptionsParser():
                                  help=SUPPRESS, default=False)
         self.parser.add_argument("-lc", dest="list_db_csv", action='store_true',
                                  help=SUPPRESS, default=False)
-        self.parser.add_argument("-x", dest="search_extern",
+        self.parser.add_argument("-x", dest="search_extern", nargs='+',
                                  help=SUPPRESS, default=False)
         self.parser.add_argument("-ah", dest="head_for_gui",
                                  help=SUPPRESS, default=False)
@@ -82,8 +84,6 @@ class OptionsParser():
                                  help="do not refine after fragment transfer", default=False)
         self.parser.add_argument("-target", dest="target", nargs='+', type=float,
                                  help=SUPPRESS, default=False)
-        self.parser.add_argument("-noffit", dest="noffit", action='store_true', default=False,
-                                 help="Use SHELXL for fragment fit. Do not use Kabsch fit.")
         self._options = self.parser.parse_args()
 
     def error(self):
@@ -151,10 +151,6 @@ class OptionsParser():
         return self._options.selfupdate
 
     @property
-    def noffit(self):
-        return self._options.noffit
-
-    @property
     def head_for_gui(self):
         frag = False
         if self._options.head_for_gui:
@@ -195,27 +191,21 @@ class OptionsParser():
     def search_string(self):
         if not self._options.search_string:
             return None
-        # search characters allowed: a-z A-Z 0-9 _ - , () {} [] ' " + * | = .
-        chars = re.match(r'^[\w\-,\(\)\[\]\{\}\'\"\+\*\|\=\.]+$', 
-                         self._options.search_string)
-        if not chars:
-            print('Characters not allowed for searching.')
+        if not self.allowed_chars.match(''.join(self._options.search_string)):
+            print('*** Characters not allowed for searching. ***')
             sys.exit()
         else:
-            return self._options.search_string
+            return ''.join(self._options.search_string)
 
     @property
     def search_extern(self):
         if not self._options.search_extern:
             return None
-        # search characters allowed: a-z A-Z 0-9 _ - , () {} [] ' " + * | = .
-        chars = re.match(r'^[\w\-,\(\)\[\]\{\}\'\"\+\*\|\=\.]+$', 
-                         self._options.search_extern)
-        if not chars:
+        if not self.allowed_chars.match(''.join(self._options.search_extern)):
             print('*** Characters not allowed for searching. ***')
             sys.exit()
         else:
-            return self._options.search_extern
+            return ''.join(self._options.search_extern)
 
     @property
     def all_options(self):

@@ -1,5 +1,5 @@
-#-*- encoding: utf-8 -*-
-#möp
+# -*- encoding: utf-8 -*-
+# möp
 #
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
@@ -10,14 +10,17 @@
 # ----------------------------------------------------------------------------
 #
 from __future__ import print_function
-import subprocess
-import sys, os, re
-import shutil
-from resfile import ResList
-import misc
-from misc import find_line, check_file_exist, remove_line
-from constants import sep_line
 
+import os
+import re
+import shutil
+import subprocess
+import sys
+
+import misc
+from constants import sep_line
+from misc import find_line, check_file_exist, remove_line
+from resfile import ResList
 
 __metaclass__ = type  # use new-style classes
 
@@ -34,8 +37,8 @@ def get_xl_version_string(exe):
             binary = f.read()
             position = binary.find(b'Version 201')
             if position > 0:
-                f.seek(position+8, 0) # seek to version string
-                version = f.read(6)   # read version string
+                f.seek(position + 8, 0)  # seek to version string
+                version = f.read(6)  # read version string
                 return version.decode('ascii')
             else:
                 return None
@@ -49,19 +52,20 @@ class ShelxlRefine():
     A class to do a shelxl refinement. It is only for shelxl 2013 and above!
     The resfilename should be without ending.
     """
+
     def __init__(self, reslist, resfile_name, find_atoms, options):
-        '''
+        """
         :param reslist: SHELXL .res file as list
         :param resfile_name: SHELXL res file name
         :param find_atoms: FindAtoms() object
-        '''
+        """
         self.options = options
         self._find_atoms = find_atoms
         self._atoms_in_reslist = self._find_atoms.collect_residues()
         self.resfile_name = str(resfile_name)
         self._reslist = reslist
         self._shelx_command = self.find_shelxl_exe()
-        self.backup_file = os.path.abspath(str(self.resfile_name+'.dsr-bak'))
+        self.backup_file = os.path.abspath(str(self.resfile_name + '.dsr-bak'))
 
         if not self._shelx_command:
             print('\nSHELXL executable not found in system path! No fragment fitting possible.\n')
@@ -125,7 +129,7 @@ class ShelxlRefine():
         ls_line = misc.find_line(self._reslist, regex)
         ls_list = self._reslist[ls_line].split()
         ls_list[1] = str(cycles)
-        self._reslist[ls_line] = '  '.join(ls_list)+'\n'
+        self._reslist[ls_line] = '  '.join(ls_list) + '\n'
         return self._reslist
 
     @property
@@ -155,7 +159,7 @@ class ShelxlRefine():
         if acta_lines:
             for i in acta_lines:
                 commands.append(self._reslist[i])
-                self._reslist[i] = 'REM '+self._reslist[i]
+                self._reslist[i] = 'REM ' + self._reslist[i]
         return commands
 
     def restore_acta_card(self, lines):
@@ -190,9 +194,9 @@ class ShelxlRefine():
                     afixes.append(i.split()[1])
         try:
             if str(afixes[-2]) != '0':
-                return False # last afix not closed
+                return False  # last afix not closed
             else:
-                return True # last afix is closed
+                return True  # last afix is closed
         except(IndexError):
             # in this case, no other afix is present and deletion of afix 9 is save
             return True
@@ -202,21 +206,21 @@ class ShelxlRefine():
         removes the AFIX 9 after refinement.
         note: find_line matches case insensitive
         """
-        regex = 'REM '+random_num
+        regex = 'REM ' + random_num
         afix_line = misc.find_line(self._reslist, regex)
         if afix_line:
             remove_line(self._reslist, afix_line, remove=True)
         # only delete afix if last afix before the dsr command was closed
         if self.afix_is_closed(afix_line):
             if afix_line:
-                remove_line(self._reslist, afix_line-1, remove=True)
+                remove_line(self._reslist, afix_line - 1, remove=True)
                 afix_line2 = misc.find_line(self._reslist, regex)
                 if afix_line2:
                     remove_line(self._reslist, afix_line2, remove=True)
                     remove_line(self._reslist, afix_line2, remove=True)
         else:
             if afix_line:
-                self._reslist[afix_line-1] = 'AFIX 0\n'
+                self._reslist[afix_line - 1] = 'AFIX 0\n'
 
     def backup_shx_file(self):
         """
@@ -226,10 +230,10 @@ class ShelxlRefine():
         """
         import datetime
         now = datetime.datetime.now()
-        timestamp = (str(now.year)+'_'+str(now.month)+'_'+str(now.day)+'_'+
-                     str(now.hour)+'-'+str(now.minute)+'-'+str(now.second))
-        resfile = os.path.abspath(str(self.resfile_name+'.res'))
-        bakup_dir = os.path.abspath(os.path.dirname(resfile))+os.path.sep+os.path.relpath('dsrsaves')
+        timestamp = (str(now.year) + '_' + str(now.month) + '_' + str(now.day) + '_' +
+                     str(now.hour) + '-' + str(now.minute) + '-' + str(now.second))
+        resfile = os.path.abspath(str(self.resfile_name + '.res'))
+        bakup_dir = os.path.abspath(os.path.dirname(resfile)) + os.path.sep + os.path.relpath('dsrsaves')
         try:
             shutil.copyfile(resfile, self.backup_file)
         except IOError:
@@ -241,7 +245,8 @@ class ShelxlRefine():
             except(IOError, OSError):
                 print('*** Unable to create backup directory {}. ***'.format(bakup_dir))
         try:
-            shutil.copyfile(resfile, bakup_dir+os.path.sep+os.path.split(self.resfile_name)[1]+'_'+timestamp+'.res')
+            shutil.copyfile(resfile,
+                            bakup_dir + os.path.sep + os.path.split(self.resfile_name)[1] + '_' + timestamp + '.res')
         except IOError:
             print('\n*** Unable to make backup file from {} in dsrsaves. ***'.format(resfile))
 
@@ -249,7 +254,7 @@ class ShelxlRefine():
         """
         restores filename from backup
         """
-        resfile = os.path.abspath(str(self.resfile_name+'.res'))
+        resfile = os.path.abspath(str(self.resfile_name + '.res'))
         try:
             print('*** Restoring previous res file. ***')
             shutil.copyfile(self.backup_file, resfile)
@@ -272,17 +277,17 @@ class ShelxlRefine():
                 print(' SHELXL {}'.format(' '.join(out.split()[6:8])))
             # wR2
             # These values are always bad after a simple LS fit without any atom movement:
-            #if out.startswith(' wR2') and not wr2:
+            # if out.startswith(' wR2') and not wr2:
             #    wr2 = True
             #    line = out[:].split()
             #    print(' {}  {} {:>6}'.format(line[0], line[1], line[2][:6]))
             # R1
-            #if out.startswith(' R1') and not r1:
+            # if out.startswith(' R1') and not r1:
             #    r1 = True
             #    line = out[:].split()
             #    print(' {}   {} {:>6}'.format(line[0], line[1], line[2][:6]))
             # GooF
-            #if re.match(r'.*GooF.*', out) and not gof:
+            # if re.match(r'.*GooF.*', out) and not gof:
             #    gof = True
             #    line = out.split()
             #    print(' {} {} {:>5}0'.format(line[0], line[1], line[4][:5]))
@@ -291,7 +296,7 @@ class ShelxlRefine():
             if re.match(r'.*CANNOT\s+OPEN\s+FILE.*hkl.*', out):
                 print('*** No hkl file found! ***')
                 print('*** You need a proper hkl file to use DSR! ***')
-                sys.exit()    
+                sys.exit()
             if re.match(r'.*\*\* Extinction \(EXTI\) or solvent.*', out):
                 continue
             if re.match(r'.*\*\* MERG code changed to 0', out):
@@ -310,8 +315,8 @@ class ShelxlRefine():
 
         TODO: Do the fit with https://github.com/tjmustard/QuatfitPy
         """
-        resfile = self.resfile_name+'.res'
-        hklfile = self.resfile_name+'.hkl'
+        resfile = self.resfile_name + '.res'
+        hklfile = self.resfile_name + '.hkl'
         if not check_file_exist(hklfile):
             print('You need a proper hkl file to use DSR.')
             sys.exit()
@@ -321,9 +326,9 @@ class ShelxlRefine():
         print(sep_line)
         print(' Running SHELXL with "{}" and "L.S. 0"'.format(' '.join(command_line)))
         p = subprocess.Popen(command_line,
-                             stdin = subprocess.PIPE,
-                             stdout = subprocess.PIPE,
-                             stderr = subprocess.STDOUT)
+                             stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT)
         (child_stdin, child_stdout_and_stderr) = (p.stdin, p.stdout)
         child_stdin.close()
         # Watch the output for successful termination
@@ -335,8 +340,8 @@ class ShelxlRefine():
         child_stdout_and_stderr.close()
         # output only the most importand things from shelxl:
         self.pretty_shx_output(output)
-        status = check_file_exist(resfile) # status is False if shelx was unsecessful
-        if not status: # fail
+        status = check_file_exist(resfile)  # status is False if shelx was unsecessful
+        if not status:  # fail
             print(sep_line)
             print('\nError: SHELXL terminated unexpectedly.')
             print('Check for errors in your SHELX input file!\n')
@@ -365,23 +370,23 @@ class ShelxlRefine():
             try:
                 misc.remove_file(self.backup_file)
             except IOError:
-                print('Unable to delete backup file {}.'.format(self.backup_file))            
+                print('Unable to delete backup file {}.'.format(self.backup_file))
             sys.exit()
         regex_final = r' Final Structure Factor Calculation.*\n'
         final_results = find_line(list_file, regex_final)
         # find data and parameters:
         try:
-            dataobj = re.search(r'[0-9]+\s+data', list_file[final_results+4])
+            dataobj = re.search(r'[0-9]+\s+data', list_file[final_results + 4])
             data = float(dataobj.group(0).split()[0])
-            parameterobj = re.search(r'[0-9]+\s+parameters', list_file[final_results+4])
+            parameterobj = re.search(r'[0-9]+\s+parameters', list_file[final_results + 4])
             parameters = float(parameterobj.group(0).split()[0])
             restrobj = re.search(r'[0-9]+\s+restraints', list_file[find_line(list_file, r" GooF = S =.*")])
             restraints = float(restrobj.group(0).split()[0])
         except AttributeError:
             return False
         try:
-            data_to_parameter_ratio = data/parameters
-            restr_ratio = ((data+restraints)/parameters)
+            data_to_parameter_ratio = data / parameters
+            restr_ratio = ((data + restraints) / parameters)
         except ZeroDivisionError:
             return False
         lattline = find_line(list_file, r'^ LATT.*')
@@ -411,19 +416,18 @@ class ShelxlRefine():
 
 if __name__ == '__main__':
     from atomhandling import FindAtoms
-    from restraints import ListFile
     import options
+
     res_file = 'p21c.res'
     rl = ResList(res_file)
     res_list = rl.get_res_list()
     find_atoms = FindAtoms(res_list)
-    #lf = ListFile('p21c')
-    #lst_file = lf.read_lst_file()
+    # lf = ListFile('p21c')
+    # lst_file = lf.read_lst_file()
     options = options.OptionsParser('program_name dsr')
     shx = ShelxlRefine(res_list, 'testfile', find_atoms, options)
 
-
-    #print(shx.afix_is_closed(110))
-    #print(shx.remove_afix())
-    #shx.set_refinement_cycles()
+    # print(shx.afix_is_closed(110))
+    # print(shx.remove_afix())
+    # shx.set_refinement_cycles()
     shx.run_shelxl()

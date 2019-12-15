@@ -3,14 +3,14 @@
 
 
 import doctest
+import os
 import sys
 import unittest
-from os import system
-import os
 
 import dbfile
-import selfupdate
+import restraints
 import sql_export
+from rmsd import calculate_rmsd
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import afix
@@ -20,7 +20,6 @@ import elements
 import export
 import misc
 import networkx
-from afix import Afix
 from atomhandling import get_atomtypes, FindAtoms, check_source_target, \
     rename_restraints_atoms, SfacTable, Elem_2_Sfac, NumberScheme
 from atoms import Element, atoms
@@ -40,7 +39,7 @@ class doctestsTest(unittest.TestCase):
     def testrun_doctest(self):
         for name in [dsr, afix, dsrparse, export, misc, elements, networkx,
                      atomhandling, networkx.classes.graph, dsrparse, dbfile,
-                     sql_export]:
+                     sql_export, restraints, calculate_rmsd]:
             failed, attempted = doctest.testmod(name)  # , verbose=True)
             if failed == 0:
                 print('passed all {} tests in {}!'.format(attempted, name.__name__))
@@ -49,311 +48,6 @@ class doctestsTest(unittest.TestCase):
                                                                                                          attempted,
                                                                                                          name.__name__)
                 self.assertFalse(failed, msg)
-
-
-# @unittest.skip("skipping dsr_complete_runs_Test ")
-class dsr_complete_runs_Test(unittest.TestCase):
-    def setUp(self):
-        self.maxDiff = 20
-        # remove this to view the results:
-        # self.dsr = '/Applications/DSR/dsr'
-        # self.dsr = 'D:\Programme\DSR\dsr'
-        self.dsr = r'"{}"'.format(misc.which('dsr')[-1])
-        print(self.dsr)
-
-        # 1 -r resi cf3 part 2 occ -31
-        # 2 -r resi cf3 part 2 occ -31 dfix
-        # 3 -r part 2 occ -31
-        # 4 -re resi cf3 part 2 occ -31
-        # 5 -re resi cf3 part 2 occ -31 dfix
-        # 6 -re part 2 occ -31
-        # 7 rigid
-        # 8 -s
-        # 9 -e toliene
-        # 10 -r -t
-        # 11 -r replace
-        # 12 -r resi replace
-        # 13 -r resi cf3 PART 2 occ 501
-        # 14 -r resi cf3 PART 2
-        # 15 -r only PUT
-        # 16 -r RESI
-        # 17 -r resi occ -31
-        # 18 occ -31
-        # 19 occ -31 without FVAR
-        # 20 put CF6 on C22 split (AFIX 120)
-        # 21 put CF3 on C22 (AFIX 130)
-        # 22 put CF9 on C1
-        # 23 -r -target x y z  PART -1 OCC 10.5 RESI TOL
-        # 24 correctly restore res file after SHELXL failure
-
-    def dsr_runtest(self, nummer=99, parameter='-r', external_file='', hkl=1,
-                    limit_start=6, limit_end=-1, ending='res', remlines=None):
-        """
-        runs a test where the whole dsr is started with different input files
-        and compares the result with optimal output
-        :type nummer: int
-        :type external_file: sting
-        :param nummer: res file number
-        :param parameter: dsr command line parameter
-        :return: None
-        """
-        if not remlines:
-            remlines = []
-        d = []
-        c = []
-        parameter = '-noffit ' + parameter
-        print('{} '.format(nummer) * 10, 'start:')
-        misc.copy_file('test-data/beispiel/{}.hkl'.format(hkl), 'test-data/beispiel/{}a.hkl'.format(nummer))
-        misc.copy_file('test-data/beispiel/{}.res'.format(nummer), 'test-data/beispiel/{}a.res'.format(nummer))
-        system('{0} {1} ./test-data/beispiel/{2}a.res'.format(self.dsr, parameter, nummer))
-        with open('./test-data/beispiel/{}a.{}'.format(nummer, ending)) as txt:
-            a = txt.readlines()[limit_start:limit_end]
-        with open('./test-data/beispiel/{}-erg.{}'.format(nummer, ending)) as txt2:
-            b = txt2.readlines()[limit_start:limit_end]
-        if external_file:
-            with open('./test-data/beispiel/{}.dfix'.format(external_file)) as ext:
-                c = ext.readlines()
-            with open('./test-data/beispiel/{}-erg.dfix'.format(external_file)) as ext2:
-                d = ext2.readlines()
-        for line in remlines:
-            a[line] = ''
-            b[line] = ''
-        print('{} test:'.format(nummer))
-        print("parameter:", parameter)
-        misc.remove_file('./test-data/beispiel/{}a.hkl'.format(nummer))
-        misc.remove_file('./test-data/beispiel/{}a.fcf'.format(nummer))
-        misc.remove_file('./test-data/beispiel/{}.fcf'.format(nummer))
-        misc.remove_file('./test-data/beispiel/{}.2fcf'.format(nummer))
-        misc.remove_file('./test-data/beispiel/{}a.lst'.format(nummer))
-        #a = remove_whitespace(a)
-        #b = remove_whitespace(b)
-        self.assertEqual(b, a)
-        if external_file:
-            self.assertEqual(d, c)
-        print('{} '.format(nummer) * 10, "ende")
-        misc.remove_file('./test-data/beispiel/{}a.ins'.format(nummer))
-        misc.remove_file('./test-data/beispiel/{}a.res'.format(nummer))
-        misc.remove_file('./test-data/beispiel/{}.dfix'.format(external_file))
-
-    # @unittest.skip(" skipping1 ")
-    def testrun_run1(self):
-        """
-        regular dsr run with
-        resi cf3 PART 2 occ -31
-        """
-        self.maxDiff = 10
-        self.dsr_runtest(1, '-r', remlines=[316, 317, 319])
-
-    # @unittest.skip(" skipping2 ")
-    def testrun_run2(self):
-        """
-        regular -r dsr run with
-        resi cf3 dfix =
-            PART 2 occ -31
-        """
-        self.dsr_runtest(2, '-r', remlines=[345, 346])
-
-    # @unittest.skip(" skipping3 ")
-    def testrun_run3(self):
-        """
-        regular run with:
-         occ -31 PART 2
-        """
-        self.dsr_runtest(3, '-r', remlines=[318])
-
-    # @unittest.skip(" skipping4 ")
-    def testrun_run4(self):
-        """
-        external -re restraints with:
-        resi cf3 =
-            PART 2 occ -31
-        """
-        self.dsr_runtest(4, '-re', external_file='dsr_CCF3_6_4a', remlines=[310])
-
-    # @unittest.skip(" skipping5 ")
-    def testrun_run5(self):
-        """
-        dsr -re  with:
-        REM dsr put oc(CF3)3 with o1 c1 c2 C3 on O1_4 C1_4 Q6 Q7 resi Ccf3 part 2 occ =
-            -31 dfix
-        """
-        self.dsr_runtest(5, '-re', external_file='dsr_CCF3_6_5a_dfx', remlines=[310])
-
-    # @unittest.skip(" skipping6 ")
-    def testrun_run6(self):
-        """
-        -re   PART 2 occ -31
-        """
-        self.dsr_runtest(6, '-re', external_file='dsr_1_6a', remlines=[310])
-
-    # @unittest.skip(" skipping 7")
-    def testrun_run7(self):
-        """
-        rigid
-
-        """
-        self.dsr_runtest(7, '-g -r', remlines=[310])
-
-    # @unittest.skip(" skipping 8")
-    def testrun_8(self):
-        """
-        dsr -s tol
-
-        """
-        print('8 ' * 10, 'start')
-        system("{} -s tol > search.txt".format(self.dsr))
-        with open('search.txt') as txt:
-            se = txt.readlines()
-        misc.remove_file('./search.txt')
-        good = False
-        for line in se:
-            if line.startswith(" toluene           | Toluene, C7H8"):
-                good = True
-        self.assertTrue(good, "Search text differs")
-        print('8 ' * 10, 'ende')
-
-    # @unittest.skip(" skipping 9")
-    def testrun_9(self):
-        """
-        dsr -e tol
-
-        """
-        print('9 ' * 10, 'start')
-        print("{} -e tolUene".format(self.dsr))
-        system("{} -e tolUene".format(self.dsr))
-        with open('toluene.res') as txt:
-            ex = txt.readlines()
-        with open('toluene-erg.res') as txt2:
-            ex_erg = txt2.readlines()
-        del ex[1]  # line with the version number
-        del ex_erg[1]
-        self.assertEqual(ex, ex_erg)
-        misc.remove_file('toluene.res')
-        print('9 ' * 10, 'ende')
-
-    # @unittest.skip(" skipping 10")
-    def testrun_run10(self):
-        """
-        invert fragment
-        -r -t
-        """
-        # Line 74 has one digit difference in Windows and Mac:
-        self.dsr_runtest(10, '-t -r', limit_end=300, remlines=[75])
-
-    # @unittest.skip(" skipping 11")
-    def testrun_run11(self):
-        """
-        regular dsr run with
-        replace resi PART 0
-        """
-        self.dsr_runtest(11, '-r', remlines=[110, 310])
-
-    # @unittest.skip(" skipping 12")
-    def testrun_run12(self):
-        """
-        regular dsr run without fit with
-        resi cf3 PART 2 occ -31
-        """
-        self.dsr_runtest(12, ending='ins', parameter='-n -r', remlines=[100, 116])
-
-    # @unittest.skip(" skipping 13")
-    def testrun_run13(self):
-        """
-        rem dsr put oc(cf3)3 with o1 c1 c2 c3 c4 on O1_3 c1_3 q6 Q4 q7 resi cf3 =
-            PART 2 occ 501
-        """
-        self.dsr_runtest(13, '-r', remlines=[330, 331, 332, 333, 326])
-
-    # @unittest.skip(" skipping 14")
-    def testrun_run14(self):
-        """
-        dsr -r p21c.res
-        REM  dsr put oc(CF3)3 with o1 c1 c2 C3 on O1_4 C1_4 Q6 Q7 resi cf3 =
-            PART 2
-        """
-        self.dsr_runtest(14, '-r', remlines=[319])
-
-    # @unittest.skip(" skipping 15")
-    def testrun_run15(self):
-        """
-        dsr -r foo
-        REM  dsr put oc(CF3)3 with o1 c1 c2 C3 on O1_4 C1_4 Q6 Q7
-        """
-        self.dsr_runtest(15, '-r', remlines=[317])
-
-    # @unittest.skip(" skipping 16")
-    def testrun_run16(self):
-        """
-        dsr -r
-        REM  dsr put oc(CF3)3 with o1 c1 c2 C3 on O1_4 C1_4 Q6 Q7 RESI
-        """
-        self.dsr_runtest(16, '-r', remlines=[309, 310])
-
-    # @unittest.skip(" skipping 17")
-    def testrun_run17(self):
-        """
-        dsr -r with:
-        REM  dsr put oc(CF3)3 with o1 c1 c2 C3 on O1_4 C1_4 Q6 Q7 resi occ -31
-        """
-        self.dsr_runtest(17, '-r', remlines=[310])
-
-    # @unittest.skip(" skipping 18")
-    def testrun_run18(self):
-        """
-        dsr -r foo
-        REM  dsr put oc(CF3)3 with o1 c1 c2 C3 on O1_4 C1_4 Q6 Q7 occ -31
-        """
-        self.dsr_runtest(18, '-r', remlines=[317])
-
-    # @unittest.skip(" skipping 19")
-    def testrun_run19(self):
-        """
-        occ -31 without FVAR
-
-        """
-        self.dsr_runtest(19, '-re', external_file='dsr_1_19a', remlines=[309, 310])
-
-    # @unittest.skip(" skipping 20")
-    def testrun_run20(self):
-        """
-        rem dsr put CF6 on C22 split
-        (AFIX 120)
-
-        """
-        self.dsr_runtest(20, '-r', hkl=20)
-
-    # @unittest.skip(" skipping 21")
-    def testrun_run21(self):
-        """
-        rem dsr put CF3 on C22
-        (AFIX 130)
-        """
-        self.dsr_runtest(21, '-r', hkl=20, remlines=[27])
-
-    # @unittest.skip(" skipping 22")
-    def testrun_run22(self):
-        """
-        rem dsr put CF9 on C1
-
-        """
-        self.dsr_runtest(22, '-r', hkl=20)
-
-    # @unittest.skip(" skipping 23")
-    def testrun_run23(self):
-        """
-        REM DSR PUT TOLUENE WITH C2 C3 C5 ON Q1 Q2 Q1 PART -1 OCC 10.5 RESI TOL
-        1.0005, 0.5447, 0.5342, 0.9314, 0.5395, 0.5126, 0.9995, 0.4553, 0.4658
-        """
-        self.dsr_runtest(23, '-target 1.0005 0.5447 0.5342 0.9314 0.5395 0.5126 0.9995 0.4553 0.4658 -r',
-                         hkl=23, remlines=[16, 97], limit_end=105)
-
-    # @unittest.skip(" skipping 24")
-    def testrun_run24(self):
-        """
-        rem dsr put toluene on C1 C2 C3
-
-        """
-        self.dsr_runtest(24, '-r', hkl=1)
 
 
 def remove_whitespace(mystringlist):
@@ -370,14 +64,14 @@ db_testhead = ['SADI C1 C2 C1 C3 C1 C4',
                'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
                'SADI 0.04 C2 C3 C3 C4 C2 C4', 'SADI 0.04 O1 C2 O1 C3 O1 C4',
                'SADI 0.04 F1 F2 F2 F3 F3 F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7',
-               'SADI 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1',
+               'SADI 0.04 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1',
                'SIMU O1 > F9', 'RIGU O1 > F9']
 
 wraphead = ['SADI C1 C2 C1 C3 C1 C4\n',
             'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 =\n   C3 F7 C4 F8 C4 F9 C4\n',
             'SADI 0.04 C2 C3 C3 C4 C2 C4\n', 'SADI 0.04 O1 C2 O1 C3 O1 C4\n',
             'SADI 0.04 F1 F2 F2 F3 F3 F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7\n',
-            'SADI 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1\n',
+            'SADI 0.04 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1\n',
             'SIMU O1 > F9\n', 'RIGU O1 > F9\n']
 
 atomnames = ['O1', 'C1', 'C2', 'F1', 'F2', 'F3', 'C3', 'F4', 'F5', 'F6', 'C4', 'F7', 'F8', 'F9']
@@ -663,7 +357,6 @@ class NumberSchemeTest(unittest.TestCase):
 @unittest.skip("skipping insertAfixTest")
 class insertAfixTest(unittest.TestCase):
     def setUp(self):
-        from options import OptionsParser
         import db
         self.maxDiff = None
         self.res_file = 'p21c.res'
@@ -709,7 +402,6 @@ class removeDublicatesAfixTest(unittest.TestCase):
         fragment = 'OC(cf3)3'
         self.gdb = dbfile.ParseDB('../dsr_db.txt')
         self.dbatoms = self.gdb.get_atoms(fragment)  # only the atoms of the dbentry as list
-        self.dbhead = self.gdb.get_restraints(fragment)  # this is only executed once
         self.dbtypes = get_atomtypes(self.dbatoms)
         # self.sf = SfacTable(self.reslist, self.dbtypes)
         # self.sfac_table = self.sf.set_sfac_table()
@@ -717,8 +409,6 @@ class removeDublicatesAfixTest(unittest.TestCase):
         self.resi = 'CCF3'  # gdb.get_resi_from_fragment(fragment)
         self.num = NumberScheme(self.reslist, self.dbatoms, self.dsrp)
         self.numberscheme = self.num.get_fragment_number_scheme()
-        self.afix = Afix(self.reslist, self.dbatoms, self.dbtypes, self.dbhead,
-                         self.dsrp, self.sfac_table, self.find_atoms, self.numberscheme, {'rigid_group': False})
         self.db_testhead = ['SADI_CCF3 C1 C2 C1 C3 C1 C4',
                             'SADI_CCF3 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ',
                             'REM test']
@@ -726,10 +416,8 @@ class removeDublicatesAfixTest(unittest.TestCase):
                              'SADI_CF3 F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 ']
 
     def testrun_remove_dublicate_restraints(self):
-        newhead = self.afix.remove_duplicate_restraints(self.db_testhead,
-                                                        self.afix.collect_all_restraints())  # , self.resi.get_resiclass)
-        newhead2 = self.afix.remove_duplicate_restraints(self.db_testhead2,
-                                                         self.afix.collect_all_restraints())  # , self.resi.get_resiclass)
+        newhead = afix.remove_duplicate_restraints(self.reslist, self.db_testhead)
+        newhead2 = afix.remove_duplicate_restraints(self.reslist, self.db_testhead2)
         self.assertListEqual(['REM test'], newhead)
         self.assertListEqual(self.db_testhead2, newhead2)
 
@@ -787,6 +475,7 @@ class globalDB(unittest.TestCase):
                                'resi': 'TST1',
                                'restraints': ['SIMU C1'],
                                'endline': 8,
+                               'hfix': [],
                                'dbname': 'dsr_user_db'},
                        'dme': {'startline': 1,
                                'name': 'dme',
@@ -797,9 +486,10 @@ class globalDB(unittest.TestCase):
                                'resi': '',
                                'restraints': [],
                                'endline': 5,
+                               'hfix': [],
                                'dbname': 'dsr_db'}
                        }
-    
+
     def testrun_build_db_dict(self):
         gdb = dbfile.ParseDB("db1_klein.TXT", "db2_klein.TXT")
         db = gdb.databases
@@ -866,7 +556,7 @@ class globalDB(unittest.TestCase):
         with self.assertRaises(SystemExit):
             gdb = dbfile.ParseDB(main_dbpath, user_dbpath)
             fragment = 'dmel'
-            gdb.check_db_header_consistency(fragment)
+            gdb.check_db_restraints_consistency(fragment)
 
     def testrun_header_consistency2(self):
         self.maxDiff = None
@@ -877,7 +567,7 @@ class globalDB(unittest.TestCase):
             fragment = 'dmem'
             head = gdb[fragment]['restraints']
             atoms = gdb.get_atoms(fragment, invert=True)
-            gdb.check_db_header_consistency(fragment)
+            gdb.check_db_restraints_consistency(fragment)
 
     def testrun_get_resi_from_fragment(self):
         self.maxDiff = None
@@ -1310,7 +1000,7 @@ class MiscTest(unittest.TestCase):
                     'SADI F1 C2 F2 C2 F3 C2 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4 F4 C3 F5 C3 F6 C3 F7 C4 F8 C4 F9 C4',
                     'SADI 0.04 C2 C3 C3 C4 C2 C4', 'SADI 0.04 O1 C2 O1 C3 O1 C4',
                     'SADI 0.04 F1 F2 F2 F3 F3 F1 F4 F5 F5 F6 F6 F4 F7 F8 F8 F9 F9 F7',
-                    'SADI 0.1 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1',
+                    'SADI 0.04 F1 C1 F2 C1 F3 C1 F4 C1 F5 C1 F6 C1 F7 C1 F8 C1 F9 C1',
                     'SIMU O1 > F9', 'RIGU O1 > F9']
         head = misc.wrap_headlines(db_testhead)
         self.assertListEqual(head, wraphead)
