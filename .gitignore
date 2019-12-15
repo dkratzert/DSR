@@ -3,6 +3,8 @@ shelXlesaves
 dsrsaves
 dsrsaves/*
 *.ps
+venv
+venv3
 *.dmg
 .idea/
 .olex/
