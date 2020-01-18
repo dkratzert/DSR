@@ -24,6 +24,8 @@ import numpy as np
 
 # Python 2/3 compatibility
 # Make range a iterator in Python 2
+from rmsd.quatfit import qtrfit, rotmol
+
 try:
     range = xrange
 except NameError:
@@ -316,10 +318,25 @@ def fit_fragment(fragment_atoms, source_atoms, target_atoms):
     # Move P_source and Q_target to origin:
     P_source -= Pcentroid
     Q_target -= Qcentroid
-    U = kabsch(P_source, Q_target)  # get the Kabsch rotation matrix
-    # U = quaternion_rotate(P_source, Q_target)  # get the Kabsch rotation matrix
+    #U = kabsch(P_source, Q_target)  # get the Kabsch rotation matrix
+    #U = quaternion_rotate(P_source, Q_target)  # get the Kabsch rotation matrix
+    quaternion, U, maxsweeps = qtrfit(P_source, Q_target, 30)
+    print(U)
+    """
+    kabsch, numpy:
+    [[ 0.95448092  0.29269794 -0.05739409]
+     [-0.29792961  0.92635214 -0.23045532]
+     [-0.01428666  0.23706461  0.97138883]]
+     
+    python:
+    [[0.9544809249167568, -0.2979296148712406, -0.01428665645721279], 
+     [0.2926979366967205, 0.9263521414666044, 0.237064606919124], 
+     [-0.05739409223547991, -0.23045532014451398, 0.9713888323393237]]
+
+    """
     source_atoms -= Pcentroid  # translate source_atoms onto center
-    rotated_fragment = np.dot(fragment_atoms, U)  # rotate fragment_atoms (instead of source_atoms)
+    #rotated_fragment = np.dot(fragment_atoms, U)  # rotate fragment_atoms (instead of source_atoms)
+    rotated_fragment = rotmol(fragment_atoms, U)
     rotated_fragment += Qcentroid  # move fragment back from zero (be aware that the translation is still wrong!)
     rmsd = kabsch_rmsd(P_source, Q_target)
     return list(rotated_fragment), rmsd

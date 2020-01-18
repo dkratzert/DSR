@@ -150,12 +150,12 @@ def rotmol(filelol, rotmat):
     yy = float(0.0)
     yz = float(0.0)
     for i in range(len(filelol)):
-        yx = rotmat[0][0] * filelol[i].x + rotmat[1][0] * filelol[i].y + rotmat[2][0] * filelol[i].z
-        yy = rotmat[0][1] * filelol[i].x + rotmat[1][1] * filelol[i].y + rotmat[2][1] * filelol[i].z
-        yz = rotmat[0][2] * filelol[i].x + rotmat[1][2] * filelol[i].y + rotmat[2][2] * filelol[i].z
-        filelol[i].x = yx  # x
-        filelol[i].y = yy  # y
-        filelol[i].z = yz  # z
+        yx = rotmat[0][0] * filelol[i][0] + rotmat[1][0] * filelol[i][1] + rotmat[2][0] * filelol[i][2]
+        yy = rotmat[0][1] * filelol[i][0] + rotmat[1][1] * filelol[i][1] + rotmat[2][1] * filelol[i][2]
+        yz = rotmat[0][2] * filelol[i][0] + rotmat[1][2] * filelol[i][1] + rotmat[2][2] * filelol[i][2]
+        filelol[i][0] = yx  # x
+        filelol[i][1] = yy  # y
+        filelol[i][2] = yz  # z
     return filelol
 
 
@@ -322,7 +322,7 @@ def qtrfit(fit_xyz, ref_xyz, maxsweeps):
 
     """
     # Create variables/lists/matrixes
-    matrix = [[float(0.0) for x in range(4)] for x in range(4)]  # double c[4][4]
+    matrix = [[float(0.0) for x in range(4)] for x in range(4)]
     quaternion = [float(0.0) for x in range(4)]
     # generate the upper triangle of the quadratic form matrix
     xxyx = float(0.0)
@@ -334,16 +334,16 @@ def qtrfit(fit_xyz, ref_xyz, maxsweeps):
     xzyx = float(0.0)
     xzyy = float(0.0)
     xzyz = float(0.0)
-    for i in range(len(fit_xyz)):
-        xxyx = xxyx + fit_xyz[i].x * ref_xyz[i].x
-        xxyy = xxyy + fit_xyz[i].x * ref_xyz[i].y
-        xxyz = xxyz + fit_xyz[i].x * ref_xyz[i].z
-        xyyx = xyyx + fit_xyz[i].y * ref_xyz[i].x
-        xyyy = xyyy + fit_xyz[i].y * ref_xyz[i].y
-        xyyz = xyyz + fit_xyz[i].y * ref_xyz[i].z
-        xzyx = xzyx + fit_xyz[i].z * ref_xyz[i].x
-        xzyy = xzyy + fit_xyz[i].z * ref_xyz[i].y
-        xzyz = xzyz + fit_xyz[i].z * ref_xyz[i].z
+    for i, _ in enumerate(fit_xyz):
+        xxyx = xxyx + fit_xyz[i][0] * ref_xyz[i][0]
+        xxyy = xxyy + fit_xyz[i][0] * ref_xyz[i][1]
+        xxyz = xxyz + fit_xyz[i][0] * ref_xyz[i][2]
+        xyyx = xyyx + fit_xyz[i][1] * ref_xyz[i][0]
+        xyyy = xyyy + fit_xyz[i][1] * ref_xyz[i][1]
+        xyyz = xyyz + fit_xyz[i][1] * ref_xyz[i][2]
+        xzyx = xzyx + fit_xyz[i][2] * ref_xyz[i][0]
+        xzyy = xzyy + fit_xyz[i][2] * ref_xyz[i][1]
+        xzyz = xzyz + fit_xyz[i][2] * ref_xyz[i][2]
 
     matrix[0][0] = xxyx + xyyy + xzyz
     matrix[0][1] = xzyy - xyyz
