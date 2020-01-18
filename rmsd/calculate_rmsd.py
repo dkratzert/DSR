@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from misc import cart_to_frac, frac_to_cart
+from misc import cart_to_frac, frac_to_cart, transpose
 
 __doc__ = \
     """
@@ -321,7 +321,7 @@ def fit_fragment(fragment_atoms, source_atoms, target_atoms):
     #U = kabsch(P_source, Q_target)  # get the Kabsch rotation matrix
     #U = quaternion_rotate(P_source, Q_target)  # get the Kabsch rotation matrix
     quaternion, U, maxsweeps = qtrfit(P_source, Q_target, 30)
-    print(U)
+    #print(U)
     """
     kabsch, numpy:
     [[ 0.95448092  0.29269794 -0.05739409]
@@ -329,10 +329,9 @@ def fit_fragment(fragment_atoms, source_atoms, target_atoms):
      [-0.01428666  0.23706461  0.97138883]]
      
     python:
-    [[0.9544809249167568, -0.2979296148712406, -0.01428665645721279], 
-     [0.2926979366967205, 0.9263521414666044, 0.237064606919124], 
-     [-0.05739409223547991, -0.23045532014451398, 0.9713888323393237]]
-
+    [(0.9544809249167568, 0.2926979366967205, -0.05739409223547991), 
+    (-0.2979296148712406, 0.9263521414666044, -0.23045532014451398), 
+    (-0.01428665645721279, 0.237064606919124, 0.9713888323393237)]
     """
     source_atoms -= Pcentroid  # translate source_atoms onto center
     #rotated_fragment = np.dot(fragment_atoms, U)  # rotate fragment_atoms (instead of source_atoms)

@@ -26,6 +26,8 @@
 
 from math import fabs, sqrt
 
+from misc import transpose
+
 
 class Atom(object):
     def __init__(self):
@@ -127,13 +129,13 @@ def center(filelol, centerswitch, centerxyz):
         centerxyz[1] = float(0.0)
         centerxyz[2] = float(0.0)
         for i in range(len(filelol)):
-            centerxyz[0] += filelol[i].x
-            centerxyz[1] += filelol[i].y
-            centerxyz[2] += filelol[i].z
+            centerxyz[0] += filelol[i][0]
+            centerxyz[1] += filelol[i][1]
+            centerxyz[2] += filelol[i][2]
     for i in range(len(filelol)):
-        filelol[i].x += modif * centerxyz[0]
-        filelol[i].y += modif * centerxyz[1]
-        filelol[i].z += modif * centerxyz[2]
+        filelol[i][0] += modif * centerxyz[0]
+        filelol[i][1] += modif * centerxyz[1]
+        filelol[i][2] += modif * centerxyz[2]
     return centerxyz, filelol
 
 
@@ -368,7 +370,7 @@ def qtrfit(fit_xyz, ref_xyz, maxsweeps):
     # generate the rotation matrix
     rotmat = q2mat(quaternion)
 
-    return quaternion, rotmat, maxsweeps
+    return quaternion, transpose(rotmat), maxsweeps
 
 
 def quatfitGetMolecule(reffilelol, fitfilelol, pairs):

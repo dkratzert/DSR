@@ -11,12 +11,13 @@
 #
 from __future__ import print_function
 
+import shutil
+from math import cos, sqrt, radians, sin
+
 import os
 import random
 import re
-import shutil
 import string
-from math import cos, sqrt, radians, sin
 
 import mpmath as mpm
 from constants import isoatomstr
@@ -235,8 +236,8 @@ def nalimov_test(data):
     [3]
     """
     # q-values for degrees of freedom:
-    f = {1: 1.409, 2: 1.645, 3: 1.757, 4: 1.814, 5: 1.848, 6: 1.870, 7: 1.885, 8: 1.895,
-         9: 1.903, 10: 1.910, 11: 1.916, 12: 1.920, 13: 1.923, 14: 1.926, 15: 1.928,
+    f = {1 : 1.409, 2: 1.645, 3: 1.757, 4: 1.814, 5: 1.848, 6: 1.870, 7: 1.885, 8: 1.895,
+         9 : 1.903, 10: 1.910, 11: 1.916, 12: 1.920, 13: 1.923, 14: 1.926, 15: 1.928,
          16: 1.931, 17: 1.933, 18: 1.935, 19: 1.936, 20: 1.937, 30: 1.945}
     fact = sqrt(float(len(data)) / (len(data) - 1))
     fval = len(data) - 2
@@ -538,6 +539,7 @@ def wrap_stringlist(strlist, width=75):
         wrapped.append('\n'.join(textwrap.wrap(line, width, subsequent_indent='REM ')) + '\n')
     return wrapped
 
+
 def wrap_text(inText, maxlen=70, subsequent_indent='=\n'):
     """
     Text wrapper without need for textwrap package.
@@ -550,7 +552,7 @@ def wrap_text(inText, maxlen=70, subsequent_indent='=\n'):
     for n, word in enumerate(inText_list):
         testline = ' '.join(line_list)
         if len(word + testline + subsequent_indent) >= maxlen:
-            if n < len(inText_list)-1:
+            if n < len(inText_list) - 1:
                 line_list.append(word + ' ' + subsequent_indent)
             else:
                 line_list.append(word)
