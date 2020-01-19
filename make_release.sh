@@ -45,7 +45,7 @@ cp -r $TMPDIR/example $DEBDIR/opt/DSR/
 cp -r $TMPDIR/manuals $DEBDIR/opt/DSR/
 cp -r $TMPDIR/networkx $DEBDIR/opt/DSR/
 cp -r $TMPDIR/mpmath $DEBDIR/opt/DSR/
-cp -r $TMPDIR/rmsd $DEBDIR/opt/DSR/
+cp -r $TMPDIR/fit $DEBDIR/opt/DSR/
 cp $TMPDIR/setup/* $DEBDIR/etc/profile.d/
 
 echo "################### deb file finished  ####################"

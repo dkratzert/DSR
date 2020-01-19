@@ -1,7 +1,7 @@
 # coding=utf-8
-from __future__ import print_function
+from math import sqrt
 
-from misc import cart_to_frac, frac_to_cart, matrix_minus_vect
+from misc import cart_to_frac, frac_to_cart, matrix_minus_vect, matrix_plus_vect
 
 __doc__ = \
     """
@@ -22,7 +22,7 @@ __version__ = '1.2.7'
 
 import copy
 
-from rmsd.quatfit import qtrfit, rotmol
+from fit.quatfit import qtrfit, rotmol, rmsd2
 
 
 def kabsch_rmsd(P, Q):
@@ -38,11 +38,11 @@ def kabsch_rmsd(P, Q):
 
     Returns
     -------
-    rmsd : float
+    fit : float
         root-mean squared deviation
     """
     P = kabsch_rotate(P, Q)
-    return rmsd(P, Q)
+    return rmsdv(P, Q)
 
 
 def kabsch_rotate(P, Q):
@@ -140,11 +140,11 @@ def quaternion_rmsd(P, Q):
 
     Returns
     -------
-    rmsd : float
+    fit : float
     """
     rot = quaternion_rotate(P, Q)
     P = np.dot(P, rot)
-    return rmsd(P, Q)
+    return rmsdv(P, Q)
 
 
 def quaternion_transform(r):
@@ -243,7 +243,7 @@ def centroid(X):
     return (s[0] / num, s[1] / num, s[2] / num)
 
 
-def rmsd(V, W):
+def rmsdv(V, W):
     """
     Calculate Root-mean-square deviation from two sets of vectors V and W.
 
@@ -256,7 +256,7 @@ def rmsd(V, W):
 
     Returns
     -------
-    rmsd : float
+    fit : float
         Root-mean-square deviation
 
     """
@@ -265,7 +265,7 @@ def rmsd(V, W):
     rmsd = 0.0
     for v, w in zip(V, W):
         rmsd += sum([(v[i] - w[i]) ** 2.0 for i in range(D)])
-    return np.sqrt(rmsd / N)
+    return sqrt(rmsd / N)
 
 
 def print_coordinates(atoms, V):
@@ -302,7 +302,7 @@ def fit_fragment(fragment_atoms, source_atoms, target_atoms):
     -------
     rotated_fragment: list
         list of coordinates from the fitted fragment
-    rmsd: float
+    fit: float
         RMSD (root mean square deviation)
     """
     source_atoms = source_atoms
@@ -348,9 +348,48 @@ def fit_fragment(fragment_atoms, source_atoms, target_atoms):
     source_atoms = matrix_minus_vect(source_atoms, Pcentroid)
     # rotated_fragment = np.dot(fragment_atoms, U)  # rotate fragment_atoms (instead of source_atoms)
     rotated_fragment = rotmol(fragment_atoms, U)
-    rotated_fragment = matrix_minus_vect(rotated_fragment, Qcentroid)  # move fragment back from zero (be aware that the translation is still wrong!)
-    #rmsd = kabsch_rmsd(P_source, Q_target)
-    return list(rotated_fragment), 0.11
+    # rotated_fragment += Qcentroid  # move fragment back from zero (be aware that the translation is still wrong!)
+    """
+    print(rotated_fragment)
+    print(Qcentroid)
+    [[-0.5117562280001381, 1.5649536362437642, -0.2765590823142341], 
+    [-0.08218773463355052, 0.26302069741071166, -1.7589427015733683e-05], 
+    [-0.9995962441371549, -0.7621845686158927, -0.762716101226858], 
+    [-2.201273695127896, -0.8731671799535639, -0.17489577922270544], 
+    [-0.4514091990686502, -1.9834249205399261, -0.8514090871475282], 
+    [-1.206648442542879, -0.29714709112582854, -2.022285873595596], 
+    [1.4168947401460537, 0.09446628321628052, -0.4462290583117015], 
+    [2.14763292702404, 1.139129811948922, -0.03474907900026675], 
+    [1.4764283622027852, 0.06803839296679565, -1.8019728164613626], 
+    [1.9723092780291038, -1.0346383279653486, 0.023784331089643063], 
+    [-0.2229313830879643, 0.08067640884475674, 1.549986457163546], 
+    [0.7476090039834943, 0.7473691583083677, 2.200783029508418], 
+    [-0.12879678587167054, -1.224641628654387, 1.87677585966355], 
+    [-1.403815570788897, 0.5466125186369125, 1.9741957324389223]]
+    (1.1000256519224787, 3.479178540000001, 11.546866763620441)
+    """
+    # rotated_fragment += Qcentroid  # move fragment back from zero (be aware that the translation is still wrong!)
+    rotated_fragment = matrix_plus_vect(rotated_fragment, Qcentroid)
+    """
+    print(rotated_fragment)
+    array([[ 0.58826942,  5.04413218, 11.27030768],
+       [ 1.01783792,  3.74219924, 11.54684917],
+       [ 0.10042941,  2.71699397, 10.78415066],
+       [-1.10124804,  2.60601136, 11.37197098],
+       [ 0.64861645,  1.49575362, 10.69545768],
+       [-0.10662279,  3.18203145,  9.52458089],
+       [ 2.51692039,  3.57364482, 11.10063771],
+       [ 3.24765858,  4.61830835, 11.51211768],
+       [ 2.57645401,  3.54721693,  9.74489395],
+       [ 3.07233493,  2.44454021, 11.57065109],
+       [ 0.87709427,  3.55985495, 13.09685322],
+       [ 1.84763466,  4.2265477 , 13.74764979],
+       [ 0.97122887,  2.25453691, 13.42364262],
+       [-0.30378992,  4.02579106, 13.5210625 ]])
+    """
+    # fit = kabsch_rmsd(P_source, Q_target)
+    rmsd = rmsd2(Q_target, P_source)
+    return list(rotated_fragment), rmsd
 
 
 def test():
