@@ -10,7 +10,7 @@ import unittest
 import dbfile
 import restraints
 import sql_export
-from rmsd import calculate_rmsd
+from fit import quatfit
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import afix
@@ -39,7 +39,7 @@ class doctestsTest(unittest.TestCase):
     def testrun_doctest(self):
         for name in [dsr, afix, dsrparse, export, misc, elements, networkx,
                      atomhandling, networkx.classes.graph, dsrparse, dbfile,
-                     sql_export, restraints, calculate_rmsd]:
+                     sql_export, restraints, quatfit]:
             failed, attempted = doctest.testmod(name)  # , verbose=True)
             if failed == 0:
                 print('passed all {} tests in {}!'.format(attempted, name.__name__))

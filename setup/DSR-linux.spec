@@ -4,7 +4,7 @@ Provides: DSR
 Packager: dkratzert@gmx.de
 Version: 230
 Release: 0
-Requires: python, xclip, python2-numpy
+Requires: python
 Prefix: /opt
 BuildRoot: %{_tmppath}/%{name}-%{version}
 BuildArch: noarch
