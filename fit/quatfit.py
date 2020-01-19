@@ -28,119 +28,9 @@ from misc import transpose
 # program in published material as:
 # David J. Heisterberg, 1990, unpublished results.
 #
+# This program was heavily modified by Daniel Kratzert
 
-
-class Atom(object):
-    def __init__(self):
-        # Hold the string for the element
-        self.e = ''
-        # Hold the int for the element
-        self.en = int(0)
-        # Hold the float for the x coordinate
-        self.x = float(0)
-        # Hold the float for the y coordinate
-        self.y = float(0)
-        # Hold the float for the z coordinate
-        self.z = float(0)
-        # Hold the float for the x coordinate
-        self.mx = ''
-        # Hold the float for the y coordinate
-        self.my = ''
-        # Hold the float for the z coordinate
-        self.mz = ''
-
-
-def createRefGeom(reflol, fitlol, pairs):
-    """
-    ### --- Create the reference XYZ files for future alignment --- ###
-    :param reflol:
-    :param fitlol:
-    :param pairs:
-    :return:
-    """
-    # Create ref_xyz and fit_xyz
-    ref_xyz = []  # [0] * len(pairs)
-    fit_xyz = []  # [0] * len(pairs)
-    # Copy the pair atoms from the original molecule into the reference xyz file
-    for i, _ in enumerate(pairs):
-        # Copy the ref pairs
-        ref_xyz.append(Atom())
-        ref_xyz[i].e = reflol[pairs[i][0] - 1].e
-        ref_xyz[i].x = reflol[pairs[i][0] - 1].x
-        ref_xyz[i].y = reflol[pairs[i][0] - 1].y
-        ref_xyz[i].z = reflol[pairs[i][0] - 1].z
-        ref_xyz[i].mx = reflol[pairs[i][0] - 1].mx
-        ref_xyz[i].my = reflol[pairs[i][0] - 1].my
-        ref_xyz[i].mz = reflol[pairs[i][0] - 1].mz
-        # Copy the fit pairs
-        fit_xyz[i] = Atom()
-        fit_xyz[i].e = fitlol[pairs[i][1] - 1].e
-        fit_xyz[i].x = fitlol[pairs[i][1] - 1].x
-        fit_xyz[i].y = fitlol[pairs[i][1] - 1].y
-        fit_xyz[i].z = fitlol[pairs[i][1] - 1].z
-        fit_xyz[i].mx = fitlol[pairs[i][1] - 1].mx
-        fit_xyz[i].my = fitlol[pairs[i][1] - 1].my
-        fit_xyz[i].mz = fitlol[pairs[i][1] - 1].mz
-    return ref_xyz, fit_xyz
-
-
-def print_atom(ofilelol):
-    """
-    ### --- Print the molecule class object --- ###
-    :param ofilelol:
-    :return:
-    """
-    for i in range(len(ofilelol)):
-        print(ofilelol[i].e + "  " + str("{:.6f}".format(ofilelol[i].x)) + "  " + str(
-            "{:.6f}".format(ofilelol[i].y)) + "  " + str("{:.6f}".format(ofilelol[i].z)) + "  " + str(
-            "{:.6f}".format(ofilelol[i].charge)) + "  " + str("{:.6f}".format(ofilelol[i].mx)) + "  " + str(
-            "{:.6f}".format(ofilelol[i].my)) + "  " + str("{:.6f}".format(ofilelol[i].mz)))
-    return
-
-
-def center(filelol, centerswitch, centerxyz):
-    """
-    ### --- center the coordinates, or translate them to some xyz --- ###
-    CENTER
-     center or translate a molecule.
-     atomnum (n) - number of atoms
-     filelol (x) - on input  - original xyz coordinates of a molecule
-         on output - moved xyz coordinates (see io for modes).
-
-     centerswitch (io) - 1 weighted geometric center of the molecule will be at (0,0,0)
-          2 molecule will be moved by a vector -center (i.e., components of a vector center
-            will be subtracted from atom coordinates).
-          3 molecule will be moved by a vector +center (i.e., components of a vector center
-            will be added atom coordinates).
-
-     centerxyz (o) - if centerswitch=1, output, center of original coordinates
-         if centerswitch=2, input, vector center will be subtracted from atomic coordinates
-         if centerswitch=3, input, vector center will be added to atomic coordinates
-
-    """
-    modif = float(0.00)
-    # int i
-    if centerswitch == 2:
-        modif = -1.0
-    elif centerswitch == 3:
-        modif = 1.0
-    else:
-        modif = -1.0
-        centerxyz[0] = float(0.0)
-        centerxyz[1] = float(0.0)
-        centerxyz[2] = float(0.0)
-        for i in range(len(filelol)):
-            centerxyz[0] += filelol[i][0]
-            centerxyz[1] += filelol[i][1]
-            centerxyz[2] += filelol[i][2]
-    for i in range(len(filelol)):
-        filelol[i][0] += modif * centerxyz[0]
-        filelol[i][1] += modif * centerxyz[1]
-        filelol[i][2] += modif * centerxyz[2]
-    return centerxyz, filelol
-
-
-def rotmol(filelol, rotmat):
+def rotmol(frag_atoms, rotmat):
     """
     ROTMOL
     rotate a molecule
@@ -152,14 +42,14 @@ def rotmol(filelol, rotmat):
     yx = float(0.0)
     yy = float(0.0)
     yz = float(0.0)
-    for i in range(len(filelol)):
-        yx = rotmat[0][0] * filelol[i][0] + rotmat[1][0] * filelol[i][1] + rotmat[2][0] * filelol[i][2]
-        yy = rotmat[0][1] * filelol[i][0] + rotmat[1][1] * filelol[i][1] + rotmat[2][1] * filelol[i][2]
-        yz = rotmat[0][2] * filelol[i][0] + rotmat[1][2] * filelol[i][1] + rotmat[2][2] * filelol[i][2]
-        filelol[i][0] = yx  # x
-        filelol[i][1] = yy  # y
-        filelol[i][2] = yz  # z
-    return filelol
+    for i in range(len(frag_atoms)):
+        yx = rotmat[0][0] * frag_atoms[i][0] + rotmat[1][0] * frag_atoms[i][1] + rotmat[2][0] * frag_atoms[i][2]
+        yy = rotmat[0][1] * frag_atoms[i][0] + rotmat[1][1] * frag_atoms[i][1] + rotmat[2][1] * frag_atoms[i][2]
+        yz = rotmat[0][2] * frag_atoms[i][0] + rotmat[1][2] * frag_atoms[i][1] + rotmat[2][2] * frag_atoms[i][2]
+        frag_atoms[i][0] = yx  # x
+        frag_atoms[i][1] = yy  # y
+        frag_atoms[i][2] = yz  # z
+    return frag_atoms
 
 
 def jacobi(matrix, maxsweeps):
@@ -278,7 +168,7 @@ def q2mat(quaternion):
     return rotmat
 
 
-def qtrfit(fit_xyz, ref_xyz, maxsweeps):
+def qtrfit(source_xyz, target_xyz, maxsweeps):
     """
      QTRFIT
      Find the quaternion, q,[and left rotation matrix, u] that minimizes
@@ -337,16 +227,16 @@ def qtrfit(fit_xyz, ref_xyz, maxsweeps):
     xzyx = float(0.0)
     xzyy = float(0.0)
     xzyz = float(0.0)
-    for i, _ in enumerate(fit_xyz):
-        xxyx = xxyx + fit_xyz[i][0] * ref_xyz[i][0]
-        xxyy = xxyy + fit_xyz[i][0] * ref_xyz[i][1]
-        xxyz = xxyz + fit_xyz[i][0] * ref_xyz[i][2]
-        xyyx = xyyx + fit_xyz[i][1] * ref_xyz[i][0]
-        xyyy = xyyy + fit_xyz[i][1] * ref_xyz[i][1]
-        xyyz = xyyz + fit_xyz[i][1] * ref_xyz[i][2]
-        xzyx = xzyx + fit_xyz[i][2] * ref_xyz[i][0]
-        xzyy = xzyy + fit_xyz[i][2] * ref_xyz[i][1]
-        xzyz = xzyz + fit_xyz[i][2] * ref_xyz[i][2]
+    for i, _ in enumerate(source_xyz):
+        xxyx = xxyx + source_xyz[i][0] * target_xyz[i][0]
+        xxyy = xxyy + source_xyz[i][0] * target_xyz[i][1]
+        xxyz = xxyz + source_xyz[i][0] * target_xyz[i][2]
+        xyyx = xyyx + source_xyz[i][1] * target_xyz[i][0]
+        xyyy = xyyy + source_xyz[i][1] * target_xyz[i][1]
+        xyyz = xyyz + source_xyz[i][1] * target_xyz[i][2]
+        xzyx = xzyx + source_xyz[i][2] * target_xyz[i][0]
+        xzyy = xzyy + source_xyz[i][2] * target_xyz[i][1]
+        xzyz = xzyz + source_xyz[i][2] * target_xyz[i][2]
 
     matrix[0][0] = xxyx + xyyy + xzyz
     matrix[0][1] = xzyy - xyyz
@@ -372,74 +262,3 @@ def qtrfit(fit_xyz, ref_xyz, maxsweeps):
     rotmat = q2mat(quaternion)
 
     return quaternion, transpose(rotmat), maxsweeps
-
-
-def rmsd2(ref_xyz, fit_xyz):
-    rms = 0.0
-    count = 0
-    for co1, co2 in zip(ref_xyz, fit_xyz):
-        count += 1
-        s1 = (co1[0] - co2[0]) ** 2
-        s2 = (co1[1] - co2[1]) ** 2
-        s3 = (co1[2] - co2[2]) ** 2
-        rms += sum([s1, s2, s3])
-    rms = sqrt(rms / count)
-    return rms
-
-
-def quatfitGetMolecule(reffilelol, fitfilelol, pairs):
-    """
-    ### --- Run the classic quatfit --- ###
-    This runs quatfit in a updated form
-    reffilelol - reference coordinate in Atom format
-    fitfilelol - fit coordinate in molecule format
-    pairs - the pairs in a list of lists (i.e. [[2, 3], [3, 13], ...])
-    """
-
-    # Create the reference coords based on the pairs
-    ref_xyz, fit_xyz = createRefGeom(reffilelol, fitfilelol, pairs)
-
-    # Center the reference coords around 0,0,0
-    refcenter, ref_xyz = center(ref_xyz, 1, [float(0), float(0), float(0)])
-    fitcenter, fit_xyz = center(fit_xyz, 1, [float(0), float(0), float(0)])
-
-    # fit the specified atom coords of the fit to reference
-    quaternion, rotmat, maxsweeps = qtrfit(fit_xyz, ref_xyz, 30)
-
-    # subtract coordinates of the center of fitted atoms of the fitted molecule
-    # from all atom coordinates of the fitted molecule
-    fitcenter, fitfilelol = center(fitfilelol, 2, fitcenter)
-
-    # rotate the fitted molecule by the rotation matrix u
-    fitfilelol = rotmol(fitfilelol, rotmat)
-
-    # same with set of fitted atoms of the fitted molecule
-    fit_xyz = rotmol(fit_xyz, rotmat)
-
-    # translate atoms of the fitted molecule to the center
-    # of fitted atoms of the reference molecule
-    refcenter, fitfilelol = center(fitfilelol, 3, refcenter)
-
-    # same with set of fitted atoms of the fitted molecule
-    refcenter, fit_xyz = center(fit_xyz, 3, refcenter)
-
-    # translate fitted atoms of reference molecule to their orig. location
-    refcenter, ref_xyz = center(ref_xyz, 3, refcenter)
-
-    rms = 0.0
-    s = 0.0
-    for i in range(len(pairs)):
-        d = 0.0
-        for j in range(3):
-            if j == 0:
-                s = ref_xyz[i].x - fit_xyz[i].x
-            elif j == 1:
-                s = ref_xyz[i].y - fit_xyz[i].y
-            elif j == 2:
-                s = ref_xyz[i].z - fit_xyz[i].z
-            d += s * s
-        rms += d
-
-    rms = sqrt(rms / len(pairs))
-
-    return fitfilelol, rms

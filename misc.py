@@ -27,14 +27,14 @@ alphabet = string.ascii_uppercase
 __metaclass__ = type  # use new-style classes
 
 
-def write_file(list, name):
+def write_file(flist, name):
     """
     Writes the content of list to name.
-    :param list: list
+    :param flist: list
     :param name:  string
     """
     with open(name, 'w') as ofile:
-        for line in list:  # modified reslist
+        for line in flist:  # modified reslist
             ofile.write("%s" % line)  # write the new file
 
 
@@ -92,7 +92,6 @@ def check_file_exist(filename):
     >>> check_file_exist('../misc.py')
     True
     """
-    filesize = False
     status = False
     if os.path.isfile(filename):
         filesize = int(os.stat(str(filename)).st_size)
@@ -106,11 +105,11 @@ def check_file_exist(filename):
     return status
 
 
-def walkdir(rootdir, include="", exclude=""):
+def walkdir(rootdir, include="", exclude=None):
     """
     Returns a list of files in all subdirectories with full path.
     :param rootdir: base path from which walk should start
-    :param filter: list of file endings to include only e.g. ['.py', '.res']
+    :param include: list of file endings to include only e.g. ['.py', '.res']
     :return: list of files
 
     >>> walkdir("../docs") #doctest: +REPORT_NDIFF +NORMALIZE_WHITESPACE +ELLIPSIS
@@ -122,6 +121,8 @@ def walkdir(rootdir, include="", exclude=""):
     >>> walkdir("../docs", exclude=['.txt']) #doctest: +REPORT_NDIFF +NORMALIZE_WHITESPACE +ELLIPSIS
     []
     """
+    if exclude is None:
+        exclude = [""]
     results = []
     if not os.path.isdir(rootdir):
         if os.path.splitext(rootdir)[1] in exclude:
@@ -154,14 +155,14 @@ def pairwise(iterable):
 
 
 def mean(values):
-    '''
+    """
     returns mean value of a list of numbers
-    
+
     >>> mean([1, 2, 3, 4, 1, 2, 3, 4])
     2.5
     >>> round(mean([1, 2, 3, 4, 1, 2, 3, 4.1, 1000000]), 4)
     111113.3444
-    '''
+    """
     mean = sum(values) / float(len(values))
     return mean
 
@@ -304,7 +305,7 @@ def find_line_of_residue(reslist, resinumber):
     :return n: integer
     :return line: string
     >>> find_line_of_residue(['REM TEST', 'C1 1 -0.00146 0.26814 0.06351 11.00 0.05', \
-        'RESI 4 BENZ', 'C2 1 -1.13341 -0.23247 -0.90730 11.00 0.05'], 4)
+        'RESI 4 BENZ', 'C2 1 -1.13341 -0.23247 -0.90730 11.00 0.05'], "4")
     [2, 'RESI 4 BENZ']
     """
     for n, line in enumerate(reslist):
@@ -359,13 +360,13 @@ def find_line(inputlist, regex, start=None):
     :param start: line number where to start the search
     :param start: start searching at line start
     :type start: string or int
-    >>> input = ['Hallo blub', 'foo bar blub', '123', '1 blub 2 3 4']
-    >>> find_line(input, '.*blub.*')
+    >>> inp = ['Hallo blub', 'foo bar blub', '123', '1 blub 2 3 4']
+    >>> find_line(inp, '.*blub.*')
     0
-    >>> find_line(input, 'nonono')
+    >>> find_line(inp, 'nonono')
     False
-    >>> input = [['foo'],['bar']]
-    >>> find_line(input, '.*blub.*') #doctest: +REPORT_NDIFF +NORMALIZE_WHITESPACE +ELLIPSIS
+    >>> inp = [['foo'],['bar']]
+    >>> find_line(inp, '.*blub.*') #doctest: +REPORT_NDIFF +NORMALIZE_WHITESPACE +ELLIPSIS
     Traceback (most recent call last):
         ...
     TypeError: expected string or ...
@@ -422,8 +423,8 @@ def find_multi_lines(inputlist, regex):
     [0, 1, 3]
     >>> find_multi_lines(input, 'blabla')
     []
-    >>> input = [['foo'],['bar']]
-    >>> find_multi_lines(input, r'.*blub.*') # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF +ELLIPSIS
+    >>> inp = [['foo'],['bar']]
+    >>> find_multi_lines(inp, r'.*blub.*') # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF +ELLIPSIS
     Traceback (most recent call last):
         ...
     TypeError: expected string or ...
@@ -1148,9 +1149,9 @@ def levenshtein(s1, s2):
 def distance(x1, y1, z1, x2, y2, z2, round_out=False):
     """
     distance between two points in space for orthogonal axes.
-    >>> distance(1, 1, 1, 2, 2, 2, 4)
+    >>> distance(1, 1, 1, 2, 2, 2, 4, True)
     1.7321
-    >>> distance(1, 0, 0, 2, 0, 0, 4)
+    >>> distance(1, 0, 0, 2, 0, 0, 4, True)
     1.0
     """
     from math import sqrt
@@ -1190,7 +1191,7 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     F3    4    0.210835   0.104067   0.437922  21.00000   0.07243   0.03058 =
        0.03216  -0.01057  -0.01708   0.03014
     >>> import mpmath as mpm
-    >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
+    >>> cell = [10.5086, 20.9035, 20.5072, 90, 94.13, 90]
     >>> coords = [0.210835,   0.104067,   0.437922]
     >>> uvals = [0.07243, 0.03058, 0.03216, -0.01057, -0.01708, 0.03014]
     >>> l = calc_ellipsoid_axes(coords, uvals, cell, longest=True)
