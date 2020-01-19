@@ -44,7 +44,7 @@ mkdir -p %buildroot%_datadir/%name
 mkdir -p %buildroot%_datadir/%name/manuals
 mkdir -p %buildroot%_datadir/%name/example
 mkdir -p %buildroot%_datadir/%name/mpmath
-mkdir -p %buildroot%_datadir/%name/rmsd
+mkdir -p %buildroot%_datadir/%name/fit
 mkdir -p %buildroot%_datadir/%name/networkx
 
 install -m 755 %name.sh %buildroot%_bindir/dsr
