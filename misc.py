@@ -340,7 +340,7 @@ def multiline_test(line):
     >>> multiline_test(line)
     False
     """
-    line = line.rpartition('=')  # partition the line in before, sep, after
+    line = line.rpartition(b'=')  # partition the line in before, sep, after
     line = ''.join(line[0:2])  # use all including separator
     line = line.rstrip()  # strip spaces
     if line.endswith('='):
@@ -883,12 +883,10 @@ def matrix_minus_vect(m, v):
     """
     >>> source = [[-0.01453, 1.6659, 0.10966], [-0.00146, 0.26814, 0.06351], [-0.27813, -0.21605, 1.52795]]
     >>> cent = [-0.09804,     0.57266333 , 0.56704]
-    [[0.08351,     1.09323667, -0.45738]
-    [0.09658, -0.30452333, -0.50353]
-    [-0.18009, -0.78871333,  0.96091]]
-    :param m:
-    :param v:
-    :return:
+    >>> matrix_minus_vect(source, cent) # DOCTEST: +NORMALIZE_WHITESPACE +ELLIPSIS
+    [[0.08351, 1.09323667, -0.45738], [0.09658, -0.30452333000000004, -0.50353], [-0.18008999999999997, -0.78871333, 0.9609099999999999]]
+    >>> matrix_minus_vect([[1,1,1],[2,2,2],[3,3,3]], [1,1,1])
+    [[0, 0, 0], [1, 1, 1], [2, 2, 2]]
     """
     result = []
     for coords in m:
@@ -900,9 +898,10 @@ def matrix_plus_vect(m, v):
     """
     >>> source = [[-0.01453, 1.6659, 0.10966], [-0.00146, 0.26814, 0.06351], [-0.27813, -0.21605, 1.52795]]
     >>> cent = [-0.09804,     0.57266333 , 0.56704]
-    :param m:
-    :param v:
-    :return:
+    >>> matrix_plus_vect(source, cent)
+    [[-0.11257, 2.23856333, 0.6767], [-0.0995, 0.84080333, 0.6305499999999999], [-0.37617, 0.35661333000000006, 2.09499]]
+    >>> matrix_minus_vect([[1,1,1],[2,2,2],[3,3,3]], [1,1,1])
+    [[0, 0, 0], [1, 1, 1], [2, 2, 2]]
     """
     result = []
     for coords in m:
@@ -1146,12 +1145,12 @@ def levenshtein(s1, s2):
     return previous_row[-1]
 
 
-def distance(x1, y1, z1, x2, y2, z2, round_out=False):
+def distance(x1, y1, z1, x2, y2, z2, round_out=0):
     """
     distance between two points in space for orthogonal axes.
-    >>> distance(1, 1, 1, 2, 2, 2, 4, True)
+    >>> distance(1, 1, 1, 2, 2, 2, 4)
     1.7321
-    >>> distance(1, 0, 0, 2, 0, 0, 4, True)
+    >>> distance(1, 0, 0, 2, 0, 0, 4)
     1.0
     """
     from math import sqrt

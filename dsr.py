@@ -12,9 +12,10 @@
 #
 from __future__ import print_function
 
-import os
 import sys
 from datetime import datetime
+
+import os
 
 from afix import remove_duplicate_restraints, write_dbhead_to_file
 from atomhandling import Elem_2_Sfac, rename_restraints_atoms
@@ -22,7 +23,8 @@ from constants import isoatomstr, sep_line, width
 from dbfile import ImportGRADE, print_search_results
 from dbfile import ParseDB, search_fragment_name
 from dsrparse import DSRParser
-from misc import cart_to_frac, chunks, frac_to_cart, touch, wrap_headlines
+from fit.quatfit import fit_fragment, centroid
+from misc import cart_to_frac, chunks, frac_to_cart, touch, wrap_headlines, matrix_plus_vect, subtract_vect
 from options import OptionsParser
 from refine import ShelxlRefine
 from resfile import ResList, ResListEdit, filename_wo_ending
@@ -158,12 +160,6 @@ class DSR(object):
             self.options.error()
         self.rl = ResList(self.res_file)
         self.reslist = self.rl.get_res_list()
-        try:
-            import numpy as np
-        except ImportError:
-            print('*** Numpy was not found. Please reinstall DSR from https://www.xs3.uni-freiburg.de/research/dsr '
-                  'or install the numpy package in order to use DSR. ***')
-            sys.exit()
         self.main()
         time2 = time.clock()
         runtime = (time2 - time1)
@@ -329,7 +325,6 @@ class DSR(object):
         # Coordinates only from the source, not the entire fragment:
         source_coords = [source_atoms[x] for x in dsrp.source]
         target_coords = [frac_to_cart(x, rle.cell) for x in target_coords]
-        from rmsd import fit_fragment
         # The source and target atom coordinates are fitted first. Then The complete fragment
         # is rotated and translated to the target position as calculated before.
         # parameter cartiesian has to be false here:
@@ -338,17 +333,15 @@ class DSR(object):
                                              source_atoms=source_coords,
                                              target_atoms=target_coords)
         # Moving back to the position of the first atom to have a reference:
-        import numpy as np
-        from rmsd import centroid
         # I have to make sure that I use the centroid of the correct atoms from target and source,
         # otherwise the fragment is shifted to a wrong position.
         # The third atom from the fragment e.g. has to be the third from the fragment to get
         # the correct centroid:
-        center_difference = centroid(np.array(target_coords)) - \
-                            centroid(np.array([list(fitted_fragment)[atnames.index(dsrp.source[x])]
-                                               for x in range(len(source_coords))]))
+        center_difference = subtract_vect(centroid(target_coords),
+                                          centroid([list(fitted_fragment)[atnames.index(dsrp.source[x])] for x in
+                                                    range(len(source_coords))]))
         # finishing shift to correct centroid:
-        fitted_fragment += center_difference
+        fitted_fragment = matrix_plus_vect(fitted_fragment, center_difference)
         # Or even lower than 0.1?
         if rmsd < 0.1:
             print('Fragment fit successful with RMSD of: {:8.3}'.format(rmsd))
@@ -407,10 +400,10 @@ class DSR(object):
         import textwrap
         source = textwrap.wrap("REM Restraints for Fragment {}, {} from: {}. "
                                "Please cite https://doi.org/10.1107/S1600576718004508".format(
-                self.fragment,
-                self.gdb.get_fragment_name(self.fragment),
-                self.gdb.get_src(self.fragment)),
-                width=74, subsequent_indent='REM ')
+            self.fragment,
+            self.gdb.get_fragment_name(self.fragment),
+            self.gdb.get_src(self.fragment)),
+            width=74, subsequent_indent='REM ')
         if dsrp.resi:
             hfixes = '\n'.join(self.gdb.get_hfixes(self.fragment, resi.get_residue_class))
             if hfixes:
