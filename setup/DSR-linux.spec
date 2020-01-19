@@ -31,7 +31,7 @@ mkdir -p %{buildroot}%{prefix}/DSR/networkx
 mkdir -p %{buildroot}%{prefix}/DSR/manuals
 mkdir -p %{buildroot}%{prefix}/DSR/example
 mkdir -p %{buildroot}%{prefix}/DSR/setup
-mkdir -p %{buildroot}%{prefix}/DSR/rmsd
+mkdir -p %{buildroot}%{prefix}/DSR/fit
 mkdir -p %{buildroot}%{prefix}/DSR/networkx/external/decorator/decorator3
 mkdir -p %{buildroot}%{prefix}/DSR/networkx/external/decorator/decorator2
 mkdir -p %{buildroot}%{prefix}/DSR/networkx/algorithms/assortativity/tests
@@ -109,9 +109,9 @@ install -m 666 example/p21c_final.res %{buildroot}%{prefix}/DSR/example/p21c_fin
 install -m 666 example/p21n_cf3.hkl %{buildroot}%{prefix}/DSR/example/p21n_cf3.hkl
 install -m 666 example/p21n_cf3.res %{buildroot}%{prefix}/DSR/example/p21n_cf3.res
 
-install -m 644 rmsd/__init__.py %{buildroot}%{prefix}/DSR/rmsd/__init__.py
-install -m 644 rmsd/calculate_rmsd.py %{buildroot}%{prefix}/DSR/rmsd/calculate_rmsd.py
-install -m 644 rmsd/LICENSE.txt %{buildroot}%{prefix}/DSR/rmsd/LICENSE.txt
+install -m 644 fit/__init__.py %{buildroot}%{prefix}/DSR/fit/__init__.py
+install -m 644 fit/quatfit.py %{buildroot}%{prefix}/DSR/fit/quatfit.py
+install -m 644 fit/LICENSE.txt %{buildroot}%{prefix}/DSR/fit/LICENSE.txt
 
 install -m 644 networkx/external/decorator/decorator3/_decorator3.py            %{buildroot}%{prefix}/DSR/networkx/external/decorator/decorator3/_decorator3.py
 install -m 644 networkx/external/decorator/decorator3/__init__.py               %{buildroot}%{prefix}/DSR/networkx/external/decorator/decorator3/__init__.py
@@ -502,9 +502,9 @@ dos2unix -q %{buildroot}%{prefix}/*
 %{prefix}/DSR/pyperclip.py
 %{prefix}/DSR/dsr_db.txt
 #%{prefix}/DSR/manuals/DSR-manual.pdf
-%{prefix}/DSR/rmsd/__init__.py
-%{prefix}/DSR/rmsd/calculate_rmsd.py
-%{prefix}/DSR/rmsd/LICENSE.txt
+%{prefix}/DSR/fit/__init__.py
+%{prefix}/DSR/fit/quatfit.py
+%{prefix}/DSR/fit/LICENSE.txt
 %{prefix}/DSR/example/p21c.hkl
 %{prefix}/DSR/example/p21c.res
 %{prefix}/DSR/example/p21c_step0.res
