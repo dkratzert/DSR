@@ -818,14 +818,10 @@ def cart_to_frac(cart_coord, cell):
     converts cartesian coordinates to fractional coordinates
     :param cart_coord: [float, float, float]
     :param cell:       [float, float, float, float, float, float]
-    >>> import mpmath as mpm
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
-    >>> A = A(cell).orthogonal_matrix
     >>> coords = [-2.74150542399906, 5.909586678, 10.7752007008937]
-    >>> print(mpm.nstr(A**-1*mpm.matrix(coords)))
-    [-0.186843]
-    [ 0.282708]
-    [ 0.526803]
+    >>> cart_to_frac(coords, cell)
+    [-0.186843, 0.282708, 0.526803]
     """
     a, b, c, alpha, beta, gamma = cell
     X, Y, Z = cart_coord
@@ -881,10 +877,11 @@ def subtract_vect(a, b):
             a[1] - b[1],
             a[2] - b[2])
 
+
 def matrix_minus_vect(m, v):
     """
     >>> source = [[-0.01453, 1.6659, 0.10966], [-0.00146, 0.26814, 0.06351], [-0.27813, -0.21605, 1.52795]]
-    >>> cent = [-0.09804     0.57266333  0.56704]
+    >>> cent = [-0.09804,     0.57266333 , 0.56704]
     [[0.08351,     1.09323667, -0.45738]
     [0.09658, -0.30452333, -0.50353]
     [-0.18009, -0.78871333,  0.96091]]
@@ -892,10 +889,25 @@ def matrix_minus_vect(m, v):
     :param v:
     :return:
     """
-    a = m[0][0] - v[0], m[0][1] - v[1], m[0][2] - v[2]
-    b = m[1][0] - v[0], m[1][1] - v[1], m[1][2] - v[2]
-    c = m[2][0] - v[0], m[2][1] - v[1], m[2][2] - v[2]
-    return (a, b, c)
+    result = []
+    for coords in m:
+        result.append([coords[0] - v[0], coords[1] - v[1], coords[2] - v[2]])
+    return result
+
+
+def matrix_plus_vect(m, v):
+    """
+    >>> source = [[-0.01453, 1.6659, 0.10966], [-0.00146, 0.26814, 0.06351], [-0.27813, -0.21605, 1.52795]]
+    >>> cent = [-0.09804,     0.57266333 , 0.56704]
+    :param m:
+    :param v:
+    :return:
+    """
+    result = []
+    for coords in m:
+        result.append([coords[0] + v[0], coords[1] + v[1], coords[2] + v[2]])
+    return result
+
 
 def transpose(a):
     """

@@ -52,7 +52,7 @@ files = [
     "example/p21n_cf3.res",
     "networkx",
     "mpmath",
-    "rmsd"
+    "fit"
 ]
 
 

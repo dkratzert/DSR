@@ -1,5 +1,10 @@
-#! /usr/bin/env python2.7
 # coding=utf-8
+from __future__ import print_function
+
+from math import fabs, sqrt
+
+from misc import transpose
+
 
 ##############################################################################
 # The program to superimpose atoms of two molecules by quaternion method
@@ -23,10 +28,6 @@
 # program in published material as:
 # David J. Heisterberg, 1990, unpublished results.
 #
-
-from math import fabs, sqrt
-
-from misc import transpose
 
 
 class Atom(object):
@@ -371,6 +372,19 @@ def qtrfit(fit_xyz, ref_xyz, maxsweeps):
     rotmat = q2mat(quaternion)
 
     return quaternion, transpose(rotmat), maxsweeps
+
+
+def rmsd2(ref_xyz, fit_xyz):
+    rms = 0.0
+    count = 0
+    for co1, co2 in zip(ref_xyz, fit_xyz):
+        count += 1
+        s1 = (co1[0] - co2[0]) ** 2
+        s2 = (co1[1] - co2[1]) ** 2
+        s3 = (co1[2] - co2[2]) ** 2
+        rms += sum([s1, s2, s3])
+    rms = sqrt(rms / count)
+    return rms
 
 
 def quatfitGetMolecule(reffilelol, fitfilelol, pairs):
