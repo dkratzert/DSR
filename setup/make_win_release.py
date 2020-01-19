@@ -33,11 +33,11 @@ def make_distribs():
     subprocess.call([innosetup_compiler, r'D:\GitHub\DSR\setup\dsr-install.iss', ])
 
 
-# Make binary distributions:
-make_distribs()
-
 # Make a zip file for web interface distribution:
 make_zip(files)
+
+# Make binary distributions:
+make_distribs()
 
 # This is not needed anymore:
 # This is to test if the distribution numpy works:
