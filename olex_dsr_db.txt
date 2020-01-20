@@ -1479,7 +1479,7 @@ C11 1 -0.07793  0.20842   0.64982
 C12 1 -0.09838  0.11846   0.65305
 </18C6>
 
-<12C2>
+<12C4>
 rem Name: 12-crown-4
 rem Src: Daniel Kratzert, Freiburg
 RESI CR4
