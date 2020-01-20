@@ -48,6 +48,29 @@
 #   in the SHELXL file automatically.
 ########################################################################################
 
+
+
+<piperidine>
+rem Name: Piperidine, C5H11N
+rem Src: CCDC DISDIU
+RESI PIP
+RIGU N1 > C5
+SIMU N1 > C5
+SADI 0.02 N1 C1 N1 C5
+SADI 0.02 C1 C2 C2 C3 C3 C4 C4 C5
+SADI 0.04 N1 C2 N1 C4
+SADI 0.04 C1 C3 C5 C3
+SADI 0.05 C1 C5 C2 C4
+FRAG 17 1 1 1 90 90 90
+N1    7      6.93743    6.51642    7.50132
+C1    6      7.54434    5.35509    6.77068
+C2    6      6.59627    4.16627    6.65993
+C3    6      6.10667    3.71988    8.03430
+C4    6      5.48956    4.90790    8.76097
+C5    6      6.48400    6.06569    8.85186
+</piperidine>
+
+
 <depe>
 rem Name: bis(diethylphosphino)ethane
 rem Src: ShelXle DSR GUI
