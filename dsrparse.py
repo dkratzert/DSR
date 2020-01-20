@@ -76,17 +76,6 @@ class DSRParser(object):
         """
         Returns the line number of the UNIT instruction in the SHELX file.
         :return: line number of UNIT
-
-        >>> from resfile import ResList, ResListEdit
-        >>> from dsrparse import DSRParser
-        >>> res_file = 'p21c.res'
-        >>> rl = ResList(res_file)
-        >>> reslist = rl.get_res_list()
-        >>> rle = ResListEdit(reslist, res_file)
-        >>> #dsr_line = dsrp.get_dsr_dict
-        >>> dsrp = DSRParser(reslist)
-        >>> dsrp.unit_line
-        7
         """
         unitline = misc.find_line(self.reslist, r'^UNIT\s+\d')
         return unitline
@@ -96,17 +85,6 @@ class DSRParser(object):
         """
         Returns the line number of the HKLF instruction in the res file.
         :return lin number of HKLF
-
-        >>> from resfile import ResList, ResListEdit
-        >>> from dsrparse import DSRParser
-        >>> res_file = 'p21c.res'  # located in unit-tests
-        >>> rl = ResList(res_file)
-        >>> reslist = rl.get_res_list()
-        >>> rle = ResListEdit(reslist, res_file)
-        >>> #dsr_line = dsrp.get_dsr_dict
-        >>> dsrp = DSRParser(reslist)
-        >>> dsrp.hklf_line
-        269
         """
         hklfline = misc.find_line(self.reslist, r'^HKLF\s+\d')
         return hklfline
