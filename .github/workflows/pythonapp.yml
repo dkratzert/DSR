@@ -27,5 +27,5 @@ jobs:
     - name: Test with pytest
       run: |
         pip install pytest
-        cd ../unit-tests
+        cd /home/runner/work/DSR/unit-tests
         pytest -k tests 
