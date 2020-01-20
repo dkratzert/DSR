@@ -28,4 +28,4 @@ jobs:
       run: |
         pip install pytest
         #cd /home/runner/work/DSR/unit-tests
-        pytest -k tests  /home/runner/work/DSR/DSR
+        pytest -k tests  --rootdir=/home/runner/work/DSR/DSR/unit-tests
