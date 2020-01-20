@@ -37,6 +37,7 @@ print(sys.version)
 
 class doctestsTest(unittest.TestCase):
     def testrun_doctest(self):
+        print('------------- Running Doctests: -------------------')
         for name in [dsr, afix, dsrparse, export, misc, elements, networkx,
                      atomhandling, networkx.classes.graph, dsrparse, dbfile,
                      sql_export, restraints, quatfit]:
