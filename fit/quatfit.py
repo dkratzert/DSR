@@ -65,6 +65,11 @@ def jacobi(matrix, maxsweeps):
     eigenvect (v) - output: eigenvectors
     eigenval (d) - output: eigenvalues
     maxsweeps (nrot) - input: maximum number of sweeps
+
+    >>> jacobi([[3.17433531690266, 0.7552355692755666, -0.37050538397620936, -0.49746947700906086], [0.0, -3.1971985481262335, -0.20753034403856088, -0.2387076705526636], [0.0, 0.0, -0.060190291281660466, -2.3321696095022664], [0.0, 0.0, 0.0, 0.08305352250523423]], 30)
+    ([[-0.08889770521773631, 0.1386812445939831, 0.09904158583248265, 0.981353898795267], [0.9657056931895532, -0.23051670048071957, 0.009464521279932086, 0.11910074633564315], [0.17301254304360364, 0.6902876776177079, -0.7024592415408208, -0.01098162340598708], [0.171977824436434, 0.6716639675659973, 0.7047355540105967, -0.15046242550547495]], [-3.346412214838959, -2.334571366711791, 2.33457136671179, 3.346412214838961])
+
+
     """
     eigenvect = [[float(0.0) for x in range(4)] for x in range(4)]
     eigenval = [float(0.0) for x in range(4)]
@@ -142,7 +147,7 @@ def jacobi(matrix, maxsweeps):
                 dtemp = eigenvect[i][k]
                 eigenvect[i][k] = eigenvect[i][j]
                 eigenvect[i][j] = dtemp
-    return eigenvect, eigenval, maxsweeps
+    return eigenvect, eigenval
 
 
 def q2mat(quaternion):
@@ -254,8 +259,9 @@ def qtrfit(source_xyz, target_xyz, maxsweeps):
     matrix[3][3] = xzyz - xxyx - xyyy
 
     # diagonalize c
-    eigenvect, eigenval, maxsweeps = jacobi(matrix, maxsweeps)
-
+    #print('input:', matrix)
+    eigenvect, eigenval = jacobi(matrix, maxsweeps)
+    #print(eigenvect, eigenval)
     # extract the desired quaternion
     quaternion[0] = eigenvect[0][3]
     quaternion[1] = eigenvect[1][3]
@@ -265,7 +271,7 @@ def qtrfit(source_xyz, target_xyz, maxsweeps):
     # generate the rotation matrix
     rotmat = q2mat(quaternion)
 
-    return quaternion, transpose(rotmat), maxsweeps
+    return quaternion, transpose(rotmat)
 
 
 def centroid(X):
@@ -375,7 +381,7 @@ def fit_fragment(fragment_atoms, source_atoms, target_atoms):
     P_source = matrix_minus_vect(P_source, Pcentroid)
     Q_target = matrix_minus_vect(Q_target, Qcentroid)
     # get the Kabsch rotation matrix:
-    quaternion, U, maxsweeps = qtrfit(P_source, Q_target, 30)
+    quaternion, U = qtrfit(P_source, Q_target, 30)
     # translate source_atoms onto center:
     source_atoms = matrix_minus_vect(source_atoms, Pcentroid)
     # rotate fragment_atoms (instead of source_atoms):
