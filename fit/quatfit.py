@@ -390,13 +390,13 @@ def fit_fragment(fragment_atoms, source_atoms, target_atoms):
     Q_target = matrix_minus_vect(Q_target, Qcentroid)
     # get the Kabsch rotation matrix:
     quaternion, U = qtrfit(P_source, Q_target, 30)
-    # translate source_atoms onto center:
-    source_atoms = matrix_minus_vect(source_atoms, Pcentroid)
     # rotate fragment_atoms (instead of source_atoms):
     rotated_fragment = rotmol(fragment_atoms, U)
+    # rotate also source atoms for rmsd calculation:
+    rotated_source = rotmol(P_source, U)
     # move fragment back from zero (be aware that the translation is still wrong!):
     rotated_fragment = matrix_plus_vect(rotated_fragment, Qcentroid)
-    rms = rmsd(Q_target, P_source)
+    rms = rmsd(Q_target, rotated_source)
     return list(rotated_fragment), rms
 
 
