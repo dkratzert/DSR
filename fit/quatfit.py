@@ -383,6 +383,7 @@ def fit_fragment(fragment_atoms, source_atoms, target_atoms):
     # Create the centroid of P_source and Q_target which is the geometric center of a
     # N-dimensional region and translate P_source and Q_target onto that center:
     # http://en.wikipedia.org/wiki/Centroid
+    # Pcentroid: (-0.09804, 0.5726633, 0.56704)
     Pcentroid = centroid(P_source)
     Qcentroid = centroid(Q_target)
     # Move P_source and Q_target to origin:
@@ -403,7 +404,7 @@ def fit_fragment(fragment_atoms, source_atoms, target_atoms):
 def mytest():
     """
     >>> mytest() # DOCTEST: +REPORT_NDIFF +NORMALIZE_WHITESPACE +ELLIPSIS
-    Kabsch RMSD:    0.0191
+    Kabsch RMSD:   0.0191
     C0d   1      0.13342089      0.24130563      0.55100894   11.0  0.04
     C1d   1      0.17619888      0.17902262      0.56452914   11.0  0.04
     C2d   1      0.08365746      0.12997794      0.52724057   11.0  0.04
