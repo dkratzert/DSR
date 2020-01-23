@@ -42,6 +42,10 @@ def rotmol(frag_atoms, rotmat):
     filelol (x) - input coordinates
     filelol (y) - rotated coordinates y = u * x
     rotmat (u) - left rotation matrix
+
+    Parameters
+    ----------
+    frag_atoms : list
     """
     yx = float(0.0)
     yy = float(0.0)
@@ -266,9 +270,9 @@ def qtrfit(source_xyz, target_xyz, maxsweeps):
     matrix[3][3] = xzyz - xxyx - xyyy
 
     # diagonalize c
-    #print('input:', matrix)
+    # print('input:', matrix)
     eigenvect, eigenval = jacobi(matrix, maxsweeps)
-    #print(eigenvect, eigenval)
+    # print(eigenvect, eigenval)
     # extract the desired quaternion
     quaternion[0] = eigenvect[0][3]
     quaternion[1] = eigenvect[1][3]
@@ -353,7 +357,7 @@ def show_coordinates(atoms, V):
         print("{0:2s}   1 {1:15.8f} {2:15.8f} {3:15.8f}   11.0  0.04".format(atom, *V[n]))
 
 
-def fit_fragment(fragment_atoms, source_atoms, target_atoms):
+def fit_fragment(fragment_atoms, source_atoms, target_atoms): 
     """
     Takes a list of fragment atoms and fits them to the position of target atoms. source_atoms are a fraction
     of the fragment to be fitted on the target_atoms.
@@ -374,9 +378,6 @@ def fit_fragment(fragment_atoms, source_atoms, target_atoms):
     rmsd: float
         RMSD (root mean square deviation)
     """
-    source_atoms = source_atoms
-    target_atoms = target_atoms
-    fragment_atoms = fragment_atoms
     P_source = copy.deepcopy(source_atoms)
     Q_target = copy.deepcopy(target_atoms)
     # Create the centroid of P_source and Q_target which is the geometric center of a
