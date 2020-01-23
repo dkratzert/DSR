@@ -403,7 +403,7 @@ def fit_fragment(fragment_atoms, source_atoms, target_atoms):
 def mytest():
     """
     >>> mytest() # DOCTEST: +REPORT_NDIFF +NORMALIZE_WHITESPACE +ELLIPSIS
-    Kabsch RMSD:    0.339
+    Kabsch RMSD:    0.0191
     C0d   1      0.13342089      0.24130563      0.55100894   11.0  0.04
     C1d   1      0.17619888      0.17902262      0.56452914   11.0  0.04
     C2d   1      0.08365746      0.12997794      0.52724057   11.0  0.04
