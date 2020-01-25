@@ -69,17 +69,17 @@ def jacobi(matrix, maxsweeps):
     >>> j = jacobi([[3.17433531690266, 0.7552355692755666, -0.37050538397620936, -0.49746947700906086], [0.0, -3.1971985481262335, -0.20753034403856088, -0.2387076705526636], [0.0, 0.0, -0.060190291281660466, -2.3321696095022664], [0.0, 0.0, 0.0, 0.08305352250523423]], 30)
     >>> j
     ([[-0.08889770521773631, 0.1386812445939831, 0.09904158583248265, 0.981353898795267], [0.9657056931895532, -0.23051670048071957, 0.009464521279932086, 0.11910074633564315], [0.17301254304360364, 0.6902876776177079, -0.7024592415408208, -0.01098162340598708], [0.171977824436434, 0.6716639675659973, 0.7047355540105967, -0.15046242550547495]], [-3.346412214838959, -2.334571366711791, 2.33457136671179, 3.346412214838961])
-    
+
     # The quaternion: angle, x, y, z
     >>> [j[0][0][3], j[0][1][3], j[0][2][3], j[0][3][3]]
     [0.981353898795267, 0.11910074633564315, -0.01098162340598708, -0.15046242550547495]
-    
+
     # The eigenvalues:
     >>> j[1]
     [-3.346412214838959, -2.334571366711791, 2.33457136671179, 3.346412214838961]
     """
-    eigenvect = [[float(0.0) for x in range(4)] for x in range(4)]
-    eigenval = [float(0.0) for x in range(4)]
+    eigenvect = [[float(0.0) for _ in range(4)] for _ in range(4)]
+    eigenval = [float(0.0) for _ in range(4)]
     onorm = float(0.0)
     dnorm = float(0.0)
     b = float(0.0)
@@ -93,8 +93,6 @@ def jacobi(matrix, maxsweeps):
     dtemp = float(0.0)
     m = 0
     for j in range(4):
-        # for i in range(4):
-        #  eigenvect[i][j] = 0.0
         eigenvect[j][j] = 1.0
         eigenval[j] = matrix[j][j]
     for m in range(maxsweeps):
@@ -104,7 +102,9 @@ def jacobi(matrix, maxsweeps):
             dnorm += fabs(eigenval[j])
             for i in range(j):
                 onorm += fabs(matrix[i][j])
-        if onorm / dnorm <= 1.0e-12: break  # goto Exit_now;
+        if onorm / dnorm <= 1.0e-12: 
+            # Solution converged
+            break
         for j in range(1, 4):
             for i in range(j):
                 b = matrix[i][j]
