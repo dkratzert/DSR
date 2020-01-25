@@ -1,10 +1,9 @@
 # coding=utf-8
 from __future__ import print_function
 
+import copy
 from math import fabs
 from math import sqrt
-
-import copy
 
 from misc import cart_to_frac, frac_to_cart, matrix_minus_vect, matrix_plus_vect
 from misc import transpose
@@ -38,14 +37,12 @@ def rotmol(frag_atoms, rotmat):
     """
     ROTMOL
     rotate a molecule
-    n - number of atoms
-    filelol (x) - input coordinates
-    filelol (y) - rotated coordinates y = u * x
-    rotmat (u) - left rotation matrix
+    y = u * x
 
     Parameters
-    ----------
-    frag_atoms : list
+    frag_atoms (x) - input coordinates
+    rotmat (u) - left rotation matrix
+    output (y) - rotated coordinates 
     """
     yx = float(0.0)
     yy = float(0.0)
@@ -143,7 +140,7 @@ def jacobi(matrix, maxsweeps):
                     dtemp = c * c * eigenval[i] + s * s * eigenval[j] - 2.0 * c * s * b
                     eigenval[j] = s * s * eigenval[i] + c * c * eigenval[j] + 2.0 * c * s * b
                     eigenval[i] = dtemp
-    maxsweeps = m
+    # print(m)
     for j in range(3):
         k = j
         dtemp = eigenval[k]
@@ -357,7 +354,7 @@ def show_coordinates(atoms, V):
         print("{0:2s}   1 {1:15.8f} {2:15.8f} {3:15.8f}   11.0  0.04".format(atom, *V[n]))
 
 
-def fit_fragment(fragment_atoms, source_atoms, target_atoms): 
+def fit_fragment(fragment_atoms, source_atoms, target_atoms):
     """
     Takes a list of fragment atoms and fits them to the position of target atoms. source_atoms are a fraction
     of the fragment to be fitted on the target_atoms.
