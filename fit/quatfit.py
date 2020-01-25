@@ -39,7 +39,6 @@ def rotmol(frag_atoms, rotmat):
     rotate a molecule
     y = u * x
 
-    Parameters
     frag_atoms (x) - input coordinates
     rotmat (u) - left rotation matrix
     output (y) - rotated coordinates 
