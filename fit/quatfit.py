@@ -374,10 +374,6 @@ def fit_fragment(fragment_atoms, source_atoms, target_atoms):
     """
     P_source = copy.deepcopy(source_atoms)
     Q_target = copy.deepcopy(target_atoms)
-    # Create the centroid of P_source and Q_target which is the geometric center of a
-    # N-dimensional region and translate P_source and Q_target onto that center:
-    # http://en.wikipedia.org/wiki/Centroid
-    # Pcentroid: (-0.09804, 0.5726633, 0.56704)
     Pcentroid = centroid(P_source)
     Qcentroid = centroid(Q_target)
     # Move P_source and Q_target to origin:
