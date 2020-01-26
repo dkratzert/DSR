@@ -43,17 +43,15 @@ def rotmol(frag_atoms, rotmat):
     rotmat (u) - left rotation matrix
     output (y) - rotated coordinates 
     """
-    yx = float(0.0)
-    yy = float(0.0)
-    yz = float(0.0)
-    for i in range(len(frag_atoms)):
-        yx = rotmat[0][0] * frag_atoms[i][0] + rotmat[1][0] * frag_atoms[i][1] + rotmat[2][0] * frag_atoms[i][2]
-        yy = rotmat[0][1] * frag_atoms[i][0] + rotmat[1][1] * frag_atoms[i][1] + rotmat[2][1] * frag_atoms[i][2]
-        yz = rotmat[0][2] * frag_atoms[i][0] + rotmat[1][2] * frag_atoms[i][1] + rotmat[2][2] * frag_atoms[i][2]
-        frag_atoms[i][0] = yx  # x
-        frag_atoms[i][1] = yy  # y
-        frag_atoms[i][2] = yz  # z
-    return frag_atoms
+    atoms = copy.deepcopy(frag_atoms)
+    for i in range(len(atoms)):
+        yx = rotmat[0][0] * atoms[i][0] + rotmat[1][0] * atoms[i][1] + rotmat[2][0] * atoms[i][2]
+        yy = rotmat[0][1] * atoms[i][0] + rotmat[1][1] * atoms[i][1] + rotmat[2][1] * atoms[i][2]
+        yz = rotmat[0][2] * atoms[i][0] + rotmat[1][2] * atoms[i][1] + rotmat[2][2] * atoms[i][2]
+        atoms[i][0] = yx  # x
+        atoms[i][1] = yy  # y
+        atoms[i][2] = yz  # z
+    return atoms
 
 
 def jacobi(matrix, maxsweeps):
@@ -102,7 +100,7 @@ def jacobi(matrix, maxsweeps):
             dnorm += fabs(eigenval[j])
             for i in range(j):
                 onorm += fabs(matrix[i][j])
-        if onorm / dnorm <= 1.0e-12: 
+        if onorm / dnorm <= 1.0e-12:
             # Solution converged
             break
         for j in range(1, 4):
@@ -256,12 +254,12 @@ def qtrfit(source_xyz, target_xyz, maxsweeps):
 
     matrix[0][0] = xxyx + xyyy + xzyz
     matrix[0][1] = xzyy - xyyz
-    matrix[1][1] = xxyx - xyyy - xzyz
     matrix[0][2] = xxyz - xzyx
-    matrix[1][2] = xxyy + xyyx
-    matrix[2][2] = xyyy - xzyz - xxyx
     matrix[0][3] = xyyx - xxyy
+    matrix[1][1] = xxyx - xyyy - xzyz
+    matrix[1][2] = xxyy + xyyx
     matrix[1][3] = xzyx + xxyz
+    matrix[2][2] = xyyy - xzyz - xxyx
     matrix[2][3] = xyyz + xzyy
     matrix[3][3] = xzyz - xxyx - xyyy
 
@@ -327,14 +325,14 @@ def rmsd(V, W):
     -------
     fit : float
         Root-mean-square deviation
-
+    
+    >>> rmsd([[1.001, 2.123, 0.123],[1.01232, 2.124, 0.121],[1.1212, 2.122, 0.111]], [[1.011, 2.123, 0.12324],[1.01232, 2.124, 0.121],[1.1012, 2.1224, 0.1112]])
+    0.012913269660830817
     """
-    D = len(V[0])
-    N = len(V)
-    rmsd = 0.0
+    d = 0
     for v, w in zip(V, W):
-        rmsd += sum([(v[i] - w[i]) ** 2.0 for i in range(D)])
-    return sqrt(rmsd / N)
+        d += sum([(h - k) ** 2 for h, k in zip(v, w)])
+    return sqrt(d / len(V))
 
 
 def show_coordinates(atoms, V):
