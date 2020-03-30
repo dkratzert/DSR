@@ -120,7 +120,7 @@ class DSR(object):
         if self.head_csv:
             self.head_to_gui()
         if self.search_extern:
-            result = search_fragment_name(self.search_extern, self.gdb, numresults=7)
+            result = search_fragment_name(self.search_extern, self.gdb, numresults=8)
             for i in result:
                 print('{};;{};;{};;{}'.format(i[0], i[1], i[2], i[3]))
             sys.exit()
