@@ -73,7 +73,7 @@ def search_fragment_name(search_string, gdb, numresults=6):
         fragment.append([coefficient, key[1]])
         search_results.append(fragment)
     # select the best n results, sort for first and sewcond search key
-    selected_results = sorted(search_results, key=lambda coeff: [coeff[-1][0], coeff[-1][1]], reverse=False)[
+    selected_results = sorted(search_results, key=lambda coeff: [coeff[-1][0], coeff[-1][1]], reverse=True)[
                        :numresults]
     return selected_results
 

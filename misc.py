@@ -1063,13 +1063,13 @@ def dice_coefficient2(a, b, case_insens=True):
         a = a.lower()
         b = b.lower()
     if not len(a) or not len(b):
-        return 1.0
+        return 0.0
     # quick case for true duplicates
     if a == b:
-        return 0.0
+        return 2.0
     # if a != b, and a or b are single chars, then they can't possibly match
     if len(a) == 1 or len(b) == 1:
-        return 1.0
+        return 0.0
     # use python list comprehension, preferred over list.append()
     a_bigram_list = [a[i:i + 2] for i in range(len(a) - 1)]
     b_bigram_list = [b[i:i + 2] for i in range(len(b) - 1)]
@@ -1089,8 +1089,7 @@ def dice_coefficient2(a, b, case_insens=True):
             i += 1
         else:
             j += 1
-    score = float(matches) / float(lena + lenb)
-    score = 1 - score
+    score = float(2*matches) / float(lena + lenb)
     return round(score, 6)
 
 
