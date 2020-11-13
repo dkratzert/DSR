@@ -18,7 +18,7 @@ import sys
 from collections import OrderedDict
 
 from atomhandling import get_atomtypes
-from elements import ELEMENTS
+from elements import get_radius_from_element
 from misc import distance, find_line, flatten, get_overlapped_chunks, remove_partsymbol, shift, vol_tetrahedron
 
 # all upper case for case insensitivity:
@@ -148,13 +148,13 @@ class Restraints():
             for co2, typ2, n2 in zip(cart_coords, atom_types, names):
                 if n1 == n2:
                     continue
-                ele1 = ELEMENTS[typ.capitalize()]
-                ele2 = ELEMENTS[typ2.capitalize()]
+                ele1_covrad = get_radius_from_element(typ.capitalize())
+                ele2_covrad = get_radius_from_element(typ2.capitalize())
                 d = distance(co1[0], co1[1], co1[2], co2[0], co2[1], co2[2], round_out=5)
                 # print(d, n1, n2, (ele1.covrad+ele2.covrad)+extra_param, '#', ele1.covrad, ele2.covrad)
                 # a bond is defined with less than the sum of the covalence
                 # radii plus the extra_param:
-                if d <= (ele1.covrad + ele2.covrad) + extra_param and d > (ele1.covrad or ele2.covrad):
+                if d <= (ele1_covrad + ele2_covrad) + extra_param and d > (ele1_covrad or ele2_covrad):
                     conlist.append([n2[1], n1[1]])
                     if [n1[1], n2[1]] in conlist:
                         continue

@@ -223,3 +223,5 @@ feed.rss
 p21c.cif
 test.res
 icp/
+/dsr.build/
+/dsr.dist/
