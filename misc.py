@@ -340,7 +340,7 @@ def multiline_test(line):
     >>> multiline_test(line)
     False
     """
-    line = line.rpartition(b'=')  # partition the line in before, sep, after
+    line = line.rpartition('=')  # partition the line in before, sep, after
     line = ''.join(line[0:2])  # use all including separator
     line = line.rstrip()  # strip spaces
     if line.endswith('='):
@@ -1045,19 +1045,19 @@ def dice_coefficient2(a, b, case_insens=True):
 
     This implementation is reverse. 1 means not hit, 0 means best match
     >>> dice_coefficient2('hallo', 'holla')
-    0.75
+    0.5
     >>> dice_coefficient2('Banze', 'Benzene')
-    0.6
+    0.8
     >>> dice_coefficient2('halo', 'Haaallo')
-    0.333333
+    1.333333
     >>> dice_coefficient2('hallo', 'Haaallo')
-    0.2
+    1.6
     >>> dice_coefficient2('hallo', 'Hallo')
-    0.0
+    2.0
     >>> dice_coefficient2('aaa', 'BBBBB')
-    1.0
+    0.0
     >>> dice_coefficient2('', '')
-    1.0
+    0.0
     """
     if case_insens:
         a = a.lower()

@@ -261,7 +261,7 @@ def _extend(nnbrs,cand,done,so_far,cliques):
         if not new_cand and not new_done:
             # Found the clique
             cliques.append(so_far[:])
-        elif not new_done and len(new_cand) is 1:
+        elif not new_done and len(new_cand) == 1:
             # shortcut if only one node left
             cliques.append(so_far+list(new_cand))
         else:

@@ -61,7 +61,7 @@ class DSRParser(object):
         if len(indexnum) > 1:
             print('*** Only one DSR command at once is allowed! ***')
             sys.exit(-1)
-        dsr_str = str(self.reslist[line_number]).encode('ascii')
+        dsr_str = str(self.reslist[line_number])#.encode('ascii')
         if misc.multiline_test(dsr_str):
             self.multiline = True
             # in case of a multiline command, strip the '=' and the newline
