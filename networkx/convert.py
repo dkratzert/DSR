@@ -609,7 +609,7 @@ def from_numpy_matrix(A,create_using=None):
     x,y=np.asarray(A).nonzero()
 
     # handle numpy constructed data type
-    if python_type is 'void':
+    if python_type == 'void':
         fields=sorted([(offset,dtype,name) for name,(dtype,offset) in
                        A.dtype.fields.items()])
         for (u,v) in zip(x,y):

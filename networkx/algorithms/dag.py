@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-from fractions import gcd
+import sys
+if sys.version_info.major == 2:
+    from fractions import gcd
+else:
+    from math import gcd
 import networkx as nx
 """Algorithms for directed acyclic graphs (DAGs)."""
 #    Copyright (C) 2006-2011 by 

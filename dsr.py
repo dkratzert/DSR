@@ -60,7 +60,10 @@ class DSR(object):
         """
         """
         import time
-        time1 = time.clock()
+        if sys.version_info.major == 2:
+            time1 = time.clock()
+        else:
+            time1 = time.perf_counter()
         # options from the commandline options parser:
         self.options = options
         self.external = False
@@ -161,7 +164,10 @@ class DSR(object):
         self.rl = ResList(self.res_file)
         self.reslist = self.rl.get_res_list()
         self.main()
-        time2 = time.clock()
+        if sys.version_info.major == 2:
+            time2 = time.clock()
+        else:
+            time2 = time.perf_counter()
         runtime = (time2 - time1)
         print('Runtime: {:>.1f} s'.format(runtime))
         print('DSR run complete.')
