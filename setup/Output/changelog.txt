@@ -1,4 +1,5 @@
-Recent changes
+Recent Changes
+-233    Fixed some accidental HFIX instructions.
 -232    Fixed rmsd value of fragment fit.
 -231    Removed numpy dependency for fragment fit.
 -230    Added "REM HFIX ..." to the list of restraints for fragments in residues. 
