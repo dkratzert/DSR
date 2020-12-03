@@ -32,14 +32,13 @@ from resi import Resi, remove_resi
 from restraints import Restraints
 from terminalsize import get_terminal_size
 
-VERSION = '232'
+VERSION = '233'
 # dont forget to change version in Innoscript file, spec file and deb file.
 minuse = ((width // 2) - 7) * '-'
 program_name = '\n{} D S R - v{} {}'.format(minuse, VERSION, minuse)
 
 # TODO and ideas:
 """
-- Add "REM HFIX mn X" for all H containing fragments
 - make DSR Python3-only
 - Split mode
   - calc principal axis for each ellipsoid
