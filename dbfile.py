@@ -69,10 +69,18 @@ def search_fragment_name(search_string, gdb, numresults=6):
     for fragment in names_list:
         key = make_sortkey(fragment[1], searchkey=True)
         # key[0] and key[1] combined to have also the sum formula:
-        coefficient = dice_coefficient2(search_string, "{0}{1}".format(key[0], key[1]))
+        fullstring  = "{0}{1}".format(key[0], key[1])
+        if fragment[1].lower().startswith(search_string):
+            # give names starting with a certain string high priority
+            coefficient = 3.0
+        elif search_string in fullstring or search_string in fragment[0]:
+            coefficient = 2.1
+        else:
+            coefficient = dice_coefficient2(search_string, fullstring)
         fragment.append([coefficient, key[1]])
-        search_results.append(fragment)
-    # select the best n results, sort for first and sewcond search key
+        if coefficient > 0.1:
+            search_results.append(fragment)
+    # select the best n results, sort for first and second search key
     selected_results = sorted(search_results, key=lambda coeff: [coeff[-1][0], coeff[-1][1]], reverse=True)[
                        :numresults]
     return selected_results
