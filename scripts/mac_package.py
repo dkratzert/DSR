@@ -23,7 +23,7 @@ version = VERSION
 make_zip(files)
 
 volname = "DSR-" + version
-inputfile = "setup/Output/DSR-{}.tar.gz".format(version, version)
+inputfile = "setup/Output/DSR-{}.tar.gz".format(version)
 dmgname = os.path.abspath("setup/Output/{}.dmg".format(volname))
 skeldmg = os.path.abspath("setup/Output/DSR-skel-rw.dmg")
 finaltmpdmg = os.path.abspath("setup/Output/DSR-tmp-rw.dmg")
