@@ -4,7 +4,7 @@
 #
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
-# <daniel.kratzert@ac.uni-freiburg.de> wrote this file. As long as you retain
+# <dkratzert@gmx.de> wrote this file. As long as you retain
 # this notice you can do whatever you want with this stuff. If we meet some day,
 # and you think this stuff is worth it, you can buy me a beer in return.
 # Daniel Kratzert
@@ -32,7 +32,7 @@ from resi import Resi, remove_resi
 from restraints import Restraints
 from terminalsize import get_terminal_size
 
-VERSION = '234'
+VERSION = '235'
 # dont forget to change version in Innoscript file, spec file and deb file.
 minuse = ((width // 2) - 7) * '-'
 program_name = '\n{} D S R - v{} {}'.format(minuse, VERSION, minuse)
@@ -67,7 +67,7 @@ class DSR(object):
         self.options = options
         self.external = False
         self.fragment = ''
-        self.helpmsg = "*** Please ask daniel.kratzert@ac.uni-freiburg.de for help ***"
+        self.helpmsg = "*** Please ask dkratzert@gmx.de for help ***"
         self.res_file = self.options.res_file
         if self.options.external_restr:
             self.external = True

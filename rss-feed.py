@@ -3,7 +3,7 @@
 #möp
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
-# <daniel.kratzert@ac.uni-freiburg.de> wrote this file. As long as you retain
+# <dkratzert@gmx.de> wrote this file. As long as you retain
 # this notice you can do whatever you want with this stuff. If we meet some day,
 # and you think this stuff is worth it, you can buy me a beer in return.
 # Daniel Kratzert
@@ -25,7 +25,7 @@ head = r"""
 
   <channel>
     <title>DSR Changelog</title>
-    <link>https://www.xs3.uni-freiburg.de/research/dsr</link>
+    <link>https://dkratzert.de/dsr.html</link>
     <description>Recent changes made to DSR development.</description>
     <language>en-en</language>
     <copyright>Daniel Kratzert</copyright>
@@ -35,7 +35,7 @@ item = r"""
     <item>
       <title> {} </title>
       <description>{}</description>
-      <link>https://www.xs3.uni-freiburg.de/research/dsr</link>
+      <link>https://dkratzert.de/dsr.html</link>
     </item>
 """
 

@@ -3,7 +3,7 @@
 #
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
-# <daniel.kratzert@ac.uni-freiburg.de> wrote this file. As long as you retain
+# <dkratzert@gmx.de> wrote this file. As long as you retain
 # this notice you can do whatever you want with this stuff. If we meet some day,
 # and you think this stuff is worth it, you can buy me a beer in return.
 # Daniel Kratzert
@@ -20,7 +20,7 @@ import tempfile
 
 from dsr import VERSION
 
-urlprefix = "https://www.xs3-data.uni-freiburg.de/data"
+urlprefix = "https://dkratzert.de/files/dsr"
 
 # changes the user-agent of the http request:
 # Python 2 and 3: alternative 4
