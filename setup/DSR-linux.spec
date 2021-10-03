@@ -8,7 +8,7 @@ Requires: python
 Prefix: /opt
 BuildRoot: %{_tmppath}/%{name}-%{version}
 BuildArch: noarch
-URL: https://www.xs3.uni-freiburg.de/research/dsr
+URL: https://dkratzert.de/dsr.html
 License: Beerware
 Source: %{name}-%{version}.tar.gz
 Group: Productivity/Scientific/Chemistry

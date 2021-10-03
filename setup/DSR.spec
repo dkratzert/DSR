@@ -3,7 +3,7 @@ Name: DSR
 Version: 217
 Release: 0
 BuildArch: noarch
-URL: https://www.xs3.uni-freiburg.de/research/dsr
+URL: https://dkratzert.de/dsr.html
 License: Beerware
 Group: Sciences/Chemistry
 Source: %name-%version.tar.gz
