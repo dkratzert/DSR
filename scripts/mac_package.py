@@ -43,19 +43,6 @@ print('Mounting .dmg file for mac deployment')
 print('Mounting: ', finaltmpdmg, '\n')
 subprocess.call(mountcommmand)
 
-"""
-# use instead of direct file opening below:
-# Download .tar.gz package from web server and extract to mounted volume:
-try:
-    print("getting DSR from web server ....")
-    selfupdate.get_update_package(version=version, destdir='/Volumes/DSR-install/DSR', post=False)
-except http_error:
-    subprocess.call(["hdiutil", "detach", "/volumes/DSR-install"])
-    print("Version {} is not present on xs3-data!".format(version))
-    # Clean temporary image:
-    misc.remove_file(finaltmpdmg)
-    sys.exit()
-"""
 # use instead of webserver stuff above
 tmpdir = tempfile.mkdtemp()  # a temporary directory
 misc.extract_tarfile(inputfile, tmpdir)
