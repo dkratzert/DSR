@@ -1,17 +1,17 @@
 import re
-atoms = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg',
+atoms = ('H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg',
         'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe',
         'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 'Rb', 'Sr', 'Y',
         'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te',
         'I', 'Xe', 'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb',
         'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt',
         'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 'Ac', 'Th', 'Pa',
-        'U']
+        'U', 'Q')
 
 
 element_base = {
     # number: name symbol ions
-    #0: ['Neutron',     'n',  ()],
+    0: ['Q-peak',      'Q',  ()],
     1: ['Hydrogen',    'H',  (1,)],
     2: ['Helium',      'He', ()],
     3: ['Lithium',     'Li', (1,)],
@@ -144,24 +144,36 @@ class Element():
         >>> el = Element()
         >>> el.get_atomic_number('F')
         9
+        >>> el.get_atomic_number('C')
+        6
+        >>> el.get_atomic_number('Q')
+        6
         '''
         for atomic_number, elements in list(self.element_base.items()):
             if element.upper() == elements[1].upper():
-                return(atomic_number)
+                if atomic_number == 0:
+                    return 6
+                return atomic_number
 
 
     def get_element(self, atomic_number):
-        '''
+        """
         returns the element symbol from the atomic number
 
         :param atomic_number: atomic number
         :type atomic_number: integer
-        
-        >>> el = Element()
-        >>> el.get_element(7)
+
+        >>> ele = Element()
+        >>> ele.get_element(7)
         'N'
-        '''
-        return self.element_base[atomic_number][1]
+        >>> ele.get_element(0)
+        'C'
+        """
+        el = self.element_base[atomic_number][1]
+        if el == 'Q':
+            return 'C'
+        else:
+            return el
 
     def get_atomlabel(self, input_atom):
         '''
@@ -170,6 +182,10 @@ class Element():
         >>> el = Element()
         >>> el.get_atomic_number('N')
         7
+        >>> el.get_atomic_number('Q')
+        1
+        >>> el.get_atomic_number('C')
+        6
         '''
         elements = [x.upper() for x in atoms]
         atom=''
