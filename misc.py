@@ -112,13 +112,9 @@ def walkdir(rootdir, include="", exclude=None):
     :param include: list of file endings to include only e.g. ['.py', '.res']
     :return: list of files
 
-    >>> walkdir("../docs") #doctest: +REPORT_NDIFF +NORMALIZE_WHITESPACE +ELLIPSIS
-    ['../docs/test.txt']
     >>> walkdir("../setup/modpath.iss")
     ['../setup/modpath.iss']
     >>> walkdir("../setup/modpath.iss", exclude=['.iss'])
-    []
-    >>> walkdir("../docs", exclude=['.txt']) #doctest: +REPORT_NDIFF +NORMALIZE_WHITESPACE +ELLIPSIS
     []
     """
     if exclude is None:
