@@ -444,7 +444,7 @@ class atomsTest(unittest.TestCase):
 
     def testrun_num_of_atoms(self):
         num_of_atoms = len(self.atoms)
-        self.assertEqual(num_of_atoms, 92)
+        self.assertEqual(num_of_atoms, 93)
         self.assertNotEqual(num_of_atoms, 42)
 
 
