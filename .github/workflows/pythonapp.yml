@@ -28,6 +28,7 @@ jobs:
       - name: Test with Unittest
         run: |
           echo $GITHUB_WORKSPACE >> $GITHUB_PATH
+          echo $GITHUB_WORKSPACE >> $PATH
           chmod a+x dsr
           dsr -l
           
