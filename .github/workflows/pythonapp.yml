@@ -17,21 +17,13 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 2.7
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pytest
-      #    pip install -r requirements.txt
-      #- name: Lint with flake8
-      #  run: |
-      #    pip install flake8
-      #    # stop the build if there are Python syntax errors or undefined names
-      #    flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-      #    # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-      #    flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      - name: Test with Unittest
-        run: |
-          cd tests
-          pytest
-          # PYTHONPATH=../$pwd python2 test_all.py
-          # PYTHONPATH=../$pwd python2 ffit_tests/test_fastfit.py
+        - name: Install dependencies
+          run: |
+            python -m pip install --upgrade pip
+            pip install pytest
+        - name: Test with Unittest
+          run: |
+            cd tests
+            pytest
+            # PYTHONPATH=../$pwd python2 test_all.py
+            # PYTHONPATH=../$pwd python2 ffit_tests/test_fastfit.py
