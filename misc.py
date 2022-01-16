@@ -1356,13 +1356,13 @@ def get_overlapped_chunks(ring, size):
     returns a list of chunks of size 'size' which overlap with one field.
     If the last chunk is smaller than size, the last 'size' chunks are returned as last chunk.
     "size" has to be larger than 3 to get reasonable results.
-    >>> l = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 'a', 'b', 'c', 'd', 'e']
+    >>> l = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
     >>> get_overlapped_chunks(l, 4)
-    [[1, 2, 3, 4], [4, 5, 6, 7], [0, 7, 8, 9], [0, 'a', 'b', 'c'], ['b', 'c', 'd', 'e']]
-    >>> get_overlapped_chunks(l, 3)
-    [['c', 'd', 'e'], ['c', 'd', 'e'], ['c', 'd', 'e'], ['c', 'd', 'e'], ['c', 'd', 'e']]
+    [[1, 2, 3, 4], [4, 5, 6, 7], [7, 8, 9, 10], [10, 11, 12, 13], [12, 13, 14, 15]]
+    >>> get_overlapped_chunks(l, 3)  # Not working with that chunk size
+    [[13, 14, 15], [13, 14, 15], [13, 14, 15], [13, 14, 15], [13, 14, 15]]
     >>> get_overlapped_chunks(l, 5)
-    [[1, 2, 3, 4, 5], [4, 5, 6, 7, 8], [0, 7, 8, 9, 'a'], [0, 'a', 'b', 'c', 'd'], ['a', 'b', 'c', 'd', 'e']]
+    [[1, 2, 3, 4, 5], [4, 5, 6, 7, 8], [7, 8, 9, 10, 11], [10, 11, 12, 13, 14], [11, 12, 13, 14, 15]]
     """
     chunks = []
     for i in range(0, len(ring) - size + 3, 3):
