@@ -15,10 +15,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         # remove this to view the results:
         #self.dsr = '/Applications/DSR/dsr'
         # self.dsr = 'D:\Programme\DSR\dsr'
-        try:
-            self.dsr = r'"{}"'.format(which('dsr')[-1])
-        except IndexError:
-            self.dsr = r'"{}"'.format('../dsr')
+        self.dsr = r'"{}"'.format(which('dsr')[-1])
         print(self.dsr)
 
         # 1 -r resi cf3 part 2 occ -31

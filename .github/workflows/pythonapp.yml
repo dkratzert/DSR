@@ -10,6 +10,8 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      DSR_DIR: /opt/DSR
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 2.7
@@ -24,7 +26,10 @@ jobs:
 
       - name: Test with Unittest
         run: |
+          mkdir -p /opt/DSR
           chmod a+x dsr
+          cp -r * /opt/DSR/
+          
           cd tests
           pytest
           # PYTHONPATH=../$pwd python2 test_all.py
