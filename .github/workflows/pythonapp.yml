@@ -10,20 +10,21 @@ jobs:
   build:
 
     runs-on: windows-latest
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 2.7
-      uses: actions/setup-python@v1
-      with:
-        python-version: 2.7
-        - name: Install dependencies
-          run: |
-            python -m pip install --upgrade pip
-            pip install pytest
-        - name: Test with Unittest
-          run: |
-            cd tests
-            pytest
-            # PYTHONPATH=../$pwd python2 test_all.py
-            # PYTHONPATH=../$pwd python2 ffit_tests/test_fastfit.py
+        uses: actions/setup-python@v2
+        with:
+          python-version: 2.7
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+
+      - name: Test with Unittest
+        run: |
+          cd tests
+          pytest
+          # PYTHONPATH=../$pwd python2 test_all.py
+          # PYTHONPATH=../$pwd python2 ffit_tests/test_fastfit.py
