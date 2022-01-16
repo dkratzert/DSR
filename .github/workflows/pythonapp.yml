@@ -27,9 +27,11 @@ jobs:
 
       - name: Test with Unittest
         run: |
-          echo $GITHUB_WORKSPACE >> $GITHUB_PATH
-          echo $GITHUB_WORKSPACE >> $PATH
+          mkdir %HOME/DSR
+          echo %HOME/DSR >> $GITHUB_PATH
+          echo %HOME/DSR
           chmod a+x dsr
+          cp -r * %HOME/DSR
           dsr -l
           
           cd tests
