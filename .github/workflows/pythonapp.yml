@@ -11,7 +11,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      DSR_DIR: ${HOME}/.local/bin
+      DSR_DIR: $HOME/.local/bin
 
     steps:
       - uses: actions/checkout@v2
