@@ -10,8 +10,8 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    env:
-      DSR_DIR: $HOME/.local/bin
+    #env:
+      #DSR_DIR: $(${HOME})/.local/bin
 
     steps:
       - uses: actions/checkout@v2
@@ -27,6 +27,7 @@ jobs:
 
       - name: Test with Unittest
         run: |
+          export DSR_DIR=${HOME}/.local/bin
           mkdir -p ${HOME}/.local/bin
           echo ${HOME}/.local/bin >> $GITHUB_PATH
           echo ${HOME}/.local/bin mypath
