@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 2.7
@@ -24,7 +24,6 @@ jobs:
 
       - name: Test with Unittest
         run: |
-          pip install -e .
           cd tests
           pytest
           # PYTHONPATH=../$pwd python2 test_all.py
