@@ -1,3 +1,5 @@
+[![Unit tests](https://github.com/dkratzert/DSR/actions/workflows/pythonapp.yml/badge.svg)](https://github.com/dkratzert/DSR/actions/workflows/pythonapp.yml)
+
 DSR
 ===
 
