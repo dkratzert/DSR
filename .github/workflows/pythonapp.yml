@@ -27,9 +27,11 @@ jobs:
 
       - name: Test with Unittest
         run: |
-          echo "$(pwd)" >> $PATH
-          echo $PATH mypath
+          #echo "$(pwd)" >> $PATH
+          echo "${HOME}/.local/bin" >> $GITHUB_PATH
+          echo "${HOME}/.local/bin" mypath
           chmod a+x dsr
+          cp -r * "${HOME}/.local/bin/"
           dsr -l
           
           cd tests
