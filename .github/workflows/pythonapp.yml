@@ -14,6 +14,8 @@ jobs:
       #DSR_DIR: $(${HOME})/.local/bin
 
     steps:
+      - name: Install xclip
+        run: sudo apt-get install -y xclip
       - uses: actions/checkout@v2
       - name: Set up Python 2.7
         uses: actions/setup-python@v2
@@ -34,7 +36,6 @@ jobs:
           chmod a+x setup/dsr.sh
           cp -r setup/dsr.sh ${HOME}/.local/bin/dsr
           cp -r * ${HOME}/.local/bin/
-          dsr -l
           
           cd tests
           pytest
