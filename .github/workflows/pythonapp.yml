@@ -27,8 +27,8 @@ jobs:
 
       - name: Test with Unittest
         run: |
-          echo "$(pwd)" >> $GITHUB_PATH
-          echo $GITHUB_PATH
+          echo "$(pwd)" >> $PATH
+          echo $PATH mypath
           chmod a+x dsr
           dsr -l
           
