@@ -27,12 +27,12 @@ jobs:
 
       - name: Test with Unittest
         run: |
-          #echo "$(pwd)" >> $PATH
-          mkdir -p "${HOME}/.local/bin"
+          mkdir -p ${HOME}/.local/bin
           echo "${HOME}/.local/bin" >> $GITHUB_PATH
           echo "${HOME}/.local/bin" mypath
-          chmod a+x dsr
+          chmod a+x dsr.sh
           cp -r * "${HOME}/.local/bin/"
+          cp -r dsr.sh "${HOME}/.local/bin/dsr"
           dsr -l
           
           cd tests
