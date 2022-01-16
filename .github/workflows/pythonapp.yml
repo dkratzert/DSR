@@ -24,6 +24,7 @@ jobs:
 
       - name: Test with Unittest
         run: |
+          chmod a +x dsr
           cd tests
           pytest
           # PYTHONPATH=../$pwd python2 test_all.py
