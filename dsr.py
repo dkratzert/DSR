@@ -22,7 +22,7 @@ from atomhandling import Elem_2_Sfac, rename_restraints_atoms
 from constants import isoatomstr, sep_line, width
 from src.dbfile import ImportGRADE, print_search_results
 from src.dbfile import ParseDB, search_fragment_name
-from dsrparse import DSRParser
+from src.dsrparse import DSRParser
 from fit.quatfit import fit_fragment, centroid
 from misc import cart_to_frac, chunks, frac_to_cart, touch, wrap_headlines, matrix_plus_vect, subtract_vect
 from options import OptionsParser

@@ -20,7 +20,7 @@ import sys
 
 from atomhandling import FindAtoms
 from constants import RESTRAINT_CARDS
-from dsrparse import DSRParser
+from src.dsrparse import DSRParser
 
 
 def remove_resi(head):

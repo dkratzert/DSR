@@ -7,7 +7,7 @@ import os
 import sys
 import unittest
 
-from src import dbfile
+from src import dbfile, dsrparse
 import restraints
 import sql_export
 from fit import quatfit
@@ -15,7 +15,6 @@ from fit import quatfit
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import afix
 import atomhandling
-import dsrparse
 import elements
 import export
 import misc
@@ -26,7 +25,7 @@ from atoms import Element, atoms
 from src.dbfile import invert_atomic_coordinates, ImportGRADE
 import dsr
 from dsr import VERSION
-from dsrparse import DSRParser
+from src.dsrparse import DSRParser
 from export import Export
 from resfile import ResList, ResListEdit
 from resi import Resi
