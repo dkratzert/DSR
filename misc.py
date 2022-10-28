@@ -275,10 +275,6 @@ def sortedlistdir(directory):
     returns a sorted list of files in directory directory.
     :param directory: directory
     :type directory: string
-    >>> sortedlistdir("../old")
-    ['dsr.py']
-    >>> sortedlistdir("foobar/")
-    False
     """
     try:
         dirlist = os.listdir(directory)

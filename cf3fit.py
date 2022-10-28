@@ -18,7 +18,7 @@ import sys
 from math import radians, sqrt
 
 import mpmath as mpm
-from atomhandling import Elem_2_Sfac, NumberScheme
+from src.atomhandling import Elem_2_Sfac, NumberScheme
 from elements import get_radius_from_element
 from misc import atomic_distance, frac_to_cart, cart_to_frac, \
     id_generator, shift, remove_partsymbol, find_multi_lines, wrap_headlines, \

@@ -18,7 +18,7 @@ from __future__ import print_function
 
 import sys
 
-from atomhandling import FindAtoms
+from src.atomhandling import FindAtoms
 from constants import RESTRAINT_CARDS
 from src.dsrparse import DSRParser
 

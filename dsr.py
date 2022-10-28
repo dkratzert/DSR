@@ -18,7 +18,7 @@ from datetime import datetime
 import os
 
 from afix import remove_duplicate_restraints, write_dbhead_to_file
-from atomhandling import Elem_2_Sfac, rename_restraints_atoms
+from src.atomhandling import Elem_2_Sfac, rename_restraints_atoms
 from constants import isoatomstr, sep_line, width
 from src.dbfile import ImportGRADE, print_search_results
 from src.dbfile import ParseDB, search_fragment_name
@@ -250,7 +250,7 @@ class DSR(object):
         """
         dbatoms = []
         # The database content:
-        import atomhandling
+        from src import atomhandling
         basefilename = filename_wo_ending(self.res_file)
         if not basefilename:
             print('*** Illegal option ***')
