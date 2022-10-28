@@ -200,10 +200,10 @@ class Element():
             elif atom[0] in elements:
                 return atom[0]  # then for all one-letter atoms
             else:
-                print('*** {} is not a valid atom!! ***'.format(atom))
+                print(f'*** {atom} is not a valid atom!! ***')
                 raise KeyError
         except(IndexError):
-            print('*** {} is not a valid atom! ***'.format(atom))
+            print(f'*** {atom} is not a valid atom! ***')
             raise KeyError
     
 
@@ -212,6 +212,6 @@ if __name__ == '__main__':
 
     failed, attempted = doctest.testmod()  # verbose=True)
     if failed == 0:
-        print('passed all {} tests!'.format(attempted))
+        print(f'passed all {attempted} tests!')
     else:
-        print('{} of {} tests failed'.format(failed, attempted))
+        print(f'{failed} of {attempted} tests failed')

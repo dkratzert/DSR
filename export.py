@@ -14,7 +14,7 @@ from __future__ import print_function
 
 from copy import deepcopy
 
-from atomhandling import get_atomtypes
+from src.atomhandling import get_atomtypes
 from src.atoms import Element
 from src.dbfile import ParseDB, invert_atomic_coordinates
 from misc import wrap_headlines, wrap_stringlist

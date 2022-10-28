@@ -9,7 +9,7 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
-from __future__ import print_function
+
 
 import os
 import re
@@ -17,7 +17,7 @@ import sys
 import tarfile
 from copy import deepcopy
 
-from atomhandling import get_atomtypes
+from src.atomhandling import get_atomtypes
 from src.atoms import Element
 from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
 from misc import atomic_distance, nalimov_test, std_dev, median, pairwise, \
