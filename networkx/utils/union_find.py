@@ -1,13 +1,9 @@
 """
 Union-find data structure.
 """
-#    Copyright (C) 2004-2011 by 
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
-import networkx as nx
+
+from networkx.utils import groups
+
 
 class UnionFind:
     """Union-find data structure.
@@ -26,16 +22,26 @@ class UnionFind:
       in X, it is added to X as one of the members of the merged set.
 
       Union-find data structure. Based on Josiah Carlson's code,
-      http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/215912
+      https://code.activestate.com/recipes/215912/
       with significant additional changes by D. Eppstein.
       http://www.ics.uci.edu/~eppstein/PADS/UnionFind.py
 
     """
 
-    def __init__(self):
-        """Create a new empty union-find structure."""
-        self.weights = {}
+    def __init__(self, elements=None):
+        """Create a new empty union-find structure.
+
+        If *elements* is an iterable, this structure will be initialized
+        with the discrete partition on the given set of elements.
+
+        """
+        if elements is None:
+            elements = ()
         self.parents = {}
+        self.weights = {}
+        for x in elements:
+            self.weights[x] = 1
+            self.parents[x] = x
 
     def __getitem__(self, object):
         """Find and return the name of the set containing the object."""
@@ -57,19 +63,43 @@ class UnionFind:
         for ancestor in path:
             self.parents[ancestor] = root
         return root
-        
+
     def __iter__(self):
         """Iterate through all items ever found or unioned by this structure."""
         return iter(self.parents)
 
+    def to_sets(self):
+        """Iterates over the sets stored in this structure.
+
+        For example::
+
+            >>> partition = UnionFind("xyz")
+            >>> sorted(map(sorted, partition.to_sets()))
+            [['x'], ['y'], ['z']]
+            >>> partition.union("x", "y")
+            >>> sorted(map(sorted, partition.to_sets()))
+            [['x', 'y'], ['z']]
+
+        """
+        # Ensure fully pruned paths
+        for x in self.parents.keys():
+            _ = self[x]  # Evaluated for side-effect only
+
+        yield from groups(self.parents).values()
+
     def union(self, *objects):
         """Find the sets containing the objects and merge them all."""
-        roots = [self[x] for x in objects]
-        heaviest = max([(self.weights[r],r) for r in roots])[1]
+        # Find the heaviest root according to its weight.
+        roots = iter(
+            sorted(
+                {self[x] for x in objects}, key=lambda r: self.weights[r], reverse=True
+            )
+        )
+        try:
+            root = next(roots)
+        except StopIteration:
+            return
+
         for r in roots:
-            if r != heaviest:
-                self.weights[heaviest] += self.weights[r]
-                self.parents[r] = heaviest
-
-
-
+            self.weights[root] += self.weights[r]
+            self.parents[r] = root
