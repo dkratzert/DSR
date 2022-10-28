@@ -20,7 +20,6 @@ from src.dbfile import ParseDB, invert_atomic_coordinates
 from misc import wrap_headlines, wrap_stringlist
 from restraints import Restraints
 
-__metaclass__ = type  # use new-style classes
 
 
 class Export():

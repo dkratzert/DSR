@@ -19,7 +19,7 @@ from copy import deepcopy
 
 from src.atomhandling import get_atomtypes
 from src.atoms import Element
-from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
+from src.constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
 from misc import atomic_distance, nalimov_test, std_dev, median, pairwise, \
     unwrap_head_lines, dice_coefficient2, frac_to_cart
 
@@ -144,7 +144,7 @@ def make_sortkey(full_name, searchkey=False):
     return keylist
 
 
-__metaclass__ = type  # use new-style classes
+
 
 
 # hardwired names of the database files:

@@ -16,9 +16,8 @@ import os
 import sys
 
 import misc
-from constants import RESTRAINT_CARDS
+from src.constants import RESTRAINT_CARDS
 
-__metaclass__ = type  # use new-style classes
 
 
 def add_residue_to_dfix(dfix_head, resinum):

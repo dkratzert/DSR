@@ -20,11 +20,10 @@ import re
 import string
 
 import mpmath as mpm
-from constants import isoatomstr
+from src.constants import isoatomstr
 
 alphabet = string.ascii_uppercase
 
-__metaclass__ = type  # use new-style classes
 
 
 def write_file(flist, name):
@@ -571,7 +570,7 @@ def unwrap_head_lines(headlines):
     >>> unwrap_head_lines(wrap_headlines(["REM name: ser\\nREM HFIX 23 C2 C3 C4  C6 C8 C10\\nSADI bar"]))
     ['REM name: ser\\nREM HFIX 23 C2 C3 C4  C6 C8 C10\\nSADI bar\\n']
     """
-    import constants
+    from src import constants
     tmp = ''
     # it is faster with this loop:
     eq = False

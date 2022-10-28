@@ -16,7 +16,6 @@ import sys
 
 import misc
 
-__metaclass__ = type  # use new-style classes
 
 
 def filename_wo_ending(resfilename):
