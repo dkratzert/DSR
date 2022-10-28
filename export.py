@@ -15,7 +15,7 @@ from __future__ import print_function
 from copy import deepcopy
 
 from atomhandling import get_atomtypes
-from atoms import Element
+from src.atoms import Element
 from src.dbfile import ParseDB, invert_atomic_coordinates
 from misc import wrap_headlines, wrap_stringlist
 from restraints import Restraints
@@ -218,7 +218,10 @@ class Export():
         clip_text.append('\n' + atoms)
         clip_text.append('\nFEND')
         text = ' '.join(clip_text)
-        pyperclip.setcb(text)
+        try:
+            pyperclip.setcb(text)
+        except OSError:
+            return False
         return True
 
     @staticmethod
