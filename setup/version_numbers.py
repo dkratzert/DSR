@@ -5,7 +5,7 @@ from __future__ import print_function
 
 from dsr import VERSION
 import misc
-import dbfile
+from src import dbfile
 import os
 
 """

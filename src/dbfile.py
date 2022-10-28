@@ -377,10 +377,10 @@ class ParseDB(object):
         """
         >>> db = ParseDB('../dsr_db.txt')
         >>> [x for x in db][:3]
-        ['napht', 'pme3', 'plusminus']
+        ['12-dichlorobenz', '12-difluorobenz', '12c4']
         """
         # return iter(self.databases.keys()) #python2
-        return iter(list(self.databases.keys()))
+        return iter(list(sorted(self.databases.keys())))
 
     def list_fragments(self):
         # type: () -> list
@@ -965,7 +965,7 @@ class ImportGRADE():
         get the fragment name from the pdbfile.txt file
 
         >>> db = ParseDB('../dsr_db.txt')
-        >>> mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz', db)
+        >>> mog = ImportGRADE('../tests/test-data/ALA.gradeserver_all.tgz', db)
         >>> mog.get_name_from_pdbfile()
         'Alanine'
         """
@@ -994,7 +994,7 @@ class ImportGRADE():
         get the fragment name from the pdbfile.txt file
 
         >>> db = ParseDB('../dsr_db.txt')
-        >>> mog = ImportGRADE('./test-data/ALA.gradeserver_all.tgz', db)
+        >>> mog = ImportGRADE('../tests/test-data/ALA.gradeserver_all.tgz', db)
         >>> mog.get_resi_from_pdbfile()
         'ALA'
         """

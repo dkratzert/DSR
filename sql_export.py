@@ -8,7 +8,7 @@ import sys
 
 import misc
 from constants import SHX_CARDS
-from dbfile import ParseDB
+from src.dbfile import ParseDB
 
 misc.remove_file('./fragment-database.sqlite')
 gl = ParseDB()
