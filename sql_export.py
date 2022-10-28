@@ -7,7 +7,7 @@ import sqlite3 as lite
 import sys
 
 import misc
-from constants import SHX_CARDS
+from src.constants import SHX_CARDS
 from src.dbfile import ParseDB
 
 misc.remove_file('./fragment-database.sqlite')

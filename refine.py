@@ -18,11 +18,10 @@ import subprocess
 import sys
 
 import misc
-from constants import sep_line
+from src.constants import sep_line
 from misc import find_line, check_file_exist, remove_line
 from resfile import ResList
 
-__metaclass__ = type  # use new-style classes
 
 
 def get_xl_version_string(exe):

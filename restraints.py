@@ -29,7 +29,7 @@ alphabet = [i for i in string.ascii_uppercase]
 # number first, then part
 # part 2 and class 3 = _3b
 
-__metaclass__ = type  # use new-style classes
+
 
 
 def remove_duplicate_bonds(bonds):

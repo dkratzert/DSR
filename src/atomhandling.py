@@ -16,10 +16,9 @@ import string
 import sys
 
 from src.atoms import Element, atoms
-from constants import atomregex, SHX_CARDS
+from src.constants import atomregex, SHX_CARDS
 from misc import find_line, find_multi_lines, atomic_distance
 
-__metaclass__ = type  # use new-style classes
 
 
 def get_atoms(atlist):

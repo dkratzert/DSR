@@ -16,7 +16,7 @@ import re
 import sys
 
 import misc
-from constants import sep_line
+from src.constants import sep_line
 
 try:
     from argparse import RawTextHelpFormatter
@@ -26,7 +26,6 @@ except ImportError:
 from argparse import ArgumentParser, SUPPRESS
 
 
-__metaclass__ = type  # use new-style classes
 
 
 
