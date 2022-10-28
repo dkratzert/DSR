@@ -18,10 +18,10 @@ import tarfile
 from copy import deepcopy
 
 from atomhandling import get_atomtypes
-from atoms import Element
+from src.atoms import Element
 from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
 from misc import atomic_distance, nalimov_test, std_dev, median, pairwise, \
-    unwrap_head_lines, dice_coefficient2, frac_to_cart, wrap_headlines
+    unwrap_head_lines, dice_coefficient2, frac_to_cart
 
 not_existing_error = '*** Fragment "{}" not found in database ***'
 
