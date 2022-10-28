@@ -1,57 +1,54 @@
-import operator
-from nose.tools import *
-__all__ = ['assert_nodes_equal', 'assert_edges_equal','assert_graphs_equal']
+import warnings
 
-def assert_nodes_equal(nlist1, nlist2):
-    # Assumes lists are either nodes, or (node,datadict) tuples,
-    # and also that nodes are orderable/sortable.
-    try:
-        l = len(nlist1[0])
-        n1 = sorted(nlist1,key=operator.itemgetter(0))
-        n2 = sorted(nlist2,key=operator.itemgetter(0))
-        assert_equal(len(n1),len(n2))
-        for a,b in zip(n1,n2):
-            assert_equal(a,b)
-    except TypeError:
-        assert_equal(set(nlist1),set(nlist2))
-    return
+from networkx.utils import edges_equal, graphs_equal, nodes_equal
 
-def assert_edges_equal(elist1, elist2):
-    # Assumes lists with u,v nodes either as
-    # edge tuples (u,v)
-    # edge tuples with data dicts (u,v,d)
-    # edge tuples with keys and data dicts (u,v,k, d)
-    # and also that nodes are orderable/sortable.
-    e1 = sorted(elist1,key=lambda x: sorted(x[0:2]))
-    e2 = sorted(elist2,key=lambda x: sorted(x[0:2]))
-    assert_equal(len(e1),len(e2))
-    if len(e1) == 0:
-        return True
-    if len(e1[0]) == 2:
-        for a,b in zip(e1,e2):
-            assert_equal(set(a[0:2]),set(b[0:2]))
-    elif len(e1[0]) == 3:
-        for a,b in zip(e1,e2):
-            assert_equal(set(a[0:2]),set(b[0:2]))
-            assert_equal(a[2],b[2])
-    elif len(e1[0]) == 4:
-        for a,b in zip(e1,e2):
-            assert_equal(set(a[0:2]),set(b[0:2]))
-            assert_equal(a[2],b[2])
-            assert_equal(a[3],b[3])
+__all__ = [
+    "assert_nodes_equal",
+    "assert_edges_equal",
+    "assert_graphs_equal",
+    "almost_equal",
+]
+
+
+def almost_equal(x, y, places=7):
+    warnings.warn(
+        (
+            "`almost_equal` is deprecated and will be removed in version 3.0.\n"
+            "Use `pytest.approx` instead.\n"
+        ),
+        DeprecationWarning,
+    )
+    return round(abs(x - y), places) == 0
+
+
+def assert_nodes_equal(nodes1, nodes2):
+    warnings.warn(
+        (
+            "`assert_nodes_equal` is deprecated and will be removed in version 3.0.\n"
+            "Use `from networkx.utils import nodes_equal` and `assert nodes_equal` instead.\n"
+        ),
+        DeprecationWarning,
+    )
+    assert nodes_equal(nodes1, nodes2)
+
+
+def assert_edges_equal(edges1, edges2):
+    warnings.warn(
+        (
+            "`assert_edges_equal` is deprecated and will be removed in version 3.0.\n"
+            "Use `from networkx.utils import edges_equal` and `assert edges_equal` instead.\n"
+        ),
+        DeprecationWarning,
+    )
+    assert edges_equal(edges1, edges2)
 
 
 def assert_graphs_equal(graph1, graph2):
-    if graph1.is_multigraph():
-        edges1 = graph1.edges(data=True,keys=True)
-    else:
-        edges1 = graph1.edges(data=True)
-        if graph2.is_multigraph():
-            edges2 = graph2.edges(data=True,keys=True)
-        else:
-            edges2 = graph2.edges(data=True)
-    assert_nodes_equal(graph1.nodes(data=True),
-                       graph2.nodes(data=True))
-    assert_edges_equal(edges1, edges2)
-    assert_equal(graph1.graph,graph2.graph)
-    return
+    warnings.warn(
+        (
+            "`assert_graphs_equal` is deprecated and will be removed in version 3.0.\n"
+            "Use `from networkx.utils import graphs_equal` and `assert graphs_equal` instead.\n"
+        ),
+        DeprecationWarning,
+    )
+    assert graphs_equal(graph1, graph2)

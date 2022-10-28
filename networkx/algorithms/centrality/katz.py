@@ -1,43 +1,40 @@
-"""
-Katz centrality.
-"""
-#    Copyright (C) 2004-2013 by
-#    Aric Hagberg <hagberg@lanl.gov>
-#    Dan Schult <dschult@colgate.edu>
-#    Pieter Swart <swart@lanl.gov>
-#    All rights reserved.
-#    BSD license.
+"""Katz centrality."""
+import math
+
 import networkx as nx
-from networkx.utils import *
-__author__ = "\n".join(['Aric Hagberg (hagberg@lanl.gov)',
-                        'Pieter Swart (swart@lanl.gov)',
-                        'Sasha Gutfraind (ag362@cornell.edu)',
-                        'Vincent Gauthier (vgauthier@luxbulb.org)'])
+from networkx.utils import not_implemented_for
 
-__all__ = ['katz_centrality',
-           'katz_centrality_numpy']
+__all__ = ["katz_centrality", "katz_centrality_numpy"]
 
-@not_implemented_for('multigraph')
-def katz_centrality(G, alpha=0.1, beta=1.0,
-                    max_iter=1000, tol=1.0e-6, nstart=None, normalized=True):
+
+@not_implemented_for("multigraph")
+def katz_centrality(
+    G,
+    alpha=0.1,
+    beta=1.0,
+    max_iter=1000,
+    tol=1.0e-6,
+    nstart=None,
+    normalized=True,
+    weight=None,
+):
     r"""Compute the Katz centrality for the nodes of the graph G.
 
-
-    Katz centrality is related to eigenvalue centrality and PageRank.
-    The Katz centrality for node `i` is
+    Katz centrality computes the centrality for a node based on the centrality
+    of its neighbors. It is a generalization of the eigenvector centrality. The
+    Katz centrality for node $i$ is
 
     .. math::
 
         x_i = \alpha \sum_{j} A_{ij} x_j + \beta,
 
-    where `A` is the adjacency matrix of the graph G with eigenvalues `\lambda`.
+    where $A$ is the adjacency matrix of graph G with eigenvalues $\lambda$.
 
-    The parameter `\beta` controls the initial centrality and
+    The parameter $\beta$ controls the initial centrality and
 
     .. math::
 
-        \alpha < \frac{1}{\lambda_{max}}.
-
+        \alpha < \frac{1}{\lambda_{\max}}.
 
     Katz centrality computes the relative influence of a node within a
     network by measuring the number of the immediate neighbors (first
@@ -45,23 +42,22 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
     to the node under consideration through these immediate neighbors.
 
     Extra weight can be provided to immediate neighbors through the
-    parameter :math:`\beta`.  Connections made with distant neighbors
-    are, however, penalized by an attenuation factor `\alpha` which
+    parameter $\beta$.  Connections made with distant neighbors
+    are, however, penalized by an attenuation factor $\alpha$ which
     should be strictly less than the inverse largest eigenvalue of the
     adjacency matrix in order for the Katz centrality to be computed
-    correctly. More information is provided in [1]_ .
-
+    correctly. More information is provided in [1]_.
 
     Parameters
     ----------
     G : graph
-      A NetworkX graph
+      A NetworkX graph.
 
     alpha : float
       Attenuation factor
 
     beta : scalar or dictionary, optional (default=1.0)
-      Weight attributed to the immediate neighborhood. If not a scalar the
+      Weight attributed to the immediate neighborhood. If not a scalar, the
       dictionary must have an value for every node.
 
     max_iter : integer, optional (default=1000)
@@ -76,40 +72,39 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
     normalized : bool, optional (default=True)
       If True normalize the resulting values.
 
+    weight : None or string, optional (default=None)
+      If None, all edge weights are considered equal.
+      Otherwise holds the name of the edge attribute used as weight.
+      In this measure the weight is interpreted as the connection strength.
+
     Returns
     -------
     nodes : dictionary
        Dictionary of nodes with Katz centrality as the value.
 
+    Raises
+    ------
+    NetworkXError
+       If the parameter `beta` is not a scalar but lacks a value for at least
+       one node
+
+    PowerIterationFailedConvergence
+        If the algorithm fails to converge to the specified tolerance
+        within the specified number of iterations of the power iteration
+        method.
+
     Examples
     --------
     >>> import math
     >>> G = nx.path_graph(4)
-    >>> phi = (1+math.sqrt(5))/2.0 # largest eigenvalue of adj matrix
-    >>> centrality = nx.katz_centrality(G,1/phi-0.01)
-    >>> for n,c in sorted(centrality.items()):
-    ...    print("%d %0.2f"%(n,c))
+    >>> phi = (1 + math.sqrt(5)) / 2.0  # largest eigenvalue of adj matrix
+    >>> centrality = nx.katz_centrality(G, 1 / phi - 0.01)
+    >>> for n, c in sorted(centrality.items()):
+    ...     print(f"{n} {c:.2f}")
     0 0.37
     1 0.60
     2 0.60
     3 0.37
-
-    Notes
-    -----
-    This algorithm it uses the power method to find the eigenvector
-    corresponding to the largest eigenvalue of the adjacency matrix of G.
-    The constant alpha should be strictly less than the inverse of largest
-    eigenvalue of the adjacency matrix for the algorithm to converge.
-    The iteration will stop after max_iter iterations or an error tolerance of
-    number_of_nodes(G)*tol has been reached.
-
-    When `\alpha = 1/\lambda_{max}` and `\beta=1` Katz centrality is the same as
-    eigenvector centrality.
-
-    References
-    ----------
-    .. [1] M. Newman, Networks: An Introduction. Oxford University Press,
-       USA, 2010, p. 720.
 
     See Also
     --------
@@ -118,77 +113,105 @@ def katz_centrality(G, alpha=0.1, beta=1.0,
     eigenvector_centrality_numpy
     pagerank
     hits
-    """
-    from math import sqrt
 
-    if len(G)==0:
+    Notes
+    -----
+    Katz centrality was introduced by [2]_.
+
+    This algorithm it uses the power method to find the eigenvector
+    corresponding to the largest eigenvalue of the adjacency matrix of ``G``.
+    The parameter ``alpha`` should be strictly less than the inverse of largest
+    eigenvalue of the adjacency matrix for the algorithm to converge.
+    You can use ``max(nx.adjacency_spectrum(G))`` to get $\lambda_{\max}$ the largest
+    eigenvalue of the adjacency matrix.
+    The iteration will stop after ``max_iter`` iterations or an error tolerance of
+    ``number_of_nodes(G) * tol`` has been reached.
+
+    When $\alpha = 1/\lambda_{\max}$ and $\beta=0$, Katz centrality is the same
+    as eigenvector centrality.
+
+    For directed graphs this finds "left" eigenvectors which corresponds
+    to the in-edges in the graph. For out-edges Katz centrality
+    first reverse the graph with ``G.reverse()``.
+
+    References
+    ----------
+    .. [1] Mark E. J. Newman:
+       Networks: An Introduction.
+       Oxford University Press, USA, 2010, p. 720.
+    .. [2] Leo Katz:
+       A New Status Index Derived from Sociometric Index.
+       Psychometrika 18(1):39–43, 1953
+       https://link.springer.com/content/pdf/10.1007/BF02289026.pdf
+    """
+    if len(G) == 0:
         return {}
 
-    nnodes=G.number_of_nodes()
+    nnodes = G.number_of_nodes()
 
     if nstart is None:
         # choose starting vector with entries of 0
-        x=dict([(n,0) for n in G])
+        x = {n: 0 for n in G}
     else:
-        x=nstart
+        x = nstart
 
     try:
-        b = dict.fromkeys(G,float(beta))
-    except (TypeError,ValueError):
+        b = dict.fromkeys(G, float(beta))
+    except (TypeError, ValueError, AttributeError) as err:
         b = beta
         if set(beta) != set(G):
-            raise nx.NetworkXError('beta dictionary '
-                                   'must have a value for every node')
+            raise nx.NetworkXError(
+                "beta dictionary " "must have a value for every node"
+            ) from err
 
     # make up to max_iter iterations
-    for i in range(max_iter):
-        xlast=x
-        x=dict.fromkeys(xlast, 0)
-        # do the multiplication y = Alpha * Ax - Beta
+    for _ in range(max_iter):
+        xlast = x
+        x = dict.fromkeys(xlast, 0)
+        # do the multiplication y^T = Alpha * x^T A - Beta
         for n in x:
             for nbr in G[n]:
-                x[n] += xlast[nbr] * G[n][nbr].get('weight',1)
-            x[n] = alpha*x[n] + b[n]
+                x[nbr] += xlast[n] * G[n][nbr].get(weight, 1)
+        for n in x:
+            x[n] = alpha * x[n] + b[n]
 
         # check convergence
-        err=sum([abs(x[n]-xlast[n]) for n in x])
-        if err < nnodes*tol:
+        error = sum(abs(x[n] - xlast[n]) for n in x)
+        if error < nnodes * tol:
             if normalized:
                 # normalize vector
                 try:
-                    s=1.0/sqrt(sum(v**2 for v in x.values()))
+                    s = 1.0 / math.hypot(*x.values())
                 # this should never be zero?
                 except ZeroDivisionError:
-                    s=1.0
+                    s = 1.0
             else:
                 s = 1
             for n in x:
-                x[n]*=s
+                x[n] *= s
             return x
+    raise nx.PowerIterationFailedConvergence(max_iter)
 
-    raise nx.NetworkXError('Power iteration failed to converge in ',
-                           '%d iterations."%(i+1))')
 
-@not_implemented_for('multigraph')
-def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True):
+@not_implemented_for("multigraph")
+def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True, weight=None):
     r"""Compute the Katz centrality for the graph G.
 
-
-    Katz centrality is related to eigenvalue centrality and PageRank.
-    The Katz centrality for node `i` is
+    Katz centrality computes the centrality for a node based on the centrality
+    of its neighbors. It is a generalization of the eigenvector centrality. The
+    Katz centrality for node $i$ is
 
     .. math::
 
         x_i = \alpha \sum_{j} A_{ij} x_j + \beta,
 
-    where `A` is the adjacency matrix of the graph G with eigenvalues `\lambda`.
+    where $A$ is the adjacency matrix of graph G with eigenvalues $\lambda$.
 
-    The parameter `\beta` controls the initial centrality and
+    The parameter $\beta$ controls the initial centrality and
 
     .. math::
 
-        \alpha < \frac{1}{\lambda_{max}}.
-
+        \alpha < \frac{1}{\lambda_{\max}}.
 
     Katz centrality computes the relative influence of a node within a
     network by measuring the number of the immediate neighbors (first
@@ -196,11 +219,11 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True):
     to the node under consideration through these immediate neighbors.
 
     Extra weight can be provided to immediate neighbors through the
-    parameter :math:`\beta`.  Connections made with distant neighbors
-    are, however, penalized by an attenuation factor `\alpha` which
+    parameter $\beta$.  Connections made with distant neighbors
+    are, however, penalized by an attenuation factor $\alpha$ which
     should be strictly less than the inverse largest eigenvalue of the
     adjacency matrix in order for the Katz centrality to be computed
-    correctly. More information is provided in [1]_ .
+    correctly. More information is provided in [1]_.
 
     Parameters
     ----------
@@ -217,36 +240,34 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True):
     normalized : bool
       If True normalize the resulting values.
 
+    weight : None or string, optional
+      If None, all edge weights are considered equal.
+      Otherwise holds the name of the edge attribute used as weight.
+      In this measure the weight is interpreted as the connection strength.
+
     Returns
     -------
     nodes : dictionary
        Dictionary of nodes with Katz centrality as the value.
 
+    Raises
+    ------
+    NetworkXError
+       If the parameter `beta` is not a scalar but lacks a value for at least
+       one node
+
     Examples
     --------
     >>> import math
     >>> G = nx.path_graph(4)
-    >>> phi = (1+math.sqrt(5))/2.0 # largest eigenvalue of adj matrix
-    >>> centrality = nx.katz_centrality_numpy(G,1/phi)
-    >>> for n,c in sorted(centrality.items()):
-    ...    print("%d %0.2f"%(n,c))
+    >>> phi = (1 + math.sqrt(5)) / 2.0  # largest eigenvalue of adj matrix
+    >>> centrality = nx.katz_centrality_numpy(G, 1 / phi)
+    >>> for n, c in sorted(centrality.items()):
+    ...     print(f"{n} {c:.2f}")
     0 0.37
     1 0.60
     2 0.60
     3 0.37
-
-    Notes
-    ------
-    This algorithm uses a direct linear solver to solve the above equation.
-    The constant alpha should be strictly less than the inverse of largest
-    eigenvalue of the adjacency matrix for there to be a solution.  When
-    `\alpha = 1/\lambda_{max}` and `\beta=1` Katz centrality is the same as
-    eigenvector centrality.
-
-    References
-    ----------
-    .. [1] M. Newman, Networks: An Introduction. Oxford University Press,
-       USA, 2010, p. 720.
 
     See Also
     --------
@@ -255,42 +276,58 @@ def katz_centrality_numpy(G, alpha=0.1, beta=1.0, normalized=True):
     eigenvector_centrality
     pagerank
     hits
+
+    Notes
+    -----
+    Katz centrality was introduced by [2]_.
+
+    This algorithm uses a direct linear solver to solve the above equation.
+    The parameter ``alpha`` should be strictly less than the inverse of largest
+    eigenvalue of the adjacency matrix for there to be a solution.
+    You can use ``max(nx.adjacency_spectrum(G))`` to get $\lambda_{\max}$ the largest
+    eigenvalue of the adjacency matrix.
+
+    When $\alpha = 1/\lambda_{\max}$ and $\beta=0$, Katz centrality is the same
+    as eigenvector centrality.
+
+    For directed graphs this finds "left" eigenvectors which corresponds
+    to the in-edges in the graph. For out-edges Katz centrality
+    first reverse the graph with ``G.reverse()``.
+
+    References
+    ----------
+    .. [1] Mark E. J. Newman:
+       Networks: An Introduction.
+       Oxford University Press, USA, 2010, p. 173.
+    .. [2] Leo Katz:
+       A New Status Index Derived from Sociometric Index.
+       Psychometrika 18(1):39–43, 1953
+       https://link.springer.com/content/pdf/10.1007/BF02289026.pdf
     """
-    try:
-        import numpy as np
-    except ImportError:
-        raise ImportError('Requires NumPy: http://scipy.org/')
-    if len(G)==0:
+    import numpy as np
+
+    if len(G) == 0:
         return {}
     try:
         nodelist = beta.keys()
         if set(nodelist) != set(G):
-            raise nx.NetworkXError('beta dictionary '
-                                   'must have a value for every node')
-        b = np.array(list(beta.values()),dtype=float)
+            raise nx.NetworkXError(
+                "beta dictionary " "must have a value for every node"
+            )
+        b = np.array(list(beta.values()), dtype=float)
     except AttributeError:
-        nodelist = G.nodes()
+        nodelist = list(G)
         try:
-            b = np.ones((len(nodelist),1))*float(beta)
-        except (TypeError,ValueError):
-            raise nx.NetworkXError('beta must be a number')
+            b = np.ones((len(nodelist), 1)) * beta
+        except (TypeError, ValueError, AttributeError) as err:
+            raise nx.NetworkXError("beta must be a number") from err
 
-    A=nx.adj_matrix(G, nodelist=nodelist)
-    n = np.array(A).shape[0]
-    centrality = np.linalg.solve( np.eye(n,n) - (alpha * A) , b)
+    A = nx.adjacency_matrix(G, nodelist=nodelist, weight=weight).todense().T
+    n = A.shape[0]
+    centrality = np.linalg.solve(np.eye(n, n) - (alpha * A), b)
     if normalized:
         norm = np.sign(sum(centrality)) * np.linalg.norm(centrality)
     else:
         norm = 1.0
-    centrality=dict(zip(nodelist, map(float,centrality/norm)))
+    centrality = dict(zip(nodelist, map(float, centrality / norm)))
     return centrality
-
-
-# fixture for nose tests
-def setup_module(module):
-    from nose import SkipTest
-    try:
-        import numpy
-        import numpy.linalg
-    except:
-        raise SkipTest("numpy not available")
