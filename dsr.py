@@ -272,7 +272,7 @@ class DSR(object):
         resi = Resi(dsrp, db_residue_string, find_atoms)
         # line where the dsr command is found in the resfile:
         if dsrp.cf3_active:
-            from cf3fit import CF3
+            from src.cf3fit import CF3
             cf3 = CF3(rle, find_atoms, self.reslist, self.fragment, sfac_table,
                       basefilename, dsrp, resi, self.res_file, self.options)
             if self.fragment == 'cf3':
