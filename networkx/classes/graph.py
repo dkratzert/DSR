@@ -152,7 +152,7 @@ class Graph(object):
     The fastest way to traverse all edges of a graph is via
     adjacency_iter(), but the edges() method is often more convenient.
 
-    >>> for n,nbrsdict in G.adjacency_iter():
+    >>> for n,nbrsdict in sorted(G.adjacency_iter()):
     ...     for nbr,eattr in nbrsdict.items():
     ...        if 'weight' in eattr:
     ...            (n,nbr,eattr['weight'])
@@ -160,8 +160,8 @@ class Graph(object):
     (2, 1, 4)
     (2, 3, 8)
     (3, 2, 8)
-    >>> [ (u,v,edata['weight']) for u,v,edata in G.edges(data=True) if 'weight' in edata ]
-    [(1, 2, 4), (2, 3, 8)]
+    >>> sorted([ (u,v,edata['weight']) for u,v,edata in G.edges(data=True) if 'weight' in edata ])
+    [(1, 2, 4), (3, 2, 8)]
 
     **Reporting:**
 

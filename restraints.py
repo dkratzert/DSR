@@ -255,33 +255,33 @@ class Restraints():
 
         returns list of flat chunks.
 
-        >>> from dbfile import ParseDB
+        >>> from src.dbfile import ParseDB
         >>> gdb = ParseDB('../dsr_db.txt')
         >>> res = Restraints('benzene', gdb)
         >>> sorted(res.make_flat_restraints())
-        [['C1', 'C2', 'C5', 'C6'], ['C3', 'C4', 'C5', 'C6']]
+        [['C1', 'C2', 'C3', 'C4'], ['C3', 'C4', 'C5', 'C6']]
         """
         import networkx as nx
-        list_of_rings = nx.cycle_basis(self._G)
+        list_of_rings = sorted(nx.cycle_basis(self._G))
         if not list_of_rings:
             return False
         flats = []
         neighbors = []
         newflats = []
         for ring in list_of_rings:
+            ring = sorted(ring)
             for atom in ring:
                 # lets see if there is a neighboring atom:
                 nb = self._G.neighbors(atom)  # [1:]
                 for i in nb:
-                    if not i in flatten(list_of_rings):
+                    if i not in sorted(flatten(list_of_rings)):
                         neighbors.append(i)
             if len(ring) < 4:
                 continue  # only proceed if ring is bigger than 3 atoms
             chunks = get_overlapped_chunks(ring, 4)
             for chunk in chunks:
-                if self.is_flat(chunk):
-                    if not chunk in flats:
-                        flats.append(chunk)
+                if self.is_flat(chunk) and chunk not in flats:
+                    flats.append(sorted(chunk))
             if not flats:
                 return False
             newflats = []
@@ -313,11 +313,8 @@ class Restraints():
                                     break  # finished, go to next flat
                             # only add if it really results in a flat composition:
                             ch.sort()
-                            if self.is_flat(ch):
-                                if ch in newflats:
-                                    pass
-                                else:
-                                    newflats.append(ch)
+                            if self.is_flat(ch) and ch not in newflats:
+                                newflats.append(ch)
         return newflats
 
     def binds_to(self, a, b):

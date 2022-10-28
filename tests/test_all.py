@@ -7,7 +7,7 @@ import os
 import sys
 import unittest
 
-import dbfile
+from src import dbfile
 import restraints
 import sql_export
 from fit import quatfit
@@ -23,7 +23,7 @@ import networkx
 from atomhandling import get_atomtypes, FindAtoms, check_source_target, \
     rename_restraints_atoms, SfacTable, Elem_2_Sfac, NumberScheme
 from atoms import Element, atoms
-from dbfile import invert_atomic_coordinates, ImportGRADE
+from src.dbfile import invert_atomic_coordinates, ImportGRADE
 import dsr
 from dsr import VERSION
 from dsrparse import DSRParser
