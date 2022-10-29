@@ -168,7 +168,7 @@ class Restraints():
         returns the requested dfixes als list of strings
         """
         dfix = []
-        for n, i in self._G.adjacency_iter():
+        for n, i in self._G.adjacency():
             # print(n, i)
             for i, x in list(i.items()):
                 dist = x['weight']  # weight of edge is the atomic distance
@@ -211,7 +211,7 @@ class Restraints():
         nb12 = self.get_neighbors(self._atom_names)
         for i in nb12:
             atom1 = i[0]
-            bonded = i[1]
+            bonded = list(i[1])
             try:
                 for n in bonded:
                     pass
@@ -220,12 +220,12 @@ class Restraints():
                       ' Check your SHELXL listing file.')
                 sys.exit()
             for n in bonded:
-                nb = list(self._G.neighbors(n))
+                nb = [x for x in self._G.neighbors(n)]
                 if not nb:
                     continue
                 try:
                     nb.remove(atom1)
-                except:
+                except Exception:
                     # print('Atom {0} has no neighbour.'.format(atom1))
                     pass
                 for at in nb:  # nb -> neighbors of n
@@ -295,7 +295,7 @@ class Restraints():
                             ch = chunk[:]
                             ch.insert(atnum, nbatom)
                             ch = shift(ch, atnum)
-                            H = self._G.subgraph(ch)
+                            H = self._G.subgraph(ch).copy()
                             # Try to delete atoms in the subgraph and test if subgraph divides.
                             # If it not devides, remove the atom unless it is the just added neighbour.
                             for num, i in enumerate(reversed(ch), start=1):

@@ -176,9 +176,9 @@ class Element():
             return el
 
     def get_atomlabel(self, input_atom):
-        '''
+        """
         converts an atom name like C12 to the element symbol C
-        
+
         >>> el = Element()
         >>> el.get_atomic_number('N')
         7
@@ -186,7 +186,7 @@ class Element():
         1
         >>> el.get_atomic_number('C')
         6
-        '''
+        """
         elements = [x.upper() for x in atoms]
         atom=''
         for x in input_atom:       # iterate over characters in i
@@ -200,9 +200,9 @@ class Element():
             elif atom[0] in elements:
                 return atom[0]  # then for all one-letter atoms
             else:
-                print(f'*** {atom} is not a valid atom!! ***')
+                print(f"*** {atom} is not a valid atom!! ***")
                 raise KeyError
-        except(IndexError):
+        except IndexError:
             print(f'*** {atom} is not a valid atom! ***')
             raise KeyError
     

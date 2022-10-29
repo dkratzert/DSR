@@ -13,6 +13,7 @@
 from __future__ import print_function
 
 from copy import deepcopy
+from pathlib import Path
 
 from src.atomhandling import get_atomtypes
 from src.atoms import Element
@@ -175,7 +176,7 @@ class Export():
         try:
             res_export.append('rem Restraints from DSR database:\n')
             res_export.append(''.join(wrap_headlines(self._gdb.get_restraints(fragname))))
-        except:
+        except Exception:
             pass
         try:
             res_export.append('rem Restraints from atom connectivities:\n')
@@ -183,7 +184,7 @@ class Export():
             res_export.append('rem end of restraints\n')
         except Exception as e:
             print("*** Error during restraints generation: {} ***".format(e))
-            pass
+            raise
         res_export.append('\n')
         res_export.append(final_atomlist)  # the atoms
         res_export.append('\nHKLF 0\nEND\n')  # the end
@@ -329,7 +330,7 @@ class Export():
             f = open(resfile, 'w')
             for line in self.export_resfile(fragment):
                 f.write(''.join(line))
-            print('Database entry of "{}" successfully written to {}.'.format(fragment, resfile))
+            print(f'Database entry of "{fragment}" successfully written to {Path(resfile).resolve()}.')
         except IOError:
             print('*** Could not write file {} ***'.format(resfile))
             import sys
