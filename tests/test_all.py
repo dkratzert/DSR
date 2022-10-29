@@ -7,9 +7,8 @@ import os
 import sys
 import unittest
 
-from src import dbfile, dsrparse, atomhandling
+from src import dbfile, dsrparse, atomhandling, sql_export
 import restraints
-import sql_export
 from src.fit import quatfit
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
