@@ -127,7 +127,7 @@ class reslistTest(unittest.TestCase):
         # print ("setUp reslistTest executed!")
         self.atom1 = 'F10   4   -0.362398   0.278516   0.447770  11.00000   0.02302   0.04023 =\n'
         self.atom2 = '0.02897   0.00131  -0.01216   0.00374\n'
-        self.res_file = 'p21c.res'
+        self.res_file = 'tests/p21c.res'
         self.res_list = ResList(self.res_file)
         self.reslist = self.res_list.get_res_list()
         self.fa = FindAtoms(self.reslist)
@@ -172,7 +172,7 @@ class reslistTest(unittest.TestCase):
 class collect_residuesTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
-        self.res_file = './collect_resi.res'
+        self.res_file = './tests/collect_resi.res'
         self.res_list = ResList(self.res_file)
         self.reslist = self.res_list.get_res_list()
         self.fa = FindAtoms(self.reslist)
@@ -290,7 +290,7 @@ class TestrenameDBHeadatoms(unittest.TestCase):
 
 class SfacTableTest(unittest.TestCase):
     def setUp(self):
-        self.res_file = './collect_resi.res'
+        self.res_file = './tests/collect_resi.res'
         self.res_list = ResList(self.res_file)
         self.reslist = self.res_list.get_res_list()
         self.fragment_atom_types = ['C', 'H', 'N', 'Na']
@@ -335,7 +335,7 @@ class NumberSchemeTest(unittest.TestCase):
     def setUp(self):
         self.numbers = ['O1A', 'C1A', 'C2A', 'F1A', 'F2A', 'F3A', 'C3A',
                         'F4A', 'F5A', 'F6A', 'C4A', 'F7A', 'F8A', 'F9A']
-        res_file = './p21c.res'
+        res_file = './tests/p21c.res'
 
         class Dsrp():
             resiflag = False
@@ -343,7 +343,7 @@ class NumberSchemeTest(unittest.TestCase):
         dsrp = Dsrp()
         rl = ResList(res_file)
         reslist = rl.get_res_list()
-        gdb = dbfile.ParseDB('../dsr_db.txt')
+        gdb = dbfile.ParseDB('./dsr_db.txt')
         fragment = 'OC(cf3)3'
         dbatoms = gdb.get_atoms(fragment)
         self.num = NumberScheme(reslist, dbatoms, dsrp)
@@ -392,14 +392,14 @@ class insertAfixTest(unittest.TestCase):
 class removeDublicatesAfixTest(unittest.TestCase):
     def setUp(self):
         # self.verbosity = 4
-        self.res_file = './collect_resi.res'
+        self.res_file = './tests/collect_resi.res'
         self.res_list = ResList(self.res_file)
         self.reslist = self.res_list.get_res_list()
         self.find_atoms = FindAtoms(self.reslist)
         invert = False
         self.dsrp = DSRParser(self.reslist)
         fragment = 'OC(cf3)3'
-        self.gdb = dbfile.ParseDB('../dsr_db.txt')
+        self.gdb = dbfile.ParseDB('./dsr_db.txt')
         self.dbatoms = self.gdb.get_atoms(fragment)  # only the atoms of the dbentry as list
         self.dbtypes = get_atomtypes(self.dbatoms)
         # self.sf = SfacTable(self.reslist, self.dbtypes)
@@ -449,13 +449,13 @@ class atomsTest(unittest.TestCase):
 class dbfileTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
-        self.rdb = dbfile.ParseDB('./db1.txt', "db2.txt")
+        self.rdb = dbfile.ParseDB('./tests/db1.txt', "./tests/db2.txt")
         self.klein = ['\n', '<DMX>\n', 'REM test\n', 'RESI 3 TST1\n', 'SIMU C1\n', 'FRAG 17 1 1 1 90 90 90\n',
                       'O1  1  -1.3542148   -0.4780990   -0.5279749\n', '</DMX>']
 
     def testrun_dublicate_tags(self):
         with self.assertRaises(SystemExit):
-            rdb = dbfile.ParseDB("db1_dublicate.TXT")
+            rdb = dbfile.ParseDB("./tests/db1_dublicate.TXT")
 
 
 class globalDB(unittest.TestCase):
@@ -490,7 +490,7 @@ class globalDB(unittest.TestCase):
                        }
 
     def testrun_build_db_dict(self):
-        gdb = dbfile.ParseDB("db1_klein.TXT", "db2_klein.TXT")
+        gdb = dbfile.ParseDB("tests/db1_klein.TXT", "tests/db2_klein.TXT")
         db = gdb.databases
         self.assertEqual(db['dmx']['startline'], 2)
         self.assertEqual(db['dmx']['name'], 'dmx')  # no name given, so name is fragment tag
@@ -502,8 +502,8 @@ class globalDB(unittest.TestCase):
 
     def testrun_get_residue_from_head2(self):
         # raises System exit, because residue in db_resinum.TXT is badly defined.
-        main_dbpath = "db_resinum.TXT"
-        user_dbpath = "db1.TXT"
+        main_dbpath = "tests/db_resinum.TXT"
+        user_dbpath = "tests/db1.TXT"
         with self.assertRaises(SystemExit):
             gdb = dbfile.ParseDB(main_dbpath, user_dbpath)
 
@@ -511,7 +511,7 @@ class globalDB(unittest.TestCase):
         x = -1.154
         z = 0.526
         o1 = ['O1', 1, -1.154, -0.748, 0.526]
-        gdb = dbfile.ParseDB("db1.TXT", "db2.TXT")
+        gdb = dbfile.ParseDB("tests/db1.TXT", "tests/db2.TXT")
         atom = gdb.get_atoms('dme')[0]
         self.assertListEqual(o1, atom)
         self.assertEqual(x, atom[2])
@@ -520,7 +520,7 @@ class globalDB(unittest.TestCase):
         self.assertEqual('O1', atom[0])
 
     def testrun_get_fragment_atoms_shortline(self):
-        gdb = dbfile.ParseDB("db1_shortline.TXT")
+        gdb = dbfile.ParseDB("tests/db1_shortline.TXT")
         # db = gdb.build_db_dict()
         atom = gdb.get_atoms('dme-free')
         self.assertEqual(len(atom), 5)
@@ -530,7 +530,7 @@ class globalDB(unittest.TestCase):
         x = -1.154
         z = 0.526
         o1 = ['O1', 1, -1.154, -0.748, 0.526]
-        gdb = dbfile.ParseDB("db1.TXT", "db2.TXT")
+        gdb = dbfile.ParseDB("tests/db1.TXT", "tests/db2.TXT")
         atom = gdb.get_atoms('dme')[0]
         self.assertListEqual(o1, atom)
         self.assertEqual(x, atom[2])
@@ -540,18 +540,18 @@ class globalDB(unittest.TestCase):
 
     def testrun_get_fragment_atoms_noatoms(self):
         with self.assertRaises(SystemExit):
-            gdb = dbfile.ParseDB("db1_noatoms.TXT", "db2.TXT")
+            gdb = dbfile.ParseDB("tests/db1_noatoms.TXT", "tests/db2.TXT")
             gdb.get_atoms('dme-free')
 
     def testrun_get_fragment_atoms_noend(self):
         with self.assertRaises(SystemExit):
-            gdb = dbfile.ParseDB("db1_noend.TXT", "db2.TXT")
+            gdb = dbfile.ParseDB("tests/db1_noend.TXT", "tests/db2.TXT")
             gdb.get_atoms('dme-free')
 
     def testrun_header_consistency(self):
         self.maxDiff = None
-        main_dbpath = "./db1_head_inconsistent.TXT"
-        user_dbpath = "./db2_klein.TXT"
+        main_dbpath = "./tests/db1_head_inconsistent.TXT"
+        user_dbpath = "./tests/db2_klein.TXT"
         with self.assertRaises(SystemExit):
             gdb = dbfile.ParseDB(main_dbpath, user_dbpath)
             fragment = 'dmel'
@@ -559,8 +559,8 @@ class globalDB(unittest.TestCase):
 
     def testrun_header_consistency2(self):
         self.maxDiff = None
-        maindb = "./db1_head_inconsistent2.TXT"
-        userdb = "./db2_klein.TXT"
+        maindb = "./tests/db1_head_inconsistent2.TXT"
+        userdb = "./tests/db2_klein.TXT"
         with self.assertRaises(SystemExit):
             gdb = dbfile.ParseDB(maindb, userdb)
             fragment = 'dmem'
@@ -570,7 +570,7 @@ class globalDB(unittest.TestCase):
 
     def testrun_get_resi_from_fragment(self):
         self.maxDiff = None
-        gdb = dbfile.ParseDB("comment.TXT", 'db1.txt')
+        gdb = dbfile.ParseDB("tests/comment.TXT", 'tests/db1.txt')
         fragment = 'com1'
         resi = gdb.get_resi(fragment)
         line = gdb.get_startline(fragment)
@@ -580,9 +580,9 @@ class globalDB(unittest.TestCase):
 
 class ImportGRADE_Test(unittest.TestCase):
     def setUp(self):
-        gdb = dbfile.ParseDB('../userdb.txt')
-        self.ig = ImportGRADE('./test-data/PFA.gradeserver_all.tgz', gdb)
-        self.igi = ImportGRADE('./test-data/PFA.gradeserver_all.tgz', gdb, invert=True)
+        gdb = dbfile.ParseDB('./userdb.txt')
+        self.ig = ImportGRADE('./tests/test-data/PFA.gradeserver_all.tgz', gdb)
+        self.igi = ImportGRADE('./tests/test-data/PFA.gradeserver_all.tgz', gdb, invert=True)
 
     # test for PFA1 is already in db and we want to import again
 
@@ -593,8 +593,8 @@ class ImportGRADE_Test(unittest.TestCase):
         files[2] = obprop
         """
         self.maxDiff = None
-        files = self.ig.get_gradefiles('./test-data/PFA.gradeserver_all.tgz')
-        filenames = ['./grade-PFA.pdb', './grade-PFA.dfix']
+        files = self.ig.get_gradefiles('./tests/test-data/PFA.gradeserver_all.tgz')
+        filenames = ['./tests/grade-PFA.pdb', './tests/grade-PFA.dfix']
         endings = []
         for num, i in enumerate(filenames):
             with open(i) as test_file:
@@ -609,7 +609,7 @@ class ImportGRADE_Test(unittest.TestCase):
 
     def testrun_get_comments(self):
         self.maxDiff = None
-        filename = './grade-comments.dfix'
+        filename = './tests/grade-comments.dfix'
         ob = []
         with open(filename) as filen:
             for line in filen:
@@ -621,7 +621,7 @@ class ImportGRADE_Test(unittest.TestCase):
         self.assertEqual(comments, ob)
 
     def testrun_get_firstlast(self):
-        files = self.ig.get_gradefiles('./test-data/PFA.gradeserver_all.tgz')
+        files = self.ig.get_gradefiles('./tests/test-data/PFA.gradeserver_all.tgz')
         atoms = self.ig.get_pdbatoms(files[0])
         fl = dbfile.get_first_last_atom(atoms)
         self.assertTupleEqual(fl, ('AL1', 'F36'))
@@ -629,7 +629,7 @@ class ImportGRADE_Test(unittest.TestCase):
     def testrun_deleted_pdb_file(self):
         with self.assertRaises(SystemExit):
             gdb = dbfile.ParseDB('../userdb.txt')
-            ImportGRADE('./PFA.gradeserver_all_2.tgz', gdb)
+            ImportGRADE('./tests/PFA.gradeserver_all_2.tgz', gdb)
 
     def testrun_get_restaraints(self):
         self.maxDiff = None
@@ -638,7 +638,7 @@ class ImportGRADE_Test(unittest.TestCase):
         # with open('test.txt', 'wb+') as file:
         #    for line in restr:
         #        file.write(' '.join(line)+'\n')
-        filename = './grade_restraints.txt'
+        filename = './tests/grade_restraints.txt'
         tst = []
         with open(filename) as test_file:
             for line in test_file:
@@ -647,7 +647,7 @@ class ImportGRADE_Test(unittest.TestCase):
 
     def testrun_get_pdbatoms(self):
         # pdblines = []
-        with open('./grade-PFA.pdb') as pdb_file:
+        with open('./tests/grade-PFA.pdb') as pdb_file:
             pdblines = pdb_file.readlines()
             pdbatoms = self.ig.get_pdbatoms(pdblines)
             self.assertListEqual(['AL1', 'AL', '9.463', '-3.351', '3.397'], pdbatoms[0])
@@ -656,8 +656,8 @@ class ImportGRADE_Test(unittest.TestCase):
 class DSRParseTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
-        self.res_file = 'dsrparse.res'
-        testresfile = './dsrparse.res'
+        self.res_file = 'tests/dsrparse.res'
+        testresfile = 'tests/dsrparse.res'
         self.rl = ResList(testresfile)
         self.reslist = self.rl.get_res_list()
         self.dsrp = DSRParser(self.reslist)
@@ -671,8 +671,8 @@ class DSRParseTest(unittest.TestCase):
 class DSRParse2Test(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
-        self.res_file = 'dsrparse.res'
-        testresfile = './dsrparse.res'
+        self.res_file = 'tests/dsrparse.res'
+        testresfile = 'tests/dsrparse.res'
         self.rl = ResList(testresfile)
         self.reslist = self.rl.get_res_list()
         self.dsrp = DSRParser(self.reslist)
@@ -689,7 +689,7 @@ class ExportTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
         self.invert = False
-        self.gdb = dbfile.ParseDB('../dsr_db.txt')
+        self.gdb = dbfile.ParseDB('./dsr_db.txt')
         self.export_clip = 'benzene'
         self.resgood = ['TITL toluene\n', 'REM This file was exported by DSR version {}\n'.format(VERSION),
                         'REM Name: Toluene, C7H8\nREM Source: CCDC CESLUJ\n',
@@ -763,7 +763,7 @@ class ExportTest(unittest.TestCase):
         """
         Exports the current fragment to the clipboard.
         """
-        gdb = dbfile.ParseDB('../dsr_db.txt')
+        gdb = dbfile.ParseDB('./dsr_db.txt')
         export = Export(gdb)
         #        with self.assertRaises(SystemExit):
         #self.assertTrue(export.export_to_clip('benzene'))
@@ -771,7 +771,7 @@ class ExportTest(unittest.TestCase):
 
 class ResListEditTest(unittest.TestCase):
     def setUp(self):
-        self.res_file = './p21c.res'
+        self.res_file = './tests/p21c.res'
         self.rl = ResList(self.res_file)
         self.res_list = self.rl.get_res_list()
         self.fa = FindAtoms(self.res_list)
@@ -787,7 +787,7 @@ class ResListEditTest(unittest.TestCase):
 class ResidueTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
-        self.res_file = './p21c.res'
+        self.res_file = './tests/p21c.res'
         self.rl = ResList(self.res_file)
         self.res_list = self.rl.get_res_list()
         self.find_atoms = FindAtoms(self.res_list)
@@ -799,7 +799,7 @@ class ResidueTest(unittest.TestCase):
                       'DFIX 2.916 0.03 CL1 CL2',
                       'SIMU CL1 > C1',
                       'RIGU CL1 > C1']
-        self.gdb = dbfile.ParseDB('../dsr_db.txt')
+        self.gdb = dbfile.ParseDB('./dsr_db.txt')
         self.residue_class = self.gdb.get_resi(fragment)
         self.fragline = self.gdb.get_startline(fragment)  # full string of FRAG line
         self.dbatoms = self.gdb.get_atoms(fragment)  # only the atoms of the dbentry as list

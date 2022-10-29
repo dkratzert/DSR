@@ -81,14 +81,14 @@ def check_file_exist(filename):
     A file size of 0 retrurns 'zero'.
 
     # keep these paths for the unit tests!
-    >>> check_file_exist('p21c.res')
+    >>> check_file_exist('tests/p21c.res')
     True
     >>> check_file_exist('foo.bar')
     File "foo.bar" not found!
     False
-    >>> check_file_exist('empty.txt')
+    >>> check_file_exist('tests/empty.txt')
     'zero'
-    >>> check_file_exist('../misc.py')
+    >>> check_file_exist('./misc.py')
     True
     """
     status = False
@@ -1336,7 +1336,7 @@ def file_len(fname):
     """
     Returns the number of lines in a text file.
 
-    >>> file_len('p21c.hkl')
+    >>> file_len('tests/p21c.hkl')
     42976
     """
     i = 0

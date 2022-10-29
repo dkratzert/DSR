@@ -59,7 +59,7 @@ class Export():
         TODO: make this crude hack more elegant!
         In calculated structure the cell is 1 1 1 90 90 90. Shelxle has problems
         with that when growing. So the cell is expanded to 50 50 50
-        >>> gdb = ParseDB('../dsr_db.txt')
+        >>> gdb = ParseDB('./dsr_db.txt')
         >>> exp = Export(gdb)
         >>> atoms = gdb.get_atoms('benzene')
         >>> exp.expand_calced_cell([1, 1, 1, 90, 90, 90], atoms)
@@ -231,7 +231,7 @@ class Export():
         Returns properly formated cartesian coordinates for fragment export.
         Atom;;number;;x;;y;;z
 
-        >>> gdb = ParseDB('../dsr_db.txt')
+        >>> gdb = ParseDB('./dsr_db.txt')
         >>> atoms = gdb.get_atoms('toluene')
         >>> cell = gdb.get_cell('toluene')
         >>> exp = Export(gdb=gdb)
@@ -289,7 +289,7 @@ class Export():
     def export_to_gui(self, fragname):
         """
         exports atoms to output for the DSRGui
-        >>> gdb = ParseDB('../dsr_db.txt')
+        >>> gdb = ParseDB('./dsr_db.txt')
         >>> exp = Export(gdb=gdb)
         >>> print(exp.export_to_gui(fragname="toluene")) # doctest: +NORMALIZE_WHITESPACE +REPORT_NDIFF +ELLIPSIS
         C1 6 1.78099 7.14907 12.00423;;C2 6 2.20089 8.30676 11.13758;;C3 6 1.26895 9.02168 10.39032;;C4
