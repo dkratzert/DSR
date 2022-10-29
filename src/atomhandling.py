@@ -97,7 +97,7 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     >>> from resfile import ResListEdit
     >>> from src.dsrparse import DSRParser
     >>> from resi import Resi
-    >>> res_file = 'p21c.res'
+    >>> res_file = 'tests/p21c.res'
     >>> rl = ResList(res_file)
     >>> reslist = rl.get_res_list()
     >>> find_atoms = FindAtoms(reslist)

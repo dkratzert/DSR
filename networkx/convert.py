@@ -113,6 +113,12 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
             except Exception as err2:
                 raise TypeError("Input is not known type.") from err2
 
+    if isinstance(data, (Collection, Generator, Iterator)):
+        try:
+            return from_edgelist(data, create_using=create_using)
+        except Exception as err:
+            raise nx.NetworkXError("Input is not a valid edge list") from err
+
     # Pandas DataFrame
     try:
         import pandas as pd
@@ -166,14 +172,8 @@ def to_networkx_graph(data, create_using=None, multigraph_input=False):
     # Note: most general check - should remain last in order of execution
     # Includes containers (e.g. list, set, dict, etc.), generators, and
     # iterators (e.g. itertools.chain) of edges
-
-    if isinstance(data, (Collection, Generator, Iterator)):
-        try:
-            return from_edgelist(data, create_using=create_using)
-        except Exception as err:
-            raise nx.NetworkXError("Input is not a valid edge list") from err
-
     raise nx.NetworkXError("Input is not a known data type for conversion.")
+
 
 
 def to_dict_of_lists(G, nodelist=None):
