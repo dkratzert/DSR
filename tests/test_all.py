@@ -25,7 +25,7 @@ import dsr
 from dsr import VERSION
 from src.dsrparse import DSRParser
 from export import Export
-from resfile import ResList, ResListEdit
+from src.resfile import ResList, ResListEdit
 from resi import Resi
 from restraints import format_atom_names
 

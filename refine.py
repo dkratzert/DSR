@@ -20,7 +20,7 @@ import sys
 import misc
 from src.constants import sep_line
 from misc import find_line, check_file_exist, remove_line
-from resfile import ResList
+from src.resfile import ResList
 
 
 
