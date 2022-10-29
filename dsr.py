@@ -30,7 +30,7 @@ from refine import ShelxlRefine
 from resfile import ResList, ResListEdit, filename_wo_ending
 from resi import Resi, remove_resi
 from restraints import Restraints
-from terminalsize import get_terminal_size
+from src.terminalsize import get_terminal_size
 
 VERSION = '236'
 # dont forget to change version in Innoscript file, spec file and deb file.
