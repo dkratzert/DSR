@@ -36,7 +36,7 @@ class OptionsParser():
     def __init__(self, progname):
         self.progname = progname
         # search characters allowed: a-z A-Z 0-9 _ - , () {} [] ' " + * | = .
-        self.allowed_chars = re.compile(r'^[\w\-,\(\)\[\]\{\}\'\"\+\*\|\=\.]+$')
+        self.allowed_chars = re.compile(r'^[\w\-,()\[\]{}\'\"+*|=.]+$')
         self.parser = ArgumentParser(prog='dsr', formatter_class=RawTextHelpFormatter,
                                      description='{}\nDisordered Structure Refinement (DSR)\n'.format(progname)
                                      + '\nExample DSR .res file command line:'
@@ -97,9 +97,9 @@ class OptionsParser():
             return False
         try:
             rpath = os.path.normpath(rpath)
-        except:
+        except Exception:
             rpath = None
-        return rpath
+        return rpath.strip()
 
     @property
     def external_restr(self):
@@ -109,7 +109,7 @@ class OptionsParser():
             return False
         try:
             erpath = os.path.normpath(erpath)
-        except:
+        except Exception:
             erpath = None
         return erpath
 
@@ -122,11 +122,11 @@ class OptionsParser():
         return self._options.rigid_group
 
     @property
-    def export_fragment(self):
+    def export_fragment(self) -> bool:
         return self._options.export_fragment
 
     @property
-    def export_clip(self):
+    def export_clip(self) -> bool:
         return self._options.export_clip
 
     @property
@@ -157,7 +157,7 @@ class OptionsParser():
         return frag
 
     @property
-    def invert(self):
+    def invert(self) -> bool:
         return self._options.invert
 
     @property
@@ -190,17 +190,17 @@ class OptionsParser():
     def search_string(self):
         if not self._options.search_string:
             return None
-        if not self.allowed_chars.match(''.join(self._options.search_string)):
+        if not self.allowed_chars.match(''.join(self._options.search_string).strip()):
             print('*** Characters not allowed for searching. ***')
             sys.exit()
         else:
-            return ''.join(self._options.search_string)
+            return ''.join(self._options.search_string).strip()
 
     @property
     def search_extern(self):
         if not self._options.search_extern:
             return None
-        if not self.allowed_chars.match(''.join(self._options.search_extern)):
+        if not self.allowed_chars.match(''.join(self._options.search_extern).strip()):
             print('*** Characters not allowed for searching. ***')
             sys.exit()
         else:

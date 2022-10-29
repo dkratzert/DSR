@@ -806,8 +806,7 @@ class ParseDB(object):
             sys.exit()
         return coords
 
-    def get_restraints(self, fragment):
-        # type: (str) -> list
+    def get_restraints(self, fragment: str) -> list[str]:
         """
         returns the header of the dbentry of fragment.
         This header does not include comments, only the restraints.

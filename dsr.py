@@ -138,18 +138,12 @@ class DSR(object):
             self.export.export_all_fragments()
         # Export one fragment
         if self.export_fragment:
-            print('Exporting "{0}" to {0}.res'.format(self.fragment))
+            print(f'Exporting "{self.fragment}" to {self.fragment}.res')
             self.fragment = self.export_fragment
-            try:
-                self.export.write_res_file(self.fragment)
-            except:
-                raise
+            self.export.write_res_file(self.fragment)
             sys.exit()
         if self.export_clip:
-            try:
-                self.export.export_to_clip(self.fragment)
-            except:
-                raise
+            self.export.export_to_clip(self.fragment)
             sys.exit()
         # Import a GRADE fragment
         if self.import_grade:
