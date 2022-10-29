@@ -11,7 +11,7 @@ import sys
 
 from dsr import VERSION
 from misc import copy_file, remove_file, walkdir
-from selfupdate import sha512_checksum
+from src.selfupdate import sha512_checksum
 
 files = [
     "afix.py",
