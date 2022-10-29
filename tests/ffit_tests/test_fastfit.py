@@ -99,20 +99,20 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         print(f'{nummer} test:')
         print("parameter:", parameter)
         if hkl:
-            remove_file(self.prefix + '{}a.hkl'.format(nummer))
-        remove_file(self.prefix + '{}a.fcf'.format(nummer))
-        remove_file(self.prefix + '{}.fcf'.format(nummer))
-        remove_file(self.prefix + '{}.2fcf'.format(nummer))
-        remove_file(self.prefix + '{}a.lst'.format(nummer))
+            remove_file(f'{self.prefix}/{nummer}a.hkl')
+        remove_file(f'{self.prefix}/{nummer}a.fcf')
+        remove_file(f'{self.prefix}/{nummer}.fcf')
+        remove_file(f'{self.prefix}/{nummer}.2fcf')
+        remove_file(f'{self.prefix}/{nummer}a.lst')
         # a = remove_whitespace(a)
         # b = remove_whitespace(b)
         self.assertEqual('\n'.join(b), '\n'.join(a))
         if external_file:
             self.assertEqual(d, c)
         print('{} '.format(nummer) * 10, "ende")
-        remove_file(self.prefix + '/{}a.ins'.format(nummer))
-        remove_file(self.prefix + '/{}a.res'.format(nummer))
-        remove_file(self.prefix + '/{}.dfix'.format(external_file))
+        remove_file(f'{self.prefix}/{nummer}a.ins')
+        remove_file(f'{self.prefix}/{nummer}a.res')
+        remove_file(f'{self.prefix}/{external_file}.dfix')
 
     # @unittest.skip(" skipping1 ")
     def testrun_run1(self):
@@ -210,7 +210,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         ex_erg = Path(f'{self.prefix}/toluene-erg.res').read_text().splitlines(keepends=False)
         del ex[1]  # line with the version number
         del ex_erg[1]
-        #Path('toluene.res').unlink(missing_ok=True)
+        Path('toluene.res').unlink(missing_ok=True)
         self.assertEqual('\n'.join(ex), '\n'.join(ex_erg))
         print('9 ' * 10, 'ende')
 
