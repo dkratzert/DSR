@@ -10,7 +10,7 @@ import unittest
 from src import dbfile, dsrparse, atomhandling
 import restraints
 import sql_export
-from fit import quatfit
+from src.fit import quatfit
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import afix
