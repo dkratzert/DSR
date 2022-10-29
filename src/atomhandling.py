@@ -93,8 +93,8 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     :param fragment_numberscheme: atom names of the fitting fragment
     :param cell: cell parameters
 
-    >>> from resfile import ResList
-    >>> from resfile import ResListEdit
+    >>> from src.resfile import ResList
+    >>> from src.resfile import ResListEdit
     >>> from src.dsrparse import DSRParser
     >>> from resi import Resi
     >>> res_file = 'tests/p21c.res'
@@ -113,7 +113,7 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     #>>> replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell)
     """
     remdist = 1.3
-    from resfile import ResListEdit
+    from src.resfile import ResListEdit
     find_atoms = FindAtoms(reslist)
     if resi.dsrp.resiflag:
         frag_at = []

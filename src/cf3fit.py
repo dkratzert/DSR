@@ -24,7 +24,7 @@ from misc import atomic_distance, frac_to_cart, cart_to_frac, \
     id_generator, shift, remove_partsymbol, find_multi_lines, wrap_headlines, \
     calc_ellipsoid_axes
 from refine import ShelxlRefine
-from resfile import ResList
+from src.resfile import ResList
 from restraints import ListFile
 
 # Y-Z-F1/F2/F3
