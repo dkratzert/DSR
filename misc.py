@@ -19,7 +19,7 @@ import random
 import re
 import string
 
-import mpmath as mpm
+import src.mpmath as mpm
 from src.constants import isoatomstr
 
 alphabet = string.ascii_uppercase
@@ -742,7 +742,6 @@ def frac_to_cart(frac_coord, cell):
     Converts fractional coordinates to cartesian coodinates
     :param frac_coord: [float, float, float]
     :param cell:       [float, float, float, float, float, float]
-    >>> import mpmath as mpm
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     >>> coord1 = (-0.186843,   0.282708,   0.526803)
     >>> print(frac_to_cart(coord1, cell))
@@ -769,7 +768,7 @@ class A(object):
     """
     orthogonalization matrix
     e.g. converts fractional coordinates to cartesian coodinates
-    >>> import mpmath as mpm
+^
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     >>> coord = (-0.186843,   0.282708,   0.526803)
     >>> A = A(cell).orthogonal_matrix
@@ -797,7 +796,7 @@ class A(object):
         Converts von fractional to cartesian.
         Invert the matrix to do the opposite.
         """
-        import mpmath as mpm
+        import src.mpmath as mpm
         Am = mpm.matrix([[self.a, self.b * cos(self.gamma), self.c * cos(self.beta)],
                          [0, self.b * sin(self.gamma),
                           (self.c * (cos(self.alpha) - cos(self.beta) * cos(self.gamma)) / sin(self.gamma))],
@@ -1179,7 +1178,7 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     Name type  x      y      z    occ     U11 U22 U33 U23 U13 U12
     F3    4    0.210835   0.104067   0.437922  21.00000   0.07243   0.03058 =
        0.03216  -0.01057  -0.01708   0.03014
-    >>> import mpmath as mpm
+    >>> import src.mpmath as mpm
     >>> cell = [10.5086, 20.9035, 20.5072, 90, 94.13, 90]
     >>> coords = [0.210835,   0.104067,   0.437922]
     >>> uvals = [0.07243, 0.03058, 0.03216, -0.01057, -0.01708, 0.03014]
