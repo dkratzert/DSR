@@ -93,7 +93,7 @@ class DSR(object):
         if self.head_csv:
             self.fragment = self.head_csv
         if self.options.selfupdate:
-            import selfupdate
+            from src import selfupdate
             selfupdate.update_dsr()
             sys.exit()
         #################################
@@ -233,7 +233,7 @@ class DSR(object):
             self.gdb.check_db_atom_consistency(fragment)
             self.gdb.check_db_restraints_consistency(fragment)
             self.gdb.check_sadi_consistence(fragment)
-        from selfupdate import is_update_needed
+        from src.selfupdate import is_update_needed
         if is_update_needed(silent=True):
             print("\n*** An update for DSR is available. You can update with 'dsr -u' ***")
         sys.exit()

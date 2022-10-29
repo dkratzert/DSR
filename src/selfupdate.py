@@ -22,17 +22,10 @@ from dsr import VERSION
 
 urlprefix = "https://dkratzert.de/files/dsr"
 
-# changes the user-agent of the http request:
-# Python 2 and 3: alternative 4
-try:
-    # Python 3:
-    from urllib.request import FancyURLopener
-    import urllib.request
-except ImportError:
-    # Python 2:
-    from urlparse import urlparse
-    from urllib import urlencode, FancyURLopener, URLopener
-    from urllib2 import urlopen, Request, HTTPError
+
+from urllib.request import FancyURLopener
+import urllib.request
+
 
 
 class MyOpener(FancyURLopener):
@@ -95,9 +88,7 @@ def update_dsr(force=False, version=None):
     #>>> update_dsr(force=True)
     #True
     """
-    if version:
-        version = version
-    else:
+    if not version:
         version = get_current_dsr_version()
     if not version:
         print('*** Could not get current version from server. ***')
@@ -118,7 +109,7 @@ def update_dsr(force=False, version=None):
         else:
             print('*** Could not update DSR. ***')
             return False
-    if (int(VERSION) >= int(version)) and version > 0:
+    if (int(VERSION) >= int(version)) and int(version) > 0:
         print('*** DSR is already up to date (version {}) ***'.format(VERSION))
         return False
 
@@ -147,16 +138,16 @@ def post_update_things(dsrdir):
     """
     import stat
     plat = get_system()
-    upath = os.path.join(dsrdir, "dsr")
+    upath = os.path.join(dsrdir, "../dsr")
     try:
         if plat == "win":
             pass
         elif plat == "mac":
-            shutil.copy2(os.path.abspath(os.path.join(dsrdir, "setup//dsr-mac")), upath)
+            shutil.copy2(os.path.abspath(os.path.join(dsrdir, "../setup/dsr-mac")), upath)
             st = os.stat(upath)
             os.chmod(upath, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
         elif plat == "lin":
-            shutil.copy2(os.path.abspath(os.path.join(dsrdir, "setup//dsr-linux")), upath)
+            shutil.copy2(os.path.abspath(os.path.join(dsrdir, "../setup/dsr-linux")), upath)
             st = os.stat(upath)
             os.chmod(upath, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
     except IOError:  # Unable to write in this case
@@ -216,7 +207,7 @@ def get_update_package(version, destdir=None, post=True):
         print(e)
         return False
     downloaded_sha, tgz_sha = check_checksum(tmpfile, version)
-    if not downloaded_sha == tgz_sha:
+    if downloaded_sha != tgz_sha:
         print('*** Checksum mismatch. Unable to update. If this problem persists, please update manually! ***')
         return False
     else:
