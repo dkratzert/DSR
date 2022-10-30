@@ -26,7 +26,7 @@ from src.dsrparse import DSRParser
 from src.fit.quatfit import fit_fragment, centroid
 from misc import cart_to_frac, chunks, frac_to_cart, touch, wrap_headlines, matrix_plus_vect, subtract_vect
 from options import OptionsParser
-from refine import ShelxlRefine
+from src.refine import ShelxlRefine
 from src.resfile import ResList, ResListEdit, filename_wo_ending
 from resi import Resi, remove_resi
 from restraints import Restraints
