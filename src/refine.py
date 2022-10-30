@@ -17,9 +17,9 @@ import shutil
 import subprocess
 import sys
 
-import misc
+from src import misc
 from src.constants import sep_line
-from misc import find_line, check_file_exist, remove_line
+from src.misc import find_line, check_file_exist, remove_line
 from src.resfile import ResList
 
 

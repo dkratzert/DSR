@@ -10,7 +10,7 @@ import shutil
 import sys
 
 from dsr import VERSION
-from misc import copy_file, remove_file, walkdir
+from src.misc import copy_file, remove_file, walkdir
 from src.selfupdate import sha512_checksum
 
 files = [

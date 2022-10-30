@@ -5,8 +5,8 @@ import copy
 from math import fabs
 from math import sqrt
 
-from misc import cart_to_frac, frac_to_cart, matrix_minus_vect, matrix_plus_vect
-from misc import transpose
+from src.misc import cart_to_frac, frac_to_cart, matrix_minus_vect, matrix_plus_vect
+from src.misc import transpose
 
 
 ##############################################################################

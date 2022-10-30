@@ -1,11 +1,10 @@
 import os
 import sys
-import time
 import unittest
 from pathlib import Path
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
-from misc import remove_file, copy_file, which
+from src.misc import remove_file, copy_file
 
 print(sys.version)
 

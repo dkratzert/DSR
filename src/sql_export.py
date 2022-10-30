@@ -6,7 +6,7 @@ import os
 import sqlite3 as lite
 import sys
 
-import misc
+from src import misc
 from src.constants import SHX_CARDS
 from src.dbfile import ParseDB
 

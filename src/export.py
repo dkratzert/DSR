@@ -18,7 +18,7 @@ from pathlib import Path
 from src.atomhandling import get_atomtypes
 from src.atoms import Element
 from src.dbfile import ParseDB, invert_atomic_coordinates
-from misc import wrap_headlines, wrap_stringlist
+from src.misc import wrap_headlines, wrap_stringlist
 from src.restraints import Restraints
 
 
@@ -256,7 +256,7 @@ class Export():
         """
         el = Element()
         atoms = deepcopy(atoms)
-        from misc import frac_to_cart
+        from src.misc import frac_to_cart
         for line in atoms:
             if int(line[1]) < 0:
                 line[1] = int(line[1])  # abs(int(line[1])) <- No abs(), it causes confusion with GUI

@@ -7,11 +7,10 @@ import os
 import sys
 import unittest
 
-from src import dbfile, dsrparse, atomhandling, sql_export, elements, export, restraints, afix
+from src import dbfile, dsrparse, atomhandling, sql_export, elements, export, restraints, afix, misc
 from src.fit import quatfit
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
-import misc
 import networkx
 from src.atomhandling import get_atomtypes, FindAtoms, check_source_target, \
     rename_restraints_atoms, SfacTable, Elem_2_Sfac, NumberScheme

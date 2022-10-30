@@ -2,8 +2,7 @@ import os
 import subprocess
 import tempfile
 
-import misc
-from src import selfupdate
+from src import selfupdate, misc
 from dsr import VERSION
 from scripts.make_zipfile import files, make_zip
 

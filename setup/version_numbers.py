@@ -4,8 +4,7 @@
 from __future__ import print_function
 
 from dsr import VERSION
-import misc
-from src import dbfile
+from src import dbfile, misc
 import os
 
 """
