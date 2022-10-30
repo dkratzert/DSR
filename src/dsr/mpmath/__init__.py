@@ -20,9 +20,9 @@ fp._iv = iv
 iv._iv = iv
 
 # XXX: extremely bad pickle hack
-from . import ctx_mp as _ctx_mp
-_ctx_mp._mpf_module.mpf = mp.mpf
-_ctx_mp._mpf_module.mpc = mp.mpc
+#from . import ctx_mp as _ctx_mp
+#_ctx_mp._mpf_module.mpf = mp.mpf
+#_ctx_mp._mpf_module.mpc = mp.mpc
 
 make_mpf = mp.make_mpf
 make_mpc = mp.make_mpc

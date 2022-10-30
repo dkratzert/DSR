@@ -15,11 +15,11 @@ from __future__ import print_function
 from copy import deepcopy
 from pathlib import Path
 
-from src.atomhandling import get_atomtypes
-from src.atoms import Element
-from src.dbfile import ParseDB, invert_atomic_coordinates
-from src.misc import wrap_headlines, wrap_stringlist
-from src.restraints import Restraints
+from atomhandling import get_atomtypes
+from atoms import Element
+from dbfile import ParseDB, invert_atomic_coordinates
+from misc import wrap_headlines, wrap_stringlist
+from restraints import Restraints
 
 
 
@@ -127,7 +127,7 @@ class Export():
             print("Fragment inverted.")
             atoms = invert_atomic_coordinates(atoms)
         try:
-            from dsr import VERSION
+            from src.dsr.dsr import VERSION
         except ImportError:
             VERSION = ''
         sfac = []
@@ -207,7 +207,7 @@ class Export():
         C7   1     2.3940  -0.0040   1.3940
         FEND
         """
-        from src import pyperclip
+        import pyperclip
         fragname = fragname.lower()
         clip_text = []
         cell = self._gdb.get_cell(fragname)
@@ -256,7 +256,7 @@ class Export():
         """
         el = Element()
         atoms = deepcopy(atoms)
-        from src.misc import frac_to_cart
+        from misc import frac_to_cart
         for line in atoms:
             if int(line[1]) < 0:
                 line[1] = int(line[1])  # abs(int(line[1])) <- No abs(), it causes confusion with GUI

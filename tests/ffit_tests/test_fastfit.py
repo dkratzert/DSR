@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
-from src.misc import remove_file, copy_file
+from src.dsr.misc import remove_file, copy_file
 
 print(sys.version)
 

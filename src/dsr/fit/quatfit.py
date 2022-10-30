@@ -1,12 +1,9 @@
 # coding=utf-8
-from __future__ import print_function
 
 import copy
-from math import fabs
-from math import sqrt
 
-from src.misc import cart_to_frac, frac_to_cart, matrix_minus_vect, matrix_plus_vect
-from src.misc import transpose
+from math import fabs, sqrt
+from misc import cart_to_frac, frac_to_cart, matrix_minus_vect, matrix_plus_vect, transpose
 
 
 ##############################################################################

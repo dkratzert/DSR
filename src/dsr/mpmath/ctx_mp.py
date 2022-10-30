@@ -12,28 +12,16 @@ from .libmp.backend import basestring, BACKEND
 
 from . import libmp
 
-from .libmp import (MPZ, MPZ_ZERO, MPZ_ONE, int_types, repr_dps,
-    round_floor, round_ceiling, dps_to_prec, round_nearest, prec_to_dps,
-    ComplexResult, to_pickable, from_pickable, normalize,
-    from_int, from_float, from_str, to_int, to_float, to_str,
-    from_rational, from_man_exp,
-    fone, fzero, finf, fninf, fnan,
-    mpf_abs, mpf_pos, mpf_neg, mpf_add, mpf_sub, mpf_mul, mpf_mul_int,
-    mpf_div, mpf_rdiv_int, mpf_pow_int, mpf_mod,
-    mpf_eq, mpf_cmp, mpf_lt, mpf_gt, mpf_le, mpf_ge,
-    mpf_hash, mpf_rand,
-    mpf_sum,
-    bitcount, to_fixed,
-    mpc_to_str,
-    mpc_to_complex, mpc_hash, mpc_pos, mpc_is_nonzero, mpc_neg, mpc_conjugate,
-    mpc_abs, mpc_add, mpc_add_mpf, mpc_sub, mpc_sub_mpf, mpc_mul, mpc_mul_mpf,
-    mpc_mul_int, mpc_div, mpc_div_mpf, mpc_pow, mpc_pow_mpf, mpc_pow_int,
-    mpc_mpf_div,
-    mpf_pow,
-    mpf_pi, mpf_degree, mpf_e, mpf_phi, mpf_ln2, mpf_ln10,
-    mpf_euler, mpf_catalan, mpf_apery, mpf_khinchin,
-    mpf_glaisher, mpf_twinprime, mpf_mertens,
-    int_types)
+from .libmp import (MPZ_ONE, repr_dps,
+                    dps_to_prec, ComplexResult, to_str,
+                    from_rational, fone, fzero, finf, fninf, fnan,
+                    mpf_neg, mpf_add, mpf_sub, mpf_mul, mpf_div, mpf_rand,
+                    bitcount, mpc_to_str,
+                    mpc_neg, mpc_add, mpc_add_mpf, mpc_sub, mpc_sub_mpf, mpc_mul, mpc_mul_mpf,
+                    mpc_div, mpc_div_mpf, mpf_pi, mpf_degree, mpf_e, mpf_phi, mpf_ln2, mpf_ln10,
+                    mpf_euler, mpf_catalan, mpf_apery, mpf_khinchin,
+                    mpf_glaisher, mpf_twinprime, mpf_mertens,
+                    int_types)
 
 from . import function_docs
 from . import rational
@@ -46,12 +34,10 @@ get_complex = re.compile(r'^\(?(?P<re>[\+\-]?\d*\.?\d*(e[\+\-]?\d+)?)??'
 if BACKEND == 'sage':
     from sage.libs.mpmath.ext_main import Context as BaseMPContext
     # pickle hack
-    import sage.libs.mpmath.ext_main as _mpf_module
+
 else:
     from .ctx_mp_python import PythonMPContext as BaseMPContext
-    from . import ctx_mp_python as _mpf_module
 
-from .ctx_mp_python import _mpf, _mpc, mpnumeric
 
 class MPContext(BaseMPContext, StandardBaseContext):
     """

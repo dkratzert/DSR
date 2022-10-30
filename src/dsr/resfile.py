@@ -14,8 +14,7 @@ from __future__ import print_function
 import os
 import sys
 
-from src import misc
-
+import misc
 
 
 def filename_wo_ending(resfilename):

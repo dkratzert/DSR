@@ -15,8 +15,8 @@ import os
 import re
 import sys
 
-from src import misc
-from src.constants import sep_line
+import misc
+from constants import sep_line
 
 try:
     from argparse import RawTextHelpFormatter
@@ -53,17 +53,17 @@ class OptionsParser():
         self.parser.add_argument("-re", dest="external_restr", metavar='"res file"', nargs='+',
                                  help="res file with DSR command (write restraints to external file)", default=False)
         self.parser.add_argument("-e", dest="export_fragment", metavar='"fragment"',
-                                 help="export fragment as .res/.png file", default=False)
+                                 help="export fragment as .res/.png file", default='')
         self.parser.add_argument("-c", dest="export_clip", metavar='"fragment"',
-                                 help="export fragment to clipboard", default=False)
+                                 help="export fragment to clipboard", default='')
         self.parser.add_argument("-t", dest="invert", action='store_true',
                                  help="inverts the current fragment", default=False)
         self.parser.add_argument("-i", dest="import_grade", metavar='"tgz file"',
-                                 help="import a fragment from GRADE (needs .tgz file)", default=False)
+                                 help="import a fragment from GRADE (needs .tgz file)", default='')
         self.parser.add_argument("-l", dest="list_db", action="store_true",
                                  help="list names of all database entries", default=False)
         self.parser.add_argument("-s", dest="search_string", metavar='"string"', nargs='+',
-                                 help="search the database for a name", default=False)
+                                 help="search the database for a name", default='')
         self.parser.add_argument("-g", dest="rigid_group", help="keep group rigid (no restraints)",
                                  action="store_true", default=False)
         self.parser.add_argument("-u", dest="selfupdate", help="Update DSR to the most current version",
@@ -126,8 +126,8 @@ class OptionsParser():
         return self._options.export_fragment
 
     @property
-    def export_clip(self) -> bool:
-        return self._options.export_clip
+    def export_clip(self) -> str:
+        return self._options.export_clip.strip()
 
     @property
     def export_all(self):

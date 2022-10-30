@@ -19,8 +19,8 @@ import random
 import re
 import string
 
-import src.mpmath as mpm
-from src.constants import isoatomstr
+from constants import isoatomstr
+import mpmath as mpm
 
 alphabet = string.ascii_uppercase
 
@@ -86,7 +86,7 @@ def check_file_exist(filename):
     >>> check_file_exist('foo.bar')
     File "foo.bar" not found!
     False
-    >>> check_file_exist('tests/empty.txt')
+    >>> check_file_exist('../../tests/empty.txt')
     'zero'
     >>> check_file_exist('src/misc.py')
     True
@@ -570,7 +570,7 @@ def unwrap_head_lines(headlines):
     >>> unwrap_head_lines(wrap_headlines(["REM name: ser\\nREM HFIX 23 C2 C3 C4  C6 C8 C10\\nSADI bar"]))
     ['REM name: ser\\nREM HFIX 23 C2 C3 C4  C6 C8 C10\\nSADI bar\\n']
     """
-    from src import constants
+    import constants
     tmp = ''
     # it is faster with this loop:
     eq = False

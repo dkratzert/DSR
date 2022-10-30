@@ -1,5 +1,3 @@
-import operator
-
 from . import libmp
 
 from .libmp.backend import basestring
@@ -10,14 +8,11 @@ from .libmp import (
     round_floor, round_ceiling,
     fzero, finf, fninf, fnan,
     mpf_le, mpf_neg,
-    from_int, from_float, from_str, from_rational,
-    mpi_mid, mpi_delta, mpi_str,
+    from_int, from_float, from_str, mpi_mid, mpi_delta, mpi_str,
     mpi_abs, mpi_pos, mpi_neg, mpi_add, mpi_sub,
-    mpi_mul, mpi_div, mpi_pow_int, mpi_pow,
+    mpi_mul, mpi_div, mpi_pow,
     mpi_from_str,
-    mpci_pos, mpci_neg, mpci_add, mpci_sub, mpci_mul, mpci_div, mpci_pow,
-    mpci_abs, mpci_pow, mpci_exp, mpci_log,
-    ComplexResult,
+    mpci_pos, mpci_neg, mpci_add, mpci_sub, mpci_mul, mpci_div, mpci_abs, mpci_pow, ComplexResult,
     mpf_hash, mpc_hash)
 
 mpi_zero = (fzero, fzero)
@@ -484,7 +479,7 @@ class MPIntervalContext(StandardBaseContext):
     def atan2(ctx, y, x):
         y = ctx.convert(y)._mpi_
         x = ctx.convert(x)._mpi_
-        return ctx.make_mpf(libmp.mpi_atan2(y,x,ctx.prec))
+        return ctx.make_mpf(libmp.mpi_atan2(y, x, ctx.prec))
 
     def _convert_param(ctx, x):
         if isinstance(x, libmp.int_types):

@@ -19,14 +19,14 @@ import sys
 
 from math import radians, sqrt
 
-from src import mpmath as mpm
-from src.atomhandling import Elem_2_Sfac, NumberScheme
-from src.elements import get_radius_from_element
-from src.misc import atomic_distance, frac_to_cart, cart_to_frac, \
+from src.dsr import mpmath as mpm
+from src.dsr.atomhandling import Elem_2_Sfac, NumberScheme
+from src.dsr.elements import get_radius_from_element
+from src.dsr.misc import atomic_distance, frac_to_cart, cart_to_frac, \
     id_generator, shift, remove_partsymbol, find_multi_lines, wrap_headlines, ufrac_to_ucart, A
-from src.refine import ShelxlRefine
-from src.resfile import ResList
-from src.restraints import ListFile
+from src.dsr.refine import ShelxlRefine
+from src.dsr.resfile import ResList
+from src.dsr.restraints import ListFile
 
 # Y-Z-F1/F2/F3
 
@@ -690,7 +690,7 @@ class CF3(object):
             # with free variables:
             # print('{}  3  {:0<8.6}  {:0<8.6}  {:0<8.6}  {:<8.6}  261\
             # '.format(i, co[0], co[1], co[2], 10.0*num+1+10))
-        from src.misc import flatten
+        from src.dsr.misc import flatten
         print('SADI ' + ' '.join(flatten(sad12)))
         print('SADI ' + ' '.join(flatten(sad13)))
         print('SADI ' + ' '.join(flatten(ff)))
