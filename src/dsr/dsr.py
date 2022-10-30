@@ -10,29 +10,27 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
-from __future__ import print_function
 
+import os
 import sys
 from datetime import datetime
 
-import os
+import atomhandling
+from afix import remove_duplicate_restraints, write_dbhead_to_file
+from atomhandling import Elem_2_Sfac, rename_restraints_atoms
+from constants import isoatomstr, sep_line, width
+from dbfile import ImportGRADE, print_search_results, ParseDB, search_fragment_name
+from dsrparse import DSRParser
+from fit.quatfit import centroid, fit_fragment
+from misc import cart_to_frac, chunks, frac_to_cart, touch, wrap_headlines, matrix_plus_vect, subtract_vect
+from options import OptionsParser
+from refine import ShelxlRefine
+from resfile import ResList, ResListEdit, filename_wo_ending
+from resi import Resi, remove_resi
+from restraints import Restraints
+from terminalsize import get_terminal_size
 
-from src.afix import remove_duplicate_restraints, write_dbhead_to_file
-from src.atomhandling import Elem_2_Sfac, rename_restraints_atoms
-from src.constants import isoatomstr, sep_line, width
-from src.dbfile import ImportGRADE, print_search_results
-from src.dbfile import ParseDB, search_fragment_name
-from src.dsrparse import DSRParser
-from src.fit.quatfit import fit_fragment, centroid
-from src.misc import cart_to_frac, chunks, frac_to_cart, touch, wrap_headlines, matrix_plus_vect, subtract_vect
-from src.options import OptionsParser
-from src.refine import ShelxlRefine
-from src.resfile import ResList, ResListEdit, filename_wo_ending
-from src.resi import Resi, remove_resi
-from src.restraints import Restraints
-from src.terminalsize import get_terminal_size
-
-VERSION = '236'
+VERSION = '237'
 # dont forget to change version in Innoscript file, spec file and deb file.
 minuse = ((width // 2) - 7) * '-'
 program_name = '\n{} D S R - v{} {}'.format(minuse, VERSION, minuse)
@@ -93,7 +91,7 @@ class DSR(object):
         if self.head_csv:
             self.fragment = self.head_csv
         if self.options.selfupdate:
-            from src import selfupdate
+            import selfupdate
             selfupdate.update_dsr()
             sys.exit()
         #################################
@@ -112,11 +110,12 @@ class DSR(object):
                 print('{};;{};;{};;{}'.format(i[0], i[3], i[1], i[2]))
             sys.exit()
         try:
-            from src.export import Export
+            from export import Export
             self.export = Export(gdb=self.gdb, invert=self.invert)
         except Exception as e:
             print("*** Unable to export informations from DSR ***")
             print(e)
+            raise
             sys.exit()
         #################################
         if self.head_csv:
@@ -183,10 +182,10 @@ class DSR(object):
         if not self.maindb_path:
             try:
                 main_dbdir = os.environ["DSR_DIR"]
-                self.maindb_path = os.path.join(main_dbdir, 'dsr_db.txt')
+                self.maindb_path = os.path.join(main_dbdir, '../../dsr_db.txt')
             except KeyError:
                 main_dbdir = './'
-                self.maindb_path = os.path.join(main_dbdir, 'dsr_db.txt')
+                self.maindb_path = os.path.join(main_dbdir, '../../dsr_db.txt')
         return True
 
     def head_to_gui(self):
@@ -233,7 +232,7 @@ class DSR(object):
             self.gdb.check_db_atom_consistency(fragment)
             self.gdb.check_db_restraints_consistency(fragment)
             self.gdb.check_sadi_consistence(fragment)
-        from src.selfupdate import is_update_needed
+        from selfupdate import is_update_needed
         if is_update_needed(silent=True):
             print("\n*** An update for DSR is available. You can update with 'dsr -u' ***")
         sys.exit()
@@ -244,7 +243,6 @@ class DSR(object):
         """
         dbatoms = []
         # The database content:
-        from src import atomhandling
         basefilename = filename_wo_ending(self.res_file)
         if not basefilename:
             print('*** Illegal option ***')
@@ -266,7 +264,7 @@ class DSR(object):
         resi = Resi(dsrp, db_residue_string, find_atoms)
         # line where the dsr command is found in the resfile:
         if dsrp.cf3_active:
-            from src.cf3fit import CF3
+            from cf3fit import CF3
             cf3 = CF3(rle, find_atoms, self.reslist, self.fragment, sfac_table,
                       basefilename, dsrp, resi, self.res_file, self.options)
             if self.fragment == 'cf3':

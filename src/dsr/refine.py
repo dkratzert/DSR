@@ -17,10 +17,10 @@ import shutil
 import subprocess
 import sys
 
-from src import misc
-from src.constants import sep_line
-from src.misc import find_line, check_file_exist, remove_line
-from src.resfile import ResList
+import misc
+from constants import sep_line
+from misc import find_line, check_file_exist, remove_line
+from resfile import ResList
 
 
 
@@ -414,7 +414,7 @@ class ShelxlRefine():
 
 
 if __name__ == '__main__':
-    from src.atomhandling import FindAtoms
+    from src.dsr.atomhandling import FindAtoms
     import options
 
     res_file = 'p21c.res'

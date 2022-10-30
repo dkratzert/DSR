@@ -15,8 +15,8 @@ import fnmatch
 import os
 import sys
 
-from src import misc
-from src.constants import RESTRAINT_CARDS
+import misc
+from constants import RESTRAINT_CARDS
 
 
 

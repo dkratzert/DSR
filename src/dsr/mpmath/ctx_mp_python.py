@@ -2,28 +2,19 @@
 
 from .libmp.backend import basestring, exec_
 
-from .libmp import (MPZ, MPZ_ZERO, MPZ_ONE, int_types, repr_dps,
-    round_floor, round_ceiling, dps_to_prec, round_nearest, prec_to_dps,
-    ComplexResult, to_pickable, from_pickable, normalize,
-    from_int, from_float, from_str, to_int, to_float, to_str,
-    from_rational, from_man_exp,
-    fone, fzero, finf, fninf, fnan,
-    mpf_abs, mpf_pos, mpf_neg, mpf_add, mpf_sub, mpf_mul, mpf_mul_int,
-    mpf_div, mpf_rdiv_int, mpf_pow_int, mpf_mod,
-    mpf_eq, mpf_cmp, mpf_lt, mpf_gt, mpf_le, mpf_ge,
-    mpf_hash, mpf_rand,
-    mpf_sum,
-    bitcount, to_fixed,
-    mpc_to_str,
-    mpc_to_complex, mpc_hash, mpc_pos, mpc_is_nonzero, mpc_neg, mpc_conjugate,
-    mpc_abs, mpc_add, mpc_add_mpf, mpc_sub, mpc_sub_mpf, mpc_mul, mpc_mul_mpf,
-    mpc_mul_int, mpc_div, mpc_div_mpf, mpc_pow, mpc_pow_mpf, mpc_pow_int,
-    mpc_mpf_div,
-    mpf_pow,
-    mpf_pi, mpf_degree, mpf_e, mpf_phi, mpf_ln2, mpf_ln10,
-    mpf_euler, mpf_catalan, mpf_apery, mpf_khinchin,
-    mpf_glaisher, mpf_twinprime, mpf_mertens,
-    int_types)
+from .libmp import (MPZ, dps_to_prec, round_nearest, prec_to_dps,
+                    ComplexResult, to_pickable, from_pickable, normalize,
+                    from_int, from_float, from_str, to_int, to_float, to_str,
+                    from_rational, from_man_exp,
+                    fzero, finf, fninf, fnan,
+                    mpf_abs, mpf_pos, mpf_neg, mpf_sub, mpf_mul, mpf_rdiv_int, mpf_cmp, mpf_lt, mpf_gt, mpf_le, mpf_ge,
+                    mpf_hash, mpf_sum,
+                    bitcount, to_fixed,
+                    mpc_to_str,
+                    mpc_to_complex, mpc_hash, mpc_pos, mpc_is_nonzero, mpc_neg, mpc_conjugate,
+                    mpc_abs, mpc_add, mpc_add_mpf, mpc_sub, mpc_sub_mpf, mpc_mul, mpc_mul_mpf,
+                    mpc_mul_int, mpc_div, mpc_div_mpf, mpc_pow, mpc_pow_mpf, mpc_pow_int,
+                    int_types)
 
 from . import rational
 from . import function_docs

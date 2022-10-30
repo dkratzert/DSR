@@ -7,22 +7,21 @@ import os
 import sys
 import unittest
 
-from src import dbfile, dsrparse, atomhandling, sql_export, elements, export, restraints, afix, misc
-from src.fit import quatfit
+from src.dsr.fit import quatfit
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import networkx
-from src.atomhandling import get_atomtypes, FindAtoms, check_source_target, \
+from src.dsr.atomhandling import get_atomtypes, FindAtoms, check_source_target, \
     rename_restraints_atoms, SfacTable, Elem_2_Sfac, NumberScheme
-from src.atoms import Element, atoms
-from src.dbfile import invert_atomic_coordinates, ImportGRADE
-import dsr
-from dsr import VERSION
-from src.dsrparse import DSRParser
-from src.export import Export
-from src.resfile import ResList, ResListEdit
-from src.resi import Resi
-from src.restraints import format_atom_names
+from src.dsr.atoms import Element, atoms
+from src.dsr.dbfile import invert_atomic_coordinates, ImportGRADE
+from src.dsr import dsr, afix, restraints, export, elements, atomhandling, misc, sql_export, dsrparse, dbfile
+from src.dsr.dsr import VERSION
+from src.dsr.dsrparse import DSRParser
+from src.dsr.export import Export
+from src.dsr.resfile import ResList, ResListEdit
+from src.dsr.resi import Resi
+from src.dsr.restraints import format_atom_names
 
 print(sys.version)
 

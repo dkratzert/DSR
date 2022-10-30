@@ -9,7 +9,7 @@ import subprocess
 import sys
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
-from dsr import VERSION
+from src.dsr.dsr import VERSION
 from scripts.make_zipfile import make_zip, files
 from setup.version_numbers import process_debian_and_spec, process_iss, debianpath, specpath, isspath
 

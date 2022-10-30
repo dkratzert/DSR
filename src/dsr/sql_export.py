@@ -6,9 +6,9 @@ import os
 import sqlite3 as lite
 import sys
 
-from src import misc
-from src.constants import SHX_CARDS
-from src.dbfile import ParseDB
+from src.dsr import misc
+from src.dsr.constants import SHX_CARDS
+from src.dsr.dbfile import ParseDB
 
 misc.remove_file('./fragment-database.sqlite')
 gl = ParseDB()
@@ -27,7 +27,7 @@ def get_fragment_atoms_cartesian(fragment):
     :param fragment:
     :type fragment:
     """
-    from src.export import Export
+    from src.dsr.export import Export
     ex = Export(gl, invert=False)
     atoms = ex.format_atoms_for_export(gl.get_cell(fragment), gl.get_atoms(fragment), False)
     coords = []

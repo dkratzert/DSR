@@ -15,9 +15,9 @@ import re
 import string
 import sys
 
-from src.atoms import Element, atoms
-from src.constants import atomregex, SHX_CARDS
-from src.misc import find_line, find_multi_lines, atomic_distance
+from atoms import Element, atoms
+from constants import atomregex, SHX_CARDS
+from misc import find_line, find_multi_lines, atomic_distance
 
 
 
@@ -93,10 +93,10 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     :param fragment_numberscheme: atom names of the fitting fragment
     :param cell: cell parameters
 
-    >>> from src.resfile import ResList
-    >>> from src.resfile import ResListEdit
-    >>> from src.dsrparse import DSRParser
-    >>> from src.resi import Resi
+    >>> from resfile import ResList
+    >>> from resfile import ResListEdit
+    >>> from dsrparse import DSRParser
+    >>> from resi import Resi
     >>> res_file = 'tests/p21c.res'
     >>> rl = ResList(res_file)
     >>> reslist = rl.get_res_list()
@@ -113,7 +113,7 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     #>>> replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell)
     """
     remdist = 1.3
-    from src.resfile import ResListEdit
+    from src.dsr.resfile import ResListEdit
     find_atoms = FindAtoms(reslist)
     if resi.dsrp.resiflag:
         frag_at = []

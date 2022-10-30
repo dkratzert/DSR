@@ -3,8 +3,8 @@
 
 from __future__ import print_function
 
-from dsr import VERSION
-from src import dbfile, misc
+from src.dsr.dsr import VERSION
+from src.dsr import misc, dbfile
 import os
 
 """

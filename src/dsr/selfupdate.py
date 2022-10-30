@@ -24,8 +24,6 @@ urlprefix = "https://dkratzert.de/files/dsr"
 
 
 from urllib.request import FancyURLopener
-import urllib.request
-
 
 
 class MyOpener(FancyURLopener):
@@ -138,16 +136,16 @@ def post_update_things(dsrdir):
     """
     import stat
     plat = get_system()
-    upath = os.path.join(dsrdir, "../dsr")
+    upath = os.path.join(dsrdir, "../../dsr")
     try:
         if plat == "win":
             pass
         elif plat == "mac":
-            shutil.copy2(os.path.abspath(os.path.join(dsrdir, "../setup/dsr-mac")), upath)
+            shutil.copy2(os.path.abspath(os.path.join(dsrdir, "../../setup/dsr-mac")), upath)
             st = os.stat(upath)
             os.chmod(upath, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
         elif plat == "lin":
-            shutil.copy2(os.path.abspath(os.path.join(dsrdir, "../setup/dsr-linux")), upath)
+            shutil.copy2(os.path.abspath(os.path.join(dsrdir, "../../setup/dsr-linux")), upath)
             st = os.stat(upath)
             os.chmod(upath, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
     except IOError:  # Unable to write in this case

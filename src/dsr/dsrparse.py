@@ -14,7 +14,7 @@
 import re
 import sys
 
-from src import misc
+import misc
 
 
 class DSRParser(object):

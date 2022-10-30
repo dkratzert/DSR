@@ -10,8 +10,8 @@ import shutil
 import sys
 
 from dsr import VERSION
-from src.misc import copy_file, remove_file, walkdir
-from src.selfupdate import sha512_checksum
+from misc import copy_file, remove_file, walkdir
+from selfupdate import sha512_checksum
 
 files = [
     "afix.py",
