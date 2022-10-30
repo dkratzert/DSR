@@ -27,7 +27,7 @@ def get_fragment_atoms_cartesian(fragment):
     :param fragment:
     :type fragment:
     """
-    from export import Export
+    from src.export import Export
     ex = Export(gl, invert=False)
     atoms = ex.format_atoms_for_export(gl.get_cell(fragment), gl.get_atoms(fragment), False)
     coords = []

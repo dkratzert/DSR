@@ -7,13 +7,12 @@ import os
 import sys
 import unittest
 
-from src import dbfile, dsrparse, atomhandling, sql_export, elements
+from src import dbfile, dsrparse, atomhandling, sql_export, elements, export
 import restraints
 from src.fit import quatfit
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import afix
-import export
 import misc
 import networkx
 from src.atomhandling import get_atomtypes, FindAtoms, check_source_target, \
@@ -23,7 +22,7 @@ from src.dbfile import invert_atomic_coordinates, ImportGRADE
 import dsr
 from dsr import VERSION
 from src.dsrparse import DSRParser
-from export import Export
+from src.export import Export
 from src.resfile import ResList, ResListEdit
 from resi import Resi
 from restraints import format_atom_names
