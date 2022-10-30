@@ -20,7 +20,7 @@ from copy import deepcopy
 from src.atomhandling import get_atomtypes
 from src.atoms import Element
 from src.constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
-from misc import atomic_distance, nalimov_test, std_dev, median, pairwise, \
+from src.misc import atomic_distance, nalimov_test, std_dev, median, pairwise, \
     unwrap_head_lines, dice_coefficient2, frac_to_cart
 
 not_existing_error = '*** Fragment "{}" not found in database ***'
@@ -552,7 +552,7 @@ class ParseDB(object):
         Returns pre-defined hfix instructions.
         :param fragment: fragment name
         :return: A string with the REM HFIX ... instruction
-        >>> from misc import wrap_headlines
+        >>> from src.misc import wrap_headlines
         >>> hf = ['REM HFIX 123 C1 C2 C3 C4 C5']
         >>> wrap_headlines(hf, 18)
         ['REM HFIX 123 C1 C2 =\\n   C3 C4 C5\\n']

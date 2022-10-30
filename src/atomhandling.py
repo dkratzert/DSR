@@ -17,7 +17,7 @@ import sys
 
 from src.atoms import Element, atoms
 from src.constants import atomregex, SHX_CARDS
-from misc import find_line, find_multi_lines, atomic_distance
+from src.misc import find_line, find_multi_lines, atomic_distance
 
 
 

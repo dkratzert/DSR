@@ -15,7 +15,7 @@ import os
 import re
 import sys
 
-import misc
+from src import misc
 from src.constants import sep_line
 
 try:

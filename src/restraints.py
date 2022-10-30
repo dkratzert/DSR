@@ -9,7 +9,6 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
-from __future__ import print_function
 
 import os
 import re
@@ -19,7 +18,7 @@ from collections import OrderedDict
 
 from src.atomhandling import get_atomtypes
 from src.elements import get_radius_from_element
-from misc import distance, find_line, flatten, get_overlapped_chunks, remove_partsymbol, shift, vol_tetrahedron
+from src.misc import distance, find_line, flatten, get_overlapped_chunks, remove_partsymbol, shift, vol_tetrahedron
 
 # all upper case for case insensitivity:
 alphabet = [i for i in string.ascii_uppercase]
