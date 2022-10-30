@@ -82,11 +82,11 @@ class QuadratureRule(object):
 
         .. math ::
 
-            [a, \infty] : t = \frac{1}{x} + (a-1)
+            \lbrack a, \infty \rbrack : t = \frac{1}{x} + (a-1)
 
-            [-\infty, b] : t = (b+1) - \frac{1}{x}
+            \lbrack -\infty, b \rbrack : t = (b+1) - \frac{1}{x}
 
-            [-\infty, \infty] : t = \frac{x}{\sqrt{1-x^2}}
+            \lbrack -\infty, \infty \rbrack : t = \frac{x}{\sqrt{1-x^2}}
 
         """
         ctx = self.ctx
@@ -211,7 +211,7 @@ class QuadratureRule(object):
         the standard interval and then calls :func:`~mpmath.sum_next`.
         """
         ctx = self.ctx
-        I = err = ctx.zero
+        I = total_err = ctx.zero
         for i in xrange(len(points)-1):
             a, b = points[i], points[i+1]
             if a == b:
@@ -224,23 +224,26 @@ class QuadratureRule(object):
                 f = lambda x: _f(-x) + _f(x)
                 a, b = (ctx.zero, ctx.inf)
             results = []
+            err = ctx.zero
             for degree in xrange(1, max_degree+1):
                 nodes = self.get_nodes(a, b, degree, prec, verbose)
                 if verbose:
                     print("Integrating from %s to %s (degree %s of %s)" % \
                         (ctx.nstr(a), ctx.nstr(b), degree, max_degree))
-                results.append(self.sum_next(f, nodes, degree, prec, results, verbose))
+                result = self.sum_next(f, nodes, degree, prec, results, verbose)
+                results.append(result)
                 if degree > 1:
                     err = self.estimate_error(results, prec, epsilon)
+                    if verbose:
+                        print("Estimated error:", ctx.nstr(err), " epsilon:", ctx.nstr(epsilon), " result: ", ctx.nstr(result))
                     if err <= epsilon:
                         break
-                    if verbose:
-                        print("Estimated error:", ctx.nstr(err))
             I += results[-1]
-        if err > epsilon:
+            total_err += err
+        if total_err > epsilon:
             if verbose:
-                print("Failed to reach full accuracy. Estimated error:", ctx.nstr(err))
-        return I, err
+                print("Failed to reach full accuracy. Estimated error:", ctx.nstr(total_err))
+        return I, total_err
 
     def sum_next(self, f, nodes, degree, prec, previous, verbose=False):
         r"""
@@ -383,7 +386,7 @@ class TanhSinh(QuadratureRule):
 
 
 class GaussLegendre(QuadratureRule):
-    """
+    r"""
     This class implements Gauss-Legendre quadrature, which is
     exceptionally efficient for polynomials and polynomial-like (i.e.
     very smooth) integrands.
@@ -407,7 +410,7 @@ class GaussLegendre(QuadratureRule):
     """
 
     def calc_nodes(self, degree, prec, verbose=False):
-        """
+        r"""
         Calculates the abscissas and weights for Gauss-Legendre
         quadrature of degree of given degree (actually `3 \cdot 2^m`).
         """
@@ -420,7 +423,7 @@ class GaussLegendre(QuadratureRule):
         orig = ctx.prec
         ctx.prec = int(prec*1.5)
         if degree == 1:
-            x = ctx.mpf(3)/5
+            x = ctx.sqrt(ctx.mpf(3)/5)
             w = ctx.mpf(5)/9
             nodes = [(-x,w),(ctx.zero,ctx.mpf(8)/9),(x,w)]
             ctx.prec = orig
@@ -438,8 +441,7 @@ class GaussLegendre(QuadratureRule):
                 # recurrence relation
                 for j1 in xrange(1,n+1):
                     t3, t2, t1 = t2, t1, ((2*j1-1)*r*t1 - (j1-1)*t2)/j1
-                t4 = n*(r*t1- t2)/(r**2-1)
-                t5 = r
+                t4 = n*(r*t1-t2)/(r**2-1)
                 a = t1/t4
                 r = r - a
                 if abs(a) < epsilon:
@@ -572,7 +574,7 @@ class QuadratureMethods(object):
 
             >>> mp.dps = 1000
             >>> 2*quad(lambda x: sqrt(1-x**2), [-1, 1])  #doctest:+ELLIPSIS
-            3.141592653589793238462643383279502884...216420198
+            3.141592653589793238462643383279502884...216420199
 
         Complex integrals are supported. The following computes
         a residue at `z = 0` by integrating counterclockwise along the

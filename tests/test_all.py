@@ -7,21 +7,21 @@ import os
 import sys
 import unittest
 
-from src.dsr.fit import quatfit
+from fit import quatfit
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import networkx
-from src.dsr.atomhandling import get_atomtypes, FindAtoms, check_source_target, \
+from atomhandling import get_atomtypes, FindAtoms, check_source_target, \
     rename_restraints_atoms, SfacTable, Elem_2_Sfac, NumberScheme
-from src.dsr.atoms import Element, atoms
-from src.dsr.dbfile import invert_atomic_coordinates, ImportGRADE
-from src.dsr import dsr, afix, restraints, export, elements, atomhandling, misc, sql_export, dsrparse, dbfile
-from src.dsr.dsr import VERSION
-from src.dsr.dsrparse import DSRParser
-from src.dsr.export import Export
-from src.dsr.resfile import ResList, ResListEdit
-from src.dsr.resi import Resi
-from src.dsr.restraints import format_atom_names
+from atoms import Element, atoms
+from dbfile import invert_atomic_coordinates, ImportGRADE
+import dsr, afix, restraints, export, elements, atomhandling, misc, sql_export, dsrparse, dbfile
+from dsr import VERSION
+from dsrparse import DSRParser
+from export import Export
+from resfile import ResList, ResListEdit
+from resi import Resi
+from restraints import format_atom_names
 
 print(sys.version)
 
@@ -336,7 +336,7 @@ class NumberSchemeTest(unittest.TestCase):
         dsrp = Dsrp()
         rl = ResList(res_file)
         reslist = rl.get_res_list()
-        gdb = dbfile.ParseDB('./dsr_db.txt')
+        gdb = dbfile.ParseDB('./src/dsr/dsr_db.txt')
         fragment = 'OC(cf3)3'
         dbatoms = gdb.get_atoms(fragment)
         self.num = NumberScheme(reslist, dbatoms, dsrp)
@@ -392,7 +392,7 @@ class removeDublicatesAfixTest(unittest.TestCase):
         invert = False
         self.dsrp = DSRParser(self.reslist)
         fragment = 'OC(cf3)3'
-        self.gdb = dbfile.ParseDB('./dsr_db.txt')
+        self.gdb = dbfile.ParseDB('./src/dsr/dsr_db.txt')
         self.dbatoms = self.gdb.get_atoms(fragment)  # only the atoms of the dbentry as list
         self.dbtypes = get_atomtypes(self.dbatoms)
         # self.sf = SfacTable(self.reslist, self.dbtypes)
@@ -682,7 +682,7 @@ class ExportTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
         self.invert = False
-        self.gdb = dbfile.ParseDB('./dsr_db.txt')
+        self.gdb = dbfile.ParseDB('./src/dsr/dsr_db.txt')
         self.export_clip = 'benzene'
         self.resgood = ['TITL toluene\n', 'REM This file was exported by DSR version {}\n'.format(VERSION),
                         'REM Name: Toluene, C7H8\nREM Source: CCDC CESLUJ\n',
@@ -756,7 +756,7 @@ class ExportTest(unittest.TestCase):
         """
         Exports the current fragment to the clipboard.
         """
-        gdb = dbfile.ParseDB('./dsr_db.txt')
+        gdb = dbfile.ParseDB('./src/dsr/dsr_db.txt')
         export = Export(gdb)
         self.assertTrue(export.export_to_clip('benzene'))
 
@@ -791,7 +791,7 @@ class ResidueTest(unittest.TestCase):
                       'DFIX 2.916 0.03 CL1 CL2',
                       'SIMU CL1 > C1',
                       'RIGU CL1 > C1']
-        self.gdb = dbfile.ParseDB('./dsr_db.txt')
+        self.gdb = dbfile.ParseDB('./src/dsr/dsr_db.txt')
         self.residue_class = self.gdb.get_resi(fragment)
         self.fragline = self.gdb.get_startline(fragment)  # full string of FRAG line
         self.dbatoms = self.gdb.get_atoms(fragment)  # only the atoms of the dbentry as list

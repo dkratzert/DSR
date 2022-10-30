@@ -40,6 +40,7 @@ class Eigen(object):
 
 def defun(f):
     setattr(Eigen, f.__name__, f)
+    return f
 
 def hessenberg_reduce_0(ctx, A, T):
     """
@@ -49,7 +50,7 @@ def hessenberg_reduce_0(ctx, A, T):
                Q' A Q = H              and             Q' Q = Q Q' = 1
 
     where H is an upper Hessenberg matrix, meaning that it only contains zeros
-    below the first subdiagonal. Here ' denotes the hermitian transpose (i.e. 
+    below the first subdiagonal. Here ' denotes the hermitian transpose (i.e.
     transposition and conjugation).
 
     parameters:
@@ -192,7 +193,7 @@ def hessenberg(ctx, A, overwrite_a = False):
 
           Q' A Q = H                and               Q' Q = Q Q' = 1
 
-    where H is an upper right Hessenberg matrix. Here ' denotes the hermitian 
+    where H is an upper right Hessenberg matrix. Here ' denotes the hermitian
     transpose (i.e. transposition and conjugation).
 
     input:
@@ -305,27 +306,30 @@ def qr_step(ctx, n0, n1, A, Q, shift):
         c /= v
         s /= v
 
+    cc = ctx.conj(c)
+    cs = ctx.conj(s)
+
     for k in xrange(n0, n):
         # apply givens rotation from the left
         x = A[n0  ,k]
         y = A[n0+1,k]
-        A[n0  ,k] = ctx.conj(c) * x + ctx.conj(s) * y
-        A[n0+1,k] =         -s  * x +          c  * y
+        A[n0  ,k] = cc * x + cs * y
+        A[n0+1,k] = c * y - s * x
 
     for k in xrange(min(n1, n0+3)):
         # apply givens rotation from the right
         x = A[k,n0  ]
         y = A[k,n0+1]
-        A[k,n0  ] =           c  * x +          s  * y
-        A[k,n0+1] = -ctx.conj(s) * x + ctx.conj(c) * y
+        A[k,n0  ] = c * x + s * y
+        A[k,n0+1] = cc * y - cs * x
 
     if not isinstance(Q, bool):
         for k in xrange(n):
             # eigenvectors
             x = Q[k,n0  ]
             y = Q[k,n0+1]
-            Q[k,n0  ] =           c  * x +          s  * y
-            Q[k,n0+1] = -ctx.conj(s) * x + ctx.conj(c) * y
+            Q[k,n0  ] = c * x + s * y
+            Q[k,n0+1] = cc * y - cs * x
 
     # chase the bulge
 
@@ -349,27 +353,30 @@ def qr_step(ctx, n0, n1, A, Q, shift):
 
         A[j+2,j] = 0
 
+        cc = ctx.conj(c)
+        cs = ctx.conj(s)
+
         for k in xrange(j+1, n):
             # apply givens rotation from the left
             x = A[j+1,k]
             y = A[j+2,k]
-            A[j+1,k] = ctx.conj(c) * x + ctx.conj(s) * y
-            A[j+2,k] =         -s  * x +          c  * y
+            A[j+1,k] = cc * x + cs * y
+            A[j+2,k] = c * y - s * x
 
         for k in xrange(0, min(n1, j+4)):
             # apply givens rotation from the right
             x = A[k,j+1]
             y = A[k,j+2]
-            A[k,j+1] =           c  * x +          s  * y
-            A[k,j+2] = -ctx.conj(s) * x + ctx.conj(c) * y
+            A[k,j+1] = c * x + s * y
+            A[k,j+2] = cc * y - cs * x
 
         if not isinstance(Q, bool):
             for k in xrange(0, n):
                 # eigenvectors
                 x = Q[k,j+1]
                 y = Q[k,j+2]
-                Q[k,j+1] =           c  * x +          s  * y
-                Q[k,j+2] = -ctx.conj(s) * x + ctx.conj(c) * y
+                Q[k,j+1] = c * x + s * y
+                Q[k,j+2] = cc * y - cs * x
 
 
 
@@ -380,7 +387,7 @@ def hessenberg_qr(ctx, A, Q):
 
           Q' A Q = R                   and                  Q' Q = Q Q' = 1
 
-    where R is an upper right triangular matrix. Here ' denotes the hermitian 
+    where R is an upper right triangular matrix. Here ' denotes the hermitian
     transpose (i.e. transposition and conjugation).
 
     parameters:
@@ -593,12 +600,12 @@ def eig_tr_r(ctx, A):
             rmax = max(rmax, abs(r))
             if rmax > simin:
                 for k in xrange(j, i+1):
-                     ER[k,i] /= rmax
+                    ER[k,i] /= rmax
                 rmax = 1
 
         if rmax != 1:
             for k in xrange(0, i + 1):
-                 ER[k,i] /= rmax
+                ER[k,i] /= rmax
 
     return ER
 
@@ -651,12 +658,12 @@ def eig_tr_l(ctx, A):
             rmax = max(rmax, abs(r))
             if rmax > simin:
                 for k in xrange(i, j + 1):
-                     EL[i,k] /= rmax
+                    EL[i,k] /= rmax
                 rmax = 1
 
         if rmax != 1:
             for k in xrange(i, n):
-                 EL[i,k] /= rmax
+                EL[i,k] /= rmax
 
     return EL
 
@@ -676,7 +683,7 @@ def eig(ctx, A, left = False, right = True, overwrite_a = False):
 
     input:
       A           : a real or complex square matrix of shape (n, n)
-      left        : if true, the left eigenvectors are calulated.
+      left        : if true, the left eigenvectors are calculated.
       right       : if true, the right eigenvectors are calculated.
       overwrite_a : if true, allows modification of A which may improve
                     performance. if false, A is not modified.
@@ -816,14 +823,14 @@ def eig_sort(ctx, E, EL = False, ER = False, f = "real"):
     """
 
     if isinstance(f, str):
-      if f == "real":
-          f = ctx.re
-      elif f == "imag":
-          f = ctx.im
-      elif cmp == "abs":
-          f = abs
-      else:
-          raise RuntimeError("unknown function %s" % f)
+        if f == "real":
+            f = ctx.re
+        elif f == "imag":
+            f = ctx.im
+        elif f == "abs":
+            f = abs
+        else:
+            raise RuntimeError("unknown function %s" % f)
 
     n = len(E)
 

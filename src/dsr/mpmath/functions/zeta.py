@@ -1,4 +1,6 @@
-from ..libmp.backend import xrange, print_
+from __future__ import print_function
+
+from ..libmp.backend import xrange
 from .functions import defun, defun_wrapped, defun_static
 
 @defun
@@ -157,7 +159,6 @@ def siegelz(ctx, t, **kwargs):
     if d > 4:
         h = lambda x: ctx.siegelz(x, derivative=4)
         return ctx.diff(h, t, n=d-4)
-        
 
 
 _zeta_zeros = [
@@ -447,7 +448,10 @@ def polylog_general(ctx, s, z):
     v = ctx.zero
     u = ctx.ln(z)
     if not abs(u) < 5: # theoretically |u| < 2*pi
-        raise NotImplementedError("polylog for arbitrary s and z")
+        j = ctx.j
+        v = 1-s
+        y = ctx.ln(-z)/(2*ctx.pi*j)
+        return ctx.gamma(v)*(j**v*ctx.zeta(v,0.5+y) + j**-v*ctx.zeta(v,0.5-y))/(2*ctx.pi)**v
     t = 1
     k = 0
     while 1:
@@ -481,11 +485,6 @@ def polylog(ctx, s, z):
     if ctx.isint(s):
         return polylog_unitcircle(ctx, int(s), z)
     return polylog_general(ctx, s, z)
-
-    #raise NotImplementedError("polylog for arbitrary s and z")
-    # This could perhaps be used in some cases
-    #from quadrature import quad
-    #return quad(lambda t: t**(s-1)/(exp(t)/z-1),[0,inf])/gamma(s)
 
 @defun_wrapped
 def clsin(ctx, s, z, pi=False):
@@ -538,6 +537,8 @@ def zeta(ctx, s, a=1, derivative=0, method=None, **kwargs):
     prec = ctx.prec
     method = kwargs.get('method')
     verbose = kwargs.get('verbose')
+    if (not s) and (not derivative):
+        return ctx.mpf(0.5) - ctx._convert_param(a)[0]
     if a == 1 and method != 'euler-maclaurin':
         im = abs(ctx._im(s))
         re = abs(ctx._re(s))
@@ -603,9 +604,9 @@ def _hurwitz(ctx, s, a=1, d=0, **kwargs):
             T1, T2 = _hurwitz_em(ctx, s, a, d, prec+10, verbose)
             cancellation = ctx.mag(T1) - ctx.mag(T1+T2)
             if verbose:
-                print_("Term 1:", T1)
-                print_("Term 2:", T2)
-                print_("Cancellation:", cancellation, "bits")
+                print("Term 1:", T1)
+                print("Term 2:", T2)
+                print("Cancellation:", cancellation, "bits")
             if cancellation < extraprec:
                 return T1 + T2
             else:
@@ -626,6 +627,8 @@ def _hurwitz_reflection(ctx, s, a, d, atype):
         n = int(res)
         if n <= 0:
             return ctx.bernpoly(1-n, a) / (n-1)
+    if not (atype == 'Q' or atype == 'Z'):
+        raise NotImplementedError
     t = 1-s
     # We now require a to be standardized
     v = 0
@@ -640,29 +643,19 @@ def _hurwitz_reflection(ctx, s, a, d, atype):
         b += 1
         shift += 1
     # Rational reflection formula
-    if atype == 'Q' or atype == 'Z':
-        try:
-            p, q = a._mpq_
-        except:
-            assert a == int(a)
-            p = int(a)
-            q = 1
-        p += shift*q
-        assert 1 <= p <= q
-        g = ctx.fsum(ctx.cospi(t/2-2*k*b)*ctx._hurwitz(t,(k,q)) \
-            for k in range(1,q+1))
-        g *= 2*ctx.gamma(t)/(2*ctx.pi*q)**t
-        v += g
-        return v
-    # General reflection formula
-    # Note: clcos/clsin can raise NotImplementedError
-    else:
-        C1, C2 = ctx.cospi_sinpi(0.5*t)
-        # Clausen functions; could maybe use polylog directly
-        if C1: C1 *= ctx.clcos(t, 2*a, pi=True)
-        if C2: C2 *= ctx.clsin(t, 2*a, pi=True)
-        v += 2*ctx.gamma(t)/(2*ctx.pi)**t*(C1+C2)
-        return v
+    try:
+        p, q = a._mpq_
+    except:
+        assert a == int(a)
+        p = int(a)
+        q = 1
+    p += shift*q
+    assert 1 <= p <= q
+    g = ctx.fsum(ctx.cospi(t/2-2*k*b)*ctx._hurwitz(t,(k,q)) \
+        for k in range(1,q+1))
+    g *= 2*ctx.gamma(t)/(2*ctx.pi*q)**t
+    v += g
+    return v
 
 def _hurwitz_em(ctx, s, a, d, prec, verbose):
     # May not be converted at this point
@@ -691,7 +684,7 @@ def _hurwitz_em(ctx, s, a, d, prec, verbose):
         logs = [logM2ad]
         logr = 1/logM2a
         rM2a = 1/M2a
-        M2as = rM2a**s
+        M2as = M2a**(-s)
         if d:
             tailsum = ctx.gammainc(d+1, s1*logM2a) / s1**(d+1)
         else:
@@ -722,7 +715,7 @@ def _hurwitz_em(ctx, s, a, d, prec, verbose):
                 return lsum, (-1)**d * tailsum
             fact *= (j2+1)*(j2+2)
         if verbose:
-            print_("Sum range:", M1, M2, "term magnitude", ctx.mag(t), "tolerance", tol)
+            print("Sum range:", M1, M2, "term magnitude", ctx.mag(t), "tolerance", tol)
         M1, M2 = M2, M2*2
         if ctx.re(s) < 0:
             N += N//2
@@ -883,7 +876,7 @@ def secondzeta_exp_term(ctx, s, a):
         mg = abs(term)
     v = a**(0.5*s)*totsum/ctx.gamma(0.5*s)
     return v
-    
+
 def secondzeta_singular_term(ctx, s, a, **kwargs):
     factor = a**(0.5*(s-1))/(4*ctx.sqrt(ctx.pi)*ctx.gamma(0.5*s))
     extraprec = ctx.mag(factor)
@@ -903,7 +896,7 @@ def secondzeta_singular_term(ctx, s, a, **kwargs):
         term = f(n)
         totsum += term
         n +=1
-        term = f(n)    
+        term = f(n)
         mg1 = mg2
         mg2 = abs(term)
     totsum += term
@@ -945,8 +938,8 @@ def secondzeta(ctx, s, a = 0.015, **kwargs):
         0.023104993115419
         >>> xi = lambda s: 0.5*s*(s-1)*pi**(-0.5*s)*gamma(0.5*s)*zeta(s)
         >>> Xi = lambda t: xi(0.5+t*j)
-        >>> -0.5*diff(Xi,0,n=2)/Xi(0)
-        (0.023104993115419 + 0.0j)
+        >>> chop(-0.5*diff(Xi,0,n=2)/Xi(0))
+        0.023104993115419
 
     We may ask for an approximate error value::
 
@@ -1036,12 +1029,12 @@ def secondzeta(ctx, s, a = 0.015, **kwargs):
         err = r1+r2+r4
         t = t1-t2+t3-t4
         if kwargs.get("verbose"):
-            print_('main term =', t1)
-            print_('    computed using', gt, 'zeros of zeta')
-            print_('prime term =', t2)
-            print_('    computed using', pt, 'values of the von Mangoldt function')
-            print_('exponential term =', t3)
-            print_('singular term =', t4)
+            print('main term =', t1)
+            print('    computed using', gt, 'zeros of zeta')
+            print('prime term =', t2)
+            print('    computed using', pt, 'values of the von Mangoldt function')
+            print('exponential term =', t3)
+            print('singular term =', t4)
     finally:
         ctx.prec = prec
     if kwargs.get("error"):
@@ -1101,9 +1094,9 @@ def lerchphi(ctx, z, s, a):
         >>> lerchphi(-2,2,-2.5)
         -12.28676272353094275265944
         >>> lerchphi(10,10,10)
-        (-4.462130727102185701817349e-11 + 1.575172198981096218823481e-12j)
+        (-4.462130727102185701817349e-11 - 1.575172198981096218823481e-12j)
         >>> lerchphi(10,10,-10.5)
-        (112658784011940.5605789002 + 498113185.5756221777743631j)
+        (112658784011940.5605789002 - 498113185.5756221777743631j)
 
     Some degenerate cases::
 
@@ -1125,7 +1118,7 @@ def lerchphi(ctx, z, s, a):
         >>> polylog(4, 3) / 3
         (1.249503297023366545192592 - 0.2314252413375664776474462j)
         >>> lerchphi(3, 4, 1 - 0.5**10)
-        (1.253978063946663945672674 + 0.2316736622836535468765376j)
+        (1.253978063946663945672674 - 0.2316736622836535468765376j)
 
     **References**
 

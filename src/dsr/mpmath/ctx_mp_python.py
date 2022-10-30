@@ -2,19 +2,28 @@
 
 from .libmp.backend import basestring, exec_
 
-from .libmp import (MPZ, dps_to_prec, round_nearest, prec_to_dps,
-                    ComplexResult, to_pickable, from_pickable, normalize,
-                    from_int, from_float, from_str, to_int, to_float, to_str,
-                    from_rational, from_man_exp,
-                    fzero, finf, fninf, fnan,
-                    mpf_abs, mpf_pos, mpf_neg, mpf_sub, mpf_mul, mpf_rdiv_int, mpf_cmp, mpf_lt, mpf_gt, mpf_le, mpf_ge,
-                    mpf_hash, mpf_sum,
-                    bitcount, to_fixed,
-                    mpc_to_str,
-                    mpc_to_complex, mpc_hash, mpc_pos, mpc_is_nonzero, mpc_neg, mpc_conjugate,
-                    mpc_abs, mpc_add, mpc_add_mpf, mpc_sub, mpc_sub_mpf, mpc_mul, mpc_mul_mpf,
-                    mpc_mul_int, mpc_div, mpc_div_mpf, mpc_pow, mpc_pow_mpf, mpc_pow_int,
-                    int_types)
+from .libmp import (MPZ, MPZ_ZERO, MPZ_ONE, int_types, repr_dps,
+    round_floor, round_ceiling, dps_to_prec, round_nearest, prec_to_dps,
+    ComplexResult, to_pickable, from_pickable, normalize,
+    from_int, from_float, from_npfloat, from_Decimal, from_str, to_int, to_float, to_str,
+    from_rational, from_man_exp,
+    fone, fzero, finf, fninf, fnan,
+    mpf_abs, mpf_pos, mpf_neg, mpf_add, mpf_sub, mpf_mul, mpf_mul_int,
+    mpf_div, mpf_rdiv_int, mpf_pow_int, mpf_mod,
+    mpf_eq, mpf_cmp, mpf_lt, mpf_gt, mpf_le, mpf_ge,
+    mpf_hash, mpf_rand,
+    mpf_sum,
+    bitcount, to_fixed,
+    mpc_to_str,
+    mpc_to_complex, mpc_hash, mpc_pos, mpc_is_nonzero, mpc_neg, mpc_conjugate,
+    mpc_abs, mpc_add, mpc_add_mpf, mpc_sub, mpc_sub_mpf, mpc_mul, mpc_mul_mpf,
+    mpc_mul_int, mpc_div, mpc_div_mpf, mpc_pow, mpc_pow_mpf, mpc_pow_int,
+    mpc_mpf_div,
+    mpf_pow,
+    mpf_pi, mpf_degree, mpf_e, mpf_phi, mpf_ln2, mpf_ln10,
+    mpf_euler, mpf_catalan, mpf_apery, mpf_khinchin,
+    mpf_glaisher, mpf_twinprime, mpf_mertens,
+    int_types)
 
 from . import rational
 from . import function_docs
@@ -131,7 +140,7 @@ class _mpf(mpnumeric):
     def __hash__(s): return mpf_hash(s._mpf_)
     def __int__(s): return int(to_int(s._mpf_))
     def __long__(s): return long(to_int(s._mpf_))
-    def __float__(s): return to_float(s._mpf_)
+    def __float__(s): return to_float(s._mpf_, rnd=s.context._prec_rounding[1])
     def __complex__(s): return complex(float(s))
     def __nonzero__(s): return s._mpf_ != fzero
 
@@ -386,7 +395,7 @@ class _mpc(mpnumeric):
         return "(%s)" % mpc_to_str(s._mpc_, s.context._str_digits)
 
     def __complex__(s):
-        return mpc_to_complex(s._mpc_)
+        return mpc_to_complex(s._mpc_, rnd=s.context._prec_rounding[1])
 
     def __pos__(s):
         cls, new, (prec, rounding) = s._ctxdata
@@ -636,6 +645,10 @@ class PythonMPContext(object):
         if isinstance(x, float): return ctx.make_mpf(from_float(x))
         if isinstance(x, complex):
             return ctx.make_mpc((from_float(x.real), from_float(x.imag)))
+        if type(x).__module__ == 'numpy': return ctx.npconvert(x)
+        if isinstance(x, numbers.Rational): # e.g. Fraction
+            try: x = rational.mpq(int(x.numerator), int(x.denominator))
+            except: pass
         prec, rounding = ctx._prec_rounding
         if isinstance(x, rational.mpq):
             p, q = x._mpq_
@@ -650,7 +663,22 @@ class PythonMPContext(object):
         if hasattr(x, '_mpc_'): return ctx.make_mpc(x._mpc_)
         if hasattr(x, '_mpmath_'):
             return ctx.convert(x._mpmath_(prec, rounding))
+        if type(x).__module__ == 'decimal':
+            try: return ctx.make_mpf(from_Decimal(x, prec, rounding))
+            except: pass
         return ctx._convert_fallback(x, strings)
+
+    def npconvert(ctx, x):
+        """
+        Converts *x* to an ``mpf`` or ``mpc``. *x* should be a numpy
+        scalar.
+        """
+        import numpy as np
+        if isinstance(x, np.integer): return ctx.make_mpf(from_int(int(x)))
+        if isinstance(x, np.floating): return ctx.make_mpf(from_npfloat(x))
+        if isinstance(x, np.complexfloating):
+            return ctx.make_mpc((from_npfloat(x.real), from_npfloat(x.imag)))
+        raise TypeError("cannot create mpf from " + repr(x))
 
     def isnan(ctx, x):
         """
@@ -818,7 +846,6 @@ class PythonMPContext(object):
         prec, rnd = ctx._prec_rounding
         real = []
         imag = []
-        other = 0
         for term in terms:
             reval = imval = 0
             if hasattr(term, "_mpf_"):
@@ -832,10 +859,7 @@ class PythonMPContext(object):
                 elif hasattr(term, "_mpc_"):
                     reval, imval = term._mpc_
                 else:
-                    if absolute: term = ctx.absmax(term)
-                    if squared: term = term**2
-                    other += term
-                    continue
+                    raise NotImplementedError
             if imval:
                 if squared:
                     if absolute:
@@ -861,10 +885,7 @@ class PythonMPContext(object):
             s = ctx.make_mpc((s, mpf_sum(imag, prec, rnd)))
         else:
             s = ctx.make_mpf(s)
-        if other == 0:
-            return s
-        else:
-            return s + other
+        return s
 
     def fdot(ctx, A, B=None, conjugate=False):
         r"""
@@ -905,12 +926,11 @@ class PythonMPContext(object):
             mpc(real='3.5', imag='-5.0')
 
         """
-        if B:
+        if B is not None:
             A = zip(A, B)
         prec, rnd = ctx._prec_rounding
         real = []
         imag = []
-        other = 0
         hasattr_ = hasattr
         types = (ctx.mpf, ctx.mpc)
         for a, b in A:
@@ -946,19 +966,13 @@ class PythonMPContext(object):
                 imag.append(mpf_mul(are, bim))
                 imag.append(mpf_mul(aim, bre))
             else:
-                if conjugate:
-                    other += a*ctx.conj(b)
-                else:
-                    other += a*b
+                raise NotImplementedError
         s = mpf_sum(real, prec, rnd)
         if imag:
             s = ctx.make_mpc((s, mpf_sum(imag, prec, rnd)))
         else:
             s = ctx.make_mpf(s)
-        if other == 0:
-            return s
-        else:
-            return s + other
+        return s
 
     def _wrap_libmp_function(ctx, mpf_f, mpc_f=None, mpi_f=None, doc="<no doc>"):
         """

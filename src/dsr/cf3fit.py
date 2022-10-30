@@ -178,7 +178,7 @@ class CF3(object):
         restr = wrap_headlines(restr, 77)
         return restr
 
-    def make_pivot_isotropic(self, linenumber):
+    def make_pivot_isotropic(self, linenumber: int):
         """
         make sure the pivot atom of a cf3 group is isotropic
         :param linenumber: line number (index) in self.reslist of the pivot atom
@@ -186,20 +186,20 @@ class CF3(object):
         :return Uij values, coordinates: U and xyz values of the pivot atom as lists
         """
         atomline = self.reslist[linenumber].split()
-        coords = [atomline[2], atomline[3], atomline[4]]
+        coords = [float(atomline[2]), float(atomline[3]), float(atomline[4])]
         if atomline[-1] == '=':
             nextline = self.reslist[linenumber + 1].split()
             try:
                 U11, U22 = atomline[6], atomline[7]
                 U33, U23, U13, U12 = nextline[0], nextline[1], nextline[2], nextline[3]
-            except:
+            except Exception:
                 # In this case we have a U value missing
                 print('*** Incomplete Uij values. Atom split not possible! ***')
                 self.dsrp.split = False
                 return [[], coords]
             self.reslist[linenumber] = '{:5.4s}{:4.2s}{:>10.8s} {:>10.8s} {:>10.8s}  {:8.6s}  0.04'.format(*atomline)
             self.reslist[linenumber + 1] = ''
-            return [[U11, U22, U33, U23, U13, U12], coords]
+            return [[float(U11), float(U22), float(U33), float(U23), float(U13), float(U12)], coords]
         else:
             # atom is already isotropic, nothing to do...
             if self.dsrp.split:
@@ -213,7 +213,7 @@ class CF3(object):
         :param atom:
         """
         for char in alphabet:
-            if not atom + char in [i[0] for i in self.atomlist]:
+            if atom + char not in [i[0] for i in self.atomlist]:
                 del alphabet[0]
                 return atom + char
 
@@ -262,7 +262,7 @@ class CF3(object):
         axes = []
         targetatom = self.dsrp.target[0]
         # c_coords: coordinates of the pivot atom
-        [uvals, c_coords] = self.make_pivot_isotropic(atomline)
+        uvals, c_coords = self.make_pivot_isotropic(atomline)
         restr = ['']
         if afix == '130':
             print('Generating CF3-Group at {}.'.format(targetatom))
@@ -795,7 +795,7 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
     Ucart = ufrac_to_ucart(_A, cell, uvals)
     # print(Ucart)
     # E => eigenvalues, Q => eigenvectors:
-    E, Q = mpm.eig(Ucart)
+    E, Q = mpm.eig(mpm.matrix(Ucart))
     # calculate vectors of ellipsoid axes
     try:
         sqrt(E[0])
@@ -826,7 +826,7 @@ def calc_ellipsoid_axes(coords, uvals, cell, probability=0.5, longest=True):
         length = mpm.norm(v3)
         v = 2
     # move vectors back to atomic position
-    atom = _A * mpm.matrix(coords)
+    atom = mpm.matrix(_A) * mpm.matrix(coords)
     v1, v1i = v1 + atom, v1i + atom
     v2, v2i = v2 + atom, v2i + atom
     v3, v3i = v3 + atom, v3i + atom

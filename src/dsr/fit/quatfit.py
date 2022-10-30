@@ -1,7 +1,8 @@
 # coding=utf-8
 
 import copy
-
+import sys
+sys.path.append('../')
 from math import fabs, sqrt
 from misc import cart_to_frac, frac_to_cart, matrix_minus_vect, matrix_plus_vect, transpose
 

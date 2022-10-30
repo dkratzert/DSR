@@ -79,8 +79,7 @@ def r_sy_tridiag(ctx, A, D, E, calc_ev = True):
 
     n = A.rows
     for i in xrange(n - 1, 0, -1):
-
-                                   # scale the vector
+        # scale the vector
 
         scale = 0
         for k in xrange(0, i):
@@ -90,14 +89,14 @@ def r_sy_tridiag(ctx, A, D, E, calc_ev = True):
         if scale != 0:
             scale_inv = 1/scale
 
-                                   # sadly there are floating point numbers not equal to zero whose reciprocal is infinity
+        # sadly there are floating point numbers not equal to zero whose reciprocal is infinity
 
         if i == 1 or scale == 0 or ctx.isinf(scale_inv):
             E[i] = A[i-1,i]        # nothing to do
             D[i] = 0
             continue
 
-                                   # calculate parameters for housholder transformation
+        # calculate parameters for housholder transformation
 
         H = 0
         for k in xrange(0, i):
@@ -113,7 +112,7 @@ def r_sy_tridiag(ctx, A, D, E, calc_ev = True):
         A[i-1,i] = F - G
         F = 0
 
-                                   # apply housholder transformation
+        # apply housholder transformation
 
         for j in xrange(0, i):
             if calc_ev:
@@ -206,7 +205,7 @@ def c_he_tridiag_0(ctx, A, D, E, T):
     T[n-1] = 1
     for i in xrange(n - 1, 0, -1):
 
-                                         # scale the vector
+        # scale the vector
 
         scale = 0
         for k in xrange(0, i):
@@ -216,7 +215,7 @@ def c_he_tridiag_0(ctx, A, D, E, T):
         if scale != 0:
             scale_inv = 1 / scale
 
-                                         # sadly there are floating point numbers not equal to zero whose reciprocal is infinity
+        # sadly there are floating point numbers not equal to zero whose reciprocal is infinity
 
         if scale == 0 or ctx.isinf(scale_inv):
             E[i] = 0
@@ -235,7 +234,7 @@ def c_he_tridiag_0(ctx, A, D, E, T):
                 T[i-1] = T[i]
             continue
 
-                                         # calculate parameters for housholder transformation
+        # calculate parameters for housholder transformation
 
         H = 0
         for k in xrange(0, i):
@@ -258,7 +257,7 @@ def c_he_tridiag_0(ctx, A, D, E, T):
         A[i-1,i] += G
         F = 0
 
-                                         # apply housholder transformation
+        # apply housholder transformation
 
         for j in xrange(0, i):
             A[i,j] = A[j,i] / H
@@ -281,8 +280,8 @@ def c_he_tridiag_0(ctx, A, D, E, T):
 
             for k in xrange(0, j + 1):
                 A[k,j] -= ctx.conj(F) * T[k] + ctx.conj(G) * A[k,i]
-                                         # as we use the lower left part for storage
-                                         # we have to use the transpose of the normal formula
+                # as we use the lower left part for storage
+                # we have to use the transpose of the normal formula
 
         T[i-1] = TZ
         D[i] = H
@@ -784,16 +783,16 @@ def gauss_quadrature(ctx, n, qtype = "legendre", alpha = 0, beta = 0):
       >>> A = mp.fdot([(f(x), w) for x, w in zip(X, W)])
       >>> B = mp.sqrt(mp.pi) * 57 / 16
       >>> C = mp.quad(lambda x: mp.exp(- x * x) * f(x), [-mp.inf, +mp.inf])
-      >>> print mp.chop(A-B, tol = 1e-10), mp.chop(A-C, tol = 1e-10)
-      0.0 0.0
+      >>> mp.nprint((mp.chop(A-B, tol = 1e-10), mp.chop(A-C, tol = 1e-10)))
+      (0.0, 0.0)
 
       >>> f = lambda x: x**5 - 2 * x**4 + 3 * x**3 - 5 * x**2 + 7 * x - 11
       >>> X, W = mp.gauss_quadrature(3, "laguerre")
       >>> A = mp.fdot([(f(x), w) for x, w in zip(X, W)])
       >>> B = 76
       >>> C = mp.quad(lambda x: mp.exp(-x) * f(x), [0, +mp.inf])
-      >>> print mp.chop(A-B, tol = 1e-10), mp.chop(A-C, tol = 1e-10)
-      0.0 0.0
+      >>> mp.nprint(mp.chop(A-B, tol = 1e-10), mp.chop(A-C, tol = 1e-10))
+      .0
 
       # orthogonality of the chebyshev polynomials:
       >>> f = lambda x: mp.chebyt(3, x) * mp.chebyt(2, x)
@@ -887,7 +886,7 @@ def gauss_quadrature(ctx, n, qtype = "legendre", alpha = 0, beta = 0):
     tridiag_eigen(ctx, d, e, z)
 
     for i in xrange(len(z)):
-      z[i] *= z[i]
+        z[i] *= z[i]
 
     z = z.transpose()
     return (d, w * z)

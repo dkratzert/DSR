@@ -4,6 +4,8 @@ operating with them.
 """
 __docformat__ = 'plaintext'
 
+import functools
+
 import re
 
 from .ctx_base import StandardBaseContext
@@ -12,16 +14,28 @@ from .libmp.backend import basestring, BACKEND
 
 from . import libmp
 
-from .libmp import (MPZ_ONE, repr_dps,
-                    dps_to_prec, ComplexResult, to_str,
-                    from_rational, fone, fzero, finf, fninf, fnan,
-                    mpf_neg, mpf_add, mpf_sub, mpf_mul, mpf_div, mpf_rand,
-                    bitcount, mpc_to_str,
-                    mpc_neg, mpc_add, mpc_add_mpf, mpc_sub, mpc_sub_mpf, mpc_mul, mpc_mul_mpf,
-                    mpc_div, mpc_div_mpf, mpf_pi, mpf_degree, mpf_e, mpf_phi, mpf_ln2, mpf_ln10,
-                    mpf_euler, mpf_catalan, mpf_apery, mpf_khinchin,
-                    mpf_glaisher, mpf_twinprime, mpf_mertens,
-                    int_types)
+from .libmp import (MPZ, MPZ_ZERO, MPZ_ONE, int_types, repr_dps,
+    round_floor, round_ceiling, dps_to_prec, round_nearest, prec_to_dps,
+    ComplexResult, to_pickable, from_pickable, normalize,
+    from_int, from_float, from_str, to_int, to_float, to_str,
+    from_rational, from_man_exp,
+    fone, fzero, finf, fninf, fnan,
+    mpf_abs, mpf_pos, mpf_neg, mpf_add, mpf_sub, mpf_mul, mpf_mul_int,
+    mpf_div, mpf_rdiv_int, mpf_pow_int, mpf_mod,
+    mpf_eq, mpf_cmp, mpf_lt, mpf_gt, mpf_le, mpf_ge,
+    mpf_hash, mpf_rand,
+    mpf_sum,
+    bitcount, to_fixed,
+    mpc_to_str,
+    mpc_to_complex, mpc_hash, mpc_pos, mpc_is_nonzero, mpc_neg, mpc_conjugate,
+    mpc_abs, mpc_add, mpc_add_mpf, mpc_sub, mpc_sub_mpf, mpc_mul, mpc_mul_mpf,
+    mpc_mul_int, mpc_div, mpc_div_mpf, mpc_pow, mpc_pow_mpf, mpc_pow_int,
+    mpc_mpf_div,
+    mpf_pow,
+    mpf_pi, mpf_degree, mpf_e, mpf_phi, mpf_ln2, mpf_ln10,
+    mpf_euler, mpf_catalan, mpf_apery, mpf_khinchin,
+    mpf_glaisher, mpf_twinprime, mpf_mertens,
+    int_types)
 
 from . import function_docs
 from . import rational
@@ -34,10 +48,12 @@ get_complex = re.compile(r'^\(?(?P<re>[\+\-]?\d*\.?\d*(e[\+\-]?\d+)?)??'
 if BACKEND == 'sage':
     from sage.libs.mpmath.ext_main import Context as BaseMPContext
     # pickle hack
-
+    import sage.libs.mpmath.ext_main as _mpf_module
 else:
     from .ctx_mp_python import PythonMPContext as BaseMPContext
+    from . import ctx_mp_python as _mpf_module
 
+from .ctx_mp_python import _mpf, _mpc, mpnumeric
 
 class MPContext(BaseMPContext, StandardBaseContext):
     """
@@ -141,8 +157,6 @@ class MPContext(BaseMPContext, StandardBaseContext):
         ctx.rgamma = ctx._wrap_libmp_function(libmp.mpf_rgamma, libmp.mpc_rgamma)
         ctx.loggamma = ctx._wrap_libmp_function(libmp.mpf_loggamma, libmp.mpc_loggamma)
         ctx.fac = ctx.factorial = ctx._wrap_libmp_function(libmp.mpf_factorial, libmp.mpc_factorial)
-        ctx.gamma_old = ctx._wrap_libmp_function(libmp.mpf_gamma_old, libmp.mpc_gamma_old)
-        ctx.fac_old = ctx.factorial_old = ctx._wrap_libmp_function(libmp.mpf_factorial_old, libmp.mpc_factorial_old)
 
         ctx.digamma = ctx._wrap_libmp_function(libmp.mpf_psi0, libmp.mpc_psi0)
         ctx.harmonic = ctx._wrap_libmp_function(libmp.mpf_harmonic, libmp.mpc_harmonic)
@@ -441,7 +455,7 @@ class MPContext(BaseMPContext, StandardBaseContext):
         return PrecisionManager(ctx, None, lambda d: n, normalize_output)
 
     def autoprec(ctx, f, maxprec=None, catch=(), verbose=False):
-        """
+        r"""
         Return a wrapped copy of *f* that repeatedly evaluates *f*
         with increasing precision until the result converges to the
         full precision used at the point of the call.
@@ -561,11 +575,31 @@ class MPContext(BaseMPContext, StandardBaseContext):
         The companion function :func:`~mpmath.nprint` prints the result
         instead of returning it.
 
+        The keyword arguments *strip_zeros*, *min_fixed*, *max_fixed*
+        and *show_zero_exponent* are forwarded to :func:`~mpmath.libmp.to_str`.
+
+        The number will be printed in fixed-point format if the position
+        of the leading digit is strictly between min_fixed
+        (default = min(-dps/3,-5)) and max_fixed (default = dps).
+
+        To force fixed-point format always, set min_fixed = -inf,
+        max_fixed = +inf. To force floating-point format, set
+        min_fixed >= max_fixed.
+
             >>> from mpmath import *
             >>> nstr([+pi, ldexp(1,-500)])
             '[3.14159, 3.05494e-151]'
             >>> nprint([+pi, ldexp(1,-500)])
             [3.14159, 3.05494e-151]
+            >>> nstr(mpf("5e-10"), 5)
+            '5.0e-10'
+            >>> nstr(mpf("5e-10"), 5, strip_zeros=False)
+            '5.0000e-10'
+            >>> nstr(mpf("5e-10"), 5, strip_zeros=False, min_fixed=-11)
+            '0.00000000050000'
+            >>> nstr(mpf(0), 5, show_zero_exponent=True)
+            '0.0e+0'
+
         """
         if isinstance(x, list):
             return "[%s]" % (", ".join(ctx.nstr(c, n, **kwargs) for c in x))
@@ -1271,6 +1305,7 @@ class PrecisionManager:
         self.dpsfun = dpsfun
         self.normalize_output = normalize_output
     def __call__(self, f):
+        @functools.wraps(f)
         def g(*args, **kwargs):
             orig = self.ctx.prec
             try:
@@ -1287,8 +1322,6 @@ class PrecisionManager:
                     return f(*args, **kwargs)
             finally:
                 self.ctx.prec = orig
-        g.__name__ = f.__name__
-        g.__doc__ = f.__doc__
         return g
     def __enter__(self):
         self.origp = self.ctx.prec

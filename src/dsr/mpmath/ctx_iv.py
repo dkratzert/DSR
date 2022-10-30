@@ -1,3 +1,5 @@
+import operator
+
 from . import libmp
 
 from .libmp.backend import basestring
@@ -8,12 +10,16 @@ from .libmp import (
     round_floor, round_ceiling,
     fzero, finf, fninf, fnan,
     mpf_le, mpf_neg,
-    from_int, from_float, from_str, mpi_mid, mpi_delta, mpi_str,
+    from_int, from_float, from_str, from_rational,
+    mpi_mid, mpi_delta, mpi_str,
     mpi_abs, mpi_pos, mpi_neg, mpi_add, mpi_sub,
-    mpi_mul, mpi_div, mpi_pow,
+    mpi_mul, mpi_div, mpi_pow_int, mpi_pow,
     mpi_from_str,
-    mpci_pos, mpci_neg, mpci_add, mpci_sub, mpci_mul, mpci_div, mpci_abs, mpci_pow, ComplexResult,
+    mpci_pos, mpci_neg, mpci_add, mpci_sub, mpci_mul, mpci_div, mpci_pow,
+    mpci_abs, mpci_pow, mpci_exp, mpci_log,
+    ComplexResult,
     mpf_hash, mpc_hash)
+from .matrices.matrices import _matrix
 
 mpi_zero = (fzero, fzero)
 
@@ -26,6 +32,7 @@ def convert_mpf_(x, prec, rounding):
     if isinstance(x, int_types): return from_int(x, prec, rounding)
     if isinstance(x, float): return from_float(x, prec, rounding)
     if isinstance(x, basestring): return from_str(x, prec, rounding)
+    raise NotImplementedError
 
 
 class ivmpf(object):
@@ -36,11 +43,20 @@ class ivmpf(object):
     def __new__(cls, x=0):
         return cls.ctx.convert(x)
 
-    def __int__(self):
+    def cast(self, cls, f_convert):
         a, b = self._mpi_
         if a == b:
-            return int(libmp.to_int(a))
+            return cls(f_convert(a))
         raise ValueError
+
+    def __int__(self):
+        return self.cast(int, libmp.to_int)
+
+    def __float__(self):
+        return self.cast(float, libmp.to_float)
+
+    def __complex__(self):
+        return self.cast(complex, libmp.to_float)
 
     def __hash__(self):
         a, b = self._mpi_
@@ -236,6 +252,7 @@ def _binary_op(f_real, f_complex):
             tval = (tval, mpi_zero)
             return g_complex(ctx, sval, tval)
     def lop_real(s, t):
+        if isinstance(t, _matrix): return NotImplemented
         ctx = s.ctx
         if not isinstance(t, ctx._types): t = ctx.convert(t)
         if hasattr(t, "_mpi_"): return g_real(ctx, s._mpi_, t._mpi_)
@@ -248,6 +265,7 @@ def _binary_op(f_real, f_complex):
         if hasattr(t, "_mpci_"): return g_complex(ctx, t._mpci_, (s._mpi_, mpi_zero))
         return NotImplemented
     def lop_complex(s, t):
+        if isinstance(t, _matrix): return NotImplemented
         ctx = s.ctx
         if not isinstance(t, s.ctx._types):
             try:
@@ -479,7 +497,7 @@ class MPIntervalContext(StandardBaseContext):
     def atan2(ctx, y, x):
         y = ctx.convert(y)._mpi_
         x = ctx.convert(x)._mpi_
-        return ctx.make_mpf(libmp.mpi_atan2(y, x, ctx.prec))
+        return ctx.make_mpf(libmp.mpi_atan2(y,x,ctx.prec))
 
     def _convert_param(ctx, x):
         if isinstance(x, libmp.int_types):

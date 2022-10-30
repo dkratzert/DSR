@@ -14,6 +14,7 @@ This module implements gamma- and zeta-related functions:
 """
 
 import math
+import sys
 
 from .backend import xrange
 from .backend import MPZ, MPZ_ZERO, MPZ_ONE, MPZ_THREE, gmpy
@@ -355,7 +356,7 @@ mpf_twinprime = def_mpf_constant(twinprime_fixed)
 MAX_BERNOULLI_CACHE = 3000
 
 
-"""
+r"""
 Small Bernoulli numbers and factorials are used in numerous summations,
 so it is critical for speed that sequential computation is fast and that
 values are cached up to a fairly high threshold.
@@ -573,233 +574,11 @@ def bernfrac(n):
 
 #-----------------------------------------------------------------------#
 #                                                                       #
-#              The gamma function  (OLD IMPLEMENTATION)                 #
-#                                                                       #
-#-----------------------------------------------------------------------#
-
-
-"""
-We compute the real factorial / gamma function using Spouge's approximation
-
-    x! = (x+a)**(x+1/2) * exp(-x-a) * [c_0 + S(x) + eps]
-
-where S(x) is the sum of c_k/(x+k) from k = 1 to a-1 and the coefficients
-are given by
-
-  c_0 = sqrt(2*pi)
-
-         (-1)**(k-1)
-  c_k =  ----------- (a-k)**(k-1/2) exp(-k+a),  k = 1,2,...,a-1
-          (k - 1)!
-
-As proved by Spouge, if we choose a = log(2)/log(2*pi)*n = 0.38*n, the
-relative error eps is less than 2^(-n) for any x in the right complex
-half-plane (assuming a > 2). In practice, it seems that a can be chosen
-quite a bit lower still (30-50%); this possibility should be investigated.
-
-For negative x, we use the reflection formula.
-
-References:
------------
-
-John L. Spouge, "Computation of the gamma, digamma, and trigamma
-functions", SIAM Journal on Numerical Analysis 31 (1994), no. 3, 931-944.
-"""
-
-spouge_cache = {}
-
-def calc_spouge_coefficients(a, prec):
-    wp = prec + int(a*1.4)
-    c = [0] * a
-    # b = exp(a-1)
-    b = mpf_exp(from_int(a-1), wp)
-    # e = exp(1)
-    e = mpf_exp(fone, wp)
-    # sqrt(2*pi)
-    sq2pi = mpf_sqrt(mpf_shift(mpf_pi(wp), 1), wp)
-    c[0] = to_fixed(sq2pi, prec)
-    for k in xrange(1, a):
-        # c[k] = ((-1)**(k-1) * (a-k)**k) * b / sqrt(a-k)
-        term = mpf_mul_int(b, ((-1)**(k-1) * (a-k)**k), wp)
-        term = mpf_div(term, mpf_sqrt(from_int(a-k), wp), wp)
-        c[k] = to_fixed(term, prec)
-        # b = b / (e * k)
-        b = mpf_div(b, mpf_mul(e, from_int(k), wp), wp)
-    return c
-
-# Cached lookup of coefficients
-def get_spouge_coefficients(prec):
-    # This exact precision has been used before
-    if prec in spouge_cache:
-        return spouge_cache[prec]
-    for p in spouge_cache:
-        if 0.8 <= prec/float(p) < 1:
-            return spouge_cache[p]
-    # Here we estimate the value of a based on Spouge's inequality for
-    # the relative error
-    a = max(3, int(0.38*prec))  # 0.38 = log(2)/log(2*pi), ~= 1.26*n
-    coefs = calc_spouge_coefficients(a, prec)
-    spouge_cache[prec] = (prec, a, coefs)
-    return spouge_cache[prec]
-
-def spouge_sum_real(x, prec, a, c):
-    x = to_fixed(x, prec)
-    s = c[0]
-    for k in xrange(1, a):
-        s += (c[k] << prec) // (x + (k << prec))
-    return from_man_exp(s, -prec, prec, round_floor)
-
-# Unused: for fast computation of gamma(p/q)
-def spouge_sum_rational(p, q, prec, a, c):
-    s = c[0]
-    for k in xrange(1, a):
-        s += c[k] * q // (p+q*k)
-    return from_man_exp(s, -prec, prec, round_floor)
-
-# For a complex number a + b*I, we have
-#
-#        c_k          (a+k)*c_k     b * c_k
-#  -------------  =   ---------  -  ------- * I
-#  (a + b*I) + k          M            M
-#
-#                 2    2      2   2              2
-#  where M = (a+k)  + b   = (a + b ) + (2*a*k + k )
-
-def spouge_sum_complex(re, im, prec, a, c):
-    re = to_fixed(re, prec)
-    im = to_fixed(im, prec)
-    sre, sim = c[0], 0
-    mag = ((re**2)>>prec) + ((im**2)>>prec)
-    for k in xrange(1, a):
-        M = mag + re*(2*k) + ((k**2) << prec)
-        sre += (c[k] * (re + (k << prec))) // M
-        sim -= (c[k] * im) // M
-    re = from_man_exp(sre, -prec, prec, round_floor)
-    im = from_man_exp(sim, -prec, prec, round_floor)
-    return re, im
-
-def mpf_gamma_int_old(n, prec, rounding=round_fast):
-    if n < 1000:
-        return from_int(ifac(n-1), prec, rounding)
-    # XXX: choose the cutoff less arbitrarily
-    size = int(n*math.log(n,2))
-    if prec > size/20.0:
-        return from_int(ifac(n-1), prec, rounding)
-    return mpf_gamma(from_int(n), prec, rounding)
-
-def mpf_factorial_old(x, prec, rounding=round_fast):
-    return mpf_gamma_old(x, prec, rounding, p1=0)
-
-def mpc_factorial_old(x, prec, rounding=round_fast):
-    return mpc_gamma_old(x, prec, rounding, p1=0)
-
-def mpf_gamma_old(x, prec, rounding=round_fast, p1=1):
-    """
-    Computes the gamma function of a real floating-point argument.
-    With p1=0, computes a factorial instead.
-    """
-    sign, man, exp, bc = x
-    if not man:
-        if x == finf:
-            return finf
-        if x == fninf or x == fnan:
-            return fnan
-    # More precision is needed for enormous x. TODO:
-    # use Stirling's formula + Euler-Maclaurin summation
-    size = exp + bc
-    if size > 5:
-        size = int(size * math.log(size,2))
-    wp = prec + max(0, size) + 15
-    if exp >= 0:
-        if sign or (p1 and not man):
-            raise ValueError("gamma function pole")
-        # A direct factorial is fastest
-        if exp + bc <= 10:
-            return from_int(ifac((man<<exp)-p1), prec, rounding)
-    reflect = sign or exp+bc < -1
-    if p1:
-        # Should be done exactly!
-        x = mpf_sub(x, fone)
-    # x < 0.25
-    if reflect:
-        # gamma = pi / (sin(pi*x) * gamma(1-x))
-        wp += 15
-        pix = mpf_mul(x, mpf_pi(wp), wp)
-        t = mpf_sin_pi(x, wp)
-        g = mpf_gamma_old(mpf_sub(fone, x), wp)
-        return mpf_div(pix, mpf_mul(t, g, wp), prec, rounding)
-    sprec, a, c = get_spouge_coefficients(wp)
-    s = spouge_sum_real(x, sprec, a, c)
-    # gamma = exp(log(x+a)*(x+0.5) - xpa) * s
-    xpa = mpf_add(x, from_int(a), wp)
-    logxpa = mpf_log(xpa, wp)
-    xph = mpf_add(x, fhalf, wp)
-    t = mpf_sub(mpf_mul(logxpa, xph, wp), xpa, wp)
-    t = mpf_mul(mpf_exp(t, wp), s, prec, rounding)
-    return t
-
-def mpc_gamma_old(x, prec, rounding=round_fast, p1=1):
-    re, im = x
-    if im == fzero:
-        return mpf_gamma_old(re, prec, rounding, p1), fzero
-    # More precision is needed for enormous x.
-    sign, man, exp, bc = re
-    isign, iman, iexp, ibc = im
-    if re == fzero:
-        size = iexp+ibc
-    else:
-        size = max(exp+bc, iexp+ibc)
-    if size > 5:
-        size = int(size * math.log(size,2))
-    reflect = sign or (exp+bc < -1)
-    wp = prec + max(0, size) + 25
-    # Near x = 0 pole (TODO: other poles)
-    if p1:
-        if size < -prec-5:
-            return mpc_add_mpf(mpc_div(mpc_one, x, 2*prec+10), \
-                mpf_neg(mpf_euler(2*prec+10)), prec, rounding)
-        elif size < -5:
-            wp += (-2*size)
-    if p1:
-        # Should be done exactly!
-        re_orig = re
-        re = mpf_sub(re, fone, bc+abs(exp)+2)
-        x = re, im
-    if reflect:
-        # Reflection formula
-        wp += 15
-        pi = mpf_pi(wp), fzero
-        pix = mpc_mul(x, pi, wp)
-        t = mpc_sin_pi(x, wp)
-        u = mpc_sub(mpc_one, x, wp)
-        g = mpc_gamma_old(u, wp)
-        w = mpc_mul(t, g, wp)
-        return mpc_div(pix, w, wp)
-    # Extremely close to the real line?
-    # XXX: reflection formula
-    if iexp+ibc < -wp:
-        a = mpf_gamma_old(re_orig, wp)
-        b = mpf_psi0(re_orig, wp)
-        gamma_diff = mpf_div(a, b, wp)
-        return mpf_pos(a, prec, rounding), mpf_mul(gamma_diff, im, prec, rounding)
-    sprec, a, c = get_spouge_coefficients(wp)
-    s = spouge_sum_complex(re, im, sprec, a, c)
-    # gamma = exp(log(x+a)*(x+0.5) - xpa) * s
-    repa = mpf_add(re, from_int(a), wp)
-    logxpa = mpc_log((repa, im), wp)
-    reph = mpf_add(re, fhalf, wp)
-    t = mpc_sub(mpc_mul(logxpa, (reph, im), wp), (repa, im), wp)
-    t = mpc_mul(mpc_exp(t, wp), s, prec, rounding)
-    return t
-
-
-#-----------------------------------------------------------------------#
-#                                                                       #
 #                         Polygamma functions                           #
 #                                                                       #
 #-----------------------------------------------------------------------#
 
-"""
+r"""
 For all polygamma (psi) functions, we use the Euler-Maclaurin summation
 formula. It looks slightly different in the m = 0 and m > 0 cases.
 
@@ -887,6 +666,10 @@ def mpf_psi0(x, prec, rnd=round_fast):
         if x == fninf or x == fnan: return fnan
     if x == fzero or (exp >= 0 and sign):
         raise ValueError("polygamma pole")
+    # Near 0 -- fixed-point arithmetic becomes bad
+    if exp+bc < -5:
+        v = mpf_psi0(mpf_add(x, fone, prec, rnd), prec, rnd)
+        return mpf_sub(v, mpf_div(fone, x, wp, rnd), prec, rnd)
     # Reflection formula
     if sign and exp+bc > 3:
         c, s = mpf_cos_sin_pi(x, wp)
@@ -1060,7 +843,7 @@ def mpc_psi(m, z, prec, rnd=round_fast):
 #                                                                       #
 #-----------------------------------------------------------------------#
 
-"""
+r"""
 We use zeta(s) = eta(s) / (1 - 2**(1-s)) and Borwein's approximation
 
                   n-1
@@ -1471,6 +1254,7 @@ def mpc_zetasum(s, a, n, derivatives, reflect, prec):
     """
 
     wp = prec + 10
+    derivatives = list(derivatives)
     have_derivatives = derivatives != [0]
     have_one_derivative = len(derivatives) == 1
 
@@ -1480,7 +1264,8 @@ def mpc_zetasum(s, a, n, derivatives, reflect, prec):
     sre = to_fixed(sre, wp)
     sim = to_fixed(sim, wp)
 
-    if a > 0 and n > ZETASUM_SIEVE_CUTOFF and not have_derivatives and not reflect:
+    if a > 0 and n > ZETASUM_SIEVE_CUTOFF and not have_derivatives \
+            and not reflect and (n < 4e7 or sys.maxsize > 2**32):
         re, im = zetasum_sieved(critical_line, sre, sim, a, n, wp)
         xs = [(from_man_exp(re, -wp, prec, 'n'), from_man_exp(im, -wp, prec, 'n'))]
         return xs, []
@@ -2379,4 +2164,3 @@ def mpf_gamma_int(n, prec, rnd=round_fast):
     if n < SMALL_FACTORIAL_CACHE_SIZE:
         return mpf_pos(small_factorial_cache[n-1], prec, rnd)
     return mpf_gamma(from_int(n), prec, rnd)
-
