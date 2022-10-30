@@ -1,5 +1,5 @@
 """
-Creates a zip file with the content of the StructureDB program.
+Creates a zip file with the content of the DSR program.
 """
 from __future__ import print_function
 import string
