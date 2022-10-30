@@ -18,7 +18,7 @@ import sys
 from collections import OrderedDict
 
 from src.atomhandling import get_atomtypes
-from elements import get_radius_from_element
+from src.elements import get_radius_from_element
 from misc import distance, find_line, flatten, get_overlapped_chunks, remove_partsymbol, shift, vol_tetrahedron
 
 # all upper case for case insensitivity:

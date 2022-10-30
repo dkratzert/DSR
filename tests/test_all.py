@@ -7,13 +7,12 @@ import os
 import sys
 import unittest
 
-from src import dbfile, dsrparse, atomhandling, sql_export
+from src import dbfile, dsrparse, atomhandling, sql_export, elements
 import restraints
 from src.fit import quatfit
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import afix
-import elements
 import export
 import misc
 import networkx
