@@ -232,7 +232,7 @@ class ShelxlRefine():
         timestamp = (str(now.year) + '_' + str(now.month) + '_' + str(now.day) + '_' +
                      str(now.hour) + '-' + str(now.minute) + '-' + str(now.second))
         resfile = os.path.abspath(str(self.resfile_name + '.res'))
-        bakup_dir = os.path.abspath(os.path.dirname(resfile)) + os.path.sep + os.path.relpath('dsrsaves')
+        bakup_dir = os.path.abspath(os.path.dirname(resfile)) + os.path.sep + os.path.relpath('../dsrsaves')
         try:
             shutil.copyfile(resfile, self.backup_file)
         except IOError:
