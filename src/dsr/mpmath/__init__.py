@@ -1,4 +1,4 @@
-__version__ = '0.19'
+__version__ = '1.2.0'
 
 from .usertools import monitor, timing
 
@@ -20,9 +20,9 @@ fp._iv = iv
 iv._iv = iv
 
 # XXX: extremely bad pickle hack
-#from . import ctx_mp as _ctx_mp
-#_ctx_mp._mpf_module.mpf = mp.mpf
-#_ctx_mp._mpf_module.mpc = mp.mpc
+from . import ctx_mp as _ctx_mp
+_ctx_mp._mpf_module.mpf = mp.mpf
+_ctx_mp._mpf_module.mpc = mp.mpc
 
 make_mpf = mp.make_mpf
 make_mpc = mp.make_mpc
@@ -47,6 +47,7 @@ qbarfrom = mp.qbarfrom
 ellipfun = mp.ellipfun
 jtheta = mp.jtheta
 kleinj = mp.kleinj
+eta = mp.eta
 
 qp = mp.qp
 qhyper = mp.qhyper
@@ -102,6 +103,11 @@ quad = mp.quad
 quadgl = mp.quadgl
 quadts = mp.quadts
 quadosc = mp.quadosc
+
+invertlaplace = mp.invertlaplace
+invlaptalbot = mp.invlaptalbot
+invlapstehfest = mp.invlapstehfest
+invlapdehoog = mp.invlapdehoog
 
 pslq = mp.pslq
 identify = mp.identify
@@ -393,7 +399,6 @@ kei = mp.kei
 coulombc = mp.coulombc
 coulombf = mp.coulombf
 coulombg = mp.coulombg
-lambertw = mp.lambertw
 barnesg = mp.barnesg
 superfac = mp.superfac
 hyperfac = mp.hyperfac
@@ -409,6 +414,7 @@ primezeta = mp.primezeta
 bell = mp.bell
 polyexp = mp.polyexp
 expm1 = mp.expm1
+log1p = mp.log1p
 powm1 = mp.powm1
 unitroots = mp.unitroots
 cyclotomic = mp.cyclotomic
@@ -433,10 +439,6 @@ def runtests():
     tests.testit(importdir, testdir)
 
 def doctests(filter=[]):
-    try:
-        import psyco; psyco.full()
-    except ImportError:
-        pass
     import sys
     from timeit import default_timer as clock
     for i, arg in enumerate(sys.argv):
@@ -458,4 +460,3 @@ def doctests(filter=[]):
 
 if __name__ == '__main__':
     doctests()
-

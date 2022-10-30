@@ -182,10 +182,10 @@ class DSR(object):
         if not self.maindb_path:
             try:
                 main_dbdir = os.environ["DSR_DIR"]
-                self.maindb_path = os.path.join(main_dbdir, '../../dsr_db.txt')
+                self.maindb_path = os.path.join(main_dbdir, 'dsr_db.txt')
             except KeyError:
                 main_dbdir = './'
-                self.maindb_path = os.path.join(main_dbdir, '../../dsr_db.txt')
+                self.maindb_path = os.path.join(main_dbdir, 'dsr_db.txt')
         return True
 
     def head_to_gui(self):

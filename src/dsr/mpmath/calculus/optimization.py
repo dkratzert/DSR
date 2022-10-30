@@ -1,6 +1,8 @@
+from __future__ import print_function
+
 from copy import copy
 
-from ..libmp.backend import xrange, print_
+from ..libmp.backend import xrange
 
 class OptimizationMethods(object):
     def __init__(ctx):
@@ -268,8 +270,8 @@ class Muller:
             fx2x1x0 = (fx1x0 - fx2x1) / (x0 - x2)
             if w == 0 and fx2x1x0 == 0:
                 if self.verbose:
-                    print_('canceled with')
-                    print_('x0 =', x0, ', x1 =', x1, 'and x2 =', x2)
+                    print('canceled with')
+                    print('x0 =', x0, ', x1 =', x1, 'and x2 =', x2)
                 break
             x0 = x1
             fx0 = fx1
@@ -395,7 +397,7 @@ class Illinois:
         self.method = kwargs.get('method', 'illinois')
         self.getm = _getm(self.method)
         if self.verbose:
-            print_('using %s method' % self.method)
+            print('using %s method' % self.method)
 
     def __iter__(self):
         method = self.method
@@ -415,7 +417,7 @@ class Illinois:
             if abs(fz) < self.tol:
                 # TODO: better condition (when f is very flat)
                 if self.verbose:
-                    print_('canceled with z =', z)
+                    print('canceled with z =', z)
                 yield z, l
                 break
             if fz * fb < 0: # root in [z, b]
@@ -429,7 +431,7 @@ class Illinois:
                 fb = fz
                 fa = m*fa # scale down to ensure convergence
             if self.verbose and m and not method == 'illinois':
-                print_('m:', m)
+                print('m:', m)
             yield (a + b)/2, abs(l)
 
 def Pegasus(*args, **kwargs):
@@ -500,7 +502,7 @@ class Ridder:
             if abs(fx4) < self.tol:
                 # TODO: better condition (when f is very flat)
                 if self.verbose:
-                    print_('canceled with f(x4) =', fx4)
+                    print('canceled with f(x4) =', fx4)
                 yield x4, abs(x1 - x2)
                 break
             if fx4 * fx2 < 0: # root in [x4, x2]
@@ -551,21 +553,21 @@ class ANewton:
                 x0 = phi(x0)
             except ZeroDivisionError:
                 if self.verbose:
-                    print_('ZeroDivisionError: canceled with x =', x0)
+                    print('ZeroDivisionError: canceled with x =', x0)
                 break
             preverror = error
             error = abs(prevx - x0)
             # TODO: decide not to use convergence acceleration
             if error and abs(error - preverror) / error < 1:
                 if self.verbose:
-                    print_('converging slowly')
+                    print('converging slowly')
                 counter += 1
             if counter >= 3:
                 # accelerate convergence
                 phi = steffensen(phi)
                 counter = 0
                 if self.verbose:
-                    print_('accelerating convergence')
+                    print('accelerating convergence')
             yield x0, error
 
 # TODO: add Brent
@@ -596,7 +598,7 @@ def jacobian(ctx, f, x):
             J[i,j] = Jj[i]
     return J
 
-# TODO: test with user-specified jacobian matrix, support force_type
+# TODO: test with user-specified jacobian matrix
 class MDNewton:
     """
     Find the root of a vector function numerically using Newton's method.
@@ -657,16 +659,16 @@ class MDNewton:
             Jx = J(*x0)
             s = self.ctx.lu_solve(Jx, fxn)
             if self.verbose:
-                print_('Jx:')
-                print_(Jx)
-                print_('s:', s)
+                print('Jx:')
+                print(Jx)
+                print('s:', s)
             # damping step size TODO: better strategy (hard task)
             l = self.ctx.one
             x1 = x0 + s
             while True:
                 if x1 == x0:
                     if self.verbose:
-                        print_("canceled, won't get more excact")
+                        print("canceled, won't get more excact")
                     cancel = True
                     break
                 fx = self.ctx.matrix(f(*x1))
@@ -684,21 +686,28 @@ class MDNewton:
 # UTILITIES #
 #############
 
-str2solver = {'newton':Newton, 'secant':Secant,'mnewton':MNewton,
+str2solver = {'newton':Newton, 'secant':Secant, 'mnewton':MNewton,
               'halley':Halley, 'muller':Muller, 'bisect':Bisection,
               'illinois':Illinois, 'pegasus':Pegasus, 'anderson':Anderson,
               'ridder':Ridder, 'anewton':ANewton, 'mdnewton':MDNewton}
 
-def findroot(ctx, f, x0, solver=Secant, tol=None, verbose=False, verify=True, **kwargs):
+def findroot(ctx, f, x0, solver='secant', tol=None, verbose=False, verify=True, **kwargs):
     r"""
-    Find a solution to `f(x) = 0`, using *x0* as starting point or
+    Find an approximate solution to `f(x) = 0`, using *x0* as starting point or
     interval for *x*.
 
     Multidimensional overdetermined systems are supported.
     You can specify them using a function or a list of functions.
 
-    If the found root does not satisfy `|f(x)^2 < \mathrm{tol}|`,
-    an exception is raised (this can be disabled with *verify=False*).
+    Mathematically speaking, this function returns `x` such that
+    `|f(x)|^2 \leq \mathrm{tol}` is true within the current working precision.
+    If the computed value does not meet this criterion, an exception is raised.
+    This exception can be disabled with *verify=False*.
+
+    For interval arithmetic (``iv.findroot()``), please note that
+    the returned interval ``x`` is not guaranteed to contain `f(x)=0`!
+    It is only some `x` for which `|f(x)|^2 \leq \mathrm{tol}` certainly holds
+    regardless of numerical error. This may be improved in the future.
 
     **Arguments**
 
@@ -711,7 +720,7 @@ def findroot(ctx, f, x0, solver=Secant, tol=None, verbose=False, verify=True, **
     *verbose*
         print additional information for each iteration if true
     *verify*
-        verify the solution and raise a ValueError if `|f(x) > \mathrm{tol}|`
+        verify the solution and raise a ValueError if `|f(x)|^2 > \mathrm{tol}`
     *solver*
         a generator for *f* and *x0* returning approximative solution and error
     *maxsteps*
@@ -887,7 +896,7 @@ def findroot(ctx, f, x0, solver=Secant, tol=None, verbose=False, verify=True, **
         >>> findroot(lambda x: x**2, (-1, .5), solver='anderson')
         Traceback (most recent call last):
           ...
-        ValueError: Could not find root within given tolerance. (1 > 2.1684e-19)
+        ValueError: Could not find root within given tolerance. (1.0 > 2.16840434497100886801e-19)
         Try another starting point or tweak arguments.
 
     """
@@ -959,18 +968,22 @@ def findroot(ctx, f, x0, solver=Secant, tol=None, verbose=False, verify=True, **
         i = 0
         for x, error in iterations:
             if verbose:
-                print_('x:    ', x)
-                print_('error:', error)
+                print('x:    ', x)
+                print('error:', error)
             i += 1
             if error < tol * max(1, norm(x)) or i >= maxsteps:
                 break
+        else:
+            if not i:
+                raise ValueError('Could not find root using the given solver.\n'
+                                 'Try another starting point or tweak arguments.')
         if not isinstance(x, (list, tuple, ctx.matrix)):
             xl = [x]
         else:
             xl = x
         if verify and norm(f(*xl))**2 > tol: # TODO: better condition?
             raise ValueError('Could not find root within given tolerance. '
-                             '(%g > %g)\n'
+                             '(%s > %s)\n'
                              'Try another starting point or tweak arguments.'
                              % (norm(f(*xl))**2, tol))
         return x

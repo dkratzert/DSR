@@ -80,12 +80,15 @@ class SpecialFunctions(object):
 
 def defun_wrapped(f):
     SpecialFunctions.defined_functions[f.__name__] = f, True
+    return f
 
 def defun(f):
     SpecialFunctions.defined_functions[f.__name__] = f, False
+    return f
 
 def defun_static(f):
     setattr(SpecialFunctions, f.__name__, f)
+    return f
 
 @defun_wrapped
 def cot(ctx, z): return ctx.one / ctx.tan(z)
@@ -106,7 +109,11 @@ def sech(ctx, z): return ctx.one / ctx.cosh(z)
 def csch(ctx, z): return ctx.one / ctx.sinh(z)
 
 @defun_wrapped
-def acot(ctx, z): return ctx.atan(ctx.one / z)
+def acot(ctx, z):
+    if not z:
+        return ctx.pi * 0.5
+    else:
+        return ctx.atan(ctx.one / z)
 
 @defun_wrapped
 def asec(ctx, z): return ctx.acos(ctx.one / z)
@@ -115,7 +122,12 @@ def asec(ctx, z): return ctx.acos(ctx.one / z)
 def acsc(ctx, z): return ctx.asin(ctx.one / z)
 
 @defun_wrapped
-def acoth(ctx, z): return ctx.atanh(ctx.one / z)
+def acoth(ctx, z):
+    if not z:
+        return ctx.pi * 0.5j
+    else:
+        return ctx.atanh(ctx.one / z)
+
 
 @defun_wrapped
 def asech(ctx, z): return ctx.acosh(ctx.one / z)
@@ -169,6 +181,14 @@ def expm1(ctx, x):
         return x + 0.5*x**2
     # TODO: accurately eval the smaller of the real/imag parts
     return ctx.sum_accurately(lambda: iter([ctx.exp(x),-1]),1)
+
+@defun_wrapped
+def log1p(ctx, x):
+    if not x:
+        return ctx.zero
+    if ctx.mag(x) < -ctx.prec:
+        return x - 0.5*x**2
+    return ctx.log(ctx.fadd(1, x, prec=2*ctx.prec))
 
 @defun_wrapped
 def powm1(ctx, x, y):

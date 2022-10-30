@@ -19,8 +19,8 @@ import random
 import re
 import string
 
-from constants import isoatomstr
 import mpmath as mpm
+from constants import isoatomstr
 
 alphabet = string.ascii_uppercase
 
@@ -86,9 +86,9 @@ def check_file_exist(filename):
     >>> check_file_exist('foo.bar')
     File "foo.bar" not found!
     False
-    >>> check_file_exist('../../tests/empty.txt')
+    >>> check_file_exist('./tests/empty.txt')
     'zero'
-    >>> check_file_exist('src/misc.py')
+    >>> check_file_exist('src/dsr/misc.py')
     True
     """
     status = False
@@ -1162,7 +1162,7 @@ def coord_to_shx_atom(coordinates):
     return strlist
 
 
-def ufrac_to_ucart(A, cell, uvals):
+def ufrac_to_ucart(_A, cell, uvals):
     U11, U22, U33, U23, U13, U12 = uvals
     U21 = U12
     U32 = U23
@@ -1179,7 +1179,7 @@ def ufrac_to_ucart(A, cell, uvals):
                     [0, bstar, 0],
                     [0, 0, cstar]])
     # Finally transform Uij values from fractional to cartesian axis system:
-    Ucart = A * N * Uij * N.T * A.T
+    Ucart = _A * N * Uij * N.T * _A.T
     return Ucart
 
 

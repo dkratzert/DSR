@@ -348,7 +348,7 @@ def to_int(s, rnd=None):
     input is inf/nan, an exception is raised."""
     sign, man, exp, bc = s
     if (not man) and exp:
-        raise ValueError("cannot convert %s to int" % man)
+        raise ValueError("cannot convert inf or nan to int")
     if exp >= 0:
         if sign:
             return (-man) << exp
@@ -426,7 +426,32 @@ def from_float(x, prec=53, rnd=round_fast):
     if x == -math_float_inf: return fninf
     return from_man_exp(int(m*(1<<53)), e-53, prec, rnd)
 
-def to_float(s, strict=False):
+def from_npfloat(x, prec=113, rnd=round_fast):
+    """Create a raw mpf from a numpy float, rounding if necessary.
+    If prec >= 113, the result is guaranteed to represent exactly the
+    same number as the input. If prec is not specified, use prec=113."""
+    y = float(x)
+    if x == y: # ldexp overflows for float16
+        return from_float(y, prec, rnd)
+    import numpy as np
+    if np.isfinite(x):
+        m, e = np.frexp(x)
+        return from_man_exp(int(np.ldexp(m, 113)), int(e-113), prec, rnd)
+    if np.isposinf(x): return finf
+    if np.isneginf(x): return fninf
+    return fnan
+
+def from_Decimal(x, prec=None, rnd=round_fast):
+    """Create a raw mpf from a Decimal, rounding if necessary.
+    If prec is not specified, use the equivalent bit precision
+    of the number of significant digits in x."""
+    if x.is_nan(): return fnan
+    if x.is_infinite(): return fninf if x.is_signed() else finf
+    if prec is None:
+        prec = int(len(x.as_tuple()[1])*3.3219280948873626)
+    return from_str(str(x), prec, rnd)
+
+def to_float(s, strict=False, rnd=round_fast):
     """
     Convert a raw mpf to a Python float. The result is exact if the
     bitcount of s is <= 53 and no underflow/overflow occurs.
@@ -434,6 +459,10 @@ def to_float(s, strict=False):
     If the number is too large or too small to represent as a regular
     float, it will be converted to inf or 0.0. Setting strict=True
     forces an OverflowError to be raised instead.
+
+    Warning: with a directed rounding mode, the correct nearest representable
+    floating-point number in the specified direction might not be computed
+    in case of overflow or (gradual) underflow.
     """
     sign, man, exp, bc = s
     if not man:
@@ -441,15 +470,12 @@ def to_float(s, strict=False):
         if s == finf: return math_float_inf
         if s == fninf: return -math_float_inf
         return math_float_inf/math_float_inf
+    if bc > 53:
+        sign, man, exp, bc = normalize1(sign, man, exp, bc, 53, rnd)
     if sign:
         man = -man
     try:
-        if bc < 100:
-            return math.ldexp(man, exp)
-        # Try resizing the mantissa. Overflow may still happen here.
-        n = bc - 53
-        m = man >> n
-        return math.ldexp(m, exp + n)
+        return math.ldexp(man, exp)
     except OverflowError:
         if strict:
             raise
@@ -518,7 +544,7 @@ def mpf_eq(s, t):
 
 def mpf_hash(s):
     # Duplicate the new hash algorithm introduces in Python 3.2.
-    if sys.version >= "3.2":
+    if sys.version_info >= (3, 2):
         ssign, sman, sexp, sbc = s
 
         # Handle special numbers
@@ -1223,13 +1249,16 @@ def to_str(s, dps, strip_zeros=True, min_fixed=None, max_fixed=None,
 
     else:
         # Rounding up kills some instances of "...99999"
-        if len(digits) > dps and digits[dps] in '56789' and \
-            (dps < 500 or digits[dps-4:dps] == '9999'):
-            digits2 = str(int(digits[:dps]) + 1)
-            if len(digits2) > dps:
-                digits2 = digits2[:dps]
+        if len(digits) > dps and digits[dps] in '56789':
+            digits = digits[:dps]
+            i = dps - 1
+            while i >= 0 and digits[i] == '9':
+                i -= 1
+            if i >= 0:
+                digits = digits[:i] + str(int(digits[i]) + 1) + '0' * (dps - i - 1)
+            else:
+                digits = '1' + '0' * (dps - 1)
                 exponent += 1
-            digits = digits2
         else:
             digits = digits[:dps]
 
@@ -1260,10 +1289,10 @@ def to_str(s, dps, strip_zeros=True, min_fixed=None, max_fixed=None,
 
 def str_to_man_exp(x, base=10):
     """Helper function for from_str."""
+    x = x.lower().rstrip('l')
     # Verify that the input is a valid float literal
     float(x)
     # Split into mantissa, exponent
-    x = x.lower()
     parts = x.split('e')
     if len(parts) == 1:
         exp = 0
@@ -1290,12 +1319,13 @@ def from_str(x, prec, rnd=round_fast):
 
     TODO: the rounding does not work properly for large exponents.
     """
-    x = x.strip()
+    x = x.lower().strip()
     if x in special_str:
         return special_str[x]
 
     if '/' in x:
         p, q = x.split('/')
+        p, q = p.rstrip('l'), q.rstrip('l')
         return from_rational(int(p), int(q), prec, rnd)
 
     man, exp = str_to_man_exp(x, base=10)

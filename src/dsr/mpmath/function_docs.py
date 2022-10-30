@@ -15,11 +15,13 @@ Mpmath can evaluate `\pi` to arbitrary precision::
     >>> +pi
     3.1415926535897932384626433832795028841971693993751
 
-This shows digits 99991-100000 of `\pi`::
+This shows digits 99991-100000 of `\pi` (the last digit is actually
+a 4 when the decimal expansion is truncated, but here the nearest
+rounding is used)::
 
     >>> mp.dps = 100000
     >>> str(pi)[-10:]
-    '5549362464'
+    '5549362465'
 
 **Possible issues**
 
@@ -74,11 +76,13 @@ Mpmath can be evaluate `e` to arbitrary precision::
     >>> +e
     2.7182818284590452353602874713526624977572470937
 
-This shows digits 99991-100000 of `e`::
+This shows digits 99991-100000 of `e` (the last digit is actually
+a 5 when the decimal expansion is truncated, but here the nearest
+rounding is used)::
 
     >>> mp.dps = 100000
     >>> str(e)[-10:]
-    '2100427165'
+    '2100427166'
 
 **Possible issues**
 
@@ -137,11 +141,13 @@ although this is less efficient::
     >>> limit(lambda n: harmonic(n)-log(n), inf)
     0.57721566490153286060651209008240243104215933593992
 
-This shows digits 9991-10000 of `\gamma`::
+This shows digits 9991-10000 of `\gamma` (the last digit is actually
+a 5 when the decimal expansion is truncated, but here the nearest
+rounding is used)::
 
     >>> mp.dps = 10000
     >>> str(euler)[-10:]
-    '4679858165'
+    '4679858166'
 
 Integrals, series, and representations for `\gamma` in terms of
 special functions include the following (there are many others)::
@@ -191,11 +197,13 @@ this is significantly less efficient::
     >>> nsum(lambda k: (-1)**k/(2*k+1)**2, [0, inf])
     0.91596559417721901505460351493238411077414937428167
 
-This shows digits 9991-10000 of `K`::
+This shows digits 9991-10000 of `K` (the last digit is actually
+a 3 when the decimal expansion is truncated, but here the nearest
+rounding is used)::
 
     >>> mp.dps = 10000
     >>> str(catalan)[-10:]
-    '9537871503'
+    '9537871504'
 
 Catalan's constant has numerous integral representations::
 
@@ -407,7 +415,7 @@ Square root evaluation is fast at huge precision::
     >>> mp.dps = 50000
     >>> a = sqrt(3)
     >>> str(a)[-10:]
-    '9329332814'
+    '9329332815'
 
 :func:`mpmath.iv.sqrt` supports interval arguments::
 
@@ -1267,8 +1275,8 @@ into mpmath numbers::
 """
 
 re = r"""
-Returns the real part of `x`, `\Re(x)`. Unlike ``x.real``,
-:func:`~mpmath.re` converts `x` to a mpmath number::
+Returns the real part of `x`, `\Re(x)`. :func:`~mpmath.re`
+converts a non-mpmath number to an mpmath number::
 
     >>> from mpmath import *
     >>> mp.dps = 15; mp.pretty = False
@@ -1279,8 +1287,8 @@ Returns the real part of `x`, `\Re(x)`. Unlike ``x.real``,
 """
 
 im = r"""
-Returns the imaginary part of `x`, `\Im(x)`. Unlike ``x.imag``,
-:func:`~mpmath.im` converts `x` to a mpmath number::
+Returns the imaginary part of `x`, `\Im(x)`. :func:`~mpmath.im`
+converts a non-mpmath number to an mpmath number::
 
     >>> from mpmath import *
     >>> mp.dps = 15; mp.pretty = False
@@ -1355,6 +1363,22 @@ Evaluation works for extremely tiny values::
     1.0e-10000000
 
 """
+
+log1p = r"""
+Computes `\log(1+x)`, accurately for small `x`.
+
+    >>> from mpmath import *
+    >>> mp.dps = 15; mp.pretty = True
+    >>> log(1+1e-10); print(mp.log1p(1e-10))
+    1.00000008269037e-10
+    9.9999999995e-11
+    >>> mp.log1p(1e-100j)
+    (5.0e-201 + 1.0e-100j)
+    >>> mp.log1p(0)
+    0.0
+
+"""
+
 
 powm1 = r"""
 Computes `x^y - 1`, accurately when `x^y` is very close to 1.
@@ -2849,6 +2873,23 @@ Please note that, as currently implemented, evaluation of `\,_pF_{p-1}`
 with `p \ge 3` may be slow or inaccurate when `|z-1|` is small,
 for some parameter values.
 
+Evaluation may be aborted if convergence appears to be too slow.
+The optional ``maxterms`` (limiting the number of series terms) and ``maxprec``
+(limiting the internal precision) keyword arguments can be used
+to control evaluation::
+
+    >>> hyper([1,2,3], [4,5,6], 10000)
+    Traceback (most recent call last):
+      ...
+    NoConvergence: Hypergeometric series converges too slowly. Try increasing maxterms.
+    >>> hyper([1,2,3], [4,5,6], 10000, maxterms=10**6)
+    7.622806053177969474396918e+4310
+
+Additional options include ``force_series`` (which forces direct use of
+a hypergeometric series even if another evaluation method might work better)
+and ``asymp_tol`` which controls the target tolerance for using
+asymptotic series.
+
 When `p > q+1`, ``hyper`` computes the (iterated) Borel sum of the divergent
 series. For `\,_2F_0` the Borel sum has an analytic solution and can be
 computed efficiently (see :func:`~mpmath.hyp2f0`). For higher degrees, the functions
@@ -2885,6 +2926,34 @@ a value with full accuracy::
 
 Note that with the positive `z` value, there is a complex part in the
 correct result, which falls below the tolerance of the asymptotic series.
+
+By default, a parameter that appears in both ``a_s`` and ``b_s`` will be removed
+unless it is a nonpositive integer. This generally speeds up evaluation
+by producing a hypergeometric function of lower order.
+This optimization can be disabled by passing ``eliminate=False``.
+
+    >>> hyper([1,2,3], [4,5,3], 10000)
+    1.268943190440206905892212e+4321
+    >>> hyper([1,2,3], [4,5,3], 10000, eliminate=False)
+    Traceback (most recent call last):
+      ...
+    NoConvergence: Hypergeometric series converges too slowly. Try increasing maxterms.
+    >>> hyper([1,2,3], [4,5,3], 10000, eliminate=False, maxterms=10**6)
+    1.268943190440206905892212e+4321
+
+If a nonpositive integer `-n` appears in both ``a_s`` and ``b_s``, this parameter
+cannot be unambiguously removed since it creates a term 0 / 0.
+In this case the hypergeometric series is understood to terminate before
+the division by zero occurs. This convention is consistent with Mathematica.
+An alternative convention of eliminating the parameters can be toggled
+with ``eliminate_all=True``:
+
+    >>> hyper([2,-1], [-1], 3)
+    7.0
+    >>> hyper([2,-1], [-1], 3, eliminate_all=True)
+    0.25
+    >>> hyper([2], [], 3)
+    0.25
 
 """
 
@@ -5548,7 +5617,7 @@ Verifying the associated Legendre differential equation::
 legenq = r"""
 Calculates the (associated) Legendre function of the second kind of
 degree *n* and order *m*, `Q_n^m(z)`. Taking `m = 0` gives the ordinary
-Legendre function of the second kind, `Q_n(z)`. The parameters may
+Legendre function of the second kind, `Q_n(z)`. The parameters may be
 complex numbers.
 
 The Legendre functions of the second kind give a second set of
@@ -6776,7 +6845,7 @@ Evaluation is supported for real and complex arguments::
     -0.7363054628673177346778998
     >>> siegelz(3+4j)
     (-0.1852895764366314976003936 - 0.2773099198055652246992479j)
-    
+
 The first four derivatives are supported, using the
 optional *derivative* keyword argument::
 
@@ -6784,7 +6853,7 @@ optional *derivative* keyword argument::
     56.89689348495089294249178
     >>> diff(siegelz, 1234567, n=3)
     56.89689348495089294249178
-    
+
 
 The Z-function has a Maclaurin expansion::
 
@@ -7218,20 +7287,17 @@ for `z` within the unit circle:
     >>> nsum(lambda k: 0.25**k / k**(3+4j), [1,inf])
     (0.24258605789446 - 0.00222938275488344j)
 
-It is also currently supported outside of the unit circle for `z`
-not too large in magnitude::
+It is also supported outside of the unit circle::
 
     >>> polylog(1+j, 20+40j)
     (-7.1421172179728 - 3.92726697721369j)
     >>> polylog(1+j, 200+400j)
-    Traceback (most recent call last):
-      ...
-    NotImplementedError: polylog for arbitrary s and z
+    (-5.41934747194626 - 9.94037752563927j)
 
 **References**
 
 1. Richard Crandall, "Note on fast polylogarithm computation"
-   http://people.reed.edu/~crandall/papers/Polylog.pdf
+   http://www.reed.edu/physics/faculty/crandall/papers/Polylog.pdf
 2. http://en.wikipedia.org/wiki/Polylogarithm
 3. http://mathworld.wolfram.com/Polylogarithm.html
 
@@ -9332,14 +9398,14 @@ The sn-function is doubly periodic in the complex plane with periods
     >>> chop(sn(2+2*j*ellipk(1-0.25), 0.25))
     0.9628981775982774425751399
 
-The cn-function is doubly periodic with periods `4 K(m)` and `4 i K(1-m)`::
+The cn-function is doubly periodic with periods `4 K(m)` and `2 K(m) + 2 i K(1-m)`::
 
     >>> cn = ellipfun('cn')
     >>> cn(2, 0.25)
     -0.2698649654510865792581416
     >>> cn(2+4*ellipk(0.25), 0.25)
     -0.2698649654510865792581416
-    >>> chop(cn(2+4*j*ellipk(1-0.25), 0.25))
+    >>> chop(cn(2+2*ellipk(0.25)+2*j*ellipk(1-0.25), 0.25))
     -0.2698649654510865792581416
 
 The dn-function is doubly periodic with periods `2 K(m)` and `4 i K(1-m)`::
@@ -9648,7 +9714,7 @@ are permitted to be complex numbers.
 
 .. note ::
 
-    :func:`~mpmath.spherharm` returns a complex number, even the value is
+    :func:`~mpmath.spherharm` returns a complex number, even if the value is
     purely real.
 
 **Plots**
@@ -9704,8 +9770,8 @@ on the unit sphere::
     >>> Y1 = lambda t,p: fp.spherharm(l1,m1,t,p)
     >>> Y2 = lambda t,p: fp.conj(fp.spherharm(l2,m2,t,p))
     >>> l1 = l2 = 3; m1 = m2 = 2
-    >>> print(fp.quad(lambda t,p: Y1(t,p)*Y2(t,p)*dS(t,p), *sphere))
-    (1+0j)
+    >>> fp.chop(fp.quad(lambda t,p: Y1(t,p)*Y2(t,p)*dS(t,p), *sphere))
+    1.0000000000000007
     >>> m2 = 1    # m1 != m2
     >>> print(fp.chop(fp.quad(lambda t,p: Y1(t,p)*Y2(t,p)*dS(t,p), *sphere)))
     0.0
@@ -9933,7 +9999,7 @@ of each other::
     ...     for k in range(5):
     ...         A[n,k] = stirling1(n,k)
     ...         B[n,k] = stirling2(n,k)
-    ... 
+    ...
     >>> A * B
     [1.0  0.0  0.0  0.0  0.0]
     [0.0  1.0  0.0  0.0  0.0]
@@ -9945,7 +10011,7 @@ Pass ``exact=True`` to obtain exact values of Stirling numbers as integers::
 
     >>> stirling1(42, 5)
     -2.864498971768501633736628e+50
-    >>> print stirling1(42, 5, exact=True)
+    >>> print(stirling1(42, 5, exact=True))
     -286449897176850163373662803014001546235808317440000
 
 """
@@ -9979,7 +10045,7 @@ Pass ``exact=True`` to obtain exact values of Stirling numbers as integers::
 
     >>> stirling2(52, 10)
     2.641822121003543906807485e+45
-    >>> print stirling2(52, 10, exact=True)
+    >>> print(stirling2(52, 10, exact=True))
     2641822121003543906807485307053638921722527655
 
 

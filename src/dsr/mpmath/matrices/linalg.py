@@ -37,10 +37,9 @@ inaccuracy of the internal floating point arithmetic. Though, it's even smaller
 than the current machine epsilon, which basically means you can trust the
 result.
 
-If you need more speed, use NumPy. Or choose a faster data type using the
-keyword ``force_type``::
+If you need more speed, use NumPy, or ``fp.lu_solve`` for a floating-point computation.
 
-    >>> lu_solve(A, b, force_type=float)
+    >>> fp.lu_solve(A, b)
     matrix(
     [['30.0'],
      ['-20.0']])
@@ -85,9 +84,9 @@ and equation solving with rigorous error bounds::
 
     >>> a = iv.matrix([['0.1','0.3','1.0'],
     ...             ['7.1','5.5','4.8'],
-    ...             ['3.2','4.4','5.6']], force_type=mpi)
+    ...             ['3.2','4.4','5.6']])
     >>>
-    >>> b = iv.matrix(['4','0.6','0.5'], force_type=mpi)
+    >>> b = iv.matrix(['4','0.6','0.5'])
     >>> c = iv.lu_solve(a, b)
     >>> print(c)
     [   [5.2582327113062568605927528666, 5.25823271130625686059275702219]]
@@ -339,14 +338,14 @@ class LinearAlgebraMethods(object):
         # calculate Householder matrix
         p = []
         for j in xrange(0, n - 1):
-            s = ctx.fsum((A[i,j])**2 for i in xrange(j, m))
+            s = ctx.fsum(abs(A[i,j])**2 for i in xrange(j, m))
             if not abs(s) > ctx.eps:
                 raise ValueError('matrix is numerically singular')
-            p.append(-ctx.sign(A[j,j]) * ctx.sqrt(s))
+            p.append(-ctx.sign(ctx.re(A[j,j])) * ctx.sqrt(s))
             kappa = ctx.one / (s - p[j] * A[j,j])
             A[j,j] -= p[j]
             for k in xrange(j+1, n):
-                y = ctx.fsum(A[i,j] * A[i,k] for i in xrange(j, m)) * kappa
+                y = ctx.fsum(ctx.conj(A[i,j]) * A[i,k] for i in xrange(j, m)) * kappa
                 for i in xrange(j, m):
                     A[i,k] -= A[i,j] * y
         # solve Rx = c1
@@ -639,7 +638,7 @@ class LinearAlgebraMethods(object):
             [0.0  1.0]
 
         """
-        
+
         # check values before continuing
         assert isinstance(A, ctx.matrix)
         m = A.rows
@@ -654,22 +653,22 @@ class LinearAlgebraMethods(object):
         # temporarily increase the precision and initialize
         with ctx.extradps(edps):
             tau = ctx.matrix(n,1)
-            A = A.copy() 
+            A = A.copy()
 
             # ---------------
-            # FACTOR MATRIX A 
+            # FACTOR MATRIX A
             # ---------------
             if cmplx:
                 one = ctx.mpc('1.0', '0.0')
                 zero = ctx.mpc('0.0', '0.0')
                 rzero = ctx.mpf('0.0')
-            
-                # main loop to factor A (complex) 
+
+                # main loop to factor A (complex)
                 for j in xrange(0, n):
                     alpha = A[j,j]
                     alphr = ctx.re(alpha)
                     alphi = ctx.im(alpha)
-                
+
                     if (m-j) >= 2:
                         xnorm = ctx.fsum( A[i,j]*ctx.conj(A[i,j]) for i in xrange(j+1, m) )
                         xnorm = ctx.re( ctx.sqrt(xnorm) )
@@ -688,7 +687,7 @@ class LinearAlgebraMethods(object):
                     tau[j] = ctx.mpc( (beta - alphr) / beta, -alphi / beta )
                     t = -ctx.conj(tau[j])
                     za = one / (alpha - beta)
-                
+
                     for i in xrange(j+1, m):
                         A[i,j] *= za
 
@@ -724,29 +723,29 @@ class LinearAlgebraMethods(object):
                         beta = ctx.sqrt(alpha**2 + xnorm**2)
                     else:
                         beta = -ctx.sqrt(alpha**2 + xnorm**2)
-                
+
                     tau[j] = (beta - alpha) / beta
                     t = -tau[j]
                     da = one / (alpha - beta)
-                
+
                     for i in xrange(j+1, m):
                         A[i,j] *= da
-                    
+
                     A[j,j] = one
                     for k in xrange(j+1, n):
                         y = ctx.fsum( A[i,j] * A[i,k] for i in xrange(j, m) )
                         temp = t * y
                         for i in xrange(j,m):
-                            A[i,k] += A[i,j] * temp    
-                        
+                            A[i,k] += A[i,j] * temp
+
                     A[j,j] = beta
 
             # return factorization in same internal format as LAPACK
             if (mode == 'raw') or (mode == 'RAW'):
                 return A, tau
-            
+
             # ----------------------------------
-            # FORM Q USING BACKWARD ACCUMULATION 
+            # FORM Q USING BACKWARD ACCUMULATION
             # ----------------------------------
 
             # form R before the values are overwritten
@@ -766,7 +765,7 @@ class LinearAlgebraMethods(object):
                 A[j,j] = one
                 for i in xrange(0, j):
                     A[i,j] = zero
-                
+
             # main loop to form Q
             for j in xrange(n-1, -1, -1):
                 t = -tau[j]
@@ -774,18 +773,18 @@ class LinearAlgebraMethods(object):
 
                 for k in xrange(j+1, p):
                     if cmplx:
-                        y = ctx.fsum(A[i,j] * ctx.conj(A[i,k]) for i in xrange(j+1, m)) 
+                        y = ctx.fsum(A[i,j] * ctx.conj(A[i,k]) for i in xrange(j+1, m))
                         temp = t * ctx.conj(y)
                     else:
                         y = ctx.fsum(A[i,j] * A[i,k] for i in xrange(j+1, m))
-                        temp = t * y               
+                        temp = t * y
                     A[j,k] = temp
                     for i in xrange(j+1, m):
                         A[i,k] += A[i,j] * temp
-                        
+
                 for i in xrange(j+1, m):
                     A[i, j] *= t
-               
+
             return A, R[0:p,0:n]
 
         # ------------------

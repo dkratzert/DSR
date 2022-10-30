@@ -253,7 +253,7 @@ def shanks(ctx, seq, table=None, randomized=False):
                 b = row[j-1] - table[i-1][j-1]
             if not b:
                 if randomized:
-                    b = rnd.getrandbits(10)*eps
+                    b = (1 + rnd.getrandbits(10))*eps
                 elif i & 1:
                     return table[:-1]
                 else:
@@ -717,9 +717,9 @@ class levin_class:
         return value,err
 
 def levin(ctx, method = "levin", variant = "u"):
-  L = levin_class(method = method, variant = variant)
-  L.ctx = ctx
-  return L
+    L = levin_class(method = method, variant = variant)
+    L.ctx = ctx
+    return L
 
 levin.__doc__ = levin_class.__doc__
 defun(levin)
@@ -727,7 +727,7 @@ defun(levin)
 
 class cohen_alt_class:
     # cohen_alt: Copyright 2013 Timo Hartmann (thartmann15 at gmail.com)
-    """
+    r"""
     This interface implements the convergence acceleration of alternating series
     as described in H. Cohen, F.R. Villegas, D. Zagier - "Convergence Acceleration
     of Alternating Series". This series transformation works only well if the
@@ -1217,7 +1217,7 @@ def adaptive_extrapolation(ctx, update, emfun, kwargs):
                 if verbose:
                     print("%s error: %s" % (L.name, ctx.nstr(lerror)))
                 if lerror <= tol:
-                   return est
+                    return est
                 if lerror < error:
                     error = lerror
                     best = est

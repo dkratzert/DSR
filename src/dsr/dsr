@@ -6,7 +6,8 @@ if [ ! $DSR_DIR ]; then
 fi
 
 PYTHON_EXE=$(which python3)
-
+# shellcheck disable=SC2034
+PYTHONPATH='.'
 
 # finally start dsr
 if [ $# -eq 0 ]; then

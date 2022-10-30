@@ -45,7 +45,7 @@ def polyval(ctx, coeffs, x, derivative=False):
 
 @defun
 def polyroots(ctx, coeffs, maxsteps=50, cleanup=True, extraprec=10,
-        error=False):
+        error=False, roots_init=None):
     """
     Computes all roots (real or complex) of a given polynomial.
 
@@ -100,24 +100,25 @@ def polyroots(ctx, coeffs, maxsteps=50, cleanup=True, extraprec=10,
     **Precision and conditioning**
 
     The roots are computed to the current working precision accuracy. If this
-    accuracy cannot be achieved in `maxsteps` steps, then a `NoConvergence`
-    exception is raised. The algorithm internally is using the current working
-    precision extended by `extraprec`. If `NoConvergence` was raised, that is
-    caused either by not having enough extra precision to achieve convergence
-    (in which case increasing `extraprec` should fix the problem) or too low
-    `maxsteps` (in which case increasing `maxsteps` should fix the problem), or
-    a combination of both.
+    accuracy cannot be achieved in ``maxsteps`` steps, then a
+    ``NoConvergence`` exception is raised. The algorithm internally is using
+    the current working precision extended by ``extraprec``. If
+    ``NoConvergence`` was raised, that is caused either by not having enough
+    extra precision to achieve convergence (in which case increasing
+    ``extraprec`` should fix the problem) or too low ``maxsteps`` (in which
+    case increasing ``maxsteps`` should fix the problem), or a combination of
+    both.
 
-    The user should always do a convergence study with regards to `extraprec`
-    to ensure accurate results. It is possible to get convergence to a wrong
-    answer with too low `extraprec`.
+    The user should always do a convergence study with regards to
+    ``extraprec`` to ensure accurate results. It is possible to get
+    convergence to a wrong answer with too low ``extraprec``.
 
     Provided there are no repeated roots, :func:`~mpmath.polyroots` can
     typically compute all roots of an arbitrary polynomial to high precision::
 
         >>> mp.dps = 60
         >>> for r in polyroots([1, 0, -10, 0, 1]):
-        ...     print r
+        ...     print(r)
         ...
         -3.14626436994197234232913506571557044551247712918732870123249
         -0.317837245195782244725757617296174288373133378433432554879127
@@ -156,6 +157,7 @@ def polyroots(ctx, coeffs, maxsteps=50, cleanup=True, extraprec=10,
         # Constant polynomial with no roots
         return []
 
+    orig = ctx.prec
     tol = +ctx.eps
     with ctx.extraprec(extraprec):
         deg = len(coeffs) - 1
@@ -166,7 +168,14 @@ def polyroots(ctx, coeffs, maxsteps=50, cleanup=True, extraprec=10,
         else:
             coeffs = [c/lead for c in coeffs]
         f = lambda x: ctx.polyval(coeffs, x)
-        roots = [ctx.mpc((0.4+0.9j)**n) for n in xrange(deg)]
+        if roots_init is None:
+            roots = [ctx.mpc((0.4+0.9j)**n) for n in xrange(deg)]
+        else:
+            roots = [None]*deg;
+            deg_init = min(deg, len(roots_init))
+            roots[:deg_init] = list(roots_init[:deg_init])
+            roots[deg_init:] = [ctx.mpc((0.4+0.9j)**n) for n
+                                in xrange(deg_init,deg)]
         err = [ctx.one for n in xrange(deg)]
         # Durand-Kerner iteration until convergence
         for step in xrange(maxsteps):

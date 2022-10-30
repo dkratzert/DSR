@@ -203,10 +203,11 @@ def hyper(ctx, a_s, b_s, z, **kwargs):
     b_s = [ctx._convert_param(b) for b in b_s]
     # Reduce degree by eliminating common parameters
     if kwargs.get('eliminate', True):
+        elim_nonpositive = kwargs.get('eliminate_all', False)
         i = 0
         while i < q and a_s:
             b = b_s[i]
-            if b in a_s:
+            if b in a_s and (elim_nonpositive or not ctx.isnpint(b[0])):
                 a_s.remove(b)
                 b_s.remove(b)
                 p -= 1
@@ -280,24 +281,22 @@ def _hyp0f1(ctx, b_s, z, **kwargs):
         try:
             # http://functions.wolfram.com/HypergeometricFunctions/
             # Hypergeometric0F1/06/02/03/0004/
-            # We don't need hypercomb because the only possible singularity
-            # occurs when the value is undefined. However, we should perhaps
-            # still check for cancellation...
             # TODO: handle the all-real case more efficiently!
             # TODO: figure out how much precision is needed (exponential growth)
             orig = ctx.prec
             try:
                 ctx.prec += 12 + magz//2
-                w = ctx.sqrt(-z)
-                jw = ctx.j*w
-                u = 1/(4*jw)
-                c = ctx.mpq_1_2 - b
-                E = ctx.exp(2*jw)
-                H1 = (-jw)**c/E*ctx.hyp2f0(b-ctx.mpq_1_2, ctx.mpq_3_2-b, -u,
-                    force_series=True)
-                H2 = (jw)**c*E*ctx.hyp2f0(b-ctx.mpq_1_2, ctx.mpq_3_2-b, u,
-                    force_series=True)
-                v = ctx.gamma(b)/(2*ctx.sqrt(ctx.pi))*(H1 + H2)
+                def h():
+                    w = ctx.sqrt(-z)
+                    jw = ctx.j*w
+                    u = 1/(4*jw)
+                    c = ctx.mpq_1_2 - b
+                    E = ctx.exp(2*jw)
+                    T1 = ([-jw,E], [c,-1], [], [], [b-ctx.mpq_1_2, ctx.mpq_3_2-b], [], -u)
+                    T2 = ([jw,E], [c,1], [], [], [b-ctx.mpq_1_2, ctx.mpq_3_2-b], [], u)
+                    return T1, T2
+                v = ctx.hypercomb(h, [], force_series=True)
+                v = ctx.gamma(b)/(2*ctx.sqrt(ctx.pi))*v
             finally:
                 ctx.prec = orig
             if ctx._is_real_type(b) and ctx._is_real_type(z):
@@ -826,9 +825,9 @@ def _hyp1f2(ctx, a_s, b_s, z, **kwargs):
     # Asymptotic series is in terms of 3F0
     can_use_asymptotic = (not kwargs.get('force_series')) and \
         (ctx.mag(absz) > 19) and \
-        (ctx.sqrt(absz) > 1.5*orig) #and \
-        #ctx._hyp_check_convergence([a1, a1-b1+1, a1-b2+1], [],
-        #    1/absz, orig+40+asymp_extraprec)
+        (ctx.sqrt(absz) > 1.5*orig)  # and \
+    #   ctx._hyp_check_convergence([a1, a1-b1+1, a1-b2+1], [],
+    #                              1/absz, orig+40+asymp_extraprec)
 
     # TODO: much of the following could be shared with 2F3 instead of
     # copypasted
