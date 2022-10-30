@@ -28,8 +28,8 @@ from misc import cart_to_frac, chunks, frac_to_cart, touch, wrap_headlines, matr
 from options import OptionsParser
 from src.refine import ShelxlRefine
 from src.resfile import ResList, ResListEdit, filename_wo_ending
-from resi import Resi, remove_resi
-from restraints import Restraints
+from src.resi import Resi, remove_resi
+from src.restraints import Restraints
 from src.terminalsize import get_terminal_size
 
 VERSION = '236'

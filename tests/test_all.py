@@ -7,8 +7,7 @@ import os
 import sys
 import unittest
 
-from src import dbfile, dsrparse, atomhandling, sql_export, elements, export
-import restraints
+from src import dbfile, dsrparse, atomhandling, sql_export, elements, export, restraints
 from src.fit import quatfit
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
@@ -24,8 +23,8 @@ from dsr import VERSION
 from src.dsrparse import DSRParser
 from src.export import Export
 from src.resfile import ResList, ResListEdit
-from resi import Resi
-from restraints import format_atom_names
+from src.resi import Resi
+from src.restraints import format_atom_names
 
 print(sys.version)
 

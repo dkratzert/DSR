@@ -25,7 +25,7 @@ from misc import atomic_distance, frac_to_cart, cart_to_frac, \
     calc_ellipsoid_axes
 from src.refine import ShelxlRefine
 from src.resfile import ResList
-from restraints import ListFile
+from src.restraints import ListFile
 
 # Y-Z-F1/F2/F3
 
