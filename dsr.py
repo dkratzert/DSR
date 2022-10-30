@@ -17,7 +17,7 @@ from datetime import datetime
 
 import os
 
-from afix import remove_duplicate_restraints, write_dbhead_to_file
+from src.afix import remove_duplicate_restraints, write_dbhead_to_file
 from src.atomhandling import Elem_2_Sfac, rename_restraints_atoms
 from src.constants import isoatomstr, sep_line, width
 from src.dbfile import ImportGRADE, print_search_results
