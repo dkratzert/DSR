@@ -112,7 +112,7 @@ class DSR(object):
                 print('{};;{};;{};;{}'.format(i[0], i[3], i[1], i[2]))
             sys.exit()
         try:
-            from export import Export
+            from src.export import Export
             self.export = Export(gdb=self.gdb, invert=self.invert)
         except Exception as e:
             print("*** Unable to export informations from DSR ***")

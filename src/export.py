@@ -98,7 +98,7 @@ class Export():
     def export_resfile(self, fragname):
         """
         exports a .res file from a database entry to be viewed in a GUI
-        #>>> db = ParseDB('../dsr_db.txt')
+        #>>> db = ParseDB('./dsr_db.txt')
         #>>> ex = Export(db)
         #>>> ex.export_resfile('water') # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
         ['TITL water\\n', 'REM This file was exported by DSR version ...\\n',
