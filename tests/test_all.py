@@ -762,8 +762,7 @@ class ExportTest(unittest.TestCase):
         """
         gdb = dbfile.ParseDB('./dsr_db.txt')
         export = Export(gdb)
-        #        with self.assertRaises(SystemExit):
-        #self.assertTrue(export.export_to_clip('benzene'))
+        self.assertTrue(export.export_to_clip('benzene'))
 
 
 class ResListEditTest(unittest.TestCase):

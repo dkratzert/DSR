@@ -207,7 +207,7 @@ class Export():
         C7   1     2.3940  -0.0040   1.3940
         FEND
         """
-        import pyperclip
+        from src import pyperclip
         fragname = fragname.lower()
         clip_text = []
         cell = self._gdb.get_cell(fragname)
