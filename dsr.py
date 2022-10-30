@@ -25,7 +25,7 @@ from src.dbfile import ParseDB, search_fragment_name
 from src.dsrparse import DSRParser
 from src.fit.quatfit import fit_fragment, centroid
 from misc import cart_to_frac, chunks, frac_to_cart, touch, wrap_headlines, matrix_plus_vect, subtract_vect
-from options import OptionsParser
+from src.options import OptionsParser
 from src.refine import ShelxlRefine
 from src.resfile import ResList, ResListEdit, filename_wo_ending
 from src.resi import Resi, remove_resi
