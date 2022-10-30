@@ -96,7 +96,7 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     >>> from src.resfile import ResList
     >>> from src.resfile import ResListEdit
     >>> from src.dsrparse import DSRParser
-    >>> from resi import Resi
+    >>> from src.resi import Resi
     >>> res_file = 'tests/p21c.res'
     >>> rl = ResList(res_file)
     >>> reslist = rl.get_res_list()
