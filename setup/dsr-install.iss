@@ -90,7 +90,7 @@ Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environm
 [UninstallDelete]
 Type: files; Name: "{app}\*.pyc"
 Type: files; Name: "{app}\dsr"
-Type: filesandordirs; Name: "{app}\python27"
+Type: filesandordirs; Name: "{app}\python311"
 Type: filesandordirs; Name: "{app}\networkx"
 Type: filesandordirs; Name: "{app}\mpmath"
 Type: filesandordirs; Name: "{app}\example"
