@@ -43,8 +43,7 @@ AppSupportPhone=+49 761 203 6156
 VersionInfoProductName=DSR - Disordered Structure Refinement
 AlwaysShowComponentsList=False
 ShowComponentSizes=False
-SignTool=signtool
-SignTool=signtool2
+;SignTool=signtool
 
 [Run]
 ;Filename: "msiexec.exe"; Parameters: "TARGETDIR=""{app}\python27"" ADDLOCAL=Extensions,SharedCRT /i ""{app}\python-2.7.5.msi"""; Description: "Install Python"
@@ -74,7 +73,7 @@ Source: "..\example\p21c_final.res"; DestDir: "{app}\example"; Flags: ignorevers
 Source: "..\example\p21n_cf3.hkl"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\example\p21n_cf3.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: ".\Output\changelog.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\manuals\DSR-manual.pdf"; DestDir: "{app}\manuals\DSR-manual.pdf"; Flags: ignoreversion
+Source: "..\manuals\DSR-manual.pdf"; DestDir: "{app}\manuals\"; Flags: ignoreversion
 Source: "..\src\dsr\*"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
 
 [Icons]
