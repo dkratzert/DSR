@@ -75,7 +75,7 @@ class OptionsParser():
         self.parser.add_argument("-x", dest="search_extern", nargs='+',
                                  help=SUPPRESS, default=False)
         self.parser.add_argument("-ah", dest="head_for_gui",
-                                 help=SUPPRESS, default=False)
+                                 help=SUPPRESS, default='')
         # with nargs='+' it accepts space in path and returns a list:
         self.parser.add_argument("-shx", dest="shelxl_ex", nargs='+',
                                  help=SUPPRESS, default=False)
@@ -153,7 +153,7 @@ class OptionsParser():
     def head_for_gui(self):
         frag = False
         if self._options.head_for_gui:
-            frag = self._options.head_for_gui.lower()
+            frag = self._options.head_for_gui.lower().strip()
         return frag
 
     @property
@@ -162,7 +162,7 @@ class OptionsParser():
 
     @property
     def target_coords(self):
-        target = self._options.target
+        target = self._options.target.strip()
         if target and len(target) % 3 > 0:
             print("*** Number of target coordinates have to be triplets. [x y z x y z ...] ***")
             sys.exit()
