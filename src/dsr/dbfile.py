@@ -16,6 +16,7 @@ import re
 import sys
 import tarfile
 from copy import deepcopy
+from typing import List
 
 from atomhandling import get_atomtypes
 from atoms import Element
@@ -806,7 +807,7 @@ class ParseDB(object):
             sys.exit()
         return coords
 
-    def get_restraints(self, fragment: str) -> list[str]:
+    def get_restraints(self, fragment: str) -> List[str]:
         """
         returns the header of the dbentry of fragment.
         This header does not include comments, only the restraints.
