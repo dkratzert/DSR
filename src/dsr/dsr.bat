@@ -22,11 +22,11 @@ IF NOT DEFINED DSR_DIR (GOTO setdsrdir) ELSE (GOTO arguments)
     goto main
 
 :main
-    "%DSR_DIR%"\python3\python.exe "%DSR_DIR%"\dsr.py %args%
+    "%DSR_DIR%"\python311\python.exe "%DSR_DIR%"\dsr.py %args%
     GOTO end
 
 :help
-    "%DSR_DIR%"\python3\python.exe "%DSR_DIR%"\dsr.py -h
+    "%DSR_DIR%"\python311\python.exe "%DSR_DIR%"\dsr.py -h
     GOTO end
 
 :end
