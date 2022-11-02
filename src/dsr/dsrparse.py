@@ -27,7 +27,7 @@ class DSRParser(object):
         :param reslist: list of strings of .res file
         """
         self.reslist = reslist
-        self._dsr_regex = '^rem\s{1,5}DSR\s{1,5}.*'
+        self._dsr_regex = r'^rem\s{1,5}DSR\s{1,5}.*'
         self.dsr_line_number = 0  # Will be set to real value by find_dsr_command()
         self.multiline = False
         self.dsr_command_list = self.find_dsr_command()
@@ -61,7 +61,7 @@ class DSRParser(object):
         if len(indexnum) > 1:
             print('*** Only one DSR command at once is allowed! ***')
             sys.exit(-1)
-        dsr_str = str(self.reslist[line_number])#.encode('ascii')
+        dsr_str = str(self.reslist[line_number])  # .encode('ascii')
         if misc.multiline_test(dsr_str):
             self.multiline = True
             # in case of a multiline command, strip the '=' and the newline
@@ -293,15 +293,15 @@ class DSRParser(object):
             print(badocc_message)
             sys.exit()
         dsr_dict = {
-            'command': str(command),
-            'fragment': str(fragment),
-            'source': source,
-            'target': target,
-            'part': part,
-            'dfix': dfix,
+            'command'  : str(command),
+            'fragment' : str(fragment),
+            'source'   : source,
+            'target'   : target,
+            'part'     : part,
+            'dfix'     : dfix,
             'occupancy': occupancy,
-            'resi': residue,
-            'split': splitatom
+            'resi'     : residue,
+            'split'    : splitatom
         }
         return dsr_dict
 
