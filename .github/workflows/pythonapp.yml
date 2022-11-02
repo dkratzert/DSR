@@ -27,7 +27,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytest
 
-      - name: Test with Unittest
+      - name: Test with Pytest
         run: |
           export DSR_DIR=${HOME}/.local/bin
           mkdir -p ${HOME}/.local/bin
@@ -37,6 +37,6 @@ jobs:
           chmod a+x ${HOME}/.local/bin/shelxl
           cp -r setup/dsr.sh ${HOME}/.local/bin/dsr
           cp -r * ${HOME}/.local/bin/
-          
+          export PYTHONPATH=src/dsr
           cd tests
           pytest
