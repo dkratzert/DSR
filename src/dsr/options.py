@@ -49,7 +49,7 @@ class OptionsParser():
                                      , usage=SUPPRESS
                                      )
         self.parser.add_argument("-r", dest="res_file", metavar='"res file"', nargs='+',
-                                 help="res file with DSR command", default=False)
+                                 help="res file with DSR command", default='')
         self.parser.add_argument("-re", dest="external_restr", metavar='"res file"', nargs='+',
                                  help="res file with DSR command (write restraints to external file)", default=False)
         self.parser.add_argument("-e", dest="export_fragment", metavar='"fragment"',
@@ -82,7 +82,7 @@ class OptionsParser():
         self.parser.add_argument("-n", dest="no_refine", action="store_true",
                                  help="do not refine after fragment transfer", default=False)
         self.parser.add_argument("-target", dest="target", nargs='+', type=float,
-                                 help=SUPPRESS, default=False)
+                                 help=SUPPRESS, default=[])
         self._options = self.parser.parse_args()
 
     def error(self):
@@ -162,7 +162,7 @@ class OptionsParser():
 
     @property
     def target_coords(self):
-        target = self._options.target.strip()
+        target = self._options.target
         if target and len(target) % 3 > 0:
             print("*** Number of target coordinates have to be triplets. [x y z x y z ...] ***")
             sys.exit()
