@@ -40,4 +40,4 @@ jobs:
           
           export PYTHONPATH=src/dsr
           export DSR_DIR=src/dsr
-          pytest tests
+          pytest --verbose
