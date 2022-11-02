@@ -40,5 +40,3 @@ jobs:
           
           cd tests
           pytest
-          # PYTHONPATH=../$pwd python2 test_all.py
-          # PYTHONPATH=../$pwd python2 ffit_tests/test_fastfit.py
