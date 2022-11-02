@@ -16,7 +16,7 @@ from atomhandling import get_atomtypes, FindAtoms, check_source_target, \
 from atoms import Element, atoms
 from dbfile import invert_atomic_coordinates, ImportGRADE
 import dsr, afix, restraints, export, elements, atomhandling, misc, sql_export, dsrparse, dbfile
-from dsr import VERSION
+from version import VERSION
 from dsrparse import DSRParser
 from export import Export
 from resfile import ResList, ResListEdit

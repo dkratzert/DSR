@@ -9,7 +9,7 @@ import os
 import shutil
 import sys
 
-from dsr import VERSION
+from version import VERSION
 from misc import copy_file, remove_file, walkdir
 from selfupdate import sha512_checksum
 

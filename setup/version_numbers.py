@@ -1,7 +1,7 @@
 # /usr/bin/env python
 # -*- encoding: utf-8 -*-
 
-from dsr import VERSION
+from version import VERSION
 import misc, dbfile
 import os
 

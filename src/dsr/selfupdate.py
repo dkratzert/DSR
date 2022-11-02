@@ -18,7 +18,7 @@ import sys
 import tarfile
 import tempfile
 
-from dsr import VERSION
+from version import VERSION
 
 urlprefix = "https://dkratzert.de/files/dsr"
 
