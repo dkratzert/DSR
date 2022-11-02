@@ -113,7 +113,7 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     #>>> replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell)
     """
     remdist = 1.3
-    from src.dsr.resfile import ResListEdit
+    from resfile import ResListEdit
     find_atoms = FindAtoms(reslist)
     if resi.dsrp.resiflag:
         frag_at = []
