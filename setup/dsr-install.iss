@@ -87,6 +87,11 @@ Root: "HKLM"; Subkey: "Software\DSR"; ValueType: string; ValueName: "dsr_directo
 Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "DSR_DIR"; ValueData: "{app}"; Flags: deletevalue
 Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "DSR_DB_DIR"; ValueData: "{app}"; Flags: deletevalue
 
+[InstallDelete]
+Type: filesandordirs; Name: "{app}\networkx"
+Type: filesandordirs; Name: "{app}\mpmath"
+Type: filesandordirs; Name: "{app}\python27"
+
 [UninstallDelete]
 Type: files; Name: "{app}\*.pyc"
 Type: files; Name: "{app}\dsr"
