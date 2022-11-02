@@ -4,7 +4,7 @@ import tempfile
 
 from version import VERSION
 from scripts.make_zipfile import files, make_zip
-from src.dsr import misc, selfupdate
+import misc, selfupdate
 
 try:  # Python2:
     # noinspection PyCompatibility

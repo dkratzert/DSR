@@ -414,7 +414,7 @@ class ShelxlRefine():
 
 
 if __name__ == '__main__':
-    from src.dsr.atomhandling import FindAtoms
+    from atomhandling import FindAtoms
     import options
 
     res_file = 'p21c.res'
