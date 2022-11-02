@@ -14,7 +14,7 @@
 #
 # Wenn das dict leer ist werden überhaupt keine RESI betreffenden dinge in das insfile übernommen
 
-from __future__ import print_function
+
 
 import sys
 

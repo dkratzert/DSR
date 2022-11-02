@@ -9,7 +9,7 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
-from __future__ import print_function
+
 
 import shutil
 from math import cos, sqrt, radians, sin
@@ -1007,9 +1007,9 @@ def dice_coefficient(a, b, case_insens=True):
     if not len(a) or not len(b):
         return 0.0
     if len(a) == 1:
-        a = a + u'.'
+        a = a + '.'
     if len(b) == 1:
-        b = b + u'.'
+        b = b + '.'
     a_bigram_list = []
     for i in range(len(a) - 1):
         a_bigram_list.append(a[i:i + 2])

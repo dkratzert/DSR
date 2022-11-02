@@ -12,7 +12,6 @@ Created on 13.05.2015
 # ----------------------------------------------------------------------------
 #
 """
-from __future__ import print_function
 
 import string
 import sys
