@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "DSR"
+version = "237"
+authors = [
+    { name = "Daniel Kratzert", email = "dkratzert@gmx.de" },
+]
+description = "A program to model disorder in small-molecule structures"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3",
+]
+
+[project.urls]
+"Homepage" = "https://dkratzert.de/dsr.html"
+"Bug Tracker" = "https://github.com/dkratzert/DSR/issues"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "/.github",
+  "/pictures",
+  "/scripts",
+  "/setup",
+  "/tests",
+  "/manuals",
+  "/olex_dsr_db.txt",
+  "/requirements-devel.txt",
+  "/requirements.txt",
+  "/make_release.sh",
+  "/venv*",
+]

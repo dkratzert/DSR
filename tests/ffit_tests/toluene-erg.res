@@ -1,5 +1,5 @@
 TITL toluene
-REM This file was exported by DSR version 215
+REM This file was exported by DSR version 236
 REM Name: Toluene, C7H8
 REM Source: CCDC CESLUJ
 
@@ -21,13 +21,13 @@ FLAT C1 > C7
 SIMU C1 > C7
 RIGU C1 > C7
 rem Restraints from atom connectivities:
-DFIX 1.3921 C3   C2  
-DFIX 1.3775 C3   C4  
 DFIX 1.5059 C2   C1  
+DFIX 1.3921 C2   C3  
 DFIX 1.3946 C2   C7  
+DFIX 1.3775 C3   C4  
 DFIX 1.3802 C7   C6  
-DFIX 1.3814 C6   C5  
-DFIX 1.3897 C5   C4  
+DFIX 1.3897 C4   C5  
+DFIX 1.3814 C5   C6  
 DANG 2.5246 C1   C3  
 DANG 2.5243 C1   C7  
 DANG 2.4183 C2   C4  
@@ -36,9 +36,9 @@ DANG 2.3877 C3   C7
 DANG 2.3909 C3   C5  
 DANG 2.3960 C4   C6  
 DANG 2.3968 C5   C7  
-FLAT C2 C5 C6 C7
-FLAT C1 C2 C6 C7
-FLAT C3 C4 C5 C6
+FLAT C2 C3 C4 C5
+FLAT C1 C2 C3 C4
+FLAT C4 C5 C6 C7
 rem end of restraints
 
 C1   1     0.34810   0.50619   0.44851   11.0   0.04

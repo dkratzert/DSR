@@ -9,7 +9,7 @@ import subprocess
 import sys
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
-from dsr import VERSION
+from version import VERSION
 from scripts.make_zipfile import make_zip, files
 from setup.version_numbers import process_debian_and_spec, process_iss, debianpath, specpath, isspath
 
@@ -39,7 +39,4 @@ make_zip(files)
 # Make binary distributions:
 make_distribs()
 
-# This is not needed anymore:
-# This is to test if the distribution numpy works:
-#subprocess.call([r'C:\Python27-dsr\python.exe', '-c', 'import numpy as np; np.sin(3)'])
 

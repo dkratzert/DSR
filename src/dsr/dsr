@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# initialize DSR_DIR to default directory if not set properly
+if [ ! $DSR_DIR ]; then
+  DSR_DIR=$(dirname -- "$0")
+  export DSR_DIR
+fi
+
+PYTHON_EXE=$(which python3)
+
+# finally start dsr
+if [ $# -eq 0 ]; then
+  $PYTHON_EXE $DSR_DIR/dsr.py --help
+else
+  $PYTHON_EXE $DSR_DIR/dsr.py $*
+fi

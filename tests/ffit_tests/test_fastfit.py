@@ -1,21 +1,30 @@
 import os
 import sys
 import unittest
+from pathlib import Path
 
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
-from misc import remove_file, copy_file, which
+from misc import remove_file, copy_file
 
 print(sys.version)
 
 
 # @unittest.skip("skipping dsr_complete_runs_Test ")
 class dsr_complete_runs_ffit_Test(unittest.TestCase):
+    def setUpClass(_=None) -> None:
+        pass
+        """os.system(f'rsync -rumv --delete-after {"/Users/daniel/Documents/GitHub/DSR"} {"/Applications/"}')
+        os.system('rm /Applications/DSR/dsr')
+        os.system('cp /Users/daniel/Documents/GitHub/DSR/setup/dsr-mac /Applications/DSR/dsr')
+        os.system('chmod a+x /Applications/DSR/dsr')"""
+
     def setUp(self):
-        self.maxDiff = 20
+        self.maxDiff = None
         # remove this to view the results:
-        #self.dsr = '/Applications/DSR/dsr'
+        # self.dsr = '/Applications/DSR/dsr'
         # self.dsr = 'D:\Programme\DSR\dsr'
-        self.dsr = r'"{}"'.format(which('dsr')[-1])
+        self.dsr = f'python3 src/dsr/dsr.py'
+        self.prefix='./tests/ffit_tests'
         print(self.dsr)
 
         # 1 -r resi cf3 part 2 occ -31
@@ -50,7 +59,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         # 27 -g (rigid) -re part 2 occ -31
         # 28 PART -1 OCC 10.5 DFIX -> negative part and dfix
 
-    def dsr_runtest(self, nummer=99, parameter='-r', external_file='', hkl=None, prefix = './ffit_tests/',
+    def dsr_runtest(self, nummer=99, parameter='-r', external_file='', hkl=None,
                     limit_start=6, limit_end=-1, ending='res', remlines=None):
         """
         runs a test where the whole dsr is started with different input files
@@ -66,42 +75,43 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         d = []
         c = []
         # parameter = '-noffit ' + parameter
-        print('{} '.format(nummer) * 10, 'start:')
+        print(f'{nummer} ' * 10, 'start:')
+        print(f'## Running test in: {Path(".").resolve()}')
         if hkl:
-            copy_file(prefix + '{}.hkl'.format(hkl), prefix + '{}a.hkl'.format(nummer))
-        copy_file(prefix + '/{}.res'.format(nummer), prefix + '/{}a.res'.format(nummer))
-        os.system('{0} {1} {3}/{2}a.res'.format(self.dsr, parameter, nummer, prefix))
-        with open(prefix + '/{}a.{}'.format(nummer, ending)) as txt:
+            copy_file(f'{self.prefix}/{hkl}.hkl', f'{self.prefix}/{nummer}a.hkl')
+        copy_file(f'{self.prefix}/{nummer}.res', f'{self.prefix}/{nummer}a.res')
+        os.system(f'{self.dsr} {parameter} {self.prefix}/{nummer}a.res')
+        with open(f'{self.prefix}/{nummer}a.{ending}') as txt:
             a = txt.readlines()[limit_start:limit_end]
             a = [x.strip(' \n\r') for x in a]
-        with open(prefix + '/{}-erg.{}'.format(nummer, ending)) as txt2:
+        with open(f'{self.prefix}/{nummer}-erg.{ending}') as txt2:
             b = txt2.readlines()[limit_start:limit_end]
             b = [x.strip(' \n\r') for x in b]
         if external_file:
-            with open(prefix + '/{}.dfix'.format(external_file)) as ext:
+            with open(f'{self.prefix}/{external_file}.dfix') as ext:
                 c = ext.readlines()
-            with open(prefix + '/{}-erg.dfix'.format(external_file)) as ext2:
+            with open(f'{self.prefix}/{external_file}-erg.dfix') as ext2:
                 d = ext2.readlines()
         for line in remlines:
             a[line] = ''
             b[line] = ''
-        print('{} test:'.format(nummer))
+        print(f'{nummer} test:')
         print("parameter:", parameter)
         if hkl:
-            remove_file(prefix + '{}a.hkl'.format(nummer))
-        remove_file(prefix + '{}a.fcf'.format(nummer))
-        remove_file(prefix + '{}.fcf'.format(nummer))
-        remove_file(prefix + '{}.2fcf'.format(nummer))
-        remove_file(prefix + '{}a.lst'.format(nummer))
+            remove_file(f'{self.prefix}/{nummer}a.hkl')
+        remove_file(f'{self.prefix}/{nummer}a.fcf')
+        remove_file(f'{self.prefix}/{nummer}.fcf')
+        remove_file(f'{self.prefix}/{nummer}.2fcf')
+        remove_file(f'{self.prefix}/{nummer}a.lst')
         # a = remove_whitespace(a)
         # b = remove_whitespace(b)
-        self.assertEqual(b, a)
+        self.assertEqual('\n'.join(b), '\n'.join(a))
         if external_file:
             self.assertEqual(d, c)
         print('{} '.format(nummer) * 10, "ende")
-        remove_file(prefix + '/{}a.ins'.format(nummer))
-        remove_file(prefix + '/{}a.res'.format(nummer))
-        remove_file(prefix + '/{}.dfix'.format(external_file))
+        remove_file(f'{self.prefix}/{nummer}a.ins')
+        remove_file(f'{self.prefix}/{nummer}a.res')
+        remove_file(f'{self.prefix}/{external_file}.dfix')
 
     # @unittest.skip(" skipping1 ")
     def testrun_run1(self):
@@ -109,7 +119,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         regular dsr run with
         resi cf3 PART 2 occ -31
         """
-        self.maxDiff = 10
+        self.maxDiff = None
         self.dsr_runtest(1, '-r', remlines=[])
 
     # @unittest.skip(" skipping2 ")
@@ -119,6 +129,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         resi cf3 dfix =
             PART 2 occ -31
         """
+        self.maxDiff = None
         self.dsr_runtest(2, '-r', remlines=[])
 
     # @unittest.skip(" skipping3 ")
@@ -169,14 +180,16 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
 
         """
         print('8 ' * 10, 'start')
-        os.system("{} -s tol > search.txt".format(self.dsr))
+        os.system(f"{self.dsr} -s tol > search.txt")
         with open('search.txt') as txt:
             se = txt.readlines()
-        remove_file('./search.txt')
         good = False
+        print(''.join(se))
         for line in se:
             if line.startswith(" toluene           | Toluene, C7H8"):
                 good = True
+        if good:
+            remove_file('./search.txt')
         self.assertTrue(good, "Search text differs")
         print('8 ' * 10, 'ende')
 
@@ -186,17 +199,18 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         dsr -e tol
 
         """
+        self.maxDiff = None
         print('9 ' * 10, 'start')
-        print("{} -e tolUene".format(self.dsr))
-        os.system("{} -e tolUene".format(self.dsr))
-        with open('toluene.res') as txt:
-            ex = txt.readlines()
-        with open('toluene-erg.res') as txt2:
-            ex_erg = txt2.readlines()
+        current_dir = Path(".").resolve()
+        print(f'## Running test in: {current_dir}')
+        print(f"{self.dsr} -e tolUene")
+        os.system(f"{self.dsr} -e tolUene")
+        ex = Path('toluene.res').read_text().splitlines(keepends=False)
+        ex_erg = Path(f'{self.prefix}/toluene-erg.res').read_text().splitlines(keepends=False)
         del ex[1]  # line with the version number
         del ex_erg[1]
-        self.assertEqual(ex, ex_erg)
-        remove_file('toluene.res')
+        Path('toluene.res').unlink(missing_ok=True)
+        self.assertEqual('\n'.join(ex), '\n'.join(ex_erg))
         print('9 ' * 10, 'ende')
 
     # @unittest.skip(" skipping 10")
@@ -362,7 +376,8 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         notice: There will be no HAFIX, because the "REM Restraints for Fragment ..." is
                 already there. 
         """
-        self.dsr_runtest(29, '-target 0.99892 0.65486 0.64458 1.03021 0.55299 0.63399 0.89952 0.57358 0.69892 -r', remlines=[])
+        self.dsr_runtest(29, '-target 0.99892 0.65486 0.64458 1.03021 0.55299 0.63399 0.89952 0.57358 0.69892 -r',
+                         remlines=[])
 
 
 def remove_whitespace(mystringlist):
