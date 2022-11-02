@@ -1,11 +1,8 @@
 # /usr/bin/env python
 # -*- encoding: utf-8 -*-
 
-from __future__ import print_function
-
-from dsr import VERSION
-import misc
-import dbfile
+from version import VERSION
+import misc, dbfile
 import os
 
 """

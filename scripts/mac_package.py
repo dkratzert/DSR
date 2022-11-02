@@ -2,10 +2,9 @@ import os
 import subprocess
 import tempfile
 
-import misc
-import selfupdate
-from dsr import VERSION
+from version import VERSION
 from scripts.make_zipfile import files, make_zip
+import misc, selfupdate
 
 try:  # Python2:
     # noinspection PyCompatibility

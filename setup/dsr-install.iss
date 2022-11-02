@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "DSR - Disordered Structure Refinement"
-#define MyAppVersion "236"
+#define MyAppVersion "237"
 #define MyAppPublisher "Daniel Kratzert"
 
 [Setup]
@@ -43,8 +43,7 @@ AppSupportPhone=+49 761 203 6156
 VersionInfoProductName=DSR - Disordered Structure Refinement
 AlwaysShowComponentsList=False
 ShowComponentSizes=False
-SignTool=signtool
-SignTool=signtool2
+;SignTool=signtool
 
 [Run]
 ;Filename: "msiexec.exe"; Parameters: "TARGETDIR=""{app}\python27"" ADDLOCAL=Extensions,SharedCRT /i ""{app}\python-2.7.5.msi"""; Description: "Install Python"
@@ -63,30 +62,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "modifypath"; Description: "Add application directory to your system environment path variable"; GroupDescription: "DSR needs to be in the PATH variable to find its components."
 
 [Files]
-Source: "..\dsr_db.txt"; DestDir: "{app}"; Flags: ignoreversion; Permissions: users-modify
-Source: "..\dsr.bat"; DestDir: "{app}"; Flags: ignoreversion; Permissions: users-modify
-Source: "..\dsr.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\manuals\DSR-manual.pdf"; DestDir: "{app}\manuals"; Flags: ignoreversion
-Source: "..\atoms.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\afix.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\atomhandling.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\constants.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dbfile.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\dsrparse.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\export.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\cf3fit.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\selfupdate.py"; DestDir: "{app}"; Flags: ignoreversion; Permissions: users-readexec
-Source: "..\terminalsize.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\misc.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\options.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\refine.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\restraints.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\resfile.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\resi.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\pyperclip.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\elements.py"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\README"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Python27-dsr\*"; DestDir: "{app}\Python27"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
+Source: "..\..\python311\*"; DestDir: "{app}\python311"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
 Source: "..\example\p21c.hkl"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\example\p21c.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs; Permissions: everyone-full
 Source: "..\example\p21c_step0.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
@@ -97,9 +73,8 @@ Source: "..\example\p21c_final.res"; DestDir: "{app}\example"; Flags: ignorevers
 Source: "..\example\p21n_cf3.hkl"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\example\p21n_cf3.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: ".\Output\changelog.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\networkx\*"; DestDir: "{app}\networkx"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
-Source: "..\mpmath\*"; DestDir: "{app}\mpmath"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
-Source: "..\fit\*"; DestDir: "{app}\fit"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
+Source: "..\manuals\DSR-manual.pdf"; DestDir: "{app}\manuals\"; Flags: ignoreversion
+Source: "..\src\dsr\*"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
 
 [Icons]
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
@@ -112,10 +87,15 @@ Root: "HKLM"; Subkey: "Software\DSR"; ValueType: string; ValueName: "dsr_directo
 Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "DSR_DIR"; ValueData: "{app}"; Flags: deletevalue
 Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "DSR_DB_DIR"; ValueData: "{app}"; Flags: deletevalue
 
+[InstallDelete]
+Type: filesandordirs; Name: "{app}\networkx"
+Type: filesandordirs; Name: "{app}\mpmath"
+Type: filesandordirs; Name: "{app}\python27"
+
 [UninstallDelete]
 Type: files; Name: "{app}\*.pyc"
 Type: files; Name: "{app}\dsr"
-Type: filesandordirs; Name: "{app}\python27"
+Type: filesandordirs; Name: "{app}\python311"
 Type: filesandordirs; Name: "{app}\networkx"
 Type: filesandordirs; Name: "{app}\mpmath"
 Type: filesandordirs; Name: "{app}\example"
