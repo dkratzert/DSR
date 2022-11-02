@@ -2,7 +2,7 @@ import os
 import subprocess
 import tempfile
 
-from src.dsr.dsr import VERSION
+from version import VERSION
 from scripts.make_zipfile import files, make_zip
 from src.dsr import misc, selfupdate
 

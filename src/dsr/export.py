@@ -127,7 +127,7 @@ class Export():
             print("Fragment inverted.")
             atoms = invert_atomic_coordinates(atoms)
         try:
-            from src.dsr.dsr import VERSION
+            from version import VERSION
         except ImportError:
             VERSION = ''
         sfac = []
