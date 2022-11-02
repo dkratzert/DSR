@@ -37,6 +37,7 @@ jobs:
           chmod a+x ${HOME}/.local/bin/shelxl
           cp -r setup/dsr.sh ${HOME}/.local/bin/dsr
           cp -r * ${HOME}/.local/bin/
+          
           export PYTHONPATH=src/dsr
-          cd tests
-          pytest
+          export DSR_DIR=src/dsr
+          pytest tests
