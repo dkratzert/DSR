@@ -9,7 +9,7 @@ and the DSR program reads this information to put a molecule or fragment with th
 of the target atoms or q-peaks in the unit cell. Bond restraints can be either applied from the database to the molecule 
 or automatically generated.
 
-* [The homepage](https://dkratzert.de/dsr)
+* [The homepage](https://dkratzert.de/dsr.html)
 
 I apologize for the messy code. This was my first bigger project...
 
