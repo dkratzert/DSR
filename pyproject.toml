@@ -26,15 +26,18 @@ classifiers = [
 
 [tool.hatch.build.targets.sdist]
 exclude = [
-  "/.github",
-  "/pictures",
-  "/scripts",
-  "/setup",
-  "/tests",
-  "/manuals",
-  "/olex_dsr_db.txt",
-  "/requirements-devel.txt",
-  "/requirements.txt",
-  "/make_release.sh",
-  "/venv*",
+    "/.github",
+    "/pictures",
+    "/scripts",
+    "/setup",
+    "/tests",
+    "/manuals",
+    "/olex_dsr_db.txt",
+    "/requirements-devel.txt",
+    "/requirements.txt",
+    "/make_release.sh",
+    "/venv*",
 ]
+
+[project.scripts]
+dsr = "dsr.dsr:main"

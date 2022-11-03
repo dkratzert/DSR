@@ -456,8 +456,8 @@ class Multilog(object):
         return g
 
 
-if __name__ == '__main__':
-    '''main function'''
+def main():
+    global options, dsr
     options = False
     lstfile = ''
     is_listfile = False
@@ -494,3 +494,7 @@ if __name__ == '__main__':
                                            platform.release(), ' '.join(platform.uname())))
         print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         raise
+
+
+if __name__ == '__main__':
+    main()
