@@ -30,6 +30,7 @@ from resi import Resi, remove_resi
 from restraints import Restraints
 from terminalsize import get_terminal_size
 from version import VERSION
+import time
 
 # dont forget to change version in Innoscript file, spec file and deb file.
 minuse = ((width // 2) - 7) * '-'
@@ -56,11 +57,7 @@ class DSR(object):
     def __init__(self, options):
         """
         """
-        import time
-        if sys.version_info.major == 2:
-            time1 = time.clock()
-        else:
-            time1 = time.perf_counter()
+        time1 = time.perf_counter()
         # options from the commandline options parser:
         self.options = options
         self.external = False
@@ -118,6 +115,8 @@ class DSR(object):
             raise
             sys.exit()
         #################################
+        if not any(list(vars(self.options.all_options).values()) + [self.res_file]):
+            self.options.error()
         if self.head_csv:
             self.head_to_gui()
         if self.search_extern:
@@ -149,17 +148,12 @@ class DSR(object):
             mog = ImportGRADE(self.import_grade, self.gdb, self.invert, self.gdb.maindb_path, self.gdb.userdb_path)
             mog.write_user_database()
             sys.exit()
-        if not any(list(vars(self.options.all_options).values()) + [self.res_file]):
-            self.options.error()
         if not self.res_file:
             self.options.error()
         self.rl = ResList(self.res_file)
         self.reslist = self.rl.get_res_list()
         self.main()
-        if sys.version_info.major == 2:
-            time2 = time.clock()
-        else:
-            time2 = time.perf_counter()
+        time2 = time.perf_counter()
         runtime = (time2 - time1)
         print('Runtime: {:>.1f} s'.format(runtime))
         print('DSR run complete.')
