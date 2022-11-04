@@ -16,7 +16,7 @@ import re
 import sys
 import tarfile
 from copy import deepcopy
-from typing import List
+from typing import List, Dict
 
 from atomhandling import get_atomtypes
 from atoms import Element
@@ -44,7 +44,7 @@ def invert_atomic_coordinates(atoms):
     for line in catoms:
         try:
             inv_coord = [-x for x in line[-3:]]
-        except:
+        except Exception:
             print('Unable to invert fragment coordinates.')
             return []
         line[-3:] = inv_coord
@@ -70,7 +70,7 @@ def search_fragment_name(search_string, gdb, numresults=6):
     for fragment in names_list:
         key = make_sortkey(fragment[1], searchkey=True)
         # key[0] and key[1] combined to have also the sum formula:
-        fullstring  = "{0}{1}".format(key[0], key[1])
+        fullstring = f"{key[0]}{key[1]}"
         if fragment[1].lower().startswith(search_string):
             # give names starting with a certain string high priority
             coefficient = 3.0
@@ -95,7 +95,7 @@ def print_search_results(results):
     print(' Fragment          | Full name, Comments                      | Line number')
     print(sep_line)
     for line in results:
-        print(' {:15s}   | {:40s} | {}'.format(line[0], line[1], line[2]))
+        print(f' {line[0]:15s}   | {line[1]:40s} | {line[2]}')
     sys.exit()
 
 
@@ -145,15 +145,11 @@ def make_sortkey(full_name, searchkey=False):
     return keylist
 
 
-
-
-
-# hardwired names of the database files:
+# Names of the database files:
 # dsr_db.txt is the db from the distribution. This file should not be edited.
 # dsr_user_db.txt if this file exists, all its content is also read in.
 
-def read_file_data(filepath):
-    # type: (str) -> list
+def read_file_data(filepath: str) -> List[str]:
     """
     reads the database files and returns them as list.
     """
@@ -166,28 +162,24 @@ def read_file_data(filepath):
     return dblist
 
 
-class ParseDB(object):
+class ParseDB():
     """
     reads in the system and user db files and makes
     a dictionary of them.
     maindb = read_file_data(path_to_maindb)
     """
 
-    def __init__(self, maindb_path=None, userdb_path=None):
-        # type: (str, str) -> NotImplemented
+    def __init__(self, maindb_path: str = '', userdb_path: str = ''):
         """
         self._databases: dictionary with the individial fragments
         """
         self.databases = {}
-        self.maindb_path = maindb_path
-        self.userdb_path = userdb_path
         if maindb_path:
             self.parse(maindb_path, 'dsr_db')
         if userdb_path:
             self.parse(userdb_path, 'dsr_user_db')
 
-    def parse(self, dbpath='./dsr_db.txt', dbname='dsr_db'):
-        # type: (str, str) -> dict
+    def parse(self, dbpath: str = '', dbname: str = 'dsr_db') -> dict[str, dict[str, str]]:
         """
         This method returns all fragment name tags in the database
 
@@ -215,7 +207,7 @@ class ParseDB(object):
         []
         """
         frag_tag = ''
-        db = {}
+        db: dict[str, dict[str, str]] = dict()
         start_regex = re.compile(r'<[^/].*>', re.IGNORECASE)  # regular expression for db tag.
         starttag = False
         fraglines = []
@@ -229,9 +221,7 @@ class ParseDB(object):
             # matching end tag
             if end_regex and end_regex.match(line):
                 starttag = False
-                db[frag_tag].update(
-                        {'endline'  : num + 1,
-                         'startline': startnum + 1})
+                db[frag_tag].update(dict(endline=num + 1, startline=startnum + 1))
                 db = self.parse_fraglines(frag_tag, fraglines, db)
                 fraglines = []
             # start tag was found, appending lines to fragment list
@@ -240,7 +230,7 @@ class ParseDB(object):
             # matching start tag and compiling end regex
             if start_regex.match(line):
                 if starttag:
-                    print('*** Error in database "{}.txt" in line {}. End tag is missing ***'.format(dbname, num + 1))
+                    print(f'*** Error in database "{dbname}.txt" in line {num + 1}. End tag is missing ***')
                 # lower case is essential here:
                 frag_tag = line.strip('<> \n\r').lower()
                 if frag_tag in db:
@@ -252,13 +242,11 @@ class ParseDB(object):
                 startnum = num
                 db[frag_tag] = {'dbname': dbname}
                 end_regex = re.compile(re.escape(r'</{}>'.format(frag_tag)), re.IGNORECASE)
-                continue
         self.databases.update(db)
         return db
 
     @staticmethod
-    def parse_fraglines(fragname_tag, fraglines, db):
-        # type: (str, list, dict) -> dict
+    def parse_fraglines(fragname_tag: str, fraglines: list, db: dict) -> dict:
         """
         Fills the database dictionary with fragment data.
         """
@@ -383,8 +371,7 @@ class ParseDB(object):
         # return iter(self.databases.keys()) #python2
         return iter(list(sorted(self.databases.keys())))
 
-    def list_fragments(self):
-        # type: () -> list
+    def list_fragments(self) -> List[List[str]]:
         """
         list all fragments in the db as list of lists
         [['tbu-c', 1723, 'dsr_db', 'Tert-butyl-C'], ...]
@@ -403,8 +390,7 @@ class ParseDB(object):
         fraglist.sort(key=lambda x: (x[4], x[5]))
         return fraglist
 
-    def get_atomic_numbers(self, fragment=''):
-        # type: (str) -> list
+    def get_atomic_numbers(self, fragment: str = '') -> List[str]:
         """
         Returns the atomic numbers of the atoms in a fragment in
         same order as in the database as list.
@@ -523,7 +509,7 @@ class ParseDB(object):
         fragment = fragment.lower()
         try:
             types = get_atomtypes(self.databases[fragment]['atoms'])
-        except:
+        except Exception:
             return None
         formula = ''
         for el in set(types):
@@ -706,8 +692,8 @@ class ParseDB(object):
                 if (stdev > (2.5 * float(dev))) and good:
                     print("\nFragment {}:".format(fragment))
                     print(
-                            '*** Suspicious restraints in SADI line {} with high standard deviation {:4.3f} '
-                            '(median length: {:4.3f} A) ***'.format(num + 1, stdev, median(distances)))
+                        '*** Suspicious restraints in SADI line {} with high standard deviation {:4.3f} '
+                        '(median length: {:4.3f} A) ***'.format(num + 1, stdev, median(distances)))
                     print('*** ' + restraints[num] + ' ***\n')
                     good = False
         if good:
@@ -1236,7 +1222,7 @@ if __name__ == '__main__':
                         print('foooooooo', pairdev)
                 stdev = std_dev(distances)
                 print("esd < 0.065 ?: {:<4.4f}, esd < 2.5*sigma?: {:<4.4f} < {:<4.4f} -> {}".format(
-                        stdev, stdev, 2.5 * float(dev), ("yes" if stdev < 2.5 * float(dev) else "no")))
+                    stdev, stdev, 2.5 * float(dev), ("yes" if stdev < 2.5 * float(dev) else "no")))
 
 
     frag = 'WBVNT'
