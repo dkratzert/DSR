@@ -19,7 +19,7 @@ import misc
 from constants import sep_line
 
 try:
-    from argparse import RawTextHelpFormatter
+    from argparse import RawTextHelpFormatter, Namespace
 except ImportError:
     print('\n*** Your Python version is incompatible with DSR! \nPlease use Python 2.7 or above. ***\n')
     sys.exit()
@@ -207,7 +207,7 @@ class OptionsParser():
             return ''.join(self._options.search_extern)
 
     @property
-    def all_options(self):
+    def all_options(self) -> Namespace:
         return self._options
 
     def __repr__(self):
