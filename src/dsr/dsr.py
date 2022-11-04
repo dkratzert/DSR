@@ -14,6 +14,7 @@
 import os
 import sys
 from datetime import datetime
+from pathlib import Path
 
 import atomhandling
 from afix import remove_duplicate_restraints, write_dbhead_to_file
@@ -145,7 +146,7 @@ class DSR(object):
             sys.exit()
         # Import a GRADE fragment
         if self.import_grade:
-            mog = ImportGRADE(self.import_grade, self.gdb, self.invert, self.gdb.maindb_path, self.gdb.userdb_path)
+            mog = ImportGRADE(self.import_grade, self.gdb, self.invert, self.maindb_path, self.userdb_path)
             mog.write_user_database()
             sys.exit()
         if not self.res_file:
@@ -161,25 +162,15 @@ class DSR(object):
     ###############################################################################
 
     def set_database_locations(self):
-        """
-        Tries to find the database files in their default locations after a regular DSR installation.
-        Returns
-        -------
-        bool
-        """
-        if not self.userdb_path:
-            # using the environment variable turned out to be too complicated.
-            homedir = os.path.expanduser("~")
-            self.userdb_path = os.path.join(homedir, "dsr_user_db.txt")
-            if not os.path.isfile(self.userdb_path):
-                touch(self.userdb_path)
-        if not self.maindb_path:
-            try:
-                main_dbdir = os.environ["DSR_DIR"]
-                self.maindb_path = os.path.join(main_dbdir, 'dsr_db.txt')
-            except KeyError:
-                main_dbdir = './'
-                self.maindb_path = os.path.join(main_dbdir, 'dsr_db.txt')
+        homedir = os.path.expanduser("~")
+        self.userdb_path = os.path.join(homedir, "dsr_user_db.txt")
+        if not os.path.isfile(self.userdb_path):
+            touch(self.userdb_path)
+        main_dbdir = os.environ.get("DSR_DIR", None)
+        if main_dbdir:
+            self.maindb_path = os.path.join(main_dbdir, 'dsr_db.txt')
+        else:
+            self.maindb_path = str(Path(__file__).parent / 'dsr_db.txt')
         return True
 
     def head_to_gui(self):
