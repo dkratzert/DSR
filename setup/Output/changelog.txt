@@ -1,5 +1,5 @@
-Recent Changes
---------------
+Recent Changes in DSR
+---------------------
 
 * 236    Made Q-peaks in a database entry valid. The Q-peak behaves like a carbon atom as in SHELX.
 * 235    Updated email addresses.
