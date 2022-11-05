@@ -72,7 +72,7 @@ C5    6      6.48400    6.06569    8.85186
 
 
 <depe>
-rem Name: bis(diethylphosphino)ethane
+rem Name: 1,2-Bis(diethylphosphino)ethane, C10H24P2
 rem Src: ShelXle DSR GUI
 RESI DEPE
 REM HFIX 23 C1 > C10
@@ -365,7 +365,7 @@ C9    6      6.77800    3.54550    2.82450
 
 
 <thiophen>
-rem Name: Thiophen, Thiofuran, C4H4S
+rem Name: Thiophene, Thiofuran, C4H4S
 rem Src: Turbomole V7.1, def2-TZVP/pbe0
 RESI THIO
 REM HFIX 43 C1 C2 C3 C4
@@ -425,7 +425,7 @@ O2    8      1.97377    4.32718    3.50301
 
 
 <plusminus>
-rem Name: Methyl tert-butyl ether, plus minus ether, C5H12O
+rem Name: Methyl tert-butyl ether, plus minus ether, MTBE, C5H12O
 rem Src: CCDC ESEYIL
 RESI PLMI
 REM HFIX 137 C2 C3 C4 C5
@@ -549,8 +549,8 @@ F6  9  1.85803 -1.31458  8.54392
 </SBF6>
 
 
-<26dcb>
-rem Name: 2,6-Dichlorobenzene, C6H3Cl2
+<13dcb>
+rem Name: 1,3-Dichlorobenzene, C6H3Cl2
 rem Src: CCDC IRUDUW
 RESI DCB
 REM HFIX 43 C1 C3 C4 C5
@@ -570,7 +570,7 @@ C3    6      4.89314    8.88350    6.86932
 C4    6      5.64670    8.31598    7.88906
 C5    6      5.28914    7.09168    8.43388
 C6    6      4.16246    6.44065    7.95446
-</26dcb>
+</13dcb>
 
 <dce>
 rem Name: 1,2-Dichloroethane, (flat), DCE, C2H4Cl2
@@ -651,7 +651,7 @@ C6    6      5.16898    1.31172    5.56459
 
 
 <isoprop>
-rem Name: Isopropanole, Propan-2-ol, C3H8O
+rem Name: Isopropanole, Propan-2-ol, iPrOH, C3H8O
 rem Src: CCDC 12671777
 rem Temp: 173 K
 REM HFIX 137 C2 C3
@@ -787,7 +787,7 @@ C4      1  0.236200  0.523300  0.446300  1.000000 0.05000
 </pyrazine>
 
 <ptbu>
-rem Name: tris-(tert-butyle)-phosphane, C12H27P
+rem Name: tris-(tert-butyle)-phosphane, tris(t-butyl) phosphine, C12H27P
 rem Src: Miriam Schwab, Freiburg
 RESI PTBU
 REM HFIX 137 C2 C3 C4 C6 C7 C8 C10 C11 C12
@@ -846,7 +846,7 @@ C4    6     1.45100   11.69500   17.38100
 </imi>
 
 <dmac>
-REM Name: N,N-dimethylacetylamide, C4H9NO, DMA
+REM Name: N,N-dimethylacetylamide, DMA, DMAc, C4H9NO
 REM Src: Produced by Grade Web Server http://grade.globalphasing.org
 DFIX  1.220 0.005 C2 O1
 DFIX  1.497 0.005 C2 C3
@@ -867,7 +867,7 @@ C6    1   10.3800  -2.6700  -1.2500
 </dmac>
 
 <phen>
-rem Name: Phenanthroline, 1,10-phenanthroline, C12H8N2
+rem Name: Phenanthroline, 1,10-phenanthroline, phen, C12H8N2
 rem Src: CCDC ASUGAW01
 REM HFIX 43 C1 C2 C4 C5 C6 C8 C9 C10
 RIGU N1 > C12
@@ -1423,7 +1423,7 @@ C7      1  0.489380  0.615360  0.412970  1.000000 0.05000
 </TOLUENE>
 
 <Benzene>
-REM Name: Benzene, Phenyl, C6H6
+REM Name: Benzene, Benzol, Phenyl, C6H6
 REM SRC: UGEDEQ
 RESI BENZ
 REM HFIX 43 C1 C2 C3 C4 C5 C6
@@ -1542,7 +1542,7 @@ C12 1 -0.09838  0.11846   0.65305
 
 
 <12C4>
-rem Name: 12-crown-4
+rem Name: 12-crown-4, C8H16O4
 rem Src: Daniel Kratzert, Freiburg
 RESI CR4
 REM HFIX 23 C1 C2 C3 C4 C5 C6 C7 C8
