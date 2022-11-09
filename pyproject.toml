@@ -8,7 +8,7 @@ version = "237"
 authors = [
     { name = "Daniel Kratzert", email = "dkratzert@gmx.de" },
 ]
-description = "A program to model disorder in small-molecule structures"
+description = "A program to model disorder in small-molecule X-ray structures"
 readme = "README.md"
 requires-python = ">=3.9"
 classifiers = [
