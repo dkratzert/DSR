@@ -4,13 +4,15 @@
 """
 This script has to be run from the main dir e.g. D:\GitHub\StructureFinder
 """
-import os
+import pathlib
 import subprocess
 import sys
 
-sys.path.insert(1, os.path.join(sys.path[0], '..'))
+pth = pathlib.Path(__file__).parent.parent
+print(pth)
+sys.path.insert(0, str(pth / 'src/DSR'))
+sys.path.insert(0, str(pth))
 from version import VERSION
-from scripts.make_zipfile import make_zip, files
 from setup.version_numbers import process_debian_and_spec, process_iss, debianpath, specpath, isspath
 
 print("Updating version numbers to version {} ...".format(VERSION))
@@ -34,9 +36,7 @@ def make_distribs():
 
 
 # Make a zip file for web interface distribution:
-make_zip(files)
+# make_zip(files)
 
 # Make binary distributions:
 make_distribs()
-
-
