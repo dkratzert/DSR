@@ -13,15 +13,12 @@ print(pth)
 sys.path.insert(0, str(pth / 'src/DSR'))
 sys.path.insert(0, str(pth))
 from version import VERSION
-from setup.version_numbers import process_debian_and_spec, process_iss, debianpath, specpath, isspath
+from setup.version_numbers import process_debian_and_spec, process_iss, debianpath, isspath
 
 print("Updating version numbers to version {} ...".format(VERSION))
 
 print("Linux deb... {}".format(VERSION))
 process_debian_and_spec(debianpath)
-
-print("Linux rpm... {}".format(VERSION))
-process_debian_and_spec(specpath)
 
 print("windows iss... {}".format(VERSION))
 process_iss(isspath)
