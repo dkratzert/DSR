@@ -11,7 +11,7 @@ This file is for updating the various version number definitions for each DSR re
 
 debianpath = os.path.abspath("./setup/debian-package/DEBIAN/control")  # for the .deb file
 isspath = os.path.abspath("./setup/dsr-install.iss")  # for the windows executable
-specpath = os.path.abspath("./setup/dsr-linux.spec")  # for the .rpm file
+#specpath = os.path.abspath("./setup/dsr-linux.spec")  # for the .rpm file
 
 
 def process_debian_and_spec(filepath):
@@ -51,8 +51,8 @@ if __name__ == "__main__":
     print("Linux... {}".format(VERSION))
     process_debian_and_spec(debianpath)
 
-    print("Linux... {}".format(VERSION))
-    process_debian_and_spec(specpath)
+    #print("Linux... {}".format(VERSION))
+    #process_debian_and_spec(specpath)
 
     print("windows... {}".format(VERSION))
     process_iss(isspath)
