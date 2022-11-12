@@ -25,6 +25,8 @@ classifiers = [
 "Bug Tracker" = "https://github.com/dkratzert/DSR/issues"
 
 [tool.hatch.build.targets.sdist]
+only-include = ["src/dsr"]
+sources = ["src"]
 exclude = [
     "/.github",
     "/pictures",
