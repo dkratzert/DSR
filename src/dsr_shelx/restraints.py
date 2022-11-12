@@ -255,7 +255,7 @@ class Restraints():
         returns list of flat chunks.
 
         >>> from dbfile import ParseDB
-        >>> gdb = ParseDB('./src/dsr/dsr_db.txt')
+        >>> gdb = ParseDB('./src/dsr_shelx/dsr_db.txt')
         >>> res = Restraints('benzene', gdb)
         >>> sorted(res.make_flat_restraints())
         [['C1', 'C2', 'C3', 'C4'], ['C3', 'C4', 'C5', 'C6']]

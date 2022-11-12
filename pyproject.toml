@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "dsr"
+name = "dsr_shelx"
 version = "237"
 authors = [
     { name = "Daniel Kratzert", email = "dkratzert@gmx.de" },
@@ -25,7 +25,7 @@ classifiers = [
 "Bug Tracker" = "https://github.com/dkratzert/DSR/issues"
 
 [tool.hatch.build.targets.sdist]
-only-include = ["src/dsr"]
+only-include = ["src/dsr_shelx"]
 sources = ["src"]
 exclude = [
     "/.github",
@@ -42,4 +42,4 @@ exclude = [
 ]
 
 [project.scripts]
-dsr = "dsr.dsr:main"
+dsr = "dsr_shelx.dsr:main"

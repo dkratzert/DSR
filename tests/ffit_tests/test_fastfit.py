@@ -23,7 +23,7 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         # remove this to view the results:
         # self.dsr = '/Applications/DSR/dsr'
         # self.dsr = 'D:\Programme\DSR\dsr'
-        self.dsr = f'python3 src/dsr/dsr.py'
+        self.dsr = f'python3 src/dsr_shelx/dsr.py'
         self.prefix='./tests/ffit_tests'
         print(self.dsr)
 
