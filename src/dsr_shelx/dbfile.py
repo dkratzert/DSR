@@ -183,7 +183,7 @@ class ParseDB():
         """
         This method returns all fragment name tags in the database
 
-        >>> dbpath = os.path.abspath('./src/dsr/dsr_db.txt')
+        >>> dbpath = os.path.abspath('./src/dsr_shelx/dsr_db.txt')
         >>> db = ParseDB(dbpath)
         >>> db.parse(dbpath, 'dsr_db')['water']['name'] # doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
         'Water, H2O'
@@ -364,7 +364,7 @@ class ParseDB():
 
     def __iter__(self):
         """
-        >>> db = ParseDB('./src/dsr/dsr_db.txt')
+        >>> db = ParseDB('./src/dsr_shelx/dsr_db.txt')
         >>> [x for x in db][:3]
         ['12-dichlorobenz', '12-difluorobenz', '12c4']
         """
@@ -420,7 +420,7 @@ class ParseDB():
         """
         returns header information of the specific fragment:
         tag, Name/comment, source, cell, residue, dbtype, restr, atoms
-        >>> dbpath = os.path.abspath('./src/dsr/dsr_db.txt')
+        >>> dbpath = os.path.abspath('./src/dsr_shelx/dsr_db.txt')
         >>> db = ParseDB(dbpath)
         >>> db.get_head_for_gui('benZene')
         ... # doctest: +NORMALIZE_WHITESPACE
@@ -539,11 +539,11 @@ class ParseDB():
         Returns pre-defined hfix instructions.
         :param fragment: fragment name
         :return: A string with the REM HFIX ... instruction
-        >>> from src.dsr.misc import wrap_headlines
+        >>> from src.dsr_shelx.misc import wrap_headlines
         >>> hf = ['REM HFIX 123 C1 C2 C3 C4 C5']
         >>> wrap_headlines(hf, 18)
         ['REM HFIX 123 C1 C2 =\\n   C3 C4 C5\\n']
-        >>> db = ParseDB('./src/dsr/dsr_db.txt')
+        >>> db = ParseDB('./src/dsr_shelx/dsr_db.txt')
         >>> db.get_hfixes('Adamantane', 'ADAM')
         ['REM HFIX_ADAM 23 C2 C3 C4 C6 C8 C10', 'REM HFIX_ADAM 13 C5 C7 C9']
         >>> db.get_hfixes('Adamantane', '')
@@ -720,7 +720,7 @@ class ParseDB():
         :param fragment: fragment name
         :type fragment: string
 
-        >>> db = ParseDB('./src/dsr/dsr_db.txt')
+        >>> db = ParseDB('./src/dsr_shelx/dsr_db.txt')
         >>> db.get_atoms('water', cartesian=False) # doctest: +NORMALIZE_WHITESPACE
         [['O1', 4, 0.0, 0.0, 0.0], ['H1', 2, 0.9584, 0.0, 0.0], ['H2', 2, -0.2392, 0.9281, 0.0]]
         >>> db.get_atoms('isoprop', cartesian=True) # doctest: +NORMALIZE_WHITESPACE
@@ -747,7 +747,7 @@ class ParseDB():
         # type: (str) -> list
         """
         returns the line with FRAG 17 cell from the dbentry
-        >>> db = ParseDB('./src/dsr/dsr_db.txt')
+        >>> db = ParseDB('./src/dsr_shelx/dsr_db.txt')
         >>> db.get_cell('water')
         [1.0, 1.0, 1.0, 90.0, 90.0, 90.0]
         >>> db.get_cell('foobar')
@@ -950,7 +950,7 @@ class ImportGRADE():
         """
         get the fragment name from the pdbfile.txt file
 
-        >>> db = ParseDB('./src/dsr/dsr_db.txt')
+        >>> db = ParseDB('./src/dsr_shelx/dsr_db.txt')
         >>> mog = ImportGRADE('./tests/test-data/ALA.gradeserver_all.tgz', db)
         >>> mog.get_name_from_pdbfile()
         'Alanine'
@@ -979,7 +979,7 @@ class ImportGRADE():
         """
         get the fragment name from the pdbfile.txt file
 
-        >>> db = ParseDB('./src/dsr/dsr_db.txt')
+        >>> db = ParseDB('./src/dsr_shelx/dsr_db.txt')
         >>> mog = ImportGRADE('./tests/test-data/ALA.gradeserver_all.tgz', db)
         >>> mog.get_resi_from_pdbfile()
         'ALA'
@@ -1227,7 +1227,7 @@ if __name__ == '__main__':
 
     frag = 'WBVNT'
 
-    dbpath = os.path.abspath('./src/dsr/dsr_db.txt')
+    dbpath = os.path.abspath('./src/dsr_shelx/dsr_db.txt')
     userpath = os.path.abspath('c:/Users/daniel/dsr_user_db.txt')
     db = ParseDB(dbpath, userdb_path=userpath)
     # pprint(db.databases['toluene'])

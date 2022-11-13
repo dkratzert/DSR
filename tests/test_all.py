@@ -336,7 +336,7 @@ class NumberSchemeTest(unittest.TestCase):
         dsrp = Dsrp()
         rl = ResList(res_file)
         reslist = rl.get_res_list()
-        gdb = dbfile.ParseDB('./src/dsr/dsr_db.txt')
+        gdb = dbfile.ParseDB('./src/dsr_shelx/dsr_db.txt')
         fragment = 'OC(cf3)3'
         dbatoms = gdb.get_atoms(fragment)
         self.num = NumberScheme(reslist, dbatoms, dsrp)
@@ -392,7 +392,7 @@ class removeDublicatesAfixTest(unittest.TestCase):
         invert = False
         self.dsrp = DSRParser(self.reslist)
         fragment = 'OC(cf3)3'
-        self.gdb = dbfile.ParseDB('./src/dsr/dsr_db.txt')
+        self.gdb = dbfile.ParseDB('./src/dsr_shelx/dsr_db.txt')
         self.dbatoms = self.gdb.get_atoms(fragment)  # only the atoms of the dbentry as list
         self.dbtypes = get_atomtypes(self.dbatoms)
         # self.sf = SfacTable(self.reslist, self.dbtypes)
@@ -682,7 +682,7 @@ class ExportTest(unittest.TestCase):
     def setUp(self):
         self.maxDiff = None
         self.invert = False
-        self.gdb = dbfile.ParseDB('./src/dsr/dsr_db.txt')
+        self.gdb = dbfile.ParseDB('./src/dsr_shelx/dsr_db.txt')
         self.export_clip = 'benzene'
         self.resgood = ['TITL toluene\n', 'REM This file was exported by DSR version {}\n'.format(VERSION),
                         'REM Name: Toluene, C7H8\nREM Source: CCDC CESLUJ\n',
@@ -756,7 +756,7 @@ class ExportTest(unittest.TestCase):
         """
         Exports the current fragment to the clipboard.
         """
-        gdb = dbfile.ParseDB('./src/dsr/dsr_db.txt')
+        gdb = dbfile.ParseDB('./src/dsr_shelx/dsr_db.txt')
         export = Export(gdb)
         self.assertTrue(export.export_to_clip('benzene'))
 
@@ -791,7 +791,7 @@ class ResidueTest(unittest.TestCase):
                       'DFIX 2.916 0.03 CL1 CL2',
                       'SIMU CL1 > C1',
                       'RIGU CL1 > C1']
-        self.gdb = dbfile.ParseDB('./src/dsr/dsr_db.txt')
+        self.gdb = dbfile.ParseDB('./src/dsr_shelx/dsr_db.txt')
         self.residue_class = self.gdb.get_resi(fragment)
         self.fragline = self.gdb.get_startline(fragment)  # full string of FRAG line
         self.dbatoms = self.gdb.get_atoms(fragment)  # only the atoms of the dbentry as list
