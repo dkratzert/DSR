@@ -88,7 +88,7 @@ def check_file_exist(filename):
     False
     >>> check_file_exist('./tests/empty.txt')
     'zero'
-    >>> check_file_exist('src/dsr/misc.py')
+    >>> check_file_exist('src/dsr_shelx/misc.py')
     True
     """
     status = False
