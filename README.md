@@ -1,3 +1,4 @@
+![Lates Release](https://img.shields.io/github/v/tag/dkratzert/DSR?label=Release)
 [![Unit tests](https://github.com/dkratzert/DSR/actions/workflows/pythonapp.yml/badge.svg)](https://github.com/dkratzert/DSR/actions/workflows/pythonapp.yml)
 ![Contributions](https://img.shields.io/badge/contributions-welcome-blue)
 
