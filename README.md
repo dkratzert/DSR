@@ -1,6 +1,12 @@
+<a href="https://repology.org/project/dsr/versions">
+    <img src="https://repology.org/badge/vertical-allrepos/dsr.svg" alt="Packaging status" align="right">
+</a>
+
 ![Lates Release](https://img.shields.io/github/v/tag/dkratzert/DSR?label=Release)
 [![Unit tests](https://github.com/dkratzert/DSR/actions/workflows/pythonapp.yml/badge.svg)](https://github.com/dkratzert/DSR/actions/workflows/pythonapp.yml)
 ![Contributions](https://img.shields.io/badge/contributions-welcome-blue)
+[![PyPI package](https://repology.org/badge/version-for-repo/pypi/python:dsr-shelx.svg)](https://repology.org/project/python:dsr-shelx/versions)
+
 
 DSR
 ===
