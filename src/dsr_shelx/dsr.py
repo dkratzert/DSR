@@ -442,7 +442,6 @@ class Multilog(object):
 
 
 def main():
-    global options, dsr
     options = False
     lstfile = ''
     is_listfile = False
