@@ -353,7 +353,7 @@ class DSR(object):
             restraints += same_resi
             # if dsrp.resiflag:  # <- Or should I do this?
             restraints += ["SIMU 0.04 0.08 1"]
-        if not options.external_restr:
+        if not self.options.external_restr:
             restraints = remove_duplicate_restraints(self.reslist, restraints, resi.get_residue_class)
         restraints = wrap_headlines(restraints)
         dfx_file_name = ''
@@ -363,7 +363,7 @@ class DSR(object):
             afix_entry = 'RESI {} {}\n{}\nRESI 0'.format(resi.get_residue_class, resi.get_resinumber, afix_entry)
         if self.options.rigid_group:
             afix_entry = 'AFIX 9\n' + afix_entry
-        if options.external_restr and not self.rigid:
+        if self.options.external_restr and not self.rigid:
             pname, ext = os.path.splitext(basefilename + '.dfix')
             if dsrp.dfix:
                 dfx_file_name = pname + "_dfx" + ext
@@ -442,7 +442,7 @@ class Multilog(object):
 
 
 def main():
-    options = False
+    options = None
     lstfile = ''
     is_listfile = False
     try:
@@ -459,7 +459,7 @@ def main():
             lstfile.write('Python version: {}\n'.format(sys.version))
             lstfile.write("Date: {} \n".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
             lstfile.write(options.__str__())
-        dsr = DSR(options)
+        DSR(options)
     except Exception:
         import platform
 
