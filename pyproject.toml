@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dsr_shelx"
-version = "237"
+dynamic = ["version"]
 authors = [
     { name = "Daniel Kratzert", email = "dkratzert@gmx.de" },
 ]
@@ -24,9 +24,11 @@ classifiers = [
 "Homepage" = "https://dkratzert.de/dsr.html"
 "Bug Tracker" = "https://github.com/dkratzert/DSR/issues"
 
+[tool.hatch.version]
+path = "src/dsr_shelx/version.py"
+pattern = "VERSION\\s*=\\s*'(?P<version>\\d+)'"
+
 [tool.hatch.build.targets.sdist]
-only-include = ["src/dsr_shelx"]
-sources = ["src"]
 exclude = [
     "/.github",
     "/pictures",
