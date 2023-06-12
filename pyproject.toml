@@ -1,10 +1,13 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-requirements-txt"]
 build-backend = "hatchling.build"
+
+[tool.hatch.metadata.hooks.requirements_txt]
+files = ["requirements.txt"]
 
 [project]
 name = "dsr_shelx"
-dynamic = ["version"]
+dynamic = ["version", "dependencies"]
 authors = [
     { name = "Daniel Kratzert", email = "dkratzert@gmx.de" },
 ]
@@ -26,7 +29,7 @@ classifiers = [
 
 [tool.hatch.version]
 path = "src/dsr_shelx/version.py"
-pattern = "VERSION\\s*=\\s*'(?P<version>\\d+)'"
+pattern = "VERSION\\s*=\\s*'(?P<version>\\d+\\.{0,1}\\d{0,1})'"
 
 [tool.hatch.build.targets.sdist]
 exclude = [
@@ -38,7 +41,6 @@ exclude = [
     "/manuals",
     "/olex_dsr_db.txt",
     "/requirements-devel.txt",
-    "/requirements.txt",
     "/make_release.sh",
     "/venv*",
 ]

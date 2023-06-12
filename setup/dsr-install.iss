@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "DSR"
-#define MyAppVersion "237"
+;#define MyAppVersion "237" ; Now using commandline argument
 #define MyAppPublisher "Daniel Kratzert"
 
 [Setup]

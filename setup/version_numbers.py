@@ -55,6 +55,6 @@ if __name__ == "__main__":
     #process_debian_and_spec(specpath)
 
     print("windows... {}".format(VERSION))
-    process_iss(isspath)
+    #process_iss(isspath)
 
     print("Version numbers updated.")

@@ -15,7 +15,7 @@ DEBDIR=/usr/src/packages/BUILD/dsr
 
 mkdir ${BUILDDIR}
 
-cd $GIT
+cd $GIT || exit
 
 rm $GIT/setup/Output/DSR-${VERSION}.tar.gz
 
@@ -23,7 +23,7 @@ PYTHONPATH=$GIT python ./scripts/make_zipfile.py
 
 cp setup/Output/DSR-${VERSION}.tar.gz /usr/src/packages/BUILD/
 cp setup/Output/DSR-${VERSION}.tar.gz /usr/src/packages/SOURCES
-cd ${GIT}
+cd ${GIT} || exit
 
 echo "#### tgz file finished ####"
 
@@ -52,7 +52,7 @@ echo "################### deb file finished  ####################"
 
 cp $GIT/setup/dsr-linux.spec $PACK/SPECS
 
-cd $PACK/SPECS
+cd $PACK/SPECS  || exit
 
 echo "### running dos2unix ###"
 dos2unix dsr-linux.spec
@@ -72,11 +72,11 @@ cp /usr/src/packages/RPMS/noarch/DSR-$VERSION-0.noarch.rpm /usr/src/packages/BUI
 ## Debian:
 ##########################################
 
-cd $GIT
+cd $GIT || exit
 
 cp -r setup/debian-package/DEBIAN $PACK/BUILD/dsr
 
-cd $PACK/BUILD
+cd $PACK/BUILD || exit
 
 dpkg-deb --build dsr
 
