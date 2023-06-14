@@ -10,7 +10,7 @@ import sys
 
 pth = pathlib.Path(__file__).parent.parent
 print(pth)
-sys.path.insert(0, str(pth / 'src/DSR'))
+sys.path.insert(0, str(pth / 'src/dsr_shelx'))
 sys.path.insert(0, str(pth))
 
 from version import VERSION
