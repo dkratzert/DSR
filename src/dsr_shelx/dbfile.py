@@ -945,8 +945,7 @@ class ImportGRADE():
             tmp.append(line)
         return tmp
 
-    def get_name_from_pdbfile(self):
-        # type: () -> str
+    def get_name_from_pdbfile(self) -> str:
         """
         get the fragment name from the pdbfile.txt file
 
@@ -955,7 +954,7 @@ class ImportGRADE():
         >>> mog.get_name_from_pdbfile()
         'Alanine'
         """
-        full_name = None
+        full_name = ''
         full_name_regex = re.compile(r'^.*Compound full name.*')
         for line in self._pdbfile:
             if not isinstance(line, str):
