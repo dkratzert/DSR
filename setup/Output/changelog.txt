@@ -1,6 +1,8 @@
 Recent Changes in DSR
 ---------------------
 
+* 239    Fixes import of Grade2 files with charged atoms.
+* 238    Fixes import of Grade2 files.
 * 237    Ported DSR to Python3.
 * 236    Made Q-peaks in a database entry valid. The Q-peak behaves like a carbon atom as in SHELX.
 * 235    Updated email addresses.
