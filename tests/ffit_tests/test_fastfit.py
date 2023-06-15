@@ -3,8 +3,9 @@ import sys
 import unittest
 from pathlib import Path
 
+from dsr_shelx.misc import copy_file, remove_file
+
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
-from misc import remove_file, copy_file
 
 print(sys.version)
 
@@ -23,7 +24,11 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         # remove this to view the results:
         # self.dsr = '/Applications/DSR/dsr'
         # self.dsr = 'D:\Programme\DSR\dsr'
-        self.dsr = f'python3 src/dsr_shelx/dsr.py'
+        if sys.platform.startswith('win'):
+            python = 'python'
+        else:
+            python = 'python3'
+        self.dsr = f'{python} src/dsr_shelx/dsr.py'
         self.prefix='./tests/ffit_tests'
         print(self.dsr)
 
@@ -58,6 +63,10 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         #         dfix PART 2 occ -31     dfix and part without resi
         # 27 -g (rigid) -re part 2 occ -31
         # 28 PART -1 OCC 10.5 DFIX -> negative part and dfix
+
+    def tearDown(self) -> None:
+        #os.removedirs('dsrsaves')
+        pass
 
     def dsr_runtest(self, nummer=99, parameter='-r', external_file='', hkl=None,
                     limit_start=6, limit_end=-1, ending='res', remlines=None):

@@ -16,6 +16,7 @@ import re
 import sys
 import tarfile
 from copy import deepcopy
+from pathlib import Path
 from typing import List, Dict
 
 from atomhandling import get_atomtypes
@@ -1113,6 +1114,16 @@ class ImportGRADE():
               'relies on GRADE v1.100 and up. ***'.format(filename))
         sys.exit()
 
+    def format_atomlist(self, atomlist: List[str]) -> List[str]:
+        formatted_list = []
+        for y in atomlist:
+            atom_name = y[1]
+            atom_name = ''.join([x for x in atom_name if x.isalpha()])
+            formatted_string = f'{y[0]:<6} -{self.el.get_atomic_number(atom_name)}  {float(y[2]):>8.3f}' \
+                               f'{float(y[3]):>8.3f}{float(y[4]):>8.3f}'
+            formatted_list.append(formatted_string)
+        return formatted_list
+
     def write_user_database(self):
         """
         writes content of existing dsr_user_db.txt and the imported GRADE entry to
@@ -1129,18 +1140,8 @@ class ImportGRADE():
         try:
             with open(self.user_db_path, 'w') as f:
                 for name in grade_db_names:
-                    print('Importing {} ({}) to user database...'.format(self._resi_name, name))
-                    atomlist = imported_entry[name]['atoms']
-                    comments = imported_entry[name]['comments']
-                    comments = '\n'.join([' '.join(i) for i in comments if i])
-                    head = '\n'.join([' '.join(x) for x in imported_entry[name]['restraints']])
-                    atoms = '\n'.join(['{:<6} -{}  {:>8.3f}{:>8.3f}{:>8.3f}' \
-                                      .format(y[0], self.el.get_atomic_number(y[1]), float(y[2]), float(y[3]),
-                                              float(y[4])) for y in atomlist])
-                    resi_name = str(name)
-                    cell = '  '.join(imported_entry[name]['cell'])
-                    dbentry = '<{}> \n{} \nRESI {} \n{} \n{} \n{} \n</{}>\n''\
-                        '.format(resi_name, comments, resi_name, head, cell, atoms, resi_name)
+                    print(f'Importing {self._resi_name} ({name}) to user database...')
+                    dbentry = self.compile_dbentry(imported_entry, name)
                     f.write(dbentry)
         except IOError as e:
             print(e)
@@ -1152,20 +1153,32 @@ class ImportGRADE():
                     if self._db[tag]['dbname'] == 'dsr_user_db':
                         atomlist = self._db[tag]['atoms']
                         head = '\n'.join([''.join(x) for x in self._db[tag]['restraints']])
-                        atoms = '\n'.join(['{:<6}{:<2}{:>8.3f}{:>8.3f}{:>8.3f}'
-                                          .format(y[0], y[1], float(y[2]), float(y[3]), float(y[4])) for y in atomlist])
+                        atoms = '\n'.join([f'{y[0]:<6}{y[1]:<2}{float(y[2]):>8.3f}'
+                                           f'{float(y[3]):>8.3f}{float(y[4]):>8.3f}' for y in atomlist])
                         resi_name = self._db[tag]['resi']
                         comments = '\n'.join(self._db[tag]['comments'])
                         name = self._db[tag]['name']
                         comments = "REM Name: {}\n{}".format(name, comments)
                         fragline = 'FRAG 17 {} {} {} {} {} {}'.format(*self._db[tag]['cell'])
-                        dbentry = '\n<{}> \n{} \nRESI {} \n{} \n{} \n{} \n</{}>\n' \
-                                  ''.format(tag, comments, resi_name, head, fragline, atoms, tag)
+                        dbentry = (f'\n<{tag}> \n{comments} \nRESI {resi_name} \n'
+                                   f'{head} \n{fragline} \n{atoms} \n</{tag}>\n')
                         fu.write(dbentry)
         except IOError as e:
             print(e)
             sys.exit()
         print('User database successfully updated.')
+
+    def compile_dbentry(self, imported_entry: dict, name: str) -> str:
+        atomlist = imported_entry[name]['atoms']
+        comments = imported_entry[name]['comments']
+        comments = '\n'.join([' '.join(i) for i in comments if i])
+        head = '\n'.join([' '.join(x) for x in imported_entry[name]['restraints']])
+        atoms = '\n'.join(self.format_atomlist(atomlist))
+        resi_name = str(name)
+        cell = '  '.join(imported_entry[name]['cell'])
+        dbentry = (f'<{resi_name}> \n{comments} \nRESI {resi_name} \n'
+                   f'{head} \n{cell} \n{atoms} \n</{resi_name}>\n')
+        return dbentry
 
 
 if __name__ == '__main__':

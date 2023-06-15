@@ -24,7 +24,7 @@ I apologize for the messy code. This was my first bigger project...
 You have either a command line version:
 ```
 C:\Users\daniel>dsr
------------------------------------------------------ D S R - v211 -------------------------------------
+----------------------------------------------------- D S R - v238 -------------------------------------
 Disordered Structure Refinement (DSR)
 
 Example DSR .res file command line:
