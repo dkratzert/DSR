@@ -18,12 +18,12 @@ import os
 import random
 import re
 import string
+from pathlib import Path
 
 import mpmath as mpm
 from constants import isoatomstr
 
 alphabet = string.ascii_uppercase
-
 
 
 def write_file(flist, name):
@@ -1079,7 +1079,7 @@ def dice_coefficient2(a, b, case_insens=True):
             i += 1
         else:
             j += 1
-    score = float(2*matches) / float(lena + lenb)
+    score = float(2 * matches) / float(lena + lenb)
     return round(score, 6)
 
 
@@ -1258,6 +1258,7 @@ def chunks(l, n):
         out.append(l[i:i + n])
     return out
 
+
 def read_cif(filename: Path, debug=False):
     """
     Open a Crystallographic Information File (*.cif) file and store all entries in a key:value dictionary
@@ -1330,7 +1331,8 @@ def read_cif(filename: Path, debug=False):
                 if cols[0][0] == '_' or cols[0] == 'loop_':
                     break  # catches error if loop is only 1 iteration
                 if cols[0][0] == '#':
-                    n += 1; continue  # catches comented out lines
+                    n += 1;
+                    continue  # catches comented out lines
                 if len(loopvals) == 1:
                     cifvals[loopvals[0]] += [lines[n].strip(' \"\'\n')]
                 else:
