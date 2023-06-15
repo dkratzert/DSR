@@ -36,6 +36,5 @@ jobs:
           cp -r setup/dsr.sh ${HOME}/.local/bin/dsr
           cp -r * ${HOME}/.local/bin/
           
-          export PYTHONPATH=src/dsr
-          export DSR_DIR=src/dsr
+          export DSR_DIR=src/dsr_shelx
           pytest --verbose

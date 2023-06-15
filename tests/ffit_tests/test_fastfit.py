@@ -1,6 +1,7 @@
 import os
 import sys
 import unittest
+from contextlib import suppress
 from pathlib import Path
 
 from dsr_shelx.misc import copy_file, remove_file
@@ -65,8 +66,10 @@ class dsr_complete_runs_ffit_Test(unittest.TestCase):
         # 28 PART -1 OCC 10.5 DFIX -> negative part and dfix
 
     def tearDown(self) -> None:
-        #os.removedirs('dsrsaves')
-        pass
+        for file in Path('tests/dsrsaves').glob('*.*'):
+            file.unlink(missing_ok=True)
+        with suppress(Exception):
+            os.removedirs('tests/dsrsaves')
 
     def dsr_runtest(self, nummer=99, parameter='-r', external_file='', hkl=None,
                     limit_start=6, limit_end=-1, ending='res', remlines=None):
