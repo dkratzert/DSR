@@ -19,6 +19,7 @@ import random
 import re
 import string
 from pathlib import Path
+from typing import List
 
 import mpmath as mpm
 from constants import isoatomstr
@@ -1259,7 +1260,7 @@ def chunks(l, n):
     return out
 
 
-def read_cif(filename: Path, debug=False):
+def read_cif(lines: List[str], debug=False):
     """
     Open a Crystallographic Information File (*.cif) file and store all entries in a key:value dictionary
      Looped values are stored as lists under a single key entry
@@ -1273,8 +1274,6 @@ def read_cif(filename: Path, debug=False):
 
     Modified version of the CIF parser in https://github.com/DanPorter/Dans_Diffraction
     """
-    lines = filename.read_text(encoding='latin1', errors='ignore').splitlines(keepends=False)
-
     cifvals = {}
 
     # Read file line by line, converting the cif file values to a python dict

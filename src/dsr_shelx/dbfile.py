@@ -9,21 +9,20 @@
 # Daniel Kratzert
 # ----------------------------------------------------------------------------
 #
-
-
+import dataclasses
 import os
 import re
 import sys
 import tarfile
 from copy import deepcopy
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Union
 
 from atomhandling import get_atomtypes
 from atoms import Element
 from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
 from misc import atomic_distance, nalimov_test, std_dev, median, pairwise, \
-    unwrap_head_lines, dice_coefficient2, frac_to_cart
+    unwrap_head_lines, dice_coefficient2, frac_to_cart, read_cif
 
 not_existing_error = '*** Fragment "{}" not found in database ***'
 
@@ -871,15 +870,19 @@ def get_first_last_atom(atoms):
     return first, last
 
 
+@dataclasses.dataclass()
+class GradeFiles():
+    cif_file: str
+    pdb_file: str
+    dfix_file: str
+    dfix_file_hydrogen: str
+
+
 class ImportGRADE():
-    def __init__(self, grade_tar_file, db, invert=False, maindb=None, userdb=None):
+    def __init__(self, grade_tar_file: str, db, invert=False, maindb=None, userdb=None):
         """
         class to import fragments from GRADE of Global Phasing Ltd.
-        :param grade_tar_file:
-        :type grade_tar_file:
-        :param invert:
-        :type invert:
-        :type maindb:   string
+        :type maindb:   str, None
         :param userdb:  directory where the user database is located.
                         Default is the users home directory.
         :type userdb:   string
@@ -892,49 +895,52 @@ class ImportGRADE():
         self._db_dir = os.path.expanduser("~")
         self._db_tags = self._db.get_fragment_tags()
         self._db = self._db.databases
-        gradefiles = self.get_gradefiles(grade_tar_file)
-        self._pdbfile = gradefiles[0]
-        self._dfixfile = gradefiles[1]
-        # self._obpropfile = gradefiles[2]
-        self._atoms = self.get_pdbatoms(self._pdbfile)
+        self.gradefiles = self.get_gradefiles(Path(grade_tar_file))
+        self._atoms = self.get_pdbatoms(self.gradefiles.pdb_file)
         self._firstlast = get_first_last_atom(self._atoms)
         self._restraints = self.get_restraints()
         self._resi_name = self.get_resi_from_pdbfile()
         if not isinstance(self._resi_name, str):
             self._resi_name = self._resi_name.decode()
 
-    def get_gradefiles(self, grade_tar_file):
+    def get_gradefiles(self, grade_tar_file: Path) -> GradeFiles:
         """
         returns the .mol2 and .dfix file location
         """
-        grade_base_filename = os.path.splitext(grade_tar_file)
-        if grade_base_filename[1] == '.tgz':
+        if grade_tar_file.suffix == '.tgz':
             try:
                 gradefile = tarfile.open(grade_tar_file)  # , encoding="ascii")
             except IOError:
                 print('No such file or directory: {}'.format(grade_tar_file))
                 sys.exit()
         else:
-            print('*** File {} is not a valid file to import from ***'.format(grade_base_filename[1]))
+            print(f'*** File {grade_tar_file} is not a valid file to import from ***')
             sys.exit()
-        pdbfile = False
-        dfixfile = False
-        for i in gradefile.getnames():
-            if i.endswith('.pdb'):
-                if re.match(r'.*obabel.*', i):
+        pdbfile = ''
+        dfixfile = ''
+        dfixfile_hydrogens = ''
+        cif_file = ''
+        for filename in gradefile.getnames():
+            if filename.endswith('.pdb'):
+                if re.match(r'.*obabel.*', filename):
                     continue
-                pdbfile = gradefile.extractfile(i)
-            if i.endswith('.dfix'):
-                dfixfile = gradefile.extractfile(i)
+                pdbfile = gradefile.extractfile(filename)
+            if filename.endswith('.dfix') and 'with_hydrogen' not in Path(filename).suffixes:
+                dfixfile = gradefile.extractfile(filename)
+            if filename.endswith('.dfix') and 'with_hydrogen' in Path(filename).suffixes:
+                dfixfile_hydrogens = gradefile.extractfile(filename)
+            if filename.endswith('.cif'):
+                cif_file = gradefile.extractfile(filename)
         if not pdbfile:
             print(' .pdb file not found!')
             self.import_error(grade_tar_file)
         elif not dfixfile:
             print(' .dfix file not found!')
             self.import_error(grade_tar_file)
-        output = []
-        output.append(self._read_tarfile_as_ascii(pdbfile))
-        output.append(self._read_tarfile_as_ascii(dfixfile))
+        output = GradeFiles(pdb_file=pdbfile.read().decode('latin1'),
+                            dfix_file=dfixfile.read().decode('latin1'),
+                            dfix_file_hydrogen=dfixfile_hydrogens,
+                            cif_file=cif_file.read().decode('latin1'))
         return output
 
     @staticmethod
@@ -957,7 +963,7 @@ class ImportGRADE():
         """
         full_name = ''
         full_name_regex = re.compile(r'^.*Compound full name.*')
-        for line in self._pdbfile:
+        for line in self.gradefiles.pdb_file.splitlines(keepends=False):
             if not isinstance(line, str):
                 line = line.decode('ascii')
             if not line:
@@ -975,6 +981,12 @@ class ImportGRADE():
                     full_name = line[5]
         return full_name
 
+    def get_name_from_cif_file(self) -> str:
+        cif_str = self.gradefiles.cif_file.splitlines(keepends=False)
+        cif = read_cif(cif_str)
+        name = cif.get('_chem_comp.name')[0]
+        return name
+
     def get_resi_from_pdbfile(self):
         """
         get the fragment name from the pdbfile.txt file
@@ -986,7 +998,7 @@ class ImportGRADE():
         """
         resi_name = None
         resi_regex = re.compile(r'^HETATM\s+1.*')
-        for line in self._pdbfile:
+        for line in self.gradefiles.pdb_file.splitlines(keepends=False):
             if not isinstance(line, str):
                 line = line.decode('ascii')
             if not line:
@@ -1013,10 +1025,10 @@ class ImportGRADE():
         matches = ['REM Produced by Grade', 'REM GEN:', 'REM grade-cif2shelx', 'REM Version:',
                    'REM Total charge', 'REM Name:']
         comments = []
-        name = 'REM Name: ' + self.get_name_from_pdbfile()
+        name = f'REM Name: {self.get_name_from_pdbfile() or self.get_name_from_cif_file()}'
         comments.append(name.split())
         for m in matches:
-            for line in self._dfixfile:
+            for line in self.gradefiles.dfix_file.splitlines():
                 if not isinstance(line, str):
                     line = line.decode()
                 if line.startswith(m):
@@ -1028,10 +1040,10 @@ class ImportGRADE():
         reads the restraints from a dfix-file
         """
         restraints = []
-        for line in self._dfixfile:
+        for line in self.gradefiles.dfix_file.splitlines(keepends=False):
             if not isinstance(line, str):
                 line = line.decode()
-            line = line.strip('\n\r').split()
+            line = line.split()
             if line:
                 line[0] = line[0][:4].upper()
                 if line[0] in RESTRAINT_CARDS:
@@ -1051,10 +1063,12 @@ class ImportGRADE():
         returns the atoms from a pdb file
         """
         atomlines = []
-        for line in pdb:
+        for line in pdb.splitlines(keepends=False):
             if not isinstance(line, str):
                 line = line.decode()
             line = line.split()
+            if not line:
+                continue
             if line[0] == 'HETATM':
                 if line[-1] == 'H':
                     continue
@@ -1105,13 +1119,11 @@ class ImportGRADE():
         return db_import_dict
 
     @staticmethod
-    def import_error(filename):
-        # type: (str) -> NotImplemented
+    def import_error(filename: Union[str, Path]):
         """
         warns for import errors
         """
-        print('*** Unable to import GRADE file {} GRADE import to DSR '
-              'relies on GRADE v1.100 and up. ***'.format(filename))
+        print(f'*** Unable to import GRADE file {filename} GRADE import to DSR relies on GRADE v1.100 and up. ***')
         sys.exit()
 
     def format_atomlist(self, atomlist: List[str]) -> List[str]:

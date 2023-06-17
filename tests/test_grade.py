@@ -3,36 +3,15 @@ from pathlib import Path
 
 from dsr_shelx import dbfile
 from dsr_shelx.dbfile import ImportGRADE
+from misc import read_cif
 from tests import grade2_import_test_result
+
 
 class ImportGRADE_Test(unittest.TestCase):
     def setUp(self):
         self.gdb = dbfile.ParseDB(maindb_path=Path('src/dsr_shelx/dsr_db.txt').resolve().__str__())
         self.ig = ImportGRADE('./tests/test-data/PFA.gradeserver_all.tgz', self.gdb)
         self.igi = ImportGRADE('./tests/test-data/PFA.gradeserver_all.tgz', self.gdb, invert=True)
-
-    # test for PFA1 is already in db and we want to import again
-
-    def testrun_get_gradefiles(self):
-        """
-        files[0] = pdb
-        files[1] = dfix
-        files[2] = obprop
-        """
-        self.maxDiff = None
-        files = self.ig.get_gradefiles('./tests/test-data/PFA.gradeserver_all.tgz')
-        filenames = ['./tests/grade-PFA.pdb', './tests/grade-PFA.dfix']
-        endings = []
-        for num, i in enumerate(filenames):
-            with open(i) as test_file:
-                #   endings.append(test_file.readlines())
-                tmp = []
-                for line in test_file:
-                    if not isinstance(line, str):
-                        line = line.decode()
-                    tmp.append(line)
-                endings.append(tmp)
-            self.assertListEqual(endings[num], files[num])
 
     def testrun_get_comments(self):
         self.maxDiff = None
@@ -48,14 +27,14 @@ class ImportGRADE_Test(unittest.TestCase):
         self.assertEqual(comments, ob)
 
     def testrun_get_firstlast(self):
-        files = self.ig.get_gradefiles('./tests/test-data/PFA.gradeserver_all.tgz')
-        atoms = self.ig.get_pdbatoms(files[0])
+        files = self.ig.get_gradefiles(Path('./tests/test-data/PFA.gradeserver_all.tgz'))
+        atoms = self.ig.get_pdbatoms(files.pdb_file)
         fl = dbfile.get_first_last_atom(atoms)
         self.assertTupleEqual(fl, ('AL1', 'F36'))
 
     def test_get_grade_v2_atoms(self):
-        files = self.ig.get_gradefiles('./tests/test-data/pcb.gradeserver_v2_all.tgz')
-        atoms = self.ig.get_pdbatoms(files[0])
+        files = self.ig.get_gradefiles(Path('./tests/test-data/pcb.gradeserver_v2_all.tgz'))
+        atoms = self.ig.get_pdbatoms(files.pdb_file)
         self.assertListEqual(atoms,
                              [['CL1', 'CL', '3.866', '0.027', '-0.274'],
                               ['C2', 'C', '2.147', '-0.006', '-0.118'],
@@ -79,6 +58,11 @@ class ImportGRADE_Test(unittest.TestCase):
         self.assertEqual(grade2_import_test_result.result_v2, imported_entry)
         self.assertEqual(grade2_import_test_result.result_v2_as_text, dbentry)
 
+    def test_get_grade_v2_cif(self):
+        ig = ImportGRADE('./tests/test-data/pcb.gradeserver_v2_all.tgz', self.gdb)
+        cif = read_cif(ig.gradefiles.cif_file.splitlines(keepends=False))
+        self.assertEqual('foobar', cif.get('_chem_comp.name')[0])
+
     def testrun_deleted_pdb_file(self):
         with self.assertRaises(SystemExit):
             gdb = dbfile.ParseDB('tests/test-data/userdb.txt')
@@ -101,6 +85,6 @@ class ImportGRADE_Test(unittest.TestCase):
     def testrun_get_pdbatoms(self):
         # pdblines = []
         with open('./tests/grade-PFA.pdb') as pdb_file:
-            pdblines = pdb_file.readlines()
+            pdblines = pdb_file.read()
             pdbatoms = self.ig.get_pdbatoms(pdblines)
             self.assertListEqual(['AL1', 'AL', '9.463', '-3.351', '3.397'], pdbatoms[0])

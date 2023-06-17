@@ -13,7 +13,7 @@ result_v2 = {'PCB': {'atoms'     : [['CL1', 'CL', '3.866', '0.027', '-0.274'],
                                     ['C13', 'C', '0.067', '-1.229', '-0.131'],
                                     ['CL14', 'CL', '-0.792', '-2.715', '-0.303']],
                      'cell'      : ['FRAG', '17', '1', '1', '1', '90', '90', '90'],
-                     'comments'  : [['REM', 'Name:']],
+                     'comments'  : [['REM', 'Name:', 'foobar']],
                      'db'        : 'dsr_user_db',
                      'line'      : None,
                      'name'      : 'PCB',
@@ -71,7 +71,7 @@ result_v2 = {'PCB': {'atoms'     : [['CL1', 'CL', '3.866', '0.027', '-0.274'],
                                     ['RIGU', 'CL1', '>', 'CL14']]}}
 
 result_v2_as_text = """<PCB> 
-REM Name: 
+REM Name: foobar 
 RESI PCB 
 DFIX 1.724 0.012 CL1 C2
 DFIX 1.393 0.011 C2 C3
