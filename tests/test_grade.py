@@ -22,7 +22,7 @@ class ImportGRADE_Test(unittest.TestCase):
                 # line = str(line, encoding='ascii')
                 ob.append(line.split())
         comments = self.ig.get_comments()
-        name = u'REM Name: ' + u'AlOCCF334'
+        name = 'REM Name: ' + 'AlOCCF334'
         ob.insert(0, name.split())  # Name is always at first place
         self.assertEqual(comments, ob)
 

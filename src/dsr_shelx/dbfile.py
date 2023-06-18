@@ -982,9 +982,12 @@ class ImportGRADE():
         return full_name
 
     def get_name_from_cif_file(self) -> str:
+        name = ''
         cif_str = self.gradefiles.cif_file.splitlines(keepends=False)
         cif = read_cif(cif_str)
-        name = cif.get('_chem_comp.name')[0]
+        cif_value = cif.get('_chem_comp.name')
+        if cif_value and isinstance(cif_value, (list, tuple)):
+            name = cif_value[0]
         return name
 
     def get_resi_from_pdbfile(self):
