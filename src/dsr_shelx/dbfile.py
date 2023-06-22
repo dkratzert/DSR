@@ -179,7 +179,7 @@ class ParseDB():
         if userdb_path:
             self.parse(userdb_path, 'dsr_user_db')
 
-    def parse(self, dbpath: str = '', dbname: str = 'dsr_db') -> dict[str, dict[str, str]]:
+    def parse(self, dbpath: str = '', dbname: str = 'dsr_db') -> Dict[str, Dict[str, str]]:
         """
         This method returns all fragment name tags in the database
 
@@ -207,7 +207,7 @@ class ParseDB():
         []
         """
         frag_tag = ''
-        db: dict[str, dict[str, str]] = dict()
+        db: Dict[str, Dict[str, str]] = dict()
         start_regex = re.compile(r'<[^/].*>', re.IGNORECASE)  # regular expression for db tag.
         starttag = False
         fraglines = []
