@@ -37,9 +37,9 @@ jobs:
           mkdir -p ${HOME}/.local/bin
           echo ${HOME}/.local/bin >> $GITHUB_PATH
           curl -o ${HOME}/.local/bin/shelxl https://dkratzert.de/files/shelx/shelxl
-          chmod a+x setup/dsr.sh
+          chmod a+x src/dsr_shelx/dsr
           chmod a+x ${HOME}/.local/bin/shelxl
-          cp -r setup/dsr.sh ${HOME}/.local/bin/dsr
+          cp -r src/dsr_shelx/dsr ${HOME}/.local/bin/dsr
           cp -r * ${HOME}/.local/bin/
           
           export DSR_DIR=src/dsr_shelx
