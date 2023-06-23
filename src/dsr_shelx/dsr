@@ -12,5 +12,5 @@ PYTHON_EXE=$(which python3)
 if [ $# -eq 0 ]; then
   $PYTHON_EXE $DSR_DIR/dsr.py --help
 else
-  $PYTHON_EXE $DSR_DIR/dsr.py $*
+  $PYTHON_EXE $DSR_DIR/dsr.py "$*"
 fi

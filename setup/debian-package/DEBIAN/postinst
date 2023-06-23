@@ -1,6 +1,0 @@
-#!/bin/bash
-
-chmod a+x /opt/DSR/dsr
-chmod 644 /etc/profile.d/dsr.sh
-chmod a+w /opt/DSR/example
-source /etc/profile.d/dsr.sh
