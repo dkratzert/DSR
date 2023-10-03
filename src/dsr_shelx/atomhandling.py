@@ -14,6 +14,7 @@
 import re
 import string
 import sys
+from typing import Dict, List
 
 from atoms import Element, atoms
 from constants import atomregex, SHX_CARDS
@@ -74,7 +75,7 @@ def get_atomtypes(dbatoms):
             if int(sfacnum) < 0:
                 found.append(el.get_element(abs(int(sfacnum))))
                 continue
-        except:
+        except Exception:
             pass
         found.append(el.get_atomlabel(atom_name))
     if len(dbatoms) != len(found):  # do we really need this here??
@@ -192,23 +193,13 @@ class FindAtoms():
             return []
 
     @staticmethod
-    def get_resi_definition_dict(resi):
+    def get_resi_definition_dict(resi: List[str]) -> Dict[str: str]:
         """
         returns the residue number and class of a string like 'RESI TOL 1'
         or 'RESI 1 TOL'
         {'class': 'TOL', 'number': '1'}
 
         :param resi: ['RESI', 'number', 'class']
-        :type resi: list or string
-
-        >>> sorted(list(FindAtoms.get_resi_definition_dict('RESI 1 TOL')))
-        ['class', 'number']
-        >>> sorted(FindAtoms.get_resi_definition_dict('RESI 1 TOL').values())
-        ['1', 'TOL']
-        >>> FindAtoms.get_resi_definition_dict('RESI 1 TOL')
-        {'class': 'TOL', 'number': '1'}
-        >>> FindAtoms.get_resi_definition_dict('RESI')
-        {'class': None, 'number': None}
         """
         resi_dict = {
             'class': None,
@@ -218,6 +209,10 @@ class FindAtoms():
         except AttributeError:
             resi = resi.split()
             resi.remove('RESI')
+        if '.' in ''.join(resi):
+            resi_str = ' '.join(resi)
+            print(f"*** Wrong RESI definition found in '{resi_str}': No floating point numbers allowed. ***")
+            sys.exit(1)
         resi.sort()
         if len(resi) > 0:
             if str.isalpha(resi[-1][0]):

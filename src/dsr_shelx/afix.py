@@ -58,7 +58,7 @@ def collect_all_restraints(reslist):
         # resline = resline.split()
         try:
             resline[:4]
-        except:
+        except Exception:
             continue
         if resline[:4] in RESTRAINT_CARDS:
             # see for the next  lines if the lines continues with "=":
@@ -66,7 +66,7 @@ def collect_all_restraints(reslist):
             while resline[-1] == '=':
                 resline = resline[:-1] + reslist[n + line + 1]
                 line += 1
-                if not resline[-1] == '=':
+                if resline[-1] != '=':
                     break
                 if line > 500:
                     break

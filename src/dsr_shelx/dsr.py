@@ -33,21 +33,8 @@ from terminalsize import get_terminal_size
 from version import VERSION
 import time
 
-# dont forget to change version in Innoscript file, spec file and deb file.
 minuse = ((width // 2) - 7) * '-'
 program_name = '\n{} D S R - v{} {}'.format(minuse, VERSION, minuse)
-
-# TODO and ideas:
-"""
-- make DSR Python3-only
-- Split mode
-  - calc principal axis for each ellipsoid
-  - generate atoms
-  - decide which new bond to new and old atoms would leave the bond length intact
-  - generate parts and restraints
-- Add Rcomplete
-
-"""
 
 
 class DSR(object):
@@ -123,7 +110,7 @@ class DSR(object):
         if self.search_extern:
             result = search_fragment_name(self.search_extern, self.gdb, numresults=8)
             for i in result:
-                print('{};;{};;{};;{}'.format(i[0], i[1], i[2], i[3]))
+                print(f'{i[0]};;{i[1]};;{i[2]};;{i[3]}')
             sys.exit()
         print(program_name)
         if self.list_db:
@@ -210,8 +197,8 @@ class DSR(object):
             fragnames.append(line[0])
             line = ' {:<17}| {:<5}| {:<11}| {}'.format(*line)
             print(line[:width - 1])
-        print('\n {} Fragments in the database(s).'.format(num),
-              '\n Feel free to add more fragments to "{}dsr_user_db.txt"\n'.format(dbdir + os.path.sep))
+        print(f'\n {num} Fragments in the database(s).',
+              f'\n Feel free to add more fragments to "{dbdir + os.path.sep}dsr_user_db.txt"\n')
         for fragment in fragnames:
             self.gdb.check_consistency(fragment)
             self.gdb.check_db_atom_consistency(fragment)
