@@ -193,7 +193,7 @@ class FindAtoms():
             return []
 
     @staticmethod
-    def get_resi_definition_dict(resi: List[str]) -> Dict[str: str]:
+    def get_resi_definition_dict(resi: List[str]) -> Dict[str, str]:
         """
         returns the residue number and class of a string like 'RESI TOL 1'
         or 'RESI 1 TOL'
