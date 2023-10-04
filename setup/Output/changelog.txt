@@ -1,6 +1,7 @@
 Recent Changes in DSR
 ---------------------
 
+* 242    Fixed crash when RESI contains a floating point number.
 * 241    Fixed crash with certain Python3 versions
 * 240    Improved import of fragment name from Grade2 files.
 * 239    Fixes import of Grade2 files with charged atoms.
