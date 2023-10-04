@@ -42,7 +42,7 @@ class DSR(object):
     main class
     """
 
-    def __init__(self, options):
+    def __init__(self, options: OptionsParser):
         """
         """
         time1 = time.perf_counter()
@@ -367,12 +367,11 @@ class DSR(object):
 
         # Adds the origin of restraints and fragment to res file:
         import textwrap
-        source = textwrap.wrap("REM Restraints for Fragment {}, {} from: {}. "
-                               "Please cite https://doi.org/10.1107/S1600576718004508".format(
-            self.fragment,
-            self.gdb.get_fragment_name(self.fragment),
-            self.gdb.get_src(self.fragment)),
-            width=74, subsequent_indent='REM ')
+        source = textwrap.wrap(f"REM Restraints for Fragment {self.fragment}, "
+                               f"{self.gdb.get_fragment_name(self.fragment)} "
+                               f"from: {self.gdb.get_src(self.fragment)}. "
+                               f"Please cite https://doi.org/10.1107/S1600576718004508",
+                               width=74, subsequent_indent='REM ')
         if dsrp.resi:
             hfixes = '\n'.join(self.gdb.get_hfixes(self.fragment, resi.get_residue_class))
             if hfixes:
@@ -443,8 +442,8 @@ def main():
     try:
         options = OptionsParser(program_name)
         if is_listfile:
-            lstfile.write('Python version: {}\n'.format(sys.version))
-            lstfile.write("Date: {} \n".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+            lstfile.write(f'Python version: {sys.version}\n')
+            lstfile.write(f"Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} \n")
             lstfile.write(options.__str__())
         DSR(options)
     except Exception:
@@ -452,17 +451,17 @@ def main():
 
         if is_listfile:
             lstpath = os.path.abspath(lstfile.name)
-            lst = 'the file "{}" \nand '.format(lstpath)
+            lst = f'the file "{lstpath}" \nand '
         else:
             lst = "this error message and "
-        print('\n*** Congratulations! You found a bug in DSR. Please send {}the .res file '
-              '(if possible) to dkratzert@gmx.de ***\n\n'.format(lst))
-        print('DSR version: {}'.format(VERSION))
-        print('Python version: {}'.format(sys.version))
+        print(
+            f'\n*** Congratulations! You found a bug in DSR. Please send {lst}the'
+            f' .res file (if possible) to dkratzert@gmx.de ***\n\n')
+        print(f'DSR version: {VERSION}')
+        print(f'Python version: {sys.version}')
         if options:
-            print('Commandline: {}'.format(options.all_options))
-        print('Platform: {} {}, {}'.format(platform.system(),
-                                           platform.release(), ' '.join(platform.uname())))
+            print(f'Commandline: {options.all_options}')
+        print(f'Platform: {platform.system()} {platform.release()}, {" ".join(platform.uname())}')
         print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
         raise
 
