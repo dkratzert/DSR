@@ -225,3 +225,4 @@ test.res
 icp/
 /dsr.build/
 /dsr.dist/
+/docs/_build

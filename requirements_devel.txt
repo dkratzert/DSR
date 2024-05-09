@@ -1,0 +1,9 @@
+# documentation:
+# Go to docs and do:
+# ./make singlehtml
+
+# For development
+#pyinstaller
+sphinx
+sphinx-rtd-theme
+pytest

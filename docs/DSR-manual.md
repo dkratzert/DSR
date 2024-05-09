@@ -19,6 +19,8 @@ If you find any bugs in this program, have feature requests or just
 comments; please don't hesitate to write an email to <dkratzert@gmx.de>
 to report these.
 
+`Link text <link URL>`_
+
 Please cite DSR as:
 
 D. Kratzert, J.J. Holstein, I. Krossing, *J. Appl. Cryst.*
