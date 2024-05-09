@@ -109,27 +109,33 @@ Since version 181, `ShelXle <http://www.shelxle.org>`_
 has the ability to start a graphical user interface for DSR. A mouse
 click on *Tools*--\> *DSR plugin* will start the DSR GUI:
 
-![](/Users/daniel/Documents/GitHub/DSR/docs/images/media/image1.png){width="6.166666666666667in"
-height="0.6959995625546807in"}
+.. image:: images/media/image1.png
+  :width: 100%
+  :alt: Start plugin
 
-![](/Users/daniel/Documents/GitHub/DSR/docs/images/media/image2.tiff){width="4.0779921259842515in"
-height="3.6771489501312336in"}
+.. image:: images/media/image2.png
+  :width: 100%
+  :alt: DSR Window
 
-Now you need to select a fragment in the list. The list of fragments can
-be shortened via the search field.
+
+Now you need to select a fragment in the list. The list of fragments
+can be searched using the search field. The search shortens the list
+to the fragments that best match by name.
 
 To fit a fragment into the structure in ShelXle, select three
 atoms/Q-peaks in the target molecule (with a left mouse click while
 holding STRG) and the fragments 3D view (just left mouse click) each.
 The 3D view should now show a preview of the fitted fragment:
 
-![](/Users/daniel/Documents/GitHub/DSR/docs/images/media/image3.png){width="2.4102449693788275in"
-height="2.256988188976378in"}
+.. image:: images/media/image3.png
+  :width: 100%
+  :alt: Fragment fit
 
 You can now control all the features of DSR with the options menu below:
 
-![](/Users/daniel/Documents/GitHub/DSR/docs/images/media/image4.tiff){width="6.071395450568679in"
-height="1.2321544181977253in"}
+.. image:: images/media/image4.png
+  :width: 100%
+  :alt: Options
 
 Setting PART to zero will disable them. The residue number will always
 be chosen as the next free available. You can safely leave this as it is
@@ -137,17 +143,19 @@ or change the residue name.
 
 The "Free variable" option defines the free variable for the fragment
 occupation in SHELXL. The Free variable will be combined with the
-occupation option. For example a free variable of -3 and an occupation
-of 1 will be combined to -31. The result appears instantly in the output
+occupation option. For example a free variable of --3 and an occupation
+of 1 will be combined to --31. The result appears instantly in the output
 window.
 
 "External restraints" writes the restraints to an external file.
 
 "Calculate DFIX" automatically generates DFIX/DANG/FLAT restraints from
-the geometry of the fragment.
+the geometry of the fragment. This can be particular useful to stabilize
+the a fragment on special positions.
 
-![](/Users/daniel/Documents/GitHub/DSR/docs/images/media/image5.png){width="4.8909492563429575in"
-height="3.4003762029746283in"}
+.. image:: images/media/image5.png
+  :width: 100%
+  :alt: Start plugin
 
 To create or edit a fragment, click on \"Edit fragment\". The edit
 window allows adding, updating and deleting of fragments.
