@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Disordered Structure Refinement (DSR)
-=====================================
+#####################################
 
 *Enhanced modelling and refinement of disordered structures with SHELXL*
 

@@ -1,6 +1,6 @@
 
 Preface
-=======
+*******
 
 The following user manual explains the usage of the program DSR. It
 allows for a semi-automatic modelling of disordered moieties. Its
@@ -30,7 +30,7 @@ stabilize a first model. **DSR does not replace the judgment of an
 expert.**
 
 Program Overview
-================
+****************
 
 The program-package consists of a simple text-database with fragments of
 molecules and the DSR program itself. It acts as a preprocessor for
@@ -48,10 +48,10 @@ It is a port of DSR to Olex2.
 
 
 Installation
-============
+************
 
 Windows
--------
+=======
 
 Execute the "DSR-setup-[version number].exe" and follow the
 instructions.
@@ -60,7 +60,7 @@ DSR needs at least Windows 7 or Windows 10 for the latest version.
 might be necessary.**
 
 Linux
------
+=====
 
 Either install DSR according to
 the installation procedure of your LINUX distribution. Or install the
@@ -77,7 +77,7 @@ files dsr.sh, dsr-mac and dsr-linux are removed from /etc/profile.d/ and/or
 /etc/paths.d/.
 
 MacOS
------
+=====
 
 Install the dsr-shelx package from `pypi.org <https://pypi.org/project/dsr-shelx/>`_.
 
@@ -88,7 +88,7 @@ files dsr.sh, dsr-mac and dsr-linux are removed from /etc/profile.d/ and/or
 
 
 User-defined database
----------------------
+=====================
 
 DSR expects the database file "dsr_user_db.txt" with
 self-made fragments in the user's home directory. The installation
@@ -103,7 +103,7 @@ Mac OS X: /Users/username/
 
 
 DSR in ShelXle
-==============
+**************
 
 Since version 181, `ShelXle <http://www.shelxle.org>`_
 has the ability to start a graphical user interface for DSR. A mouse
@@ -169,5 +169,313 @@ not have to invent a database name tag. It will be randomly chosen,
 because the GUI will never show them. Instead the GUI always shows the
 real fragments names.
 
-If you have a new fragment, you should consider sending it to me by
-clicking on \"Mail Fragment Home\".
+Rename mode
+***********
+
+In order to rename the atoms in a fragment, click on "Enter Rename Mode". The
+editor will you now only allow editing of atomic names. The restraints
+will be renamed accordingly while you are typing. Accept the changes
+with "OK" or discard them with "Abort".
+
+After renaming, you can save the changes by clicking "Add as new" or
+"Update fragment".
+
+.. image:: images/media/image6.png
+  :width: 100%
+  :alt: Rename mode
+
+
+Background Informtion
+*********************
+
+General Procedure
+=================
+
+Although DSR has a graphical user interface in ShelXle, it can also be run on
+the command line only. Therefore, insert the DSR command explained in
+the following chapter into the .res file. Then, run
+"dsr -r filename.res" and DSR will transfer the fragment from the
+database into the structure. The resulting *filename.res* can now be
+reopened for further refinement. The new fragment is then exactly in
+front of the HKLF instruction of the .res file. The respective
+restraints are located directly after the UNIT instruction. In order to
+be able to revert the changes in the .res file, DSR creates a backup
+file in a subdirectory \"dsrsaves\" with the current date as file name
+before every action.
+
+Command Syntax
+==============
+
+The DSR command has the following syntax:
+
+REM DSR PUT/REPLACE fragment WITH atom1 atom2 atom3 \... ON atom2 atom3
+atom4 \... PART n OCC mn RESI class num \[alias\] DFIX
+
+The command is introduced with a REM because SHELXL should never
+interpret the DSR command line.
+
+PUT Put the fragment on there, ignoring atoms on this position.
+
+REPLACE Replace the target atoms. Hydrogen atoms of target atoms should
+be prior removed.
+
+fragment The name of the desired molecule or fragment.
+
+WITH Behind WITH are the source atoms. They are at least three atoms
+from the fragment.
+
+ON Behind ON are the target atoms. They are at least three atoms or
+Q-peaks in the .res- file.
+
+\[atom n\] Minimum three atoms each (including Q-peaks). Source and
+target have to include the same number of atoms and/or Q-peaks. Target
+atoms can be either regular atoms or atoms in residues. Atoms in
+residues can be addressed by the "\_" notation. C1_2 would be atom C1 in
+residue number 2.
+
+PART n Optional SHELXL PART definition.
+
+OCC mn Optional occupancy and free variable definition for the fragment.
+
+DFIX Optional, generates DFIX/DANG restraints instead of those from the
+database. All 1,2- and 1,3-distances in the fragment are restrained with
+DFIX and DANG respectively. DSR also searches for rings in the fragment
+and generates FLAT restraints for flat rings.
+
+RESI class num \[alias\] Optional residue definition as in SHELXL.
+
+SPLIT Only for a disordered CF3 group on two positions (CF6 fragment).
+Splits the pivot atom in two positions.
+
+Example
+=======
+
+The following command line can be inserted anywhere between the atoms of
+a .res file.
+
+**REM DSR put toluene with C1 C2 C3 on Q1 C5 C2**
+
+The command is always introduced with a REM. The case does not matter,
+DSR is completely case insensitive. The DSR command line can be up to
+two lines with a trailing \"=\" for a continuation line like in SHELX.
+Please note that the second line of the DSR COMMAND after the \"=\" must
+begin with a leading whitespace.
+
+The minimal requirement for DSR to work is rem dsr put/replace
+"fragment" with "three atoms/Q-peaks" on "three atoms/Q-peaks".
+
+The new molecule or fragment is placed just before the HKLF instruction.
+DSR applies a new naming scheme to the fragment while inserting it into
+the .res file. Essentially it searches if any atom name from the
+database fragment is already used in the .res file. If this applies, the
+program places a suffix letter (A, B, \...) to the atom name in the .res
+file. This renaming is completely turned off if residues are used. Atoms
+of the new fragment are then addressed by their residue.
+
+**put**
+
+DSR searches for the coordinates of the given atoms/Q-peaks and
+places the fragment on these coordinates leaving the given atoms in
+place. The above example will place the fragment on the coordinates of
+Q1, C5 and C2. The atoms C5 and C2 would remain where they were located
+before.
+
+**replace**
+
+DSR searches for the coordinates of the given atoms/Q-peaks
+but in contrast to the former example, it replaces the target atoms and
+all atoms in 1.3 Å distance around each atom of the fitted fragment that
+are in PART 0. This mode is useful to quickly rename atoms from a
+solution by SHELXT.
+
+It is highly advised to use residues with DSR. They make many things
+easier and DSR takes care about all details regarding residues. Normally
+it is sufficient to simply use the RESI command without any options in
+DSR. This way, DSR takes the residue class from the database and finds
+the next residue number automatically. Restraints for the same residue
+class are only introduced once. Also the atoms in the fragment would not
+be renamed:
+
+**REM DSR put toluene with C1 C2 C3 on Q1 C5 C2 RESI**
+
+Use of Residues
+===============
+
+To use the RESI command in DSR has several advantages. It places the
+fragment into a residue and therefore no renaming of the atoms in the
+fragment needs to be performed by DSR. If residues are used, the
+restraints like \"SADI_class Atoms\" are inserted only once, since they
+act on the atoms in all residues with the same class together.
+
+In SHELXL you define residues as:
+
+.. code-block:: text
+
+    RESI 1 abc
+    atoms ...
+    RESI 0
+
+    RESI 2 abc
+    atoms ...
+    RESI 0
+
+    RESI 3 xyz
+    atoms ...
+    RESI 0
+
+
+A big plus is that you can use restraints like \"SAME_class C1 \> C20\".
+This command will apply a SAME restraint to all residues in class.
+A single atom inside a residue is now addressed with Atom_number, like
+\"DFIX 1.5 C1_2 C3_0\". Generally, residue 0 includes all atoms outside
+of residues.
+
+Residues are especially useful if the same moiety is repeated several
+times in a crystal structure. And that is what DSR is intended for!
+Different moieties of the same residue class are distinguished by
+different residue numbers. A residue number must be unique in a .res
+file. The DSR command RESI without any further options is usually the
+best practice. DSR then uses the residue class name from the database
+and finds the next free residue number by itself. But the user can also
+specify a particular residue class and/or number after the RESI command,
+if desired.
+
+Please be aware that SIMU behaves special with residues. Let's assume we
+have a disordered phenyl group on two positions where the two rings are
+slightly rotated along their bond to the next part of the molecule
+(Figure 1):
+
+.. image:: images/media/image7.png
+  :width: 100%
+  :alt: Two rings
+
+DSR introduces, among others, the restraint "SIMU_BENZ C1 \> C6". This
+is not wrong, but still not enough in every case, because SHELXL only
+generates SIMU restraints inside each residue. In this case, it
+generates "SIMU C1_1 C2_1 C3_1 C4_1 C5_1 C6_1" and "SIMU C1_2 C2_2 C3_2
+C4_2 C5_2 C6_2". But because of the close proximity and the small
+rotational movement we can assume that the thermal parameter in both
+disorder parts are more equal. Therefore, we have to include all
+involved atoms explicitly in one SIMU command: "SIMU C1_1 \> C6_1 C1_2
+\> C6_2". This can possibly be optimized by more than one SIMU and
+different values for the standard deviation and dmax, e.g. "SIMU 0.02
+0.04 0.5 atoms" and "SIMU 0.04 0.08 1.3 atoms" (Figure 2).
+
+.. image:: images/media/image8.png
+  :width: 100%
+  :alt: Start plugin
+
+The RESI option of DSR can be used in three ways:
+
+1)  If only a RESI command is given (best practice), the residue class
+    is taken from the database entry and the residue number is
+    automatically generated.
+
+2)  If RESI with only a number is given, DSR takes the residue class
+    from the database with the given number.
+
+3)  RESI with a number and a class overwrites the information from the
+    database and gives complete control over the residue.
+
+A given class, number or alias always overwrites the information of the
+database. The manual on the SHELX website gives more detailed
+information: <http://shelx.uni-ac.gwdg.de/SHELX/wikis.php>
+
+[]{#_Toc15237821 .anchor}Common Problems with residues
+
+When using residues you may encounter the following warning from SHELXL:
+
+\*\* No match for C1A C2A in SIMU \*\*
+
+These errors are most likely due to a different arrangement of atoms
+within the same residue class or to a different number of atoms within
+the same class.
+
+Residues of same class always have to have the same arrangement of atoms
+and the same number of atoms!
+
+For example
+
+SIMU_foo C1 \> C3
+
+**RESI 1 foo**
+
+C1 1 \...
+
+Different number of atoms
+
+C2 1 \...
+
+C3 1 \...
+
+**RESI 2 foo**
+
+PART 1 21
+
+C1 1 \...
+
+C2 1 \...
+
+C3 1 \...
+
+Different number of atoms
+
+PART 2
+
+C1A 1 \...
+
+C2A 1 \...
+
+C3A 1 \...
+
+PART 0
+
+**RESI 0**
+
+would produce the above error.
+
+You can get rid of the error if you move the **PART 2** out of the
+residue. Therefore, move **RESI 0** before **PART 2**:
+
+SIMU_foo C1 \> C3
+
+**RESI 1 foo**
+
+C1 1 \...
+
+same number of atoms
+
+C2 1 \...
+
+C3 1 \...
+
+**RESI 2 foo**
+
+PART 1 21
+
+C1 1 \...
+
+same number of atoms
+
+C2 1 \...
+
+C3 1 \...
+
+**RESI 0**
+
+PART 2
+
+C1A 1 \...
+
+the residues don't care about these extra atoms
+
+C2A 1 \...
+
+C3A 1 \...
+
+PART 0
+
+[]{#_Toc15237822 .anchor}Command line Syntax
+
+Following options are available in the Windows or Unix command line to
+control the behavior of DSR:
