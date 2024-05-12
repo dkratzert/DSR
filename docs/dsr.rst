@@ -515,56 +515,65 @@ database. The syntax mainly follows the SHELXL syntax:
 
 .. code-block:: text
 
-    <fragment name>     <- Start tag
-    RESI class          <- Required, defines the residue name of db entry.
-    restraints** \<- Any restraints and comments following the SHELXL
+    <fragment name>                <- Start tag
+    RESI class                     <- Required, defines the residue name of db entry.
+    restraints                     <- Any restraints and comments following the
+                                      SHELXL syntax.
+                                      You must enter at least one restraint!
+                                      e.g. RIGU C1 > C7
+    FRAG 17 a b c alpha beta gamma <- FRAG card with AFIX number and cell parameters.
 
-    syntax. You must enter at least one restraint!
+    Atom sfac-number coordinates   <- One isotropic atom per line following SHELX syntax:
 
-    e.g. RIGU C1 \> C7**\
-    FRAG 17 a b c alpha beta gamma** \<- FRAG card with AFIX number and cell
+    O1  1 1.2345 0.6734 0.8352     <- Either the atom type is recognized by the atom name
+                                      for positive Numbers in the second column.
+    C1 -6 0.2683 0.4783 0.1616     <- Or the atom type is defined by the negative atomic
+                                      number in the second column.
 
-    parameters.
+    </fragment name>               <- End tag. Same as start tag but with a slash.
 
-    **Atom sfac-number coordinates** \<- One isotropic atom per line
-    following
+- Anything not being an atom after FRAG is ignored.
 
-    SHELX syntax.
+- Fragment names CF3, CF6 and CF9 are reserved by DSR. Do not attempt
+  to use them in database entries.
 
-    e.g.
+- Only lines beginning with valid SHELXL instructions are allowed in
+  the header.
 
-    **O1 1 1.2345 0.6734 0.8352** \<- Either the atom type is recognized by
+- Anything behind the 5th column in the atom list is ignored.
 
-    the atom name for positive Numbers in
+- Long lines can be wrapped with an equal sign (=) and a space
+  character in the next line like in SHELXL, but the can also be of any
+  length. All lines will be wrapped to fit in the SHELXL file
+  automatically.
 
-    the second column.
-
-    **C1 -6 0.2683 0.4783 0.1616** \<- Or the atom type is defined by the
-
-    negative atomic number in the second
-
-    column.
-
-    **\</fragment name\>** \<- End tag. Same as start tag but with /
-
-\- Anything not being an atom after FRAG is ignored.
-
-\- Fragment names CF3, CF6 and CF9 are reserved by DSR. Do not attempt
-to use them in database entries.
-
-\- Only lines beginning with valid SHELXL instructions are allowed in
-the header.
-
-\- Anything behind the 5th column in the atom list is ignored.
-
-\- Long lines can be wrapped with an equal sign (=) and a space
-character in the next line like in SHELXL, but the can also be of any
-length. All lines will be wrapped to fit in the SHELXL file
-automatically.
-
-[]{#_Toc15237824 .anchor}Database Example
+Database Example
+================
 
 A usual database entry looks like the following:
+
+.. code-block:: text
+
+    <Toluene>
+    rem CCDC: BUWME
+    rem Name: Toluene, C7H8
+    RESI TOL
+    SAME C2 > C6 C1
+    SAME C1 C6 < C2 C7
+    HFIX 137 C7
+    FLAT C1 > C7
+    SIMU C1 > C7
+    RIGU C1 > C7
+
+    FRAG 17 11.430 12.082 15.500 106.613 100.313 90.68
+    C1 1 0.268330 0.478380 0.161680
+    C2 1 0.205960 0.555770 0.217990
+    C3 1 0.249400 0.600760 0.310040
+    C4 1 0.357300 0.568990 0.348900
+    C5 1 0.420800 0.492470 0.294060
+    C6 1 0.376630 0.447580 0.201340
+    C7 1 0.221500 0.430400 0.060360
+    </TOLUENE>
 
 The restraints applied by DSR might be stricter than necessary. After
 introduction of a new fragment, the refinement can be proceeded as
@@ -573,3 +582,441 @@ to database fragments should always be done in the dsr_user_db.txt and
 not in the dsr_db.txt. The user database will not be overwritten during
 updates. The fragment names must be unique in both databases. Every
 valid restraints from SHELXL can be used, even HFIX is possible.
+
+
+
+The syntax follows the SHELXL syntax. All entries between the start tag
+<Toluene> and the FRAG command are considered as the database entry
+header. Comments can be introduced with REM. All lines with non-SHELX
+commands are ignored.
+
+If a "rem Name:" statement is given, the name after this statement is
+printed in the list of available fragments.
+
+After FRAG until the end tag </TOLUENE> only atoms with SHELX syntax
+are accepted.
+
+Step by Step Working Example (command line)
+===========================================
+
+You can find the following example in the DSR install directory. This
+example explains the procedures of using DSR via the command line. You
+can also use the graphical user interface for DSR in ShelXle if you do
+not like to type DSR commands (see chapter *ShelXle Integration*).
+
+Step 0
+======
+
+-   Open "p21c.res".
+-   Residue number 3 turns out to be a part of a disorder.
+-   Apply a PART and the free variable 2 to this residue with "PART 1
+    21":
+
+.. image:: images/media/image9.png
+  :width: 100%
+  :alt: p321.res
+
+.. code-block:: text
+
+    RESI 3 CCF3
+    PART 1 21
+    O1 3 0.156860 0.210330 0.529750 21.00000 0.05000
+    C1 1 0.198400 0.149690 0.543840 21.00000 0.05000
+    C2 1 0.283540 0.125060 0.490330 21.00000 0.05000
+    F1 4 0.357580 0.075160 0.511570 21.00000 0.05000
+    F2 4 0.359970 0.170660 0.471080 21.00000 0.05000
+    F3 4 0.212170 0.104000 0.438130 21.00000 0.05000
+    C3 1 0.086960 0.103360 0.549830 21.00000 0.05000
+    F4 4 0.118510 0.041260 0.547430 21.00000 0.05000
+    F5 4 -0.003540 0.114200 0.501240 21.00000 0.05000
+    F6 4 0.032040 0.112650 0.606550 21.00000 0.05000
+    C4 1 0.279960 0.152770 0.609930 21.00000 0.05000
+    F7 4 0.222220 0.188240 0.652750 21.00000 0.05000
+    F8 4 0.297220 0.093900 0.636590 21.00000 0.05000
+    F9 4 0.395450 0.177140 0.602220 21.00000 0.05000
+    PART 0
+    RESI 0
+
+Step 1
+======
+
+-   Now you can insert the command line for DSR after the residue 3.
+
+-   The command is
+
+    **rem dsr put oc(cf3)3 with O1 c1 c2 on O1_3 C1_3 Q11 part 2 occ -21
+    resi**
+
+    to place the fragment **OC(CF3)3** on the position of **O1_3 C1_3
+    q11**.
+
+-   In addition we want to have the fragment in a **PART 2** with the
+    **occupancy** of **−21** and in a **residue**. DSR automatically
+    finds a free residue number and uses a residue name from the
+    database. All these options are placed in one line. As usual in
+    SHELXL, lines longer than 80 characters can be continued with \"=\"
+    at the end and a whitespace before the first character in the next
+    line.
+
+-   Save the res file after editing.
+
+[]{#_Toc15237828 .anchor}Step 2
+
+-   Now run \"dsr -r p21c.res\" on the Windows/Unix command line.
+
+-   DSR will run over the res file, insert the fragment and makes a
+    refinement with "L.S. 0". This finally inserts the fragment. You can
+    see the status before the refinement in the "p21c_step2.ins" file.
+
+D:\\tmp\\example\>dsr -r p21c.res
+
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-- D S R -- v208
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
+
+No residue number was given. Using residue number 5.
+
+Inserting oc(cf3)3 into res File.
+
+Source atoms: O1, C1, C2
+
+Target atoms: O1_3, C1_3, Q11
+
+RESI instruction is enabled. Leaving atom numbers as they are.
+
+Fragment atom names: O1, C1, C2, F1, F2, F3, C3, F4, F5, F6, C4, F7, F8,
+F9
+
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\--
+
+Running SHELXL with \"c:\\bn\\sxtl\\xl.exe -b3000 p21c\" and \"L.S. 0\"
+
+SHELXL Version 2014/7
+
+wR2 = 0.5454
+
+GooF = 6.4660
+
+R1 = 0.2101
+
+Runtime: 0.3 s
+
+DSR run complete.
+
+-   Reopen the resulting res file.
+
+[]{#_Toc15237829 .anchor}Step 3
+
+-   The fragment turned out to be successfully fitted on its desired
+    position:
+
+![](/Users/daniel/Documents/GitHub/DSR/docs/images/media/image10.png){width="6.5in"
+height="3.65625in"}
+
+-   The previously used DSR command line is now commented out with REM
+    and will not be recognized by DSR again.
+
+[]{#_Toc15237830 .anchor}Step 4
+
+-   Do the same procedure from step 1 onwards to refine the second
+    disorder.
+
+-   The final model of the anion should look like this:
+
+> ![](/Users/daniel/Documents/GitHub/DSR/docs/images/media/image11.png){width="2.8489905949256342in"
+> height="2.6047528433945755in"}
+
+-   Now you can add/remove additional restraints and further refine the
+    structure as usual. Already existing restraints for an existing
+    residue class will not be inserted again, because they already act
+    for all residues together (with SADI_CCF3 for example).
+
+-   A good assumption for the model would also be that all Al--O
+    distances are the same. Therefore, we should add the restraint\
+    SADI Al1_0 O1_1 Al1_0 O1_2 Al1_0 O1_3 Al1_0 O1_4 Al1_0 O1_5 Al1_0
+    O1_6
+
+-   The central oxygen and carbon atoms of the disordered perfluorinated
+    tert-butyl alcohol group are now in close proximity. Therefore, it
+    is a good idea to safe parameters and stabilize their ADPs with an
+    EADP constraint:
+
+> EADP C1_3 C1_5
+>
+> EADP O1_5 O1_3
+>
+> EADP C1_6 C1_4
+>
+> EADP O1_4 O1_6
+
+-   After ten cycles of refinement, the structure should produce an R1
+    of 4% and should have no bigger residual density features left over
+    (0.30 eÅ^−3^ level):
+
+> ![](/Users/daniel/Documents/GitHub/DSR/docs/images/media/image12.png){width="4.00990813648294in"
+> height="2.631867891513561in"}
+
+[]{#_Toc15237831 .anchor}Import fragments from GRADE
+
+GRADE from Global Phasing Ltd. <http://grade.globalphasing.org/> is a
+ligand restraint generator whose main source of restraint information is
+the Cambridge Structural Database (CSD) of small-molecule crystal
+structures, queried using the MOGUL program developed by the CCDC. Where
+small-molecule information is lacking, Grade uses quantum chemical
+procedures to obtain the restraint values.
+
+Fragments obtained by GRADE can be imported to DSR with the --i command
+line option. The GRADE server outputs a .tgz file including several
+files. Execution of "dsr --i filename.tgz" will import a GRADE fragment
+from these files. The fragment gets imported to the "dsr-user-db.txt" in
+the DSR program directory. You also might need to change the fragment
+and residue name after the import. The best way is to supply the GRADE
+server with a .mol2 file. This way you can choose the atom names and
+their sorting yourself. mol2 files can be generated if you create a
+molecule with Avogadro (save as .res file)
+<http://sourceforge.net/projects/avogadro/> then you must rename the
+atoms and open the res file with mercury
+<http://www.ccdc.cam.ac.uk/Solutions/CSDSystem/Pages/Mercury.aspx>.
+Mercury can now save a .mol2 file for GRADE.
+
+[]{#_Toc15237832 .anchor}CF~3~-Groups
+
+DSR is able to generate CF~3~ groups with the respective restraints
+automatically. In contrast to the other fragments, for modelling of
+CF~3~ groups with DSR you only need to define one single target atom (a
+carbon atom). The CF~3~ group can be modeled either as ordered group on
+one position (like an AFIX 130 would do), as well as a disordered group
+on two or three positions. The respective fragment names are CF3, CF6
+and CF9. In ShelXle, select the respective carbon atom, and click the
+"fit fragment" button. On the command line, a disordered CF~3~ group on
+three positions would be modelled using:
+
+REM DSR put CF9 on C1
+
+The result is the following plus the respective free variables added to
+the FVAR line.
+
+REM CF3 group made by DSR:
+
+SUMP 1 0.0001 1 2 1 3 1 4
+
+SADI 0.02 C1 F1B C1 F2B C1 F3B C1 F4B C1 F5B C1 F6B C1 F7B C1 F8B C1 F9B
+
+SADI 0.04 F1B F2B F2B F3B F3B F1B F4B F5B F5B F6B F6B F4B F7B F8B F8B
+F9B =
+
+F9B F7B
+
+SADI 0.1 C2 F1B C2 F2B C2 F3B C2 F4B C2 F5B C2 F6B C2 F7B C2 F8B C2 F9B
+
+RIGU C2 C1 F1B \> F9B
+
+PART 1 21
+
+F1B 3 0.128560 -0.462510 0.547150 11.00000 0.04
+
+F2B 3 0.047696 -0.372991 0.451178 11.00000 0.04
+
+F3B 3 0.040064 -0.244730 0.559034 11.00000 0.04
+
+PART 2 31
+
+F4B 3 0.118185 -0.486145 0.500565 11.00000 0.04
+
+F5B 3 0.020565 -0.289148 0.471484 11.00000 0.04
+
+F6B 3 0.077571 -0.304938 0.585313 11.00000 0.04
+
+PART 3 41
+
+F7B 3 0.086249 -0.450791 0.462663 11.00000 0.04
+
+F8B 3 0.017551 -0.238494 0.514080 11.00000 0.04
+
+F9B 3 0.112520 -0.390946 0.580619 11.00000 0.04
+
+PART 0
+
+Existing fluorine atoms connected to the respective carbon atom will be
+deleted by DSR beforehand.
+
+If you like DFIX instead of SADI, add DFIX to the DSR command line:
+
+REM DSR put CF9 on C1 DFIX
+
+The special command SPLIT in combination with the CF6 fragment tries to
+split the target carbon atom in two positions. The coordinates of the
+two positions are the principal axes of the carbon atom ellipsoid in its
+longest direction. The restraints will be adjusted accordingly.
+
+![](/Users/daniel/Documents/GitHub/DSR/docs/images/media/image13.png){width="2.2054549431321084in"
+height="1.978781714785652in"}
+![](/Users/daniel/Documents/GitHub/DSR/docs/images/media/image14.png){width="2.1290037182852144in"
+height="2.010120297462817in"}
+
+You should never use CF9 just because it is possible! Often CF6 is
+sufficient. CF9 often just uses more least-squares parameters without
+improving the model.
+
+You can try the above example with the structure "p21n_cf3.res" located
+in the example directory of DSR. At the end of the file, there is
+already a command line to place a CF~3~ group on C22.
+
+[]{#_Toc15237833 .anchor}Tips and Tricks
+
+-   You can quickly rename molecular moieties using DSR in the replace
+    mode. This is useful directly after the solution with SHELXT for
+    example. In the replace mode, DSR replaces all atoms that are in
+    PART 0 and that are 1.3 Å near the atoms of the placed fragment.
+    Using replace mode prevents you from renaming every single atom.
+
+-   You want to know typical bond lengths of fragments included in the
+    DSR database? Export the respective fragment and either see 1,2 and
+    1,3 distances in the restraints lists or let the SHELX GUI of your
+    choice find out any distance of the respective atoms.
+
+-   The command "dsr --l" will tell you about errors in the fragment
+    database in case you created a frag­ment yourself and made a mistake.
+
+-   The ShelXle interface allows you to edit or create fragments. In the
+    rename mode, you can rename atoms of a fragment and their respective
+    restraints.
+
+-   In ShelXle, it is not necessary to do anything special for atoms on
+    special positions anymore. Every symmetry related atom or q-peak
+    (grow q-peaks option) can be chosen as target position for DSR. DSR
+    uses the coordinates instead of atoms names.
+
+-   In ShelXle, you can easily go back in the DSR model with the
+    "restore last .res" button. This restores the .res file from just
+    before the fragment fit. The complete save history in ShelXle is in:
+    menu→file→open save history.
+
+# Fragments Included in the Database
+
+Type "dsr --l" to see a list of fragments supplied with DSR. Also the
+graphical user interfaces show a list of all fragments.
+
+[]{#_Toc15237835 .anchor}For Developers
+
+Graphical user interfaces for SHELXL (like ShelXle) can use several
+special commands to control DSR:
+
+**\$ dsr --lc**
+
+DSR version: 199
+
+acetate;;Acetate anion, C2H3O2-;;1105;;dsr_db
+
+acetone;;Acetone, C3H6O;;2312;;dsr_db
+
+acetonitrile;;Acetonitrile, C2H3N, NMe;;1670;;dsr_db
+
+adamantane;;Adamantane, C10H16;;2405;;dsr_db
+
+\...
+
+The first line of the --lc output is the version of DSR. All other lines
+are separated by double semicolon. Each fragment uses one line. The
+first column is the name tag, the second is the full name and the third
+is the type of database (dsr_db/dsr_usr_db).
+
+**\$ dsr -x tol**
+
+toluene;;Toluene, C7H8;;885;;dsr_db
+
+tbu-o;;tert-Butanol (or tert-Butoxy);;2203;;dsr_db
+
+tosylate;;Tosylate anion, CH3C6H4SO3-;;2447;;dsr_db
+
+dmpz;;Dimethylpyrazolato anion, \[C5H6N\]-, pz\*;;1126;;dsr_db
+
+ile;;ISOLEUCINE;;4327;;dsr_db
+
+pyr;;PYRROLYSINE;;3802;;dsr_db
+
+acetonitrile;;Acetonitrile, C2H3N, NMe;;1670;;dsr_db
+
+mquinolinol;;2-Methyl-8-quinolinol, C10H9NO;;2041;;dsr_db
+
+The --x parameter searches for fragments and displays the result with
+the same syntax as --lc.
+
+**\$ dsr -ah toluene**
+
+\<atoms\>
+
+C1 6 1.78099 7.14907 12.00423;;C2 6 2.20089 8.30676 11.13758;;C3 6
+1.26895 9.02168 10.39032;;C4 6 1.64225 10.07768 9.58845;;C5 6 2.98081
+10.44432 9.51725;;C6 6 3.92045 9.74974 10.25408;;C7 6 3.53891 8.69091
+11.05301
+
+\</atoms\>
+
+\<tag\>
+
+toluene
+
+\</tag\>
+
+\<comment\>
+
+Toluene, C7H8
+
+\</comment\>
+
+\<source\>
+
+CCDC CESLUJ
+
+\</source\>
+
+\<cell\>
+
+1;;1;;1;;90;;90;;90
+
+\</cell\>
+
+\<residue\>
+
+TOL
+
+\</residue\>
+
+\<dbtype\>
+
+dsr_db
+
+\</dbtype\>
+
+\<restr\>
+
+SADI C2 C3 C3 C4 C4 C5 C5 C6 C6 C7 C7 C2;;SADI 0.04 C2 C6 C2 C4 C7 C5 C3
+C7 C4 C6 C3 C5;;DFIX 1.51 C1 C2;;SADI 0.04 C1 C7 C1 C3;;FLAT C1 \>
+C7;;SIMU C1 \> C7;;RIGU C1 \> C7
+
+\</restr\>
+
+The --ah command displays the content of the database entry for the
+respective fragment on screen. Each type of database entry has a start
+end an end tag. Each entry is a single delimited by double semicolon.
+
+**-shx \"c:\\Program files\\shelx\\shelxl\"**
+
+Command to tell DSR where SHELXL is located.
+
+**\$ dsr --ea**
+
+Exports **all** fragments at once to the current directory.
+
+**\$ dsr --target \[coordinate triples\]**
+
+With the target option you are able to define the exact coordinates of
+the target position for the fragment fit. Coordinates are given in space
+separated coordinates.
+
+**General Remarks**
+
+Parsers for DSR output should be aware that DSR prints error messages
+between three stars (SHELXL between two stars). For example:
+
+\*\*\* Check database entry. \*\*\*
