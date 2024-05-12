@@ -299,7 +299,7 @@ be renamed:
 **REM DSR put toluene with C1 C2 C3 on Q1 C5 C2 RESI**
 
 Use of Residues
-===============
+***************
 
 To use the RESI command in DSR has several advantages. It places the
 fragment into a residue and therefore no renaming of the atoms in the
@@ -378,10 +378,13 @@ The RESI option of DSR can be used in three ways:
     database and gives complete control over the residue.
 
 A given class, number or alias always overwrites the information of the
-database. The manual on the SHELX website gives more detailed
-information: <http://shelx.uni-ac.gwdg.de/SHELX/wikis.php>
+database.
 
-[]{#_Toc15237821 .anchor}Common Problems with residues
+The manual on the SHELX website gives more detailed
+information about residues: `http://shelx.uni-ac.gwdg.de/SHELX/wikis.php <http://shelx.uni-ac.gwdg.de/SHELX/wikis.php>`_
+
+Common Problems with residues
+=============================
 
 When using residues you may encounter the following warning from SHELXL:
 
@@ -396,86 +399,177 @@ and the same number of atoms!
 
 For example
 
-SIMU_foo C1 \> C3
+.. code-block:: text
 
-**RESI 1 foo**
+    SIMU_foo C1 > C3
 
-C1 1 \...
+    RESI 1 foo
+    C1 1 ...
+    C2 1 ...
+    C3 1 ...
 
-Different number of atoms
+    RESI 2 foo
+    PART 1 21
+    C1 1 ...
+    C2 1 ...
+    C3 1 ...
+    PART 2
+    C1A 1 ...
+    C2A 1 ...
+    C3A 1 ...
+    PART 0
+    RESI 0
 
-C2 1 \...
-
-C3 1 \...
-
-**RESI 2 foo**
-
-PART 1 21
-
-C1 1 \...
-
-C2 1 \...
-
-C3 1 \...
-
-Different number of atoms
-
-PART 2
-
-C1A 1 \...
-
-C2A 1 \...
-
-C3A 1 \...
-
-PART 0
-
-**RESI 0**
-
-would produce the above error.
+would produce the above error, because RESI 2 has six atoms and RESI 1 only three.
 
 You can get rid of the error if you move the **PART 2** out of the
 residue. Therefore, move **RESI 0** before **PART 2**:
 
-SIMU_foo C1 \> C3
+.. code-block:: text
 
-**RESI 1 foo**
+    SIMU_foo C1 > C3
 
-C1 1 \...
+    RESI 1 foo
+    C1 1 ...
+    C2 1 ...
+    C3 1 ...
 
-same number of atoms
+    RESI 2 foo
+    PART 1 21
+    C1 1 ...
+    C2 1 ...
+    C3 1 ...
+    RESI 0
 
-C2 1 \...
+    PART 2
+    C1A 1 ...
+    C2A 1 ...
+    C3A 1 ...
+    PART 0
 
-C3 1 \...
+Here, RESI 1 and RESI 2 have the same number of atoms and the atoms of PART 2 are
+irrelevant for the residues.
 
-**RESI 2 foo**
-
-PART 1 21
-
-C1 1 \...
-
-same number of atoms
-
-C2 1 \...
-
-C3 1 \...
-
-**RESI 0**
-
-PART 2
-
-C1A 1 \...
-
-the residues don't care about these extra atoms
-
-C2A 1 \...
-
-C3A 1 \...
-
-PART 0
-
-[]{#_Toc15237822 .anchor}Command line Syntax
+Command line Syntax
+===================
 
 Following options are available in the Windows or Unix command line to
 control the behavior of DSR:
+
+
+usage: dsr \[-h\] \[-r \"res file\"\] \[-re \"res file\"\] \[-e
+\"fragment\"\] \[-c \"fragment\"\] \[-t\] \[-i \"tgz file\"\] \[-l\]
+\[-n\]
+
+optional arguments:
+
+--h, \--help Show a help message and exit.
+
+--r \"res file\" res file with DSR command. Usually this option is used
+to process the SHELXL file with DSR.
+
+--re \"res file\" Same as \"-r\", but a file called dsr_class_name.dfx
+or dsr_class_number_name.dfx is written which includes the restraints
+for the fragment for the .res file \"name\" in the residue \"class\" and
+\"number\".
+
+--e \"fragment\" Exports a fragment from the database to the file
+\[fragment\].res. It includes the minimal requirements to view the
+fragment in a 3D molecule viewer. If a PLATON executable and ImageMagic
+installation is in the system path, it also creates a .png-picture of
+the molecule.
+
+--c \"fragment\" Exports the fragment to the clipboard with Cartesian
+coordinates. This fragment can for example be used for modelling in the
+program Olex2.
+
+--t Inverts the current fragment. Available for fragment fit, import and
+export.
+
+--I \"GRADE file\" Imports a molecular fragment from .tgz file of the
+Grade server http://grade.globalphasing.org/ into the dsr_usr_db.txt.
+
+--l Displays all fragments in the database with the line numbers where
+they occur.
+
+--s \"string\" Search the database for given string.
+
+--g Keep the fragment as rigid group (AFIX 9). The fragment will only
+move as a whole. Restraints will be omitted.
+
+--u Updates DSR to the most recent version if any available. (In Linux,
+you need super-user rights to perform an update)
+
+--n Only transfers the fragment. The fragment fit after the fragment
+transfer is disabled.
+
+Database Format Definition
+==========================
+
+The database format was deliberately kept very simple. It consists of a
+system database in the dsr_db.txt and a user database in the
+dsr_user_db.txt. The system database is overwritten with every new
+program install while the user database will always stay untouched. So
+the user can easily add new fragments to its own dsr_user_db.txt
+database. The syntax mainly follows the SHELXL syntax:
+
+.. code-block:: text
+
+    <fragment name>     <- Start tag
+    RESI class          <- Required, defines the residue name of db entry.
+    restraints** \<- Any restraints and comments following the SHELXL
+
+    syntax. You must enter at least one restraint!
+
+    e.g. RIGU C1 \> C7**\
+    FRAG 17 a b c alpha beta gamma** \<- FRAG card with AFIX number and cell
+
+    parameters.
+
+    **Atom sfac-number coordinates** \<- One isotropic atom per line
+    following
+
+    SHELX syntax.
+
+    e.g.
+
+    **O1 1 1.2345 0.6734 0.8352** \<- Either the atom type is recognized by
+
+    the atom name for positive Numbers in
+
+    the second column.
+
+    **C1 -6 0.2683 0.4783 0.1616** \<- Or the atom type is defined by the
+
+    negative atomic number in the second
+
+    column.
+
+    **\</fragment name\>** \<- End tag. Same as start tag but with /
+
+\- Anything not being an atom after FRAG is ignored.
+
+\- Fragment names CF3, CF6 and CF9 are reserved by DSR. Do not attempt
+to use them in database entries.
+
+\- Only lines beginning with valid SHELXL instructions are allowed in
+the header.
+
+\- Anything behind the 5th column in the atom list is ignored.
+
+\- Long lines can be wrapped with an equal sign (=) and a space
+character in the next line like in SHELXL, but the can also be of any
+length. All lines will be wrapped to fit in the SHELXL file
+automatically.
+
+[]{#_Toc15237824 .anchor}Database Example
+
+A usual database entry looks like the following:
+
+The restraints applied by DSR might be stricter than necessary. After
+introduction of a new fragment, the refinement can be proceeded as
+usual. In the course of you should review the restraints. Modifications
+to database fragments should always be done in the dsr_user_db.txt and
+not in the dsr_db.txt. The user database will not be overwritten during
+updates. The fragment names must be unique in both databases. Every
+valid restraints from SHELXL can be used, even HFIX is possible.
