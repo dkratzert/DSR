@@ -81,6 +81,15 @@ MacOS
 
 Install the dsr-shelx package from `pypi.org <https://pypi.org/project/dsr-shelx/>`_.
 
+Easiest way in macOS might be:
+
+* Install homebrew: https://brew.sh/
+* brew install pipx
+* pipx install dsr-shelx
+* Create a link that is usable for all users:
+
+  sudo ln -s /Users/[username]/.local/bin/dsr /usr/local/bin/dsr
+
 The update from DSR for python 2.7 (version 236 and below) to DSR for Python 3
 needs some manual work. You need to uninstall the old version and make sure the
 files dsr.sh, dsr-mac and dsr-linux are removed from /etc/profile.d/ and/or
@@ -208,43 +217,43 @@ Command Syntax
 
 The DSR command has the following syntax:
 
-REM DSR PUT/REPLACE fragment WITH atom1 atom2 atom3 \... ON atom2 atom3
-atom4 \... PART n OCC mn RESI class num \[alias\] DFIX
+.. code-block:: text
+
+    REM DSR PUT/REPLACE fragment WITH atom1 atom2 atom3 ... ON atom2 atom3
+    atom4 ... PART n OCC mn RESI class num [alias] DFIX
 
 The command is introduced with a REM because SHELXL should never
 interpret the DSR command line.
 
-PUT Put the fragment on there, ignoring atoms on this position.
+``PUT``      Put the fragment on there, ignoring atoms on this position.
 
-REPLACE Replace the target atoms. Hydrogen atoms of target atoms should
-be prior removed.
+``REPLACE``  Replace the target atoms. Hydrogen atoms of target atoms should be prior removed.
 
-fragment The name of the desired molecule or fragment.
+``fragment``  The name of the desired molecule or fragment.
 
-WITH Behind WITH are the source atoms. They are at least three atoms
-from the fragment.
+``WITH`` Behind WITH are the source atoms. They are at least three atoms from the fragment.
 
-ON Behind ON are the target atoms. They are at least three atoms or
+``ON`` Behind ON are the target atoms. They are at least three atoms or
 Q-peaks in the .res- file.
 
-\[atom n\] Minimum three atoms each (including Q-peaks). Source and
+``[atom n]`` Minimum three atoms each (including Q-peaks). Source and
 target have to include the same number of atoms and/or Q-peaks. Target
 atoms can be either regular atoms or atoms in residues. Atoms in
 residues can be addressed by the "\_" notation. C1_2 would be atom C1 in
 residue number 2.
 
-PART n Optional SHELXL PART definition.
+``PART n`` Optional SHELXL PART definition.
 
-OCC mn Optional occupancy and free variable definition for the fragment.
+``OCC mn`` Optional occupancy and free variable definition for the fragment.
 
-DFIX Optional, generates DFIX/DANG restraints instead of those from the
+``DFIX`` Optional, generates DFIX/DANG restraints instead of those from the
 database. All 1,2- and 1,3-distances in the fragment are restrained with
 DFIX and DANG respectively. DSR also searches for rings in the fragment
 and generates FLAT restraints for flat rings.
 
-RESI class num \[alias\] Optional residue definition as in SHELXL.
+``RESI class num [alias]`` Optional residue definition as in SHELXL.
 
-SPLIT Only for a disordered CF3 group on two positions (CF6 fragment).
+``SPLIT`` Only for a disordered CF3 group on two positions (CF6 fragment).
 Splits the pivot atom in two positions.
 
 Example
@@ -272,21 +281,19 @@ program places a suffix letter (A, B, \...) to the atom name in the .res
 file. This renaming is completely turned off if residues are used. Atoms
 of the new fragment are then addressed by their residue.
 
-**put**
+``put``
+    DSR uses the coordinates of the given atoms/Q-peaks and
+    puts the fragment on these coordinates leaving the given atoms in
+    place. The above example will place the fragment on the coordinates of
+    Q1, C5 and C2. The atoms C5 and C2 would remain where they were located
+    before.
 
-DSR searches for the coordinates of the given atoms/Q-peaks and
-places the fragment on these coordinates leaving the given atoms in
-place. The above example will place the fragment on the coordinates of
-Q1, C5 and C2. The atoms C5 and C2 would remain where they were located
-before.
-
-**replace**
-
-DSR searches for the coordinates of the given atoms/Q-peaks
-but in contrast to the former example, it replaces the target atoms and
-all atoms in 1.3 Å distance around each atom of the fitted fragment that
-are in PART 0. This mode is useful to quickly rename atoms from a
-solution by SHELXT.
+``replace``
+    DSR searches for the coordinates of the given atoms/Q-peaks
+    but in contrast to the former example, it replaces the target atoms and
+    all atoms in 1.3 Å distance around each atom of the fitted fragment that
+    are in PART 0. This mode is useful to quickly rename atoms from a
+    solution by SHELXT.
 
 It is highly advised to use residues with DSR. They make many things
 easier and DSR takes care about all details regarding residues. Normally
@@ -399,49 +406,49 @@ and the same number of atoms!
 
 For example
 
-.. code-block:: text
+.. parsed-literal::
 
     SIMU_foo C1 > C3
 
-    RESI 1 foo
+    **RESI 1 foo**
     C1 1 ...
     C2 1 ...
     C3 1 ...
 
-    RESI 2 foo
+    **RESI 2 foo**
     PART 1 21
     C1 1 ...
     C2 1 ...
     C3 1 ...
-    PART 2
+    *PART 2*
     C1A 1 ...
     C2A 1 ...
     C3A 1 ...
     PART 0
-    RESI 0
+    **RESI 0**
 
 would produce the above error, because RESI 2 has six atoms and RESI 1 only three.
 
 You can get rid of the error if you move the **PART 2** out of the
 residue. Therefore, move **RESI 0** before **PART 2**:
 
-.. code-block:: text
+.. parsed-literal::
 
     SIMU_foo C1 > C3
 
-    RESI 1 foo
+    **RESI 1 foo**
     C1 1 ...
     C2 1 ...
     C3 1 ...
 
-    RESI 2 foo
+    **RESI 2 foo**
     PART 1 21
     C1 1 ...
     C2 1 ...
     C3 1 ...
-    RESI 0
+    **RESI 0**
 
-    PART 2
+    *PART 2*
     C1A 1 ...
     C2A 1 ...
     C3A 1 ...
@@ -644,11 +651,9 @@ Step 1
 
 -   The command is
 
-    **rem dsr put oc(cf3)3 with O1 c1 c2 on O1_3 C1_3 Q11 part 2 occ -21
-    resi**
+    **rem dsr put oc(cf3)3 with O1 c1 c2 on O1_3 C1_3 Q11 part 2 occ -21 resi**
 
-    to place the fragment **OC(CF3)3** on the position of **O1_3 C1_3
-    q11**.
+    to place the fragment **OC(CF3)3** on the position of **O1_3 C1_3 q11**.
 
 -   In addition we want to have the fragment in a **PART 2** with the
     **occupancy** of **−21** and in a **residue**. DSR automatically
@@ -671,9 +676,9 @@ Step 2
 
 .. code-block:: text
 
-    D:\\tmp\\example\>dsr -r p21c.res
+    D:\tmp\example>dsr -r p21c.res
 
-    --------------------------------- D S R -- v208 --------------------------
+    --------------------------------- D S R -- v242 ----------------------------
     No residue number was given. Using residue number 5.
     Inserting oc(cf3)3 into res File.
     Source atoms: O1, C1, C2
@@ -681,13 +686,14 @@ Step 2
     RESI instruction is enabled. Leaving atom numbers as they are.
     Fragment atom names: O1, C1, C2, F1, F2, F3, C3, F4, F5, F6, C4, F7, F8, F9
     -----------------------------------------------------------------------------
-    Running SHELXL with \"c:\\bn\\sxtl\\xl.exe -b3000 p21c\" and \"L.S. 0\"
-    SHELXL Version 2014/7
+    Running SHELXL with "C:\bn\sxtl\xl.exe -b3000 p21c" and "L.S. 0"
+    SHELXL Version 2019/3
     wR2 = 0.5454
     GooF = 6.4660
     R1 = 0.2101
     Runtime: 0.3 s
     DSR run complete.
+
 
 -   Reopen the resulting res file.
 
@@ -796,7 +802,7 @@ the FVAR line.
     SUMP 1 0.0001 1 2 1 3 1 4
     SADI 0.02 C1 F1B C1 F2B C1 F3B C1 F4B C1 F5B C1 F6B C1 F7B C1 F8B C1 F9B
     SADI 0.04 F1B F2B F2B F3B F3B F1B F4B F5B F5B F6B F6B F4B F7B F8B F8B F9B =
-    F9B F7B
+        F9B F7B
     SADI 0.1 C2 F1B C2 F2B C2 F3B C2 F4B C2 F5B C2 F6B C2 F7B C2 F8B C2 F9B
     RIGU C2 C1 F1B > F9B
 
@@ -963,7 +969,7 @@ Command to tell DSR where SHELXL is located.
 
 **\$ dsr --ea**
 
-Exports **all** fragments at once to the current directory.
+Exports **all** fragments at once to .res files in the current directory.
 
 **\$ dsr --target \[coordinate triples\]**
 
@@ -974,6 +980,6 @@ separated coordinates.
 **General Remarks**
 
 Parsers for DSR output should be aware that DSR prints error messages
-between three stars (SHELXL between two stars). For example:
+between three stars (SHELXL uses two stars). For example:
 
 \*\*\* Check database entry. \*\*\*
