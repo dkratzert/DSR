@@ -116,15 +116,21 @@ DSR in ShelXle
 
 Since version 181, `ShelXle <http://www.shelxle.org>`_
 has the ability to start a graphical user interface for DSR. A mouse
-click on *Tools*--\> *DSR plugin* will start the DSR GUI:
+click on *Tools*--\> *DSR plugin* (figure 1) will start the DSR GUI (figure 2):
 
-.. image:: images/media/image1.png
-  :width: 100%
-  :alt: Start plugin
+.. figure:: images/media/image1.png
+    :width: 100%
+    :alt: Start plugin
 
-.. image:: images/media/image2.png
-  :width: 100%
-  :alt: DSR Window
+    Figure 1
+
+
+.. figure:: images/media/image2.png
+    :width: 100%
+    :align: left
+    :alt: DSR Window
+
+    Figure 2
 
 
 Now you need to select a fragment in the list. The list of fragments
@@ -134,17 +140,24 @@ to the fragments that best match by name.
 To fit a fragment into the structure in ShelXle, select three
 atoms/Q-peaks in the target molecule (with a left mouse click while
 holding STRG) and the fragments 3D view (just left mouse click) each.
-The 3D view should now show a preview of the fitted fragment:
+The 3D view should now show a preview of the fitted fragment (figure 3):
 
-.. image:: images/media/image3.png
-  :width: 100%
-  :alt: Fragment fit
+.. figure:: images/media/image3.png
+    :width: 80%
+    :align: left
+    :alt: Fragment fit
 
-You can now control all the features of DSR with the options menu below:
+    Figure 3
 
-.. image:: images/media/image4.png
-  :width: 100%
-  :alt: Options
+
+You can now control all the features of DSR with the options menu below (figure 4):
+
+.. figure:: images/media/image4.png
+    :width: 100%
+    :alt: Options
+
+    Figure 4
+
 
 Setting PART to zero will disable them. The residue number will always
 be chosen as the next free available. You can safely leave this as it is
@@ -162,9 +175,11 @@ window.
 the geometry of the fragment. This can be particular useful to stabilize
 the a fragment on special positions.
 
-.. image:: images/media/image5.png
-  :width: 100%
-  :alt: Start plugin
+.. figure:: images/media/image5.png
+    :width: 100%
+    :alt: Start plugin
+
+    Figure 5
 
 To create or edit a fragment, click on \"Edit fragment\". The edit
 window allows adding, updating and deleting of fragments.
@@ -189,9 +204,11 @@ with "OK" or discard them with "Abort".
 After renaming, you can save the changes by clicking "Add as new" or
 "Update fragment".
 
-.. image:: images/media/image6.png
-  :width: 100%
-  :alt: Rename mode
+.. figure:: images/media/image6.png
+    :width: 100%
+    :alt: Rename mode
+
+    Figure 6
 
 
 Background Informtion
@@ -350,11 +367,14 @@ if desired.
 Please be aware that SIMU behaves special with residues. Let's assume we
 have a disordered phenyl group on two positions where the two rings are
 slightly rotated along their bond to the next part of the molecule
-(Figure 1):
+(Figure 7):
 
-.. image:: images/media/image7.png
-  :width: 100%
-  :alt: Two rings
+.. figure:: images/media/image7.png
+    :width: 40%
+    :alt: Two rings
+
+    Figure 7
+
 
 DSR introduces, among others, the restraint "SIMU_BENZ C1 \> C6". This
 is not wrong, but still not enough in every case, because SHELXL only
@@ -366,11 +386,14 @@ disorder parts are more equal. Therefore, we have to include all
 involved atoms explicitly in one SIMU command: "SIMU C1_1 \> C6_1 C1_2
 \> C6_2". This can possibly be optimized by more than one SIMU and
 different values for the standard deviation and dmax, e.g. "SIMU 0.02
-0.04 0.5 atoms" and "SIMU 0.04 0.08 1.3 atoms" (Figure 2).
+0.04 0.5 atoms" and "SIMU 0.04 0.08 1.3 atoms" (Figure 8).
 
-.. image:: images/media/image8.png
-  :width: 100%
-  :alt: Start plugin
+.. figure:: images/media/image8.png
+    :width: 40%
+    :alt: Start plugin
+
+    Figure 8
+
 
 The RESI option of DSR can be used in three ways:
 
@@ -388,7 +411,7 @@ A given class, number or alias always overwrites the information of the
 database.
 
 The manual on the SHELX website gives more detailed
-information about residues: `http://shelx.uni-ac.gwdg.de/SHELX/wikis.php <http://shelx.uni-ac.gwdg.de/SHELX/wikis.php>`_
+information about residues: `https://shelx.uni-goettingen.de/wikis.php <https://shelx.uni-goettingen.de/wikis.php>`_
 
 Common Problems with residues
 =============================
@@ -511,7 +534,7 @@ you need super-user rights to perform an update)
 transfer is disabled.
 
 Database Format Definition
-==========================
+**************************
 
 The database format was deliberately kept very simple. It consists of a
 system database in the dsr_db.txt and a user database in the
@@ -520,9 +543,9 @@ program install while the user database will always stay untouched. So
 the user can easily add new fragments to its own dsr_user_db.txt
 database. The syntax mainly follows the SHELXL syntax:
 
-.. code-block:: text
+.. parsed-literal::
 
-    <fragment name>                <- Start tag
+    \<fragment name\>                <- Start tag
     RESI class                     <- Required, defines the residue name of db entry.
     restraints                     <- Any restraints and comments following the
                                       SHELXL syntax.
@@ -532,9 +555,9 @@ database. The syntax mainly follows the SHELXL syntax:
 
     Atom sfac-number coordinates   <- One isotropic atom per line following SHELX syntax:
 
-    O1  1 1.2345 0.6734 0.8352     <- Either the atom type is recognized by the atom name
+    O1  **1** 1.2345 0.6734 0.8352     <- Either the atom type is recognized by the atom name
                                       for positive Numbers in the second column.
-    C1 -6 0.2683 0.4783 0.1616     <- Or the atom type is defined by the negative atomic
+    C1 **-6** 0.2683 0.4783 0.1616     <- Or the atom type is defined by the negative atomic
                                       number in the second column.
 
     </fragment name>               <- End tag. Same as start tag but with a slash.
@@ -619,9 +642,12 @@ Step 0
 -   Apply a PART and the free variable 2 to this residue with "PART 1
     21":
 
-.. image:: images/media/image9.png
-  :width: 100%
-  :alt: p321.res
+.. figure:: images/media/image9.png
+    :width: 100%
+    :alt: p321.res
+
+    Figure 9
+
 
 .. code-block:: text
 
@@ -703,9 +729,12 @@ Step 3
 -   The fragment turned out to be successfully fitted on its desired
     position:
 
-.. image:: images/media/image10.png
-  :width: 100%
-  :alt: Result step 3
+.. figure:: images/media/image10.png
+    :width: 100%
+    :alt: Result step 3
+
+    Figure 10
+
 
 -   The previously used DSR command line is now removed
     and will not be recognized by DSR again.
@@ -719,9 +748,12 @@ Step 4
 -   The final model of the anion should look like this:
 
 
-.. image:: images/media/image11.png
-  :width: 100%
-  :alt: Result step 4
+.. figure:: images/media/image11.png
+    :width: 100%
+    :alt: Result step 4
+
+    Figure 11
+
 
 -   Now you can add/remove additional restraints and further refine the
     structure as usual. Already existing restraints for an existing
@@ -729,9 +761,11 @@ Step 4
     for all residues together (with SADI_CCF3 for example).
 
 -   A good assumption for the model would also be that all Al--O
-    distances are the same. Therefore, we should add the restraint\
-    SADI Al1_0 O1_1 Al1_0 O1_2 Al1_0 O1_3 Al1_0 O1_4 Al1_0 O1_5 Al1_0
-    O1_6
+    distances are the same. Therefore, we should add the restraint
+
+.. code-block:: text
+
+    SADI Al1_0 O1_1 Al1_0 O1_2 Al1_0 O1_3 Al1_0 O1_4 Al1_0 O1_5 Al1_0 O1_6
 
 -   The central oxygen and carbon atoms of the disordered perfluorinated
     tert-butyl alcohol group are now in close proximity. Therefore, it
@@ -750,9 +784,12 @@ Step 4
     (0.30 eÅ:sup:`-3` level):
 
 
-.. image:: images/media/image12.png
-  :width: 100%
-  :alt: Start plugin
+.. figure:: images/media/image12.png
+    :width: 80%
+    :alt: Start plugin
+
+    Figure 12
+
 
 Import fragments from GRADE
 ***************************
@@ -833,14 +870,19 @@ two positions are the principal axes of the carbon atom ellipsoid in its
 longest direction. The restraints will be adjusted accordingly.
 
 
-.. image:: images/media/image13.png
-  :width: 100%
-  :alt: Residual electron density
+.. figure:: images/media/image13.png
+    :width: 50%
+    :alt: Residual electron density
+
+    Figure 13 with C1
 
 
-.. image:: images/media/image14.png
-  :width: 100%
-  :alt: Result
+.. figure:: images/media/image14.png
+    :width: 100%
+    :alt: Result
+
+    Figure 14 CF3 group split on two positions (``rem dsr put CF6 on C22 split``).
+
 
 You should never use CF9 just because it is possible! Often CF6 is
 sufficient. CF9 often just uses more least-squares parameters without
