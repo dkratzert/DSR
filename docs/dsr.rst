@@ -77,7 +77,7 @@ files dsr.sh, dsr-mac and dsr-linux are removed from /etc/profile.d/ and/or
 Do the following steps in order to install and run DSR:
 Some Linux distributions like Ubuntu need a python3-venv package to be installed first.
 
-.. code-block::
+.. code-block:: bash
 
     >> cd
     >> python3 -m venv dsrenv        <-- creates a virtual environment
