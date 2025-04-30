@@ -80,7 +80,7 @@ Some Linux distributions like Ubuntu need a python3-venv package to be installed
 .. code-block::
 
     >> cd
-    >> python -m venv dsrenv        <-- creates a virtual environment
+    >> python3 -m venv dsrenv        <-- creates a virtual environment
     >> source dsrenv/bin/activate   (Windows: dsrenv\Scripts\activate.bat)  <-- Activates the environment
     >> pip install dsr-shelx
     >> sudo ln -s /home/[username]/dsrenv/bin/dsr /usr/local/bin/dsr    <-- link the executable to a global accessible directory
