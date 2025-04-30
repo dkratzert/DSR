@@ -68,13 +68,24 @@ dsr-shelx package from `pypi.org <https://pypi.org/project/dsr-shelx/>`_.
 DSR expects a shelxl or xl executable version 2013 or above in the
 system path.
 
-Since version 213, DSR needs the numpy package to be installed in order
-to run.
-
 The update from DSR for python 2.7 (version 236 and below) to DSR for Python 3
 needs some manual work. You need to uninstall the old version and make sure the
 files dsr.sh, dsr-mac and dsr-linux are removed from /etc/profile.d/ and/or
 /etc/paths.d/.
+
+
+Do the following steps in order to install and run DSR:
+Some Linux distributions like Ubuntu need a python3-venv package to be installed first.
+
+.. code-block::
+
+    >> cd
+    >> python -m venv dsrenv        <-- creates a virtual environment
+    >> source dsrenv/bin/activate   (Windows: dsrenv\Scripts\activate.bat)  <-- Activates the environment
+    >> pip install dsr-shelx
+    >> sudo ln -s /home/[username]/dsrenv/bin/dsr /usr/local/bin/dsr    <-- link the executable to a global accessible directory
+    >> dsr
+
 
 MacOS
 =====
