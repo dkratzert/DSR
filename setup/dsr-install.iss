@@ -62,7 +62,7 @@ Name: "modifypath"; Description: "Add application directory to your system envir
 
 [Files]
 Source: "..\dist\python_dist\*"; DestDir: "{app}\python"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
-Source: "..\dist\vc_redist.x64.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\vc_redist.x64.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\example\p21c.hkl"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\example\p21c.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs; Permissions: everyone-full
 Source: "..\example\p21c_step0.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
@@ -73,7 +73,6 @@ Source: "..\example\p21c_final.res"; DestDir: "{app}\example"; Flags: ignorevers
 Source: "..\example\p21n_cf3.hkl"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\example\p21n_cf3.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: ".\Output\changelog.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\manuals\DSR-manual.pdf"; DestDir: "{app}\manuals\"; Flags: ignoreversion
 Source: "..\src\dsr_shelx\*"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
 
 [Icons]
