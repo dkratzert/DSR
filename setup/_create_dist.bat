@@ -42,6 +42,12 @@ del python-%PYTHON_VERSION%.zip
 
 echo python%SHORT_PYTHON_VERSION%.zip > %PACKAGE_DIR%\python%SHORT_PYTHON_VERSION%._pth
 echo . >> %PACKAGE_DIR%\python%SHORT_PYTHON_VERSION%._pth
+REM DSR's own modules (dsr.py, atomhandling.py, ...) are installed one level up in
+REM {app}, not inside {app}\python. The embeddable distribution's ._pth file
+REM restricts sys.path to only the entries listed here (relative to this python\
+REM folder), so ".." must be added explicitly or "import atomhandling" etc. fail
+REM with ModuleNotFoundError at runtime.
+echo .. >> %PACKAGE_DIR%\python%SHORT_PYTHON_VERSION%._pth
 echo import site >> %PACKAGE_DIR%\python%SHORT_PYTHON_VERSION%._pth
 endlocal
 
