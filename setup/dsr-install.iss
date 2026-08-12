@@ -46,13 +46,12 @@ ShowComponentSizes=False
 SignTool=sign_sha256
 
 [Run]
-;Filename: "msiexec.exe"; Parameters: "TARGETDIR=""{app}\python27"" ADDLOCAL=Extensions,SharedCRT /i ""{app}\python-2.7.5.msi"""; Description: "Install Python"
-
-; why does the quiet installation of python with parameter /qn not install the visual C++ redistributable?
-;Filename: "msiexec.exe"; Parameters: "/qn TARGETDIR=""{app}\python27"" /qn ADDLOCAL=Extensions,SharedCRT /i ""{app}\python-2.7.5.msi"""; Description: "Install Python"
+; The VC++ redistributable is required by the embedded Python interpreter; only run it
+; when it is not already present on the system.
+Filename: "{app}\vc_redist.x64.exe"; WorkingDir: "{app}"; Parameters: "/passive /norestart"; \
+    Check: ShouldInstallVCRedist
 
 [UninstallRun]
-;Filename: "msiexec.exe"; Parameters: "/qn /x{{DBDD570E-0952-475f-9453-AB88F3DD5659}"; WorkingDir: "{app}"
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -62,7 +61,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "modifypath"; Description: "Add application directory to your system environment path variable"; GroupDescription: "DSR needs to be in the PATH variable to find its components."
 
 [Files]
-Source: "..\..\python311\*"; DestDir: "{app}\python311"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
+Source: "..\dist\python_dist\*"; DestDir: "{app}\python"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
+Source: "..\dist\vc_redist.x64.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\example\p21c.hkl"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\example\p21c.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs; Permissions: everyone-full
 Source: "..\example\p21c_step0.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
@@ -91,10 +91,14 @@ Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environm
 Type: filesandordirs; Name: "{app}\networkx"
 Type: filesandordirs; Name: "{app}\mpmath"
 Type: filesandordirs; Name: "{app}\python27"
+; Clean up old-style Python installs from previous releases before installing the new
+; embedded interpreter under {app}\python.
+Type: filesandordirs; Name: "{app}\python311"
 
 [UninstallDelete]
 Type: files; Name: "{app}\*.pyc"
 Type: files; Name: "{app}\dsr"
+Type: filesandordirs; Name: "{app}\python"
 Type: filesandordirs; Name: "{app}\python311"
 Type: filesandordirs; Name: "{app}\networkx"
 Type: filesandordirs; Name: "{app}\mpmath"
@@ -110,6 +114,19 @@ Name: "{app}\manuals"; Permissions: everyone-full
 Name: "{app}\."; Permissions: everyone-full
 
 [Code]
+function IsVCRedistInstalled(): Boolean;
+var
+  installed: Cardinal;
+begin
+  Result := RegQueryDWordValue(HKEY_LOCAL_MACHINE,
+    'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64', 'Installed', installed) and (installed = 1);
+end;
+
+function ShouldInstallVCRedist(): Boolean;
+begin
+  Result := not IsVCRedistInstalled;
+end;
+
 const
     ModPathName = 'modifypath';
     ModPathType = 'system';

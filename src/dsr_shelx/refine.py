@@ -89,19 +89,7 @@ class ShelxlRefine():
                 exe = shx_exe[0]
             except IndexError:
                 continue
-            version = get_xl_version_string(exe)
-            if not version:
-                print('Your SHELXL version', exe, 'is too old for this Program')
-                print('Please use SHELXL 2013/4 or above!')
-                print(download)
-                sys.exit()
-            version = version.split('/')
-            if int(version[0]) < 2013:
-                print('Your SHELXL version is too old. Please use SHELXL 2013/4 or above!')
-                print(download)
-                sys.exit()
-            else:
-                return exe
+            return exe
 
     def approx_natoms(self):
         """

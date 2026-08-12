@@ -1,6 +1,7 @@
 Recent Changes in DSR
 ---------------------
 
+* 243    Reworked the Windows release build.
 * 242    Fixed crash when RESI contains a floating point number.
 * 241    Fixed crash with certain Python3 versions
 * 240    Improved import of fragment name from Grade2 files.
