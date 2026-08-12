@@ -17,23 +17,22 @@ import shutil
 import sys
 import tarfile
 import tempfile
+import urllib.request
 
 from version import VERSION
 
 urlprefix = "https://dkratzert.de/files/dsr"
 
 
-from urllib.request import FancyURLopener
-
-
-class MyOpener(FancyURLopener):
+def _urlopen(url, silent=False, timeout=3):
     """
-    Sets the user agent of the urllib http request.
+    Opens a URL with a custom DSR User-Agent header.
+
+    FancyURLopener was removed in Python 3.14 (deprecated since Python 3.3); a plain
+    urllib.request.Request with a User-Agent header replaces it here.
     """
-    version = 'DSR cmdline {}'.format(VERSION)
-
-
-myurlopen = MyOpener()
+    request = urllib.request.Request(url, headers={'User-Agent': 'DSR-updater {}'.format(VERSION)})
+    return urllib.request.urlopen(request, timeout=timeout)
 
 
 def get_current_dsr_version(silent=False):
@@ -48,11 +47,8 @@ def get_current_dsr_version(silent=False):
     version number
     :type: str
     """
-    import socket
-    socket.setdefaulttimeout(3)
-    FancyURLopener.version = "DSR-updater {}".format(VERSION)
     try:
-        response = myurlopen.open('{}/version.txt'.format(urlprefix))
+        response = _urlopen('{}/version.txt'.format(urlprefix), silent=silent)
     except IOError:
         if not silent:
             print("*** Unable to connect to update server. No Update possible. ***")
@@ -196,7 +192,7 @@ def get_update_package(version, destdir=None, post=True):
         print("*** Could not determine the location of DSR. Can not update. ***")
         sys.exit()
     # DSR file:
-    response = myurlopen.open('{}/DSR-{}.tar.gz'.format(urlprefix, version))
+    response = _urlopen('{}/DSR-{}.tar.gz'.format(urlprefix, version), timeout=30)
     try:
         with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
             tmpfile.write(response.read())
@@ -242,7 +238,7 @@ def check_checksum(tmpfile, version):
     :return: the two checksums
     """
     # download SHA file:
-    response2 = myurlopen.open('{}/DSR-{}-sha512.sha'.format(urlprefix, version))
+    response2 = _urlopen('{}/DSR-{}-sha512.sha'.format(urlprefix, version), timeout=30)
     downloaded_sha = response2.read()
     # Checksum for program package:
     tgz_sha = sha512_checksum(tmpfile.name)
