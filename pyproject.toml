@@ -1,26 +1,28 @@
 [build-system]
-requires = ["hatchling", "hatch-requirements-txt"]
+requires = ["hatchling"]
 build-backend = "hatchling.build"
-
-[tool.hatch.metadata.hooks.requirements_txt]
-files = ["requirements.txt"]
 
 [project]
 name = "dsr_shelx"
-dynamic = ["version", "dependencies"]
+dynamic = ["version"]
+dependencies = []
 authors = [
     { name = "Daniel Kratzert", email = "dkratzert@gmx.de" },
 ]
 description = "A program to model disorder in small-molecule X-ray structures"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Topic :: Scientific/Engineering :: Chemistry",
     "Development Status :: 5 - Production/Stable",
-    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 
 [project.urls]
@@ -28,7 +30,6 @@ classifiers = [
 "Bug Tracker" = "https://github.com/dkratzert/DSR/issues"
 
 [dependency-groups]
-# Unpinned on purpose: requires-python >=3.9 and recent Sphinx releases need 3.10/3.11+.
 doc = [
     "sphinx",
     "sphinx-rtd-theme",
@@ -52,7 +53,6 @@ exclude = [
     "/tests",
     "/manuals",
     "/olex_dsr_db.txt",
-    "/requirements-devel.txt",
     "/make_release.sh",
     "/venv*",
 ]
