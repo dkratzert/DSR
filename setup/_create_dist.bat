@@ -58,10 +58,10 @@ curl -L https://aka.ms/vs/17/release/vc_redist.x64.exe -o vc_redist.x64.exe
 cd %SCRIPT_DIR%\..
 
 REM Install the project's runtime dependencies (if any are ever added to
-REM requirements.txt) straight into the embedded interpreter. Currently a no-op
+REM pyproject.toml) straight into the embedded interpreter. Currently a no-op
 REM since DSR ships all its dependencies (mpmath, networkx) vendored in-tree, but
 REM this keeps the release script future-proof without hardcoding "no deps".
-uv pip install --python "%PACKAGE_DIR%\python.exe" -r requirements.txt --link-mode=copy
+uv pip install --python "%PACKAGE_DIR%\python.exe" -r pyproject.toml --link-mode=copy
 if %errorlevel% neq 0 (
     echo uv pip install failed. Stopping now.
     exit /b %errorlevel%

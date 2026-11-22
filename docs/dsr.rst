@@ -74,17 +74,17 @@ files dsr.sh, dsr-mac and dsr-linux are removed from /etc/profile.d/ and/or
 /etc/paths.d/.
 
 
-Do the following steps in order to install and run DSR:
-Some Linux distributions like Ubuntu need a python3-venv package to be installed first.
+Do the following steps in order to install and run DSR with
+`uv <https://docs.astral.sh/uv/>`_. uv also installs a suitable Python version (3.11 or above) if necessary.
 
 .. code-block:: bash
 
-    >> cd
-    >> python3 -m venv dsrenv        <-- creates a virtual environment
-    >> source dsrenv/bin/activate   # (in Windows: dsrenv\Scripts\activate.bat)  <-- Activates the environment
-    >> pip install dsr-shelx
-    >> sudo ln -s /home/[username]/dsrenv/bin/dsr /usr/local/bin/dsr    <-- link the executable to a global accessible directory
+    >> curl -LsSf https://astral.sh/uv/install.sh | sh    <-- installs uv
+    >> uv tool install dsr-shelx
+    >> sudo ln -s /home/[username]/.local/bin/dsr /usr/local/bin/dsr    <-- link the executable to a global accessible directory
     >> dsr
+
+Update DSR later with "uv tool upgrade dsr-shelx".
 
 
 MacOS
@@ -95,11 +95,13 @@ Install the dsr-shelx package from `pypi.org <https://pypi.org/project/dsr-shelx
 Easiest way in macOS might be:
 
 * Install homebrew: https://brew.sh/
-* brew install pipx
-* pipx install dsr-shelx
+* brew install uv
+* uv tool install dsr-shelx
 * Create a link that is usable for all users:
 
   sudo ln -s /Users/[username]/.local/bin/dsr /usr/local/bin/dsr
+
+* Update DSR later with "uv tool upgrade dsr-shelx".
 
 The update from DSR for python 2.7 (version 236 and below) to DSR for Python 3
 needs some manual work. You need to uninstall the old version and make sure the
