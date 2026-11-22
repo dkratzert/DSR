@@ -27,6 +27,13 @@ classifiers = [
 "Homepage" = "https://dkratzert.de/dsr.html"
 "Bug Tracker" = "https://github.com/dkratzert/DSR/issues"
 
+[dependency-groups]
+# Unpinned on purpose: requires-python >=3.9 and recent Sphinx releases need 3.10/3.11+.
+doc = [
+    "sphinx",
+    "sphinx-rtd-theme",
+]
+
 [tool.hatch.version]
 path = "src/dsr_shelx/version.py"
 pattern = "VERSION\\s*=\\s*'(?P<version>\\d+\\.{0,1}\\d{0,1})'"
