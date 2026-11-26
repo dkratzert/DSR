@@ -1,6 +1,7 @@
 Recent Changes in DSR
 ---------------------
 
+* 244    Replace mode now also deletes the empty AFIX instructions of deleted hydrogen atoms.
 * 243    Reworked the Windows release build. Several fixes in the database.
 * 242    Fixed crash when RESI contains a floating point number.
 * 241    Fixed crash with certain Python3 versions

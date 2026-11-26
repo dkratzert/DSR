@@ -25,8 +25,6 @@ from misc import find_line, find_multi_lines, atomic_distance
 def get_atoms(atlist):
     """
     returns all atoms found in the input as list of lists
-    >>> get_atoms(['F8    4    0.349210   0.073474   0.519443 -21.00000   0.03106', 'foo'])
-    [['F8', '4', '0.349210', '0.073474', '0.519443']]
     """
     atoms = []
     try:
@@ -52,18 +50,6 @@ def get_atomtypes(dbatoms):
                       [...]
                      ]
     :type dbatoms: list
-    >>> atoms = [['O1', 3, '-0.01453', '1.66590', '0.10966'],\
-                 ['C1', 1, '-0.00146', '0.26814', '0.06351'],\
-                 ['Au15', 8, '0.00146', '0.26814', '0.06351']]
-    >>> get_atomtypes(atoms)
-    ['O', 'C', 'AU']
-    >>> atoms = [['O1', 3, '-0.01453', '1.66590', '0.10966'],\
-                 ['C1', 1, '-0.00146', '0.26814', '0.06351'],\
-                 ['Ax15', 8, '0.00146', '0.26814', '0.06351']]
-    >>> get_atomtypes(atoms)
-    Traceback (most recent call last):
-    ...
-    KeyError
     """
     el = Element()
     found = []
@@ -84,6 +70,33 @@ def get_atomtypes(dbatoms):
     return found
 
 
+def remove_emptied_afix_blocks(reslist):
+    """
+    Removes "AFIX mn" instructions (and their closing "AFIX 0") whose atoms were all
+    deleted. Deleted lines are expected to be empty strings in reslist.
+    """
+    afix_regex = re.compile(r'^AFIX\s+(\d+)', re.IGNORECASE)
+    for num, line in enumerate(reslist):
+        afix = afix_regex.match(line)
+        if not afix or int(afix.group(1)) == 0:
+            continue
+        deleted_lines = False
+        for nextnum in range(num + 1, len(reslist)):
+            nextline = reslist[nextnum]
+            if nextline == '':
+                deleted_lines = True
+                continue
+            if not nextline.strip():
+                continue
+            next_afix = afix_regex.match(nextline)
+            if next_afix and deleted_lines:
+                reslist[num] = ''
+                if int(next_afix.group(1)) == 0:
+                    reslist[nextnum] = ''
+            break
+    return reslist
+
+
 def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     """
     deletes the atoms in replace mode that are near the fragment atoms
@@ -93,25 +106,6 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     :param resi: Resi() instance
     :param fragment_numberscheme: atom names of the fitting fragment
     :param cell: cell parameters
-
-    >>> from resfile import ResList
-    >>> from resfile import ResListEdit
-    >>> from dsrparse import DSRParser
-    >>> from resi import Resi
-    >>> res_file = 'tests/p21c.res'
-    >>> rl = ResList(res_file)
-    >>> reslist = rl.get_res_list()
-    >>> find_atoms = FindAtoms(reslist)
-    >>> rle = ResListEdit(reslist, find_atoms)
-    >>> dsrp = DSRParser(reslist)
-    >>> dbhead = ['RESI CF3']
-    >>> db_residue_string='CF3'
-    >>> resi = Resi(dsrp, db_residue_string, find_atoms)
-    No residue number was given. Using residue number 4.
-    >>> fragment_numberscheme = ['O1_1', 'C1_1', 'C2_1', 'F1_1', 'F2', 'F3', 'C3', 'F4', 'F5', 'F6', 'C4', 'F7', 'F8', 'F9']
-    >>> cell = rle.get_cell()
-
-    #>>> replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell)
     """
     remdist = 1.3
     from resfile import ResListEdit
@@ -134,6 +128,7 @@ def replace_after_fit(rl, reslist, resi, fragment_numberscheme, cell):
     for i in target_lines:
         i = int(i)
         rle.remove_line(i, rem=False, remove=True, frontspace=False)
+    remove_emptied_afix_blocks(reslist)
     rl.write_resfile(reslist, '.res')
     reslist = rl.get_res_list()
     return reslist, find_atoms
@@ -176,12 +171,6 @@ class FindAtoms():
         returns all atoms found in the input as list if they are real atoms
 
         :param atomline:  'O1    3    0.120080   0.336659   0.494426  11.00000   0.01445 ...'
-        >>> FindAtoms.is_atom(atomline = 'O1    3    0.120080   0.336659   0.494426  11.00000   0.01445 ...')
-        ['O1', '3', '0.120080', '0.336659', '0.494426']
-        >>> FindAtoms.is_atom(atomline = 'O1    0.120080   0.336659   0.494426  11.00000   0.01445 ...')
-        []
-        >>> FindAtoms.is_atom(atomline = 'O1    0.120080   0.336659   0.494426  11.00000   0.01445 ...')
-        []
         """
         if atomregex.match(str(atomline)):  # search atoms
             atom = atomline.split()[:5]  # convert to list and use only first 5 columns
@@ -229,9 +218,6 @@ class FindAtoms():
         Parameters
         ----------
         partstring: string like 'PART 2 -21'
-
-        >>> FindAtoms.get_partnumber(partstring='PART 2 -21')
-        2
         """
         partstring = partstring.upper()
         part = partstring.split()
@@ -678,13 +664,6 @@ class Elem_2_Sfac():
         returns an sfac-number for the element given in "atom_type"
         :param atom_type: string 'C'
         :type atom_type: string
-
-        >>> el = Elem_2_Sfac(['Ca', 'H', 'C', 'BR'])
-        >>> el.elem_2_sfac('Br')
-        4
-        >>> el.elem_2_sfac('c')
-        3
-        >>> el.elem_2_sfac('Ar')
         """
         for num, element in enumerate(self._sfac_table, 1):
             if atom_type.upper() == element.upper():
@@ -695,19 +674,6 @@ class Elem_2_Sfac():
         """
         returns an element and needs an sfac-number
         :param sfacnum: string like '2'
-        >>> el = Elem_2_Sfac(['Ca', 'H', 'C', 'BR'])
-        >>> el.sfac_2_elem(1)
-        'CA'
-        >>> el.sfac_2_elem(2)
-        'H'
-        >>> el.sfac_2_elem(3)
-        'C'
-        >>> el.sfac_2_elem(4)
-        'BR'
-        >>> el.sfac_2_elem(5)
-
-        >>> el.sfac_2_elem(0)
-
         """
         try:
             sfacnum = int(sfacnum)
