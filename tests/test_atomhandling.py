@@ -1,16 +1,14 @@
 import re
 import shutil
 import unittest
-from io import StringIO
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import patch
 
 import pytest
 
-from atomhandling import FindAtoms, remove_emptied_afix_blocks, get_atoms, get_atomtypes, Elem_2_Sfac, \
+from dsr_shelx.atomhandling import get_atoms, get_atomtypes, Elem_2_Sfac, FindAtoms, remove_emptied_afix_blocks, \
     replace_after_fit
-from resfile import ResList
+from dsr_shelx.resfile import ResList
 
 TESTS_DIR = Path(__file__).parent
 
@@ -61,7 +59,7 @@ def test_sfac_2_elem(sfac, element):
 def test_replace_after_fit_removes_hydrogens_and_their_afix(tmp_path, capsys):
     res_file = tmp_path / 'p21c.res'
     shutil.copy(TESTS_DIR / 'p21c.res', res_file)
-    lines = res_file.read_text().splitlines(keepends=True)
+    lines = res_file.read_text(encoding='latin1').splitlines(keepends=True)
     coords = {}
     for line in lines:
         match = re.match(r'^(C3[0-5])\s+1\s+(\S+)\s+(\S+)\s+(\S+)', line)
@@ -70,7 +68,7 @@ def test_replace_after_fit_removes_hydrogens_and_their_afix(tmp_path, capsys):
     # Put a fitted "benzene" exactly onto C30 to C35:
     hklf = [num for num, line in enumerate(lines) if line.startswith('HKLF')][0]
     lines[hklf:hklf] = ['C{} 1 {} {} {} 11.0 0.03\n'.format(n + 1, *coords['C3{}'.format(n)]) for n in range(6)]
-    res_file.write_text(''.join(lines))
+    res_file.write_text(''.join(lines), encoding='latin1')
     rl = ResList(str(res_file))
     reslist = rl.get_res_list()
     cell = [float(x) for x in reslist[1].split()[2:8]]

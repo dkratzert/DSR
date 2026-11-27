@@ -20,7 +20,7 @@ from typing import List, Dict, Union
 
 from atomhandling import get_atomtypes
 from atoms import Element
-from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line
+from constants import atomregex, SHX_CARDS, RESTRAINT_CARDS, sep_line, FILE_ENCODING
 from misc import atomic_distance, nalimov_test, std_dev, median, pairwise, \
     unwrap_head_lines, dice_coefficient2, frac_to_cart, read_cif
 
@@ -155,7 +155,7 @@ def read_file_data(filepath: str) -> List[str]:
     """
     dblist = []
     try:
-        with open(filepath, 'r') as f:
+        with open(filepath, 'r', encoding=FILE_ENCODING) as f:
             dblist = f.read().splitlines()
     except (IOError, TypeError) as e:
         print(e)
@@ -1153,7 +1153,7 @@ class ImportGRADE():
                 user_db_names.append(self._db[i]['name'])
         # try to write the new dbentry:
         try:
-            with open(self.user_db_path, 'w') as f:
+            with open(self.user_db_path, 'w', encoding=FILE_ENCODING) as f:
                 for name in grade_db_names:
                     print(f'Importing {self._resi_name} ({name}) to user database...')
                     dbentry = self.compile_dbentry(imported_entry, name)
@@ -1163,7 +1163,7 @@ class ImportGRADE():
             sys.exit()
         # try to write existing dbentries:
         try:
-            with open(self.user_db_path, 'a+') as fu:
+            with open(self.user_db_path, 'a+', encoding=FILE_ENCODING) as fu:
                 for tag in fragments:
                     if self._db[tag]['dbname'] == 'dsr_user_db':
                         atomlist = self._db[tag]['atoms']

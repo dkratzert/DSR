@@ -15,6 +15,7 @@ import os
 import sys
 
 import misc
+from constants import FILE_ENCODING
 
 
 def filename_wo_ending(resfilename):
@@ -51,7 +52,7 @@ class ResList():
         filename = self.__basefile + '.res'
         reslist = []
         try:
-            with open(filename, 'r') as f:
+            with open(filename, 'r', encoding=FILE_ENCODING) as f:
                 for line in f:
                     reslist.append(line)
         except IOError:
@@ -67,7 +68,7 @@ class ResList():
         :param ending:  string, file ending like '.res'
         """
         try:
-            nfile = open(self.__basefile + ending, 'w')  # open the ins file
+            nfile = open(self.__basefile + ending, 'w', encoding=FILE_ENCODING)  # open the ins file
         except IOError:
             print('Unable to write .res file! Check directory write permissions.')
             sys.exit(-1)

@@ -17,6 +17,7 @@ import sys
 from collections import OrderedDict
 
 from atomhandling import get_atomtypes
+from constants import FILE_ENCODING
 from elements import get_radius_from_element
 from misc import distance, find_line, flatten, get_overlapped_chunks, remove_partsymbol, shift, vol_tetrahedron
 
@@ -390,7 +391,7 @@ class ListFile():
         '''
         listfile = []
         try:
-            with open(self._listfile, 'r') as l:
+            with open(self._listfile, 'r', encoding=FILE_ENCODING) as l:
                 for line in l:
                     listfile.append(line)
         except(IOError):

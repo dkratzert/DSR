@@ -15,6 +15,7 @@ from pathlib import Path
 
 from atomhandling import get_atomtypes
 from atoms import Element
+from constants import FILE_ENCODING
 from dbfile import ParseDB, invert_atomic_coordinates
 from misc import wrap_headlines, wrap_stringlist
 from restraints import Restraints
@@ -311,7 +312,7 @@ class Export():
         arg = base + ending
         try:
             print('try to open...')
-            open(arg, 'w')
+            open(arg, 'w', encoding=FILE_ENCODING)
             return True
         except IOError:
             print('can not open file')
@@ -325,7 +326,7 @@ class Export():
         # write to file:
         resfile = str(fragment) + '.res'
         try:
-            f = open(resfile, 'w')
+            f = open(resfile, 'w', encoding=FILE_ENCODING)
             for line in self.export_resfile(fragment):
                 f.write(''.join(line))
             print(f'Database entry of "{fragment}" successfully written to {Path(resfile).resolve()}.')

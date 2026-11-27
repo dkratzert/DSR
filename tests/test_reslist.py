@@ -113,3 +113,15 @@ class ResListEditTest(unittest.TestCase):
         self.assertListEqual([17], lines)
         self.assertNotEqual(None, lines)
         self.assertNotEqual(False, lines)
+
+
+def test_res_file_with_non_utf8_characters_round_trip(tmp_path):
+    # "Bärbel" and "Ä" in latin1/cp1252 encoding are invalid UTF-8:
+    content = 'TITL p21c in P2(1)/c\r\nREM Bärbel measured this ±0.1 Ä\r\nHKLF 4\r\nEND\r\n'.encode('latin1')
+    res_file = tmp_path / 'test.res'
+    res_file.write_bytes(content)
+    rl = ResList(str(res_file))
+    reslist = rl.get_res_list()
+    assert reslist[1] == 'REM Bärbel measured this ±0.1 Ä\n'
+    rl.write_resfile(reslist, '.res')
+    assert res_file.read_bytes().replace(b'\r\n', b'\n') == content.replace(b'\r\n', b'\n')

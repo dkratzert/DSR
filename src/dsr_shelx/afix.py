@@ -16,7 +16,7 @@ import os
 import sys
 
 import misc
-from constants import RESTRAINT_CARDS
+from constants import RESTRAINT_CARDS, FILE_ENCODING
 
 
 
@@ -177,7 +177,7 @@ def write_dbhead_to_file(dsrp, filename, dbhead, resi_class, resi_number):
         print('Previous restraint file found. Using restraints from "{}"'.format(filename))
         return filename
     try:
-        dfix_file = open(os.path.join(filepath, filename), 'w')  # open the ins file
+        dfix_file = open(os.path.join(filepath, filename), 'w', encoding=FILE_ENCODING)  # open the ins file
     except IOError:
         print('*** Unable to write restraints file! Check directory write permissions. ***')
         sys.exit(False)

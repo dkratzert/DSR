@@ -14,6 +14,11 @@ import re
 
 from terminalsize import get_terminal_size
 
+# Encoding for SHELX and database files. It must be explicit, because the default
+# encoding is UTF-8 since Python 3.15. latin1 decodes every byte, so files with
+# arbitrary non-ASCII characters are read without errors and written back unchanged.
+FILE_ENCODING = 'latin1'
+
 SHX_CARDS = ('TITL', 'CELL', 'ZERR', 'LATT', 'SYMM', 'SFAC', 'UNIT', 'LIST', 'L.S.', 'CGLS',
              'BOND', 'FMAP', 'PLAN', 'TEMP', 'ACTA', 'CONF', 'SIMU', 'RIGU', 'WGHT', 'FVAR',
              'DELU', 'SAME', 'DISP', 'LAUE', 'REM ', 'MORE', 'TIME', 'END', 'HKLF', 'OMIT',

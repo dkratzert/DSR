@@ -429,7 +429,7 @@ def main():
     lstfile = ''
     is_listfile = False
     try:
-        lstfile = open('./dsr-log.lst', 'w')
+        lstfile = open('./dsr-log.lst', 'w', encoding='utf-8')
     except IOError:
         pass
     else:

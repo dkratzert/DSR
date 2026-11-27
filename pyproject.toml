@@ -11,7 +11,7 @@ authors = [
 ]
 description = "A program to model disorder in small-molecule X-ray structures"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -19,10 +19,10 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Chemistry",
     "Development Status :: 5 - Production/Stable",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
 ]
 
 [project.urls]

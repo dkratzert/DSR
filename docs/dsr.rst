@@ -75,7 +75,7 @@ files dsr.sh, dsr-mac and dsr-linux are removed from /etc/profile.d/ and/or
 
 
 Do the following steps in order to install and run DSR with
-`uv <https://docs.astral.sh/uv/>`_. uv also installs a suitable Python version (3.11 or above) if necessary.
+`uv <https://docs.astral.sh/uv/>`_. uv also installs a suitable Python version (3.12 or above) if necessary.
 
 .. code-block:: bash
 

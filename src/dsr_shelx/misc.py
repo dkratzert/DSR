@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import List
 
 import mpmath as mpm
-from constants import isoatomstr
+from constants import isoatomstr, FILE_ENCODING
 
 alphabet = string.ascii_uppercase
 
@@ -33,7 +33,7 @@ def write_file(flist, name):
     :param flist: list
     :param name:  string
     """
-    with open(name, 'w') as ofile:
+    with open(name, 'w', encoding=FILE_ENCODING) as ofile:
         for line in flist:  # modified reslist
             ofile.write("%s" % line)  # write the new file
 
@@ -70,7 +70,7 @@ def touch(fname, times=None):
     """
     creates an empty file like unix touch command
     """
-    with open(fname, 'a'):
+    with open(fname, 'a', encoding=FILE_ENCODING):
         os.utime(fname, times)
 
 
@@ -1214,7 +1214,7 @@ def file_len(fname):
     42976
     """
     i = 0
-    with open(fname) as f:
+    with open(fname, encoding=FILE_ENCODING) as f:
         for i, l in enumerate(f, 1):
             pass
     return i
