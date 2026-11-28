@@ -2,6 +2,10 @@ Recent Changes in DSR
 ---------------------
 
 * 244    Replace mode now also deletes the empty AFIX instructions of deleted hydrogen atoms.
+         Fixed replace mode deleting atoms of the new fragment. Fixed duplicate atom names with
+         lower-case names in the res file and wrong SFAC numbers with explicit scattering factors.
+         GRADE import no longer alters existing user database entries.
+         SHELXL is now only needed for CF3, CF6 and CF9 groups. Several smaller fixes.
 * 243    Reworked the Windows release build. Several fixes in the database.
 * 242    Fixed crash when RESI contains a floating point number.
 * 241    Fixed crash with certain Python3 versions
