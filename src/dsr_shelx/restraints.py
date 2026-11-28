@@ -283,7 +283,7 @@ class Restraints():
                 if self.is_flat(chunk) and chunk not in flats:
                     flats.append(sorted(chunk))
             if not flats:
-                return False
+                continue  # this ring is not flat, but a later one might be
             newflats = []
             # check for neighbours and add the to the flat list:
             for chunk in flats:
@@ -315,6 +315,8 @@ class Restraints():
                             ch.sort()
                             if self.is_flat(ch) and ch not in newflats:
                                 newflats.append(ch)
+        if not flats:
+            return False
         return newflats
 
     def binds_to(self, a, b):

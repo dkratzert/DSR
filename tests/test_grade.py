@@ -88,3 +88,41 @@ class ImportGRADE_Test(unittest.TestCase):
             pdblines = pdb_file.read()
             pdbatoms = self.ig.get_pdbatoms(pdblines)
             self.assertListEqual(['AL1', 'AL', '9.463', '-3.351', '3.397'], pdbatoms[0])
+
+
+USER_DB_ENTRY = """<myfrag>
+REM Name: My fragment
+REM Src: CSD ABCDEF
+REM HFIX 43 C2
+SADI C1 C2 C2 C3
+FRAG 17 10 10 10 90 90 90
+C1  1  0.123456 0.234567 0.345678
+C2  1  0.234567 0.234567 0.345678
+C3  1  0.345678 0.234567 0.345678
+</myfrag>"""
+
+
+def test_grade_import_keeps_existing_user_entries(tmp_path):
+    maindb = str(Path('src/dsr_shelx/dsr_db.txt').resolve())
+    userdb = tmp_path / 'dsr_user_db.txt'
+    userdb.write_text(USER_DB_ENTRY, encoding='latin1')
+    gdb = dbfile.ParseDB(maindb, str(userdb))
+    ImportGRADE('./tests/test-data/ALA.gradeserver_all.tgz', gdb, False, maindb, str(userdb)).write_user_database()
+    assert userdb.read_text(encoding='latin1').startswith(USER_DB_ENTRY + '\n')
+    new_db = dbfile.ParseDB(maindb, str(userdb))
+    user_tags = [tag for tag in new_db.databases if new_db.databases[tag]['dbname'] == 'dsr_user_db']
+    assert len(user_tags) == 2
+    assert new_db.get_src('myfrag') == 'CSD ABCDEF'
+    assert new_db.get_hfixes('myfrag', '') == ['REM HFIX 43 C2']
+    assert new_db.get_atoms('myfrag')[0] == ['C1', 1, 0.123456, 0.234567, 0.345678]
+
+
+def test_grade_import_name_is_unique(tmp_path):
+    maindb = str(Path('src/dsr_shelx/dsr_db.txt').resolve())
+    userdb = tmp_path / 'dsr_user_db.txt'
+    userdb.write_text(USER_DB_ENTRY.replace('myfrag', 'abc'), encoding='latin1')
+    gdb = dbfile.ParseDB(maindb, str(userdb))
+    entry = ImportGRADE('./tests/test-data/ABC.gradeserver_all.tgz', gdb, False, maindb, str(userdb))
+    assert list(entry.bild_grade_db_entry()) == ['ABC1']
+    entry.write_user_database()
+    assert 'abc1' in dbfile.ParseDB(maindb, str(userdb)).databases

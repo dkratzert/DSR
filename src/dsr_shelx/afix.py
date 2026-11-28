@@ -55,21 +55,12 @@ def collect_all_restraints(reslist):
     all_restraints = []
     for n, resline in enumerate(reslist):
         resline = resline.strip(' \n\r')
-        # resline = resline.split()
-        try:
-            resline[:4]
-        except Exception:
-            continue
         if resline[:4] in RESTRAINT_CARDS:
-            # see for the next  lines if the lines continues with "=":
-            line = 0
-            while resline[-1] == '=':
-                resline = resline[:-1] + reslist[n + line + 1]
-                line += 1
-                if resline[-1] != '=':
-                    break
-                if line > 500:
-                    break
+            # join the following lines as long as the line continues with "=":
+            nextnum = n + 1
+            while resline.endswith('=') and nextnum < len(reslist) and nextnum - n <= 500:
+                resline = resline[:-1].rstrip() + ' ' + reslist[nextnum].strip(' \n\r')
+                nextnum += 1
             all_restraints.append(resline)
     return all_restraints
 
@@ -156,24 +147,22 @@ def write_dbhead_to_file(dsrp, filename, dbhead, resi_class, resi_number):
     """
     number = '1'
     files = []
+    filepath, filename = os.path.split(os.path.abspath(filename))
     # find a unique number for the restraint file:
-    for filen in misc.sortedlistdir('.'):
+    for filen in misc.sortedlistdir(filepath) or []:
         if fnmatch.fnmatch(filen, 'dsr_*_' + filename):
             filenum = filen.split('_')
             if str.isdigit(filenum[1]):
-                files.append(filenum[1])
-    filepath, filename = os.path.split(os.path.abspath(filename))
-    try:
-        number = str(int(files[-1]) + 1)
-    except IndexError:
-        pass
+                files.append(int(filenum[1]))
+    if files:
+        number = str(max(files) + 1)
     if not dsrp.resiflag:  # no residues
         filename = 'dsr_' + number + '_' + filename
     if dsrp.resiflag and resi_number:  # only residue number known
         filename = 'dsr_' + resi_class + '_' + resi_number + '_' + filename
     if dsrp.resiflag and not resi_number and resi_class:  # only residue class known
         filename = 'dsr_' + resi_class + '_' + filename
-    if os.path.isfile(os.path.abspath(filename)):
+    if os.path.isfile(os.path.join(filepath, filename)):
         print('Previous restraint file found. Using restraints from "{}"'.format(filename))
         return filename
     try:

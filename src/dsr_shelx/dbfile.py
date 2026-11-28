@@ -512,7 +512,8 @@ class ParseDB():
         except Exception:
             return None
         formula = ''
-        for el in set(types):
+        # in order of first appearance, like the SFAC list of an exported fragment:
+        for el in dict.fromkeys(types):
             num = types.count(el)
             formula += '{}{} '.format(el, num)
         return formula
@@ -644,7 +645,8 @@ class ParseDB():
                         dev = line[0]
                         del line[0]  # delete standard deviation
                 except IndexError:
-                    return False
+                    good = False
+                    continue
                 if len(line) % 2 == 1:  # test for uneven atoms count
                     print('*** Inconsistent SADI restraint line {} of "{}". '
                           'Not all atoms form a pair ***'.format(num, fragment))
@@ -652,28 +654,30 @@ class ParseDB():
                 distances = []
                 pairlist = []
                 if len(pairs) <= 1:
-                    return True
-                for i in pairs:
-                    if i in pairlist or tuple(reversed(i)) in pairlist:
-                        print('*** Duplicate atom pair "{}" in SADI restraint line {} of "{}". ***'.format(" ".join(i),
-                                                                                                           num,
-                                                                                                           fragment))
-                    pairlist.append(i)
-                    try:
+                    continue
+                try:
+                    for i in pairs:
+                        if i in pairlist or tuple(reversed(i)) in pairlist:
+                            print('*** Duplicate atom pair "{}" in SADI restraint line {} of "{}". ***'
+                                  .format(" ".join(i), num, fragment))
+                        pairlist.append(i)
                         atom1 = [float(x) for x in atoms[atnames.index(i[0])][2:5]]
                         atom2 = [float(x) for x in atoms[atnames.index(i[1])][2:5]]
-                    except ValueError:
-                        return False
-                    dist = atomic_distance(atom1, atom2, self.get_cell(fragment))
-                    distances.append(dist)
+                        dist = atomic_distance(atom1, atom2, self.get_cell(fragment))
+                        distances.append(dist)
+                except ValueError:
+                    # unknown atom name, can not calculate the distances of this line:
+                    good = False
+                    continue
                 if len(pairlist) == 2:
                     # Find restraints with one pair, where 1,2 and 1,3 distances are mixed:
                     pairdev = 1.0 - (min(distances) / max(distances))
                     if pairdev > (2.0 * float(dev)):
                         print('*** Suspicious deviation of {:.3f} A for "{}" in {} ***'.format(pairdev, restraints[num],
                                                                                                fragment))
-                        return False
-                    return True  # because esd is too sensitive for two distances.
+                        good = False
+                    continue  # because esd is too sensitive for two distances.
+                line_good = True
                 stdev = std_dev(distances)  # Error distribution of
                 # only do outlier test if standard deviation is suspiciously large:
                 if stdev > 0.065:
@@ -688,18 +692,17 @@ class ParseDB():
                                                                  self.get_db_name(fragment))
                                   )
                             print('*** {} ... ***'.format(restr[num][:60]))
-                            good = False
-                if (stdev > (2.5 * float(dev))) and good:
+                            line_good = False
+                if (stdev > (2.5 * float(dev))) and line_good:
                     print("\nFragment {}:".format(fragment))
                     print(
                         '*** Suspicious restraints in SADI line {} with high standard deviation {:4.3f} '
                         '(median length: {:4.3f} A) ***'.format(num + 1, stdev, median(distances)))
                     print('*** ' + restraints[num] + ' ***\n')
+                    line_good = False
+                if not line_good:
                     good = False
-        if good:
-            return True
-        else:
-            return False
+        return good
 
     def search_for_error_response(self, fragment):
         """
@@ -1090,24 +1093,13 @@ class ImportGRADE():
         .mol2 and .dfix file
         """
         db_import_dict = {}
-        num = 0
-        name = self._resi_name[:4].upper()
+        name = self._resi_name.upper()
         if not isinstance(name, str):
             name = name.decode()
-        resi_name = name
         if not self._db_tags:
             print('*** Unable to import fragment. Database is empty. ***')
             sys.exit()
-        # Check if anything is already in database:
-        # tags are always lower case:
-        while resi_name.lower() in self._db_tags:
-            # Already there, so add a number to the tag:
-            num = num + 1
-            resi_name = resi_name[:3] + str(num)
-        if num == 0:
-            resi_name = resi_name[:3]
-        else:
-            resi_name = resi_name[:3] + str(num)
+        resi_name = self.make_unique_name(name, self._db_tags)
         fragline = 'FRAG 17 1  1  1  90  90  90'
         db_import_dict[resi_name] = {
             'restraints': self._restraints,
@@ -1120,6 +1112,33 @@ class ImportGRADE():
             'name'      : resi_name
         }
         return db_import_dict
+
+    @staticmethod
+    def make_unique_name(name: str, tags: List[str]) -> str:
+        """
+        Returns a fragment name of three characters that is not already a tag in the database.
+        The name is also used as residue class, which can have only four characters in SHELXL.
+        If the name already exists, a number is added as fourth character. Numbers with more
+        than one digit replace the last characters of the name.
+
+        >>> ImportGRADE.make_unique_name('ABCD', [])
+        'ABC'
+        >>> ImportGRADE.make_unique_name('ABCD', ['abc'])
+        'ABC1'
+        >>> ImportGRADE.make_unique_name('ALA', ['ala', 'ala1'])
+        'ALA2'
+        >>> ImportGRADE.make_unique_name('ALA', ['ala'] + ['ala{}'.format(n) for n in range(1, 10)])
+        'AL10'
+        """
+        resi_name = name[:3]
+        num = 0
+        # tags are always lower case:
+        while resi_name.lower() in tags:
+            num += 1
+            suffix = str(num)
+            # keep at least one letter, because a residue class must start with a letter:
+            resi_name = name[:max(1, min(3, 4 - len(suffix)))] + suffix
+        return resi_name
 
     @staticmethod
     def import_error(filename: Union[str, Path]):
@@ -1141,43 +1160,22 @@ class ImportGRADE():
 
     def write_user_database(self):
         """
-        writes content of existing dsr_user_db.txt and the imported GRADE entry to
-        the dsr_user_db.txt
+        Appends the imported GRADE entry to dsr_user_db.txt. The existing
+        entries are left untouched.
         """
-        fragments = list(self._db)
         imported_entry = self.bild_grade_db_entry()
-        grade_db_names = list(imported_entry)
-        user_db_names = []
-        for i in fragments:
-            if self._db[i]['dbname'] == 'dsr_user_db':
-                user_db_names.append(self._db[i]['name'])
-        # try to write the new dbentry:
+        dbentries = []
+        for name in imported_entry:
+            print(f'Importing {self._resi_name} ({name}) to user database...')
+            dbentries.append(self.compile_dbentry(imported_entry, name))
         try:
-            with open(self.user_db_path, 'w', encoding=FILE_ENCODING) as f:
-                for name in grade_db_names:
-                    print(f'Importing {self._resi_name} ({name}) to user database...')
-                    dbentry = self.compile_dbentry(imported_entry, name)
-                    f.write(dbentry)
-        except IOError as e:
-            print(e)
-            sys.exit()
-        # try to write existing dbentries:
-        try:
-            with open(self.user_db_path, 'a+', encoding=FILE_ENCODING) as fu:
-                for tag in fragments:
-                    if self._db[tag]['dbname'] == 'dsr_user_db':
-                        atomlist = self._db[tag]['atoms']
-                        head = '\n'.join([''.join(x) for x in self._db[tag]['restraints']])
-                        atoms = '\n'.join([f'{y[0]:<6}{y[1]:<2}{float(y[2]):>8.3f}'
-                                           f'{float(y[3]):>8.3f}{float(y[4]):>8.3f}' for y in atomlist])
-                        resi_name = self._db[tag]['resi']
-                        comments = '\n'.join(self._db[tag]['comments'])
-                        name = self._db[tag]['name']
-                        comments = "REM Name: {}\n{}".format(name, comments)
-                        fragline = 'FRAG 17 {} {} {} {} {} {}'.format(*self._db[tag]['cell'])
-                        dbentry = (f'\n<{tag}> \n{comments} \nRESI {resi_name} \n'
-                                   f'{head} \n{fragline} \n{atoms} \n</{tag}>\n')
-                        fu.write(dbentry)
+            existing = ''
+            if os.path.isfile(self.user_db_path):
+                with open(self.user_db_path, 'r', encoding=FILE_ENCODING) as f:
+                    existing = f.read()
+            separator = '\n' if existing and not existing.endswith('\n') else ''
+            with open(self.user_db_path, 'a', encoding=FILE_ENCODING) as f:
+                f.write(separator + '\n' + '\n'.join(dbentries))
         except IOError as e:
             print(e)
             sys.exit()

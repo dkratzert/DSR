@@ -18,7 +18,7 @@ from typing import Dict, List
 
 from atoms import Element, atoms
 from constants import atomregex, SHX_CARDS
-from misc import find_line, find_multi_lines, atomic_distance
+from misc import find_line, find_multi_lines, atomic_distance, multiline_test
 
 
 
@@ -245,7 +245,7 @@ class FindAtoms():
         frag_coords = self.get_atomcoordinates(frag_atoms)
         for resinum in self._residues:
             suffix = ''
-            if resinum != 0:
+            if str(resinum) != '0':
                 suffix = '_{}'.format(resinum)
             # resinum is the resideue number
             for atom in self._residues[resinum]:
@@ -449,26 +449,20 @@ class FindAtoms():
         :param sfac_table: list of atom types ['C', 'H', 'N', ...]
         """
         delcount = []
-        if atype == 'H':
-            name = "hydrogen"
-        if atype == 'F':
-            name = "fluorine"
+        name = {'H': 'hydrogen', 'F': 'fluorine'}.get(atype.upper(), atype)
         lines = self.get_atom_line_numbers(atoms)
         try:
-            hydrogen_sfac = sfac_table.index(type) + 1
+            hydrogen_sfac = [x.upper() for x in sfac_table].index(atype.upper()) + 1
         except ValueError:
-            hydrogen_sfac = False
-            return
+            return delcount
         for i in lines:
             afix = False
-            if i == '':
-                continue
-            if i == '\n':
-                continue
-            for n in range(1, 11):
+            # skip the continuation line of an anisotropic atom:
+            start = i + 2 if multiline_test(self._reslist[i]) else i + 1
+            for num in range(start, start + 10):
                 try:
-                    line = self._reslist[i + n + 1].upper()
-                    atom = line.split()[0].upper()
+                    line = self._reslist[num].upper()
+                    atom = line.split()[0]
                 except IndexError:
                     continue
                 if line.startswith('HKLF'):
@@ -478,7 +472,9 @@ class FindAtoms():
                     if str(line.split()[1]) == str(hydrogen_sfac):
                         print('Deleted {0} atom {1}'.format(name, atom))
                         delcount.append(atom)
-                        self._reslist[i + n] = ''
+                        self._reslist[num] = ''
+                        if multiline_test(line) and num + 1 < len(self._reslist):
+                            self._reslist[num + 1] = ''
                         continue
                     else:
                         break
@@ -487,23 +483,21 @@ class FindAtoms():
                     # stop also if next "AFIX mn" begins
                     break
                 if line.startswith('AFIX') and line.split()[1] != '0':
-                    self._reslist[i + n + 1] = ''
+                    self._reslist[num] = ''
                     afix = True  # turn on afix flag if first "AFIX mn" is found
                     continue
                 if line.startswith('AFIX') and line.split()[1] == '0':
                     afix = False  # turn of afix flag if afix is closed with "AFIX 0"
-                    self._reslist[i + n + 1] = ''
+                    self._reslist[num] = ''
                     continue
                 if afix:
-                    try:
-                        if atom in SHX_CARDS:
-                            continue
-                        # delete the hydrogen atom
-                        self._reslist[i + n + 1] = ''
+                    if atom in SHX_CARDS:
+                        continue
+                    # delete the hydrogen atom (or its continuation line)
+                    self._reslist[num] = ''
+                    if atomregex.match(line):
                         print('Deleted {0} atom {1}'.format(name, atom))
                         delcount.append(atom)
-                    except IndexError:
-                        continue
         return delcount
 
 
@@ -598,12 +592,12 @@ class SfacTable():
         """
         sfacline = find_multi_lines(self._reslist, r'SFAC\s+[a-zA-Z]+')  # position of the SFAC card
         unitline = find_line(self._reslist, r'UNIT\s+[0-9]+')  # position of the UNIT card
-        try:
-            if sfacline[-1] > unitline:
-                print('*** SFAC in line {} must be defined before UNIT! ***'.format(sfacline[-1] + 1))
-                sys.exit()
-        except():
-            pass
+        if unitline is False:
+            print('*** No UNIT instruction in res file found! Can not proceed! ***')
+            sys.exit()
+        if sfacline and sfacline[-1] > unitline:
+            print('*** SFAC in line {} must be defined before UNIT! ***'.format(sfacline[-1] + 1))
+            sys.exit()
         unit = []
         explicit_scat = []
         regular_sfac_line_num = False
@@ -706,9 +700,11 @@ class NumberScheme():
         self._reslist = reslist
         self.__rlist = []
         for i in get_atoms(self._reslist):
-            if not re.match('H[0-9]+', i[0]):
-                if not re.match('Q[0-9]+', i[0]):
-                    self.__rlist.append(i[0])
+            # SHELXL atom names are case-insensitive:
+            name = i[0].upper()
+            if not re.match('H[0-9]+', name):
+                if not re.match('Q[0-9]+', name):
+                    self.__rlist.append(name)
         self.__dbatome = dbatome
         # Alphabet for the naming scheme:
         self.__alphabet = []
@@ -760,7 +756,7 @@ class NumberScheme():
         """
         if not extranames:
             extranames = []
-        self.__rlist.extend(extranames)
+        self.__rlist.extend([x.upper() for x in extranames])
         if self.dsrp.resiflag:
             print('RESI instruction is enabled. Leaving atom numbers as they are.')
             return [i[0].upper() for i in self.__dbatome]

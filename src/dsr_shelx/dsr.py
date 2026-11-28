@@ -185,10 +185,9 @@ class DSR(object):
         """
         dbdir = os.path.expanduser('~')
         fragnames = []
-        num = 0
         try:
             (width, _) = get_terminal_size()
-        except():
+        except Exception:
             width = 80
         print('\n Entries found in the databases:\n')
         print(' Fragment         | Line | DB Name    | Full name, Comments ')
@@ -197,7 +196,7 @@ class DSR(object):
             fragnames.append(line[0])
             line = ' {:<17}| {:<5}| {:<11}| {}'.format(*line)
             print(line[:width - 1])
-        print(f'\n {num} Fragments in the database(s).',
+        print(f'\n {len(fragnames)} Fragments in the database(s).',
               f'\n Feel free to add more fragments to "{dbdir + os.path.sep}dsr_user_db.txt"\n')
         for fragment in fragnames:
             self.gdb.check_consistency(fragment)
@@ -254,8 +253,9 @@ class DSR(object):
         restraints = remove_resi(restraints)
         # corrects the atom type according to the previous defined global sfac table:
         dbatoms = atomhandling.set_final_db_sfac_types(db_atom_types, dbatoms, sfac_table)
-        if not dsrp.unit_line:
+        if dsrp.unit_line is False:
             print('*** No UNIT instruction in res file found! Can not proceed! ***')
+            sys.exit()
         print('Inserting {} into res File.'.format(self.fragment))
         if self.invert:
             print('Fragment inverted.')

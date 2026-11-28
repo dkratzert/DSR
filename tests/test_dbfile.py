@@ -155,3 +155,40 @@ class globalDB(unittest.TestCase):
         line = gdb.get_startline(fragment)
         self.assertEqual(resi, 'DME')
         self.assertEqual(line, 2)
+
+
+SADI_TEST_ENTRY = """<testfrag>
+REM Name: Test fragment
+RESI TST
+SADI C1 C2 C2 C3
+{second_sadi}
+FRAG 17 1 1 1 90 90 90
+C1 1 0.0 0.0 0.0
+C2 1 1.5 0.0 0.0
+C3 1 3.0 0.0 0.0
+C4 1 4.5 0.0 0.0
+C5 1 7.0 0.0 0.0
+</testfrag>
+"""
+
+
+def _sadi_test_db(tmp_path, second_sadi):
+    dbpath = tmp_path / 'db.txt'
+    dbpath.write_text(SADI_TEST_ENTRY.format(second_sadi=second_sadi))
+    return dbfile.ParseDB(maindb_path=str(dbpath))
+
+
+def test_check_sadi_consistence_checks_all_sadi_lines(tmp_path, capsys):
+    gdb = _sadi_test_db(tmp_path, 'SADI C1 C2 C2 C3 C3 C4 C4 C5')
+    assert gdb.check_sadi_consistence('testfrag') is False
+    assert 'Suspicious' in capsys.readouterr().out
+
+
+def test_check_sadi_consistence_good_entry(tmp_path):
+    gdb = _sadi_test_db(tmp_path, 'SADI C1 C2 C2 C3 C3 C4')
+    assert gdb.check_sadi_consistence('testfrag') is True
+
+
+def test_sum_formula_in_order_of_appearance():
+    gdb = dbfile.ParseDB(maindb_path='./src/dsr_shelx/dsr_db.txt')
+    assert gdb.get_sum_formula('oc(cf3)3') == 'O1 C4 F9 '

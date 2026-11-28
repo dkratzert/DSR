@@ -236,10 +236,8 @@ class ResListEdit():
         fvar_list = self.get_fvarlist()  # free variables in the res file
         varlen = self.get_fvar_count()
         occupancynumber = occupancynumber.strip('-')
-        # how many numbers do we have?:
         # the occupancynumber is split in the fvar part and the occupancy part:
-        num = occupancynumber.split('.')
-        fvar = int(num[0]) // 10  # e.g. 20.5 is fvar 2 and occupancy 0.5
+        fvar = int(float(occupancynumber)) // 10  # e.g. 20.5 is fvar 2 and occupancy 0.5
         if fvar == 0:
             fvar = 1
         difference = (fvar - varlen)

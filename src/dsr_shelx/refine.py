@@ -66,8 +66,13 @@ class ShelxlRefine():
         self._shelx_command = self.find_shelxl_exe()
         self.backup_file = os.path.abspath(str(self.resfile_name + '.dsr-bak'))
 
+    def check_shelxl_available(self):
+        """
+        Exits DSR if no SHELXL executable was found. Only tasks that really run
+        SHELXL (e.g. CF3 groups) need it, the fragment fit itself does not.
+        """
         if not self._shelx_command:
-            print('\nSHELXL executable not found in system path! No fragment fitting possible.\n')
+            print('\nSHELXL executable not found in system path! SHELXL is needed for this task.\n')
             print('You can download SHELXL at http://shelx.uni-goettingen.de\n')
             sys.exit()
 
@@ -304,6 +309,7 @@ class ShelxlRefine():
         """
         resfile = self.resfile_name + '.res'
         hklfile = self.resfile_name + '.hkl'
+        self.check_shelxl_available()
         if not check_file_exist(hklfile):
             print('You need a proper hkl file to use DSR.')
             sys.exit()

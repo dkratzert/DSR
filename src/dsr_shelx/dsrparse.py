@@ -69,7 +69,12 @@ class DSRParser(object):
             dsr_str = re.sub(' +', ' ', dsr_str)  # Why did I do this? At least it does no harm.
             dsr_str = dsr_str + self.reslist[line_number + 1]
         self.dsr_line_number = line_number
-        return dsr_str.upper().split()
+        dsr_command_list = dsr_str.upper().split()
+        if len(dsr_command_list) < 4:
+            print('*** Incomplete DSR command in line {}! Syntax: '
+                  'REM DSR PUT/REPLACE fragment WITH atoms ON atoms ... ***'.format(line_number + 1))
+            sys.exit()
+        return dsr_command_list
 
     @property
     def unit_line(self):
@@ -279,14 +284,14 @@ class DSRParser(object):
         badocc_message = '*** Occupancy without numerical value supplied. Please define occupancy value after OCC ***'
         badocc_status = False
         if occupancy:
-            num = occupancy.split('.')
-            fvar = abs(int(num[0])) // 10
             try:
-                if float(fvar) > 99:
+                fvar = int(abs(float(occupancy))) // 10
+            except (ValueError, OverflowError):
+                badocc_status = True
+            else:
+                if fvar > 99:
                     print('*** Only 99 free variables allowed in SHELXL! ***')
                     sys.exit()
-            except ValueError:
-                badocc_status = True
         if 'OCC' in self.dsr_command_list and not occupancy:
             badocc_status = True
         if badocc_status:

@@ -119,6 +119,8 @@ class CF3(object):
         self.cell = rle.get_cell()
         self.startm = '\nREM CF3 group made by DSR:\n'
         self.endm = 'REM End of CF3 group made by DSR\n'
+        # CF3 groups are refined with SHELXL, so fail before anything is changed:
+        ShelxlRefine(reslist, basefilename, fa, options).check_shelxl_available()
 
     def find_bonded_fluorine(self, atom, extra_param=0.16, element='F'):
         """

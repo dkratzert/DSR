@@ -1,5 +1,7 @@
 import unittest
 
+import pytest
+
 from dsr_shelx import dbfile
 from dsr_shelx.atomhandling import FindAtoms, NumberScheme
 from dsr_shelx.resfile import ResList, ResListEdit
@@ -125,3 +127,11 @@ def test_res_file_with_non_utf8_characters_round_trip(tmp_path):
     assert reslist[1] == 'REM Bärbel measured this ±0.1 Ä\n'
     rl.write_resfile(reslist, '.res')
     assert res_file.read_bytes().replace(b'\r\n', b'\n') == content.replace(b'\r\n', b'\n')
+
+
+@pytest.mark.parametrize('occ', ['.5', '-.5', '21', '-21.5', '31'])
+def test_set_free_variables_accepts_all_occupancy_formats(occ):
+    reslist = ResList('./tests/p21c.res').get_res_list()
+    rle = ResListEdit(reslist, FindAtoms(reslist))
+    fvars = rle.set_free_variables(occ)
+    assert fvars[0].startswith('FVAR 0.08479 0.48343')

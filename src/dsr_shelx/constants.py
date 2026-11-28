@@ -47,7 +47,7 @@ atomregex = re.compile(
 
 try:
     (width, height) = get_terminal_size()  # @UnusedVariable
-except():
+except Exception:
     width = 80
 sep_line = (width - 1) * '-'
 
