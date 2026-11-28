@@ -46,10 +46,6 @@ ShowComponentSizes=False
 SignTool=sign_sha256
 
 [Run]
-; The VC++ redistributable is required by the embedded Python interpreter; only run it
-; when it is not already present on the system.
-Filename: "{app}\vc_redist.x64.exe"; WorkingDir: "{app}"; Parameters: "/passive /norestart"; \
-    Check: ShouldInstallVCRedist
 ; Compile all Python files once, so that DSR does not have to do it at its first start:
 Filename: "{app}\python\python.exe"; Parameters: "-m compileall -q ""{app}"""; WorkingDir: "{app}"; \
     Flags: runhidden; StatusMsg: "Compiling Python files..."
@@ -65,7 +61,6 @@ Name: "modifypath"; Description: "Add application directory to your system envir
 
 [Files]
 Source: "..\dist\python_dist\*"; DestDir: "{app}\python"; Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.pyc"
-Source: "..\vc_redist.x64.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\example\p21c.hkl"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
 Source: "..\example\p21c.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs; Permissions: everyone-full
 Source: "..\example\p21c_step0.res"; DestDir: "{app}\example"; Flags: ignoreversion createallsubdirs recursesubdirs
@@ -96,6 +91,8 @@ Type: filesandordirs; Name: "{app}\python27"
 ; Clean up old-style Python installs from previous releases before installing the new
 ; embedded interpreter under {app}\python.
 Type: filesandordirs; Name: "{app}\python311"
+; Left over from releases that bundled the VC++ redistributable.
+Type: files; Name: "{app}\vc_redist.x64.exe"
 
 [UninstallDelete]
 Type: files; Name: "{app}\*.pyc"
@@ -116,19 +113,6 @@ Name: "{app}\manuals"; Permissions: everyone-full
 Name: "{app}\."; Permissions: everyone-full
 
 [Code]
-function IsVCRedistInstalled(): Boolean;
-var
-  installed: Cardinal;
-begin
-  Result := RegQueryDWordValue(HKEY_LOCAL_MACHINE,
-    'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64', 'Installed', installed) and (installed = 1);
-end;
-
-function ShouldInstallVCRedist(): Boolean;
-begin
-  Result := not IsVCRedistInstalled;
-end;
-
 const
     ModPathName = 'modifypath';
     ModPathType = 'system';

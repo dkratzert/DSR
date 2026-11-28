@@ -51,10 +51,6 @@ echo .. >> %PACKAGE_DIR%\python%SHORT_PYTHON_VERSION%._pth
 echo import site >> %PACKAGE_DIR%\python%SHORT_PYTHON_VERSION%._pth
 endlocal
 
-del vc_redist.x64.exe 2>NUL
-
-curl -L https://aka.ms/vs/17/release/vc_redist.x64.exe -o vc_redist.x64.exe
-
 cd %SCRIPT_DIR%\..
 
 REM Install the project's runtime dependencies (if any are ever added to
