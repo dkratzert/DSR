@@ -59,3 +59,21 @@ def test_incomplete_dsr_command_exits_with_message(command, capsys):
     with pytest.raises(SystemExit):
         _parse(command)
     assert 'Incomplete DSR command' in capsys.readouterr().out
+
+
+@pytest.mark.parametrize('options, part, occ', [
+    ('part 1 occ 21', '1', '21'),
+    ('part -1 occ -21.5', '-1', '-21.5'),
+    ('part 999 occ 991', '999', '991'),
+    ('occ 1', '', '1'),
+    ('', '', ''),
+])
+def test_valid_part_and_occupancy(options, part, occ):
+    dsrp = _parse('rem dsr put toluene with C1 C2 C3 on Q1 Q2 Q3 ' + options)
+    assert (dsrp.part, dsrp.occupancy) == (part, occ)
+
+
+@pytest.mark.parametrize('options', ['part abc', 'part occ 21', 'part 1000', 'part -1000', 'occ', 'occ 1000'])
+def test_invalid_part_and_occupancy_exit(options):
+    with pytest.raises(SystemExit):
+        _parse('rem dsr put toluene with C1 C2 C3 on Q1 Q2 Q3 ' + options)

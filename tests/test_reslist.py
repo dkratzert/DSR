@@ -135,3 +135,14 @@ def test_set_free_variables_accepts_all_occupancy_formats(occ):
     rle = ResListEdit(reslist, FindAtoms(reslist))
     fvars = rle.set_free_variables(occ)
     assert fvars[0].startswith('FVAR 0.08479 0.48343')
+
+
+@pytest.mark.parametrize('occ, fvar_lines', [
+    ('41', ['FVAR 0.08479 0.48343 0.55591 0.5']),
+    ('91', ['FVAR 0.08479 0.48343 0.55591 0.5 0.5 0.5 0.5', 'FVAR 0.5 0.5']),
+])
+def test_set_free_variables_adds_missing_free_variables(occ, fvar_lines):
+    reslist = ResList('./tests/p21c.res').get_res_list()
+    rle = ResListEdit(reslist, FindAtoms(reslist))
+    assert rle.set_free_variables(occ) == fvar_lines
+    assert reslist[17] == ' \n'.join(fvar_lines) + '\n'

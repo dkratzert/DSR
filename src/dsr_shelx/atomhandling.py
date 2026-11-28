@@ -602,6 +602,9 @@ class SfacTable():
         explicit_scat = []
         regular_sfac_line_num = False
         sfac = []
+        sfac_lines = sfacline[:]
+        # all elements in the order of their SFAC numbers:
+        elements_in_file = []
         if len(sfacline) == 1:
             # regular SFAC table
             sfac = self._reslist[sfacline[0]].split()[1:]  # SFAC string in the reslist
@@ -613,9 +616,11 @@ class SfacTable():
                     # in this case the SFAC command defines also a scattering factor:
                     element = self._reslist[i].split()[1]
                     explicit_scat.append(element)  # first SFAC paramter is element
+                    elements_in_file.append(element.upper())
                 else:
                     # regular SFAC list
                     sfac.extend(self._reslist[i].split()[1:])
+                    elements_in_file.extend([x.upper() for x in self._reslist[i].split()[1:]])
                     regular_sfac_line_num = i
         if regular_sfac_line_num:
             sfacline = regular_sfac_line_num
@@ -638,7 +643,15 @@ class SfacTable():
         if not explicit_scat:
             self._reslist[sfacline] = 'SFAC  {}\n'.format('  '.join(sfac))
             self._reslist[unitline] = 'UNIT  {}\n'.format('  '.join(unit))  # builds the UNIT line
-        return sfac + explicit_scat
+            return sfac
+        # With explicit scattering factors, the SFAC numbers of the existing atoms must not change.
+        # Therefore, new elements are added in an extra SFAC line after the last one:
+        new_elements = [x for x in sfac if x not in elements_in_file]
+        if new_elements:
+            self._reslist[sfac_lines[-1]] += 'SFAC  {}\n'.format('  '.join(new_elements))
+            self._reslist[unitline] = '{}  {}\n'.format(self._reslist[unitline].rstrip('\r\n'),
+                                                        '  '.join(['1'] * len(new_elements)))
+        return elements_in_file + new_elements
 
 
 #############################################################################

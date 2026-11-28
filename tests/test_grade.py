@@ -110,11 +110,9 @@ def test_grade_import_keeps_existing_user_entries(tmp_path):
     ImportGRADE('./tests/test-data/ALA.gradeserver_all.tgz', gdb, False, maindb, str(userdb)).write_user_database()
     assert userdb.read_text(encoding='latin1').startswith(USER_DB_ENTRY + '\n')
     new_db = dbfile.ParseDB(maindb, str(userdb))
-    user_tags = [tag for tag in new_db.databases if new_db.databases[tag]['dbname'] == 'dsr_user_db']
-    assert len(user_tags) == 2
-    assert new_db.get_src('myfrag') == 'CSD ABCDEF'
-    assert new_db.get_hfixes('myfrag', '') == ['REM HFIX 43 C2']
-    assert new_db.get_atoms('myfrag')[0] == ['C1', 1, 0.123456, 0.234567, 0.345678]
+    # Everything is unchanged apart from the new entry:
+    assert set(new_db.databases) - set(gdb.databases) == {'ala1'}
+    assert {tag: new_db.databases[tag] for tag in gdb.databases} == gdb.databases
 
 
 def test_grade_import_name_is_unique(tmp_path):

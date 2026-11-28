@@ -190,3 +190,39 @@ class TestFindAtoms(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+def _sfac_elements_in_file(reslist):
+    """Elements in the order of their SFAC numbers in the file."""
+    elements = []
+    for line in [x for x in ''.join(reslist).splitlines() if x.upper().startswith('SFAC')]:
+        tokens = line.split()[1:]
+        # Regular SFAC lines list elements, explicit ones define one element with scattering factors:
+        elements.extend(tokens if ''.join(tokens).isalpha() else tokens[:1])
+    return [x.upper() for x in elements]
+
+
+def test_sfac_table_adds_new_elements():
+    reslist = ['TITL test\n', 'SFAC C H\n', 'UNIT 1 2\n', 'C1    1    0.1    0.2    0.3    11.00000    0.04\n']
+    assert SfacTable(reslist, ['C', 'N']).set_sfac_table() == ['C', 'H', 'N']
+    assert _sfac_elements_in_file(reslist) == ['C', 'H', 'N']
+
+
+def test_sfac_table_with_explicit_scattering_factors():
+    # p21c.res has a regular SFAC line and "SFAC N 1 0 0 ..." with explicit scattering factors:
+    reslist = ResList(str(TESTS_DIR / 'p21c.res')).get_res_list()
+    assert SfacTable(reslist, ['C', 'O', 'F', 'N']).set_sfac_table() == ['C', 'H', 'O', 'F', 'AL', 'GA', 'N']
+    assert _sfac_elements_in_file(reslist) == ['C', 'H', 'O', 'F', 'AL', 'GA', 'N']
+
+
+@pytest.mark.parametrize('sfac_lines', [
+    ['SFAC C H\n', 'SFAC N 1 0 0 0 0 0 0 0 6.64600 0 0 0.002 0.670 10.011\n'],
+    ['SFAC N 1 0 0 0 0 0 0 0 6.64600 0 0 0.002 0.670 10.011\n', 'SFAC C H\n'],
+])
+def test_sfac_table_with_explicit_scattering_factors_and_new_element(sfac_lines):
+    reslist = ['TITL test\n', *sfac_lines, 'UNIT 10 20 1\n',
+               'C1    1    0.1    0.2    0.3    11.00000    0.04\n']
+    table = SfacTable(reslist, ['C', 'B']).set_sfac_table()
+    assert table == _sfac_elements_in_file(reslist)
+    assert table[-1] == 'B'
+    assert reslist[3] == 'UNIT 10 20 1  1\n'

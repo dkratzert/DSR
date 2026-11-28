@@ -1,8 +1,13 @@
 import unittest
+from pathlib import Path
+
+import pytest
 
 from dsr_shelx import dbfile
 from dsr_shelx.export import Export
 from dsr_shelx.version import VERSION
+
+TESTS_DIR = Path(__file__).parent
 
 
 class ExportTest(unittest.TestCase):
@@ -87,3 +92,30 @@ class ExportTest(unittest.TestCase):
         gdb = dbfile.ParseDB('./src/dsr_shelx/dsr_db.txt')
         export = Export(gdb)
         self.assertTrue(export.export_to_clip('benzene'))
+
+
+def test_write_res_file(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    Export(dbfile.ParseDB(str(TESTS_DIR.parent / 'src/dsr_shelx/dsr_db.txt')), invert=True).write_res_file('Benzene')
+    text = (tmp_path / 'benzene.res').read_text(encoding='latin1')
+    for item in ('TITL benzene', 'SFAC C', 'REM Sum formula: C6', 'DFIX 1.', 'FLAT ', 'HKLF 0'):
+        assert item in text
+    assert len([line for line in text.splitlines() if line.startswith('C')]) == 6 + 1  # atoms and CELL
+
+
+def test_export_all_fragments(tmp_path, monkeypatch):
+    entry = ('<{0}>\nREM Name: {0}\nRESI {0}\nSADI C1 C2 C2 C3\nFRAG 17 1 1 1 90 90 90\n'
+             'C1 1 0.0 0.0 0.0\nC2 1 1.5 0.0 0.0\nC3 1 3.0 0.0 0.0\n</{0}>\n')
+    (tmp_path / 'db.txt').write_text(entry.format('fraga') + entry.format('fragb'))
+    monkeypatch.chdir(tmp_path)
+    with pytest.raises(SystemExit):
+        Export(dbfile.ParseDB(str(tmp_path / 'db.txt'))).export_all_fragments()
+    assert (tmp_path / 'fraga.res').is_file() and (tmp_path / 'fragb.res').is_file()
+
+
+def test_export_to_clip(monkeypatch):
+    clipboard = []
+    monkeypatch.setattr('pyperclip.setcb', clipboard.append)
+    assert Export(dbfile.ParseDB(str(TESTS_DIR.parent / 'src/dsr_shelx/dsr_db.txt'))).export_to_clip('benzene')
+    assert clipboard[0].startswith('FRAG') and clipboard[0].endswith('FEND')
+    assert clipboard[0].count('\nC') == 6

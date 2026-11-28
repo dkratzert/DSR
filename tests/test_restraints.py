@@ -4,8 +4,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 from dsr_shelx.dbfile import ParseDB
-from dsr_shelx.restraints import Restraints
+from dsr_shelx.restraints import Restraints, ListFile, Lst_Deviations, format_atom_names
 
 REPO_DIR = Path(__file__).parent.parent
 
@@ -48,3 +50,48 @@ def test_flat_restraints_do_not_depend_on_hash_seed():
         results.add(subprocess.run([sys.executable, '-c', code], env=env, capture_output=True, text=True,
                                    check=True, cwd=REPO_DIR).stdout)
     assert len(results) == 1
+
+
+LST = """ CELL  0.71073  10.5086  20.9035  20.5072  90.000  94.130  90.000
+
+ Covalent radii and connectivity table for test
+ C    0.770
+ F    0.640
+
+C1 -  C2 C4
+C2 -  C1 F1
+F1 -  C2
+C4 -  C1
+{clockwise}
+     ATOM       x         y         z
+ 
+ C1      0.22379   0.37551   0.50415
+ F1_2a   0.30000   0.40000   0.50000
+
+  ** Atom C2 deviates by 0.512 A
+"""
+
+
+@pytest.mark.parametrize('clockwise, bondvector', [
+    ('', ('C1', 'C2')),
+    (' Rotation is clockwise looking down C4 to C1. The first value is for F1\n', ('C4', 'C1')),
+])
+def test_list_file(tmp_path, clockwise, bondvector):
+    (tmp_path / 'test.lst').write_text(LST.format(clockwise=clockwise))
+    lf = ListFile(str(tmp_path / 'test'))
+    assert lf.get_cell() == [10.5086, 20.9035, 20.5072, 90.0, 94.13, 90.0]
+    assert lf.get_all_coordinates == {'C1': [0.22379, 0.37551, 0.50415], 'F1_2A': [0.3, 0.4, 0.5]}
+    assert lf.get_single_coordinate('F9') is None
+    assert ('C2', 'F1') in lf.read_conntable()
+    assert lf.get_bondvector('C2') == bondvector
+    assert Lst_Deviations(lf.listfile_list).find_deviations() == {'C2': '0.512'}
+
+
+@pytest.mark.parametrize('part, resinum, names', [
+    ('2', '4', ['C1_4B', 'O1_4B']),
+    ('1', '', ['C1_A', 'O1_A']),
+    ('', '3', ['C1_3', 'O1_3']),
+    ('', '', ['C1', 'O1']),
+])
+def test_format_atom_names(part, resinum, names):
+    assert format_atom_names(['C1', 'O1'], part, resinum) == names
