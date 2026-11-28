@@ -50,6 +50,9 @@ SignTool=sign_sha256
 ; when it is not already present on the system.
 Filename: "{app}\vc_redist.x64.exe"; WorkingDir: "{app}"; Parameters: "/passive /norestart"; \
     Check: ShouldInstallVCRedist
+; Compile all Python files once, so that DSR does not have to do it at its first start:
+Filename: "{app}\python\python.exe"; Parameters: "-m compileall -q ""{app}"""; WorkingDir: "{app}"; \
+    Flags: runhidden; StatusMsg: "Compiling Python files..."
 
 [UninstallRun]
 

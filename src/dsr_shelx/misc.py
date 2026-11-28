@@ -21,7 +21,6 @@ import string
 from pathlib import Path
 from typing import List
 
-import mpmath as mpm
 from constants import isoatomstr, FILE_ENCODING
 
 alphabet = string.ascii_uppercase
@@ -771,6 +770,7 @@ class A(object):
     orthogonalization matrix
     e.g. converts fractional coordinates to cartesian coodinates
 
+    >>> import mpmath as mpm
     >>> cell = (10.5086, 20.9035, 20.5072, 90, 94.13, 90)
     >>> coord = (-0.186843,   0.282708,   0.526803)
     >>> A = A(cell).orthogonal_matrix
@@ -793,11 +793,12 @@ class A(object):
         self.gamma = radians(gamma)
 
     @property
-    def orthogonal_matrix(self) -> mpm.matrix:
+    def orthogonal_matrix(self) -> 'mpm.matrix':
         """
         Converts von fractional to cartesian.
         Invert the matrix to do the opposite.
         """
+        import mpmath as mpm
         Am = mpm.matrix([[self.a, self.b * cos(self.gamma), self.c * cos(self.beta)],
                          [0, self.b * sin(self.gamma),
                           (self.c * (cos(self.alpha) - cos(self.beta) * cos(self.gamma)) / sin(self.gamma))],
@@ -1165,6 +1166,7 @@ def coord_to_shx_atom(coordinates):
 
 
 def ufrac_to_ucart(_A, cell, uvals):
+    import mpmath as mpm
     U11, U22, U33, U23, U13, U12 = uvals
     U21 = U12
     U32 = U23
